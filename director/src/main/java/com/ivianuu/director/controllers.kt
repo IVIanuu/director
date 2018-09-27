@@ -23,14 +23,12 @@ val Controller.application get() = activity?.application
 val Controller.resources get() = activity?.resources
 
 fun Controller.requireApplication() =
-    router ?: throw IllegalStateException("not attached to a router")
+    application?.applicationContext ?: throw IllegalStateException("not attached to a router")
 
 fun Controller.requireActivity() =
     activity ?: throw IllegalStateException("not attached to a router")
 
 fun Controller.requireResources() =
     resources ?: throw IllegalStateException("not attached to a router")
-
-fun Controller.requireRouter() = router ?: throw IllegalStateException("not attached to a router")
 
 fun Controller.requireView() = view ?: throw IllegalStateException("no view is attached")

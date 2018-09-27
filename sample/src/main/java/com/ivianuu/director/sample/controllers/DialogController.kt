@@ -3,7 +3,6 @@ package com.ivianuu.director.sample.controllers
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BundleBuilder
 import kotlinx.android.synthetic.main.controller_dialog.*
@@ -19,8 +18,8 @@ class DialogController : BaseController() {
         tv_description.text = args.getString(KEY_DESCRIPTION)
         tv_description.movementMethod = LinkMovementMethod.getInstance()
 
-        dismiss.setOnClickListener { requireRouter().popController(this) }
-        dialog_window.setOnClickListener { requireRouter().popController(this) }
+        dismiss.setOnClickListener { router.popController(this) }
+        dialog_window.setOnClickListener { router.popController(this) }
     }
 
     companion object {

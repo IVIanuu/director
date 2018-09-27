@@ -12,8 +12,8 @@ import com.ivianuu.director.common.HorizontalChangeHandler
 import com.ivianuu.director.common.VerticalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireResources
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.CircularRevealChangeHandler
@@ -37,7 +37,12 @@ class TransitionDemoController : BaseController() {
         super.onViewCreated(view)
 
         if (transitionDemo.colorId != 0 && bg_view != null) {
-            bg_view.setBackgroundColor(ContextCompat.getColor(activity!!, transitionDemo.colorId))
+            bg_view.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireActivity(),
+                    transitionDemo.colorId
+                )
+            )
         }
 
         val nextIndex = transitionDemo.ordinal + 1
@@ -50,14 +55,14 @@ class TransitionDemoController : BaseController() {
         }
 
         btn_next.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(activity!!, buttonColor))
+                ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), buttonColor))
         tv_title.text = transitionDemo.title
 
         btn_next.setOnClickListener {
             if (nextIndex < TransitionDemo.values().size) {
-                requireRouter().pushController(getRouterTransaction(nextIndex, this))
+                router.pushController(getRouterTransaction(nextIndex, this))
             } else {
-                requireRouter().popToRoot()
+                router.popToRoot()
             }
         }
     }

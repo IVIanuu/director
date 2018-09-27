@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.attachRouter
-import com.ivianuu.director.common.ControllerViewRef
 import com.ivianuu.director.doOnChangeStarted
 import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.controllers.HomeController

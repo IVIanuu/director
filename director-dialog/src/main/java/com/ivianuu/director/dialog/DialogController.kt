@@ -30,7 +30,6 @@ import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.requireActivity
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 
@@ -188,7 +187,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         dialog?.dismiss()
         isDismissed = true
 
-        requireRouter().popController(this)
+        router.popController(this)
     }
 
     /**

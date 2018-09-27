@@ -40,16 +40,20 @@ abstract class Controller {
     /**
      * Returns the router of this controller
      */
-    var router: Router? = null
+    var router: Router
+        get() = if (routerSet) _router else throw IllegalStateException("router is only available after onCreate")
         internal set(value) {
-            field = value
+            if (routerSet) return
+            _router = value
+            routerSet = true
             performCreate()
+            performRestoreInstanceState()
 
-            if (value != null) {
-                onRouterSetListeners.forEach { it.invoke(value) }
-                onRouterSetListeners.clear()
-            }
+            onRouterSetListeners.forEach { it(value) }
+            onRouterSetListeners.clear()
         }
+    private lateinit var _router: Router
+    private var routerSet = false
 
     /**
      * Return this Controller's View or `null` if it has not yet been created or has been
@@ -75,7 +79,7 @@ abstract class Controller {
     private var targetInstanceId: String? = null
 
     var targetController: Controller?
-        get() = targetInstanceId?.let { router?.rootRouter?.findControllerByInstanceId(it) }
+        get() = targetInstanceId?.let { _router.rootRouter.findControllerByInstanceId(it) }
         set(value) { targetInstanceId = value?.instanceId }
 
     /**
@@ -186,7 +190,7 @@ abstract class Controller {
      * Returns the host activity of this controller
      */
     val activity: Activity?
-        get() = router?.activity
+        get() = router.activity
 
     /**
      * Will be called once when the router was set for the first time
@@ -407,7 +411,7 @@ abstract class Controller {
     open fun handleBack() = _childRouters
         .flatMap { it.backstack }
         .sortedByDescending { it.transactionIndex }
-        .any { it.controller.isAttached && it.controller.requireRouter().handleBack() }
+        .any { it.controller.isAttached && it.controller.router.handleBack() }
 
     /**
      * Adds a listener for all of this Controller's lifecycle events
@@ -513,8 +517,7 @@ abstract class Controller {
     }
 
     internal fun contextAvailable() {
-        val context = requireRouter().activity
-
+        val context = activity
         if (context != null && !isContextAvailable) {
             notifyLifecycleListeners { it.preContextAvailable(this) }
             isContextAvailable = true
@@ -627,7 +630,7 @@ abstract class Controller {
     internal fun attach(view: View) {
         val router = router
 
-        attachedToUnownedParent = router == null || view.parent != router.container
+        attachedToUnownedParent = view.parent != router.container
 
         if (attachedToUnownedParent) {
             return
@@ -647,12 +650,12 @@ abstract class Controller {
         notifyLifecycleListeners { it.preAttach(this, view) }
 
         isAttached = true
-        needsAttach = router?.isActivityStopped == true
+        needsAttach = router.isActivityStopped == true
 
         onAttach(view)
 
         if (hasOptionsMenu && !optionsMenuHidden) {
-            requireRouter().invalidateOptionsMenu()
+            router.invalidateOptionsMenu()
         }
 
         notifyLifecycleListeners { it.postAttach(this, view) }
@@ -680,7 +683,7 @@ abstract class Controller {
             }
 
             if (hasOptionsMenu && !optionsMenuHidden) {
-                router?.invalidateOptionsMenu()
+                router.invalidateOptionsMenu()
             }
 
             notifyLifecycleListeners { it.postDetach(this, view) }
@@ -761,7 +764,7 @@ abstract class Controller {
     private fun destroy(removeViews: Boolean) {
         isBeingDestroyed = true
 
-        router?.unregisterForActivityResults(instanceId)
+        router.unregisterForActivityResults(instanceId)
 
         _childRouters.forEach { it.destroy(false) }
 
@@ -865,18 +868,17 @@ abstract class Controller {
     }
 
     private fun performCreate() {
-        if (!isCreated && router != null) {
+        if (!isCreated) {
             notifyLifecycleListeners { it.preCreate(this) }
             onCreate()
             isCreated = true
             notifyLifecycleListeners { it.postCreate(this) }
-            performRestoreInstanceState()
         }
     }
 
     private fun performRestoreInstanceState() {
         val savedInstanceState = savedInstanceState
-        if (savedInstanceState != null && router != null) {
+        if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
 
             notifyLifecycleListeners { it.onRestoreInstanceState(this, savedInstanceState) }
@@ -917,8 +919,8 @@ abstract class Controller {
         if (isBeingDestroyed && !viewIsAttached && !isAttached && destroyedView != null) {
             val view = destroyedView.get()
             val router = router
-            val container = router?.container
 
+            val container = router.container
             if (container != null && view != null && view.parent == router.container) {
                 container.removeView(view)
             }
@@ -945,7 +947,7 @@ abstract class Controller {
 
     private fun withRouter(action: (Router) -> Unit) {
         val router = router
-        if (router != null) {
+        if (routerSet) {
             action.invoke(router)
         } else {
             onRouterSetListeners.add(action)

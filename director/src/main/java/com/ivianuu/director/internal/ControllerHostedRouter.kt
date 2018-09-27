@@ -21,7 +21,7 @@ internal class ControllerHostedRouter : Router {
             return hostController?.let { hostController ->
                 mutableListOf<Router>().apply {
                     addAll(hostController.childRouters)
-                    hostController.router?.let { addAll(it.siblingRouters) }
+                    addAll(hostController.router.siblingRouters)
                 }
             } ?: emptyList()
         }

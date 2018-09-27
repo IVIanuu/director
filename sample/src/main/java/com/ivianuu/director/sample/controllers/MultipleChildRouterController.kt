@@ -4,7 +4,6 @@ import android.view.View
 import com.ivianuu.director.common.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_multiple_child_routers.*
@@ -30,7 +29,7 @@ class MultipleChildRouterController : BaseController() {
             }
 
         show_top.setOnClickListener {
-            requireRouter().pushController(
+            router.pushController(
                 TextController.newInstance("Dummy")
                     .toTransaction()
                     .pushChangeHandler(FadeChangeHandler())

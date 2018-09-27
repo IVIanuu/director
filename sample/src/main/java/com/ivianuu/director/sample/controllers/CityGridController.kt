@@ -13,8 +13,8 @@ import com.ivianuu.director.common.FadeChangeHandler
 import com.ivianuu.director.common.TransitionChangeHandlerCompat
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireResources
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
 import com.ivianuu.director.sample.util.BundleBuilder
@@ -40,7 +40,7 @@ class CityGridController : BaseController() {
 
         tv_title.text = title
         img_dot.drawable.setColorFilter(
-            ContextCompat.getColor(activity!!, dotColor),
+            ContextCompat.getColor(requireActivity(), dotColor),
             Mode.SRC_ATOP
         )
 
@@ -66,7 +66,7 @@ class CityGridController : BaseController() {
             requireResources().getString(R.string.transition_tag_title_named, model.title)
         )
 
-        requireRouter().pushController(
+        router.pushController(
             CityDetailController.newInstance(model.drawableRes, model.title).toTransaction()
                 .pushChangeHandler(
                     TransitionChangeHandlerCompat(

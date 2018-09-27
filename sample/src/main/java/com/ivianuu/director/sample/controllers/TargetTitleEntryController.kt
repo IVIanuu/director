@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.ivianuu.director.Controller
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_target_title_entry.*
 
@@ -27,7 +26,7 @@ class TargetTitleEntryController : BaseController() {
         btn_use_title.setOnClickListener {
             (targetController as? TargetTitleEntryControllerListener)
                 ?.onTitlePicked(edit_text.text.toString())
-            requireRouter().popController(this)
+            router.popController(this)
         }
     }
 

@@ -10,7 +10,6 @@ import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireResources
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
@@ -77,7 +76,7 @@ class ParentController : BaseController() {
                                 if (index > 0) {
                                     removeChild(index - 1)
                                 } else {
-                                    requireRouter().popController(this@ParentController)
+                                    router.popController(this@ParentController)
                                 }
                             }
                         }

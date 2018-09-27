@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ivianuu.director.common.HorizontalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.extensions.LayoutContainer
@@ -66,7 +65,7 @@ class MasterDetailListController : BaseController() {
         if (twoPaneView) {
             getChildRouter(detail_container).setRoot(controller.toTransaction())
         } else {
-            requireRouter().pushController(
+            router.pushController(
                 controller.toTransaction()
                     .pushChangeHandler(HorizontalChangeHandler())
                     .popChangeHandler(HorizontalChangeHandler())

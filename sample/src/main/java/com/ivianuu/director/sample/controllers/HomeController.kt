@@ -28,7 +28,6 @@ import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireResources
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FabToDialogTransitionChangeHandler
@@ -143,7 +142,7 @@ class HomeController : BaseController() {
             FadeChangeHandler()
         ) else FadeChangeHandler()
 
-        requireRouter()
+        router
             .pushController(
                 DialogController.newInstance("Director", description.toString())
                     .toTransaction()
@@ -155,7 +154,7 @@ class HomeController : BaseController() {
     fun onModelRowClick(model: DemoModel?, position: Int) {
         when (model) {
             HomeController.DemoModel.NAVIGATION -> {
-                requireRouter().pushController(
+                router.pushController(
                     NavigationDemoController.newInstance(
                         0,
                         NavigationDemoController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY)
@@ -166,7 +165,7 @@ class HomeController : BaseController() {
                 )
             }
             HomeController.DemoModel.TRANSITIONS -> {
-                requireRouter().pushController(
+                router.pushController(
                     TransitionDemoController.getRouterTransaction(
                         0,
                         this
@@ -174,7 +173,7 @@ class HomeController : BaseController() {
                 )
             }
             HomeController.DemoModel.TARGET_CONTROLLER -> {
-                requireRouter().pushController(
+                router.pushController(
                     TargetDisplayController()
                         .toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
@@ -182,14 +181,14 @@ class HomeController : BaseController() {
                 )
             }
             HomeController.DemoModel.VIEW_PAGER -> {
-                requireRouter().pushController(
+                router.pushController(
                     PagerController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
             HomeController.DemoModel.CHILD_CONTROLLERS -> {
-                requireRouter().pushController(
+                router.pushController(
                     ParentController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
@@ -201,7 +200,7 @@ class HomeController : BaseController() {
                 val dotSharedElementName =
                     requireResources().getString(R.string.transition_tag_dot_indexed, position)
 
-                requireRouter().pushController(
+                router.pushController(
                     CityGridController.newInstance(model.title, model.color, position).toTransaction()
                         .pushChangeHandler(
                             ArcFadeMoveChangeHandler(
@@ -218,7 +217,7 @@ class HomeController : BaseController() {
                 )
             }
             HomeController.DemoModel.DRAG_DISMISS -> {
-                requireRouter().pushController(
+                router.pushController(
                     DragDismissController().toTransaction()
                         .pushChangeHandler(
                             FadeChangeHandler(
@@ -229,7 +228,7 @@ class HomeController : BaseController() {
                 )
             }
             HomeController.DemoModel.MULTIPLE_CHILD_ROUTERS -> {
-                requireRouter().pushController(
+                router.pushController(
                     MultipleChildRouterController()
                         .toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
@@ -237,17 +236,17 @@ class HomeController : BaseController() {
                 )
             }
             HomeController.DemoModel.MASTER_DETAIL -> {
-                requireRouter().pushController(
+                router.pushController(
                     MasterDetailListController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
             DemoModel.DIALOG -> {
-                SimpleDialogController().show(requireRouter())
+                SimpleDialogController().show(router)
             }
             DemoModel.ARCH -> {
-                requireRouter().pushController(
+                router.pushController(
                     ArchController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
@@ -281,7 +280,7 @@ class HomeController : BaseController() {
                 model = item
                 tv_title.text = item.title
                 img_dot.drawable.setColorFilter(
-                    ContextCompat.getColor(activity!!, item.color),
+                    ContextCompat.getColor(requireActivity(), item.color),
                     Mode.SRC_ATOP
                 )
 

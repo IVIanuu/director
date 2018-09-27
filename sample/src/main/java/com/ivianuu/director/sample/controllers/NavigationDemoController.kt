@@ -9,7 +9,6 @@ import com.ivianuu.director.internal.d
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.requireResources
-import com.ivianuu.director.requireRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BundleBuilder
 import com.ivianuu.director.sample.util.ColorUtil
@@ -46,7 +45,7 @@ class NavigationDemoController : BaseController() {
         tv_title.text = requireResources().getString(R.string.navigation_title, index)
 
         btn_next.setOnClickListener {
-            requireRouter().pushController(
+            router.pushController(
                 NavigationDemoController.newInstance(index + 1, displayUpMode.displayUpModeForChild)
                     .toTransaction()
                     .pushChangeHandler(HorizontalChangeHandler())
@@ -54,9 +53,9 @@ class NavigationDemoController : BaseController() {
             )
         }
 
-        btn_up.setOnClickListener { requireRouter().popToTag(TAG_UP_TRANSACTION) }
+        btn_up.setOnClickListener { router.popToTag(TAG_UP_TRANSACTION) }
 
-        btn_pop_to_root.setOnClickListener { requireRouter().popToRoot() }
+        btn_pop_to_root.setOnClickListener { router.popToRoot() }
     }
 
     override fun onDestroyView(view: View) {
