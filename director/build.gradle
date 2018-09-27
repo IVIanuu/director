@@ -4,6 +4,7 @@ apply plugin: "kotlin-android-extensions"
 apply plugin: 'com.github.dcendents.android-maven'
 
 group=Versions.groupId
+version=Versions.versionName
 
 android {
     compileSdkVersion Versions.compileSdk

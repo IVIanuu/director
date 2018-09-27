@@ -206,7 +206,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         }
     }
     
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle) {
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         if (this.activity == activity) {
             routers.forEach { it.onContextAvailable() }
         }
