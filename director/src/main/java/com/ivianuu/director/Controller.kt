@@ -44,14 +44,22 @@ abstract class Controller {
         get() = if (routerSet) _router else throw IllegalStateException("router is only available after onCreate")
         internal set(value) {
             if (routerSet) return
-            _router = value
             routerSet = true
+            _router = value
+
+            // restore the internal state
+            savedState?.let { restoreInstanceState(it) }
+
+            // create
             performCreate()
+
+            // restore instance state
             performRestoreInstanceState()
 
             onRouterSetListeners.forEach { it(value) }
             onRouterSetListeners.clear()
         }
+
     private lateinit var _router: Router
     private var routerSet = false
 
@@ -126,8 +134,9 @@ abstract class Controller {
             if (invalidate) withRouter { it.invalidateOptionsMenu() }
         }
 
-    private var viewState: Bundle? = null
+    private var savedState: Bundle? = null
     private var savedInstanceState: Bundle? = null
+    private var viewState: Bundle? = null
 
     internal var needsAttach = false
     private var viewIsAttached = false
@@ -833,8 +842,6 @@ abstract class Controller {
 
         this.savedInstanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)
             ?.also { it.classLoader = javaClass.classLoader }
-
-        performCreate()
     }
 
     private fun saveViewState(view: View) {
@@ -868,7 +875,7 @@ abstract class Controller {
     }
 
     private fun performCreate() {
-        if (!isCreated) {
+        if (!isCreated && routerSet) {
             notifyLifecycleListeners { it.preCreate(this) }
             onCreate()
             isCreated = true
@@ -998,7 +1005,7 @@ abstract class Controller {
             return newInstanceOrThrow<Controller>(className).apply {
                 // Restore the args that existed before the last process death
                 this.args = args ?: Bundle(clazz.classLoader!!)
-                restoreInstanceState(bundle)
+                this.savedState = bundle
             }
         }
     }
