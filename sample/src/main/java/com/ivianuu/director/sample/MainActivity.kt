@@ -3,9 +3,10 @@ package com.ivianuu.director.sample
 import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.Router
 import com.ivianuu.director.attachRouter
-import com.ivianuu.director.doOnChangeStarted
 import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.controllers.HomeController
 import com.ivianuu.director.toTransaction
@@ -25,9 +26,12 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         setSupportActionBar(toolbar)
 
         router = attachRouter(controller_container, savedInstanceState).apply {
-            doOnChangeStarted(true) { to, from, _, _, _ ->
-                this@MainActivity.d { "on change started from ${from?.javaClass}, to ${to?.javaClass}" }
-            }
+            addLifecycleListener(object : ControllerLifecycleListener {
+                override fun postCreate(controller: Controller) {
+                    super.postCreate(controller)
+                    this@MainActivity.d { "post create $controller" }
+                }
+            }, false)
 
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())

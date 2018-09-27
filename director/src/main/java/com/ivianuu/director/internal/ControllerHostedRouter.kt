@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeListener
+import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
 
@@ -76,6 +77,15 @@ internal class ControllerHostedRouter : Router {
             super.getAllChangeListeners(recursiveOnly).toMutableList()
 
         hostController?.router?.let { listeners.addAll(it.getAllChangeListeners(true)) }
+
+        return listeners
+    }
+
+    override fun getAllLifecycleListeners(recursiveOnly: Boolean): List<ControllerLifecycleListener> {
+        val listeners =
+            super.getAllLifecycleListeners(recursiveOnly).toMutableList()
+
+        hostController?.router?.let { listeners.addAll(it.getAllLifecycleListeners(true)) }
 
         return listeners
     }

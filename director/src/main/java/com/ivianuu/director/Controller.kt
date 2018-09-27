@@ -955,7 +955,10 @@ abstract class Controller {
     }
 
     private inline fun notifyLifecycleListeners(block: (ControllerLifecycleListener) -> Unit) {
-        lifecycleListeners.toList().forEach(block)
+        val listeners = mutableListOf<ControllerLifecycleListener>()
+        listeners.addAll(lifecycleListeners)
+        listeners.addAll(router.getAllLifecycleListeners())
+        listeners.forEach(block)
     }
 
     private inline fun onChildRouters(block: (ControllerHostedRouter) -> Unit) {

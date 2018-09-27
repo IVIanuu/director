@@ -43,7 +43,8 @@ abstract class Router {
      */
     abstract val activity: Activity?
 
-    private val changeListeners = mutableSetOf<ChangeListenerEntry>()
+    private val changeListeners = mutableListOf<ChangeListenerEntry>()
+    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
     private val pendingControllerChanges = mutableListOf<ChangeTransaction>()
     protected val destroyingControllers = mutableListOf<Controller>()
 
@@ -485,6 +486,32 @@ abstract class Router {
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener }
 
+    /**
+     * Adds a lifecycle listener for controllers of this router
+     */
+    fun addLifecycleListener(listener: ControllerLifecycleListener, recursive: Boolean = false) {
+        if (!getAllLifecycleListeners(false).contains(listener)) {
+            d { "actual add listener $listener, $recursive" }
+            lifecycleListeners.add(LifecycleListenerEntry(listener, recursive))
+        }
+    }
+
+    /**
+     * Removes a previously added listener
+     */
+    fun removeLifecycleListener(listener: ControllerLifecycleListener) {
+        lifecycleListeners.removeAll { it.listener == listener }
+    }
+
+    internal fun getAllLifecycleListeners() =
+        getAllLifecycleListeners(false)
+
+    internal open fun getAllLifecycleListeners(recursiveOnly: Boolean) =
+        lifecycleListeners
+            .also { d { "get all listeners $recursiveOnly, listeners $lifecycleListeners" } }
+            .filter { !recursiveOnly || it.recursive }
+            .also { d { "get all listeners $recursiveOnly, filtered $it" } }
+            .map { it.listener }
 
     internal fun onActivityResult(instanceIds: Set<String>, requestCode: Int, resultCode: Int, data: Intent?) {
         instanceIds
@@ -554,7 +581,8 @@ abstract class Router {
 
     open fun onActivityDestroyed(activity: Activity) {
         prepareForContainerRemoval()
-        changeListeners.clear()
+        // todo changeListeners.clear()
+        // todo lifecycleListeners.clear()
 
         _backstack.reversedEntries.forEach { transaction ->
             transaction.controller.activityDestroyed(activity)
@@ -903,6 +931,11 @@ abstract class Router {
 
     private data class ChangeListenerEntry(
         val listener: ControllerChangeListener,
+        val recursive: Boolean
+    )
+
+    private data class LifecycleListenerEntry(
+        val listener: ControllerLifecycleListener,
         val recursive: Boolean
     )
 
