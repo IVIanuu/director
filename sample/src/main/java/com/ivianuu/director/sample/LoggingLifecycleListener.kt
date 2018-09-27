@@ -16,102 +16,102 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
 
     override fun preCreate(controller: Controller) {
         super.preCreate(controller)
-        controller.d { "pre create" }
+        controller.d { "Lifecycle: pre create" }
     }
 
     override fun postCreate(controller: Controller) {
         super.postCreate(controller)
-        controller.d { "post create" }
+        controller.d { "Lifecycle: post create" }
     }
 
     override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
         super.onRestoreInstanceState(controller, savedInstanceState)
-        controller.d { "on restore instance state" }
+        controller.d { "Lifecycle: on restore instance state" }
     }
 
     override fun preContextAvailable(controller: Controller) {
         super.preContextAvailable(controller)
-        controller.d { "pre context available" }
+        controller.d { "Lifecycle: pre context available" }
     }
 
     override fun postContextAvailable(controller: Controller, context: Context) {
         super.postContextAvailable(controller, context)
-        controller.d { "post context available" }
+        controller.d { "Lifecycle: post context available" }
     }
 
     override fun preCreateView(controller: Controller) {
         super.preCreateView(controller)
-        controller.d { "pre create view" }
+        controller.d { "Lifecycle: pre create view" }
     }
 
     override fun postCreateView(controller: Controller, view: View) {
         super.postCreateView(controller, view)
-        controller.d { "post create view" }
+        controller.d { "Lifecycle: post create view" }
     }
 
     override fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
         super.onRestoreViewState(controller, savedViewState)
-        controller.d { "on restore view state" }
+        controller.d { "Lifecycle: on restore view state" }
     }
 
     override fun preAttach(controller: Controller, view: View) {
         super.preAttach(controller, view)
-        controller.d { "pre attach" }
+        controller.d { "Lifecycle: pre attach" }
     }
 
     override fun postAttach(controller: Controller, view: View) {
         super.postAttach(controller, view)
-        controller.d { "post attach" }
+        controller.d { "Lifecycle: post attach" }
     }
 
     override fun preDetach(controller: Controller, view: View) {
         super.preDetach(controller, view)
-        controller.d { "pre detach" }
+        controller.d { "Lifecycle: pre detach" }
     }
 
     override fun postDetach(controller: Controller, view: View) {
         super.postDetach(controller, view)
-        controller.d { "post detach" }
+        controller.d { "Lifecycle: post detach" }
     }
 
     override fun onSaveViewState(controller: Controller, outState: Bundle) {
         super.onSaveViewState(controller, outState)
-        controller.d { "on save view state" }
+        controller.d { "Lifecycle: on save view state" }
     }
 
     override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
         super.onSaveInstanceState(controller, outState)
-        controller.d { "on save instance state" }
+        controller.d { "Lifecycle: on save instance state" }
     }
 
     override fun preDestroyView(controller: Controller, view: View) {
         super.preDestroyView(controller, view)
-        controller.d { "pre destroy view" }
+        controller.d { "Lifecycle: pre destroy view" }
     }
 
     override fun postDestroyView(controller: Controller) {
         super.postDestroyView(controller)
-        controller.d { "post destroy view" }
+        controller.d { "Lifecycle: post destroy view" }
     }
 
     override fun preContextUnavailable(controller: Controller, context: Context) {
         super.preContextUnavailable(controller, context)
-        controller.d { "pre context unavailable" }
+        controller.d { "Lifecycle: pre context unavailable" }
     }
 
     override fun postContextUnavailable(controller: Controller) {
         super.postContextUnavailable(controller)
-        controller.d { "post context unavailable" }
+        controller.d { "Lifecycle: post context unavailable" }
     }
 
     override fun preDestroy(controller: Controller) {
         super.preDestroy(controller)
-        controller.d { "pre destroy" }
+        controller.d { "Lifecycle: pre destroy" }
     }
 
     override fun postDestroy(controller: Controller) {
         super.postDestroy(controller)
-        controller.d { "post destroy" }
+        controller.d { "Lifecycle: post destroy" }
     }
 
     override fun onChangeStart(
@@ -120,7 +120,7 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         changeType: ControllerChangeType
     ) {
         super.onChangeStart(controller, changeHandler, changeType)
-        controller.d { "on change start" }
+        controller.d { "Lifecycle: on change start" }
     }
 
     override fun onChangeEnd(
@@ -129,6 +129,6 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         changeType: ControllerChangeType
     ) {
         super.onChangeEnd(controller, changeHandler, changeType)
-        controller.d { "on change end" }
+        controller.d { "Lifecycle: on change end" }
     }
 }

@@ -91,6 +91,7 @@ internal class ViewAttachHandler(private val attachListener: ViewAttachListener)
         }
 
         childOnAttachStateChangeListener = object : OnAttachStateChangeListener {
+
             var attached = false
 
             override fun onViewAttachedToWindow(v: View) {
@@ -110,9 +111,7 @@ internal class ViewAttachHandler(private val attachListener: ViewAttachListener)
     }
 
     private fun findDeepestChild(viewGroup: ViewGroup): View {
-        if (viewGroup.childCount == 0) {
-            return viewGroup
-        }
+        if (viewGroup.childCount == 0) return viewGroup
 
         val lastChild = viewGroup.getChildAt(viewGroup.childCount - 1)
         return if (lastChild is ViewGroup) {
