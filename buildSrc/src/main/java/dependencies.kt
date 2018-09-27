@@ -29,10 +29,8 @@ object Deps {
     const val androidxFragment = "androidx.fragment:fragment:${Versions.androidx}"
     const val androidxViewPager = "androidx.viewpager:viewpager:${Versions.androidx}"
 
-    const val archLifecycleCommon =
-        "androidx.lifecycle:lifecycle-common:${Versions.androidxArch}"
-    const val archLifecycleViewModel =
-        "androidx.lifecycle:lifecycle-viewmodel:${Versions.androidxArch}"
+    const val archLifecycleExtensions =
+        "androidx.lifecycle:lifecycle-extensions:${Versions.androidxArch}"
 
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"

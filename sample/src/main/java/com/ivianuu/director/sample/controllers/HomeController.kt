@@ -18,12 +18,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.GenericLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.FadeChangeHandler
 import com.ivianuu.director.common.TransitionChangeHandlerCompat
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.requireActivity
@@ -62,10 +66,23 @@ class HomeController : BaseController() {
     override fun onCreate() {
         super.onCreate()
         hasOptionsMenu = true
+
+        lifecycle.addObserver(object : GenericLifecycleObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                this@HomeController.d { "lifecycle -> $event" }
+            }
+        })
     }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
+
+        viewLifecycleOwner.lifecycle.addObserver(object : GenericLifecycleObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                this@HomeController.d { "view lifecycle -> $event" }
+            }
+        })
+
         recycler_view.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())

@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.arch.viewmodel
+package com.ivianuu.director.arch.lifecycle
 
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerLifecycleListener
 
 /**
  * A [ViewModelStoreOwner] for [Controller]'s
  */
 class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwner {
-    private val viewModelStore = ControllerViewModelStore(controller)
+
+    private val viewModelStore = ViewModelStore()
+
+    init {
+        controller.addLifecycleListener(object : ControllerLifecycleListener {
+            override fun postDestroy(controller: Controller) {
+                super.postDestroy(controller)
+                viewModelStore.clear()
+            }
+        })
+    }
+
     override fun getViewModelStore(): ViewModelStore = viewModelStore
 }
 
-fun Controller.ControllerViewModelStoreOwner() = ControllerViewModelStore(this)
+fun Controller.ControllerViewModelStoreOwner() = ControllerViewModelStoreOwner(this)

@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         setSupportActionBar(toolbar)
 
         router = attachRouter(controller_container, savedInstanceState).apply {
-            addLifecycleListener(LoggingLifecycleListener(), true)
+            //            addLifecycleListener(LoggingLifecycleListener(), true)
 
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())

@@ -1,1 +1,1 @@
-include ':sample', ':director', ':director-viewpager', ':director-dialog', ':director-common', ':director-arch-lifecycle', ':director-arch-viewmodel'
+include ':sample', ':director', ':director-viewpager', ':director-dialog', ':director-common', ':director-arch-lifecycle'

@@ -14,7 +14,7 @@ android {
 }
 
 dependencies {
-    api Deps.archLifecycleCommon
+    api Deps.archLifecycleExtensions
     api project(':director')
 }
 

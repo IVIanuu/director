@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/director/director.iml" filepath="$PROJECT_DIR$/director/director.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-arch-lifecycle/director-arch-lifecycle.iml" filepath="$PROJECT_DIR$/director-arch-lifecycle/director-arch-lifecycle.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-arch-viewmodel/director-arch-viewmodel.iml" filepath="$PROJECT_DIR$/director-arch-viewmodel/director-arch-viewmodel.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-common/director-common.iml" filepath="$PROJECT_DIR$/director-common/director-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-viewpager/director-viewpager.iml" filepath="$PROJECT_DIR$/director-viewpager/director-viewpager.iml" />

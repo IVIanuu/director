@@ -5,17 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelStoreOwner
-import com.ivianuu.director.Controller
-import com.ivianuu.director.arch.lifecycle.ControllerLifecycleOwner
-import com.ivianuu.director.arch.viewmodel.ControllerViewModelStore
+import com.ivianuu.director.arch.lifecycle.LifecycleController
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.ActionBarProvider
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
-abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner, ViewModelStoreOwner {
+abstract class BaseController : LifecycleController(), LayoutContainer {
 
     override var containerView: View? = null
 
@@ -25,9 +21,6 @@ abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner, V
         get() = (requireActivity() as ActionBarProvider).providedActionBar
 
     protected open var title: String? = null
-
-    private val lifecycleOwner = ControllerLifecycleOwner()
-    private val viewModelStore = ControllerViewModelStore()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,7 +66,4 @@ abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner, V
         }
     }
 
-    override fun getLifecycle() = lifecycleOwner.lifecycle
-
-    override fun getViewModelStore() = viewModelStore
 }

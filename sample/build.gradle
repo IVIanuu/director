@@ -44,7 +44,6 @@ dependencies {
 
     implementation project(':director')
     implementation project(':director-arch-lifecycle')
-    implementation project(':director-arch-viewmodel')
     implementation project(':director-common')
     implementation project(':director-dialog')
     implementation project(':director-viewpager')
