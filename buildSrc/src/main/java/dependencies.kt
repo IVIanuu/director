@@ -7,7 +7,7 @@ object Versions {
     const val minSdkSample = 21
     const val targetSdk = 28
     const val versionCode = 1
-    const val versionName = "SNAPSHOT"
+    const val versionName = "0.0.1-dev1"
     const val groupId = "com.ivianuu.director"
 
     const val androidGradlePlugin = "3.2.0"

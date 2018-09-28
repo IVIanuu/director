@@ -86,7 +86,6 @@ class FlipChangeHandler(
     }
 
     companion object {
-
-        private val DEFAULT_ANIMATION_DURATION: Long = 300
+        private const val DEFAULT_ANIMATION_DURATION = 300L
     }
 }
