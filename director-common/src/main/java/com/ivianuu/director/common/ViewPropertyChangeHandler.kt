@@ -1,17 +1,20 @@
 package com.ivianuu.director.common
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewPropertyAnimator
 import android.view.ViewTreeObserver
-import android.view.animation.Animation
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.internal.d
 
 /**
- * A base [ControllerChangeHandler] that facilitates using [android.view.animation.Animation]s to replace Controller Views
+ * A base [ControllerChangeHandler] that facilitates using [android.view.ViewPropertyAnimator]s to replace Controller Views
  */
-abstract class AnimationChangeHandler(
+abstract class ViewPropertyChangeHandler(
     duration: Long = DEFAULT_ANIMATION_DURATION,
     override var removesFromViewOnPush: Boolean = true
 ) : ControllerChangeHandler() {
@@ -20,8 +23,8 @@ abstract class AnimationChangeHandler(
         DEFAULT_ANIMATION_DURATION
         private set
 
-    private var fromAnimation: Animation? = null
-    private var toAnimation: Animation? = null
+    private var fromAnimator: ViewPropertyAnimator? = null
+    private var toAnimator: ViewPropertyAnimator? = null
 
     private var onAnimationReadyOrAbortedListener: OnAnimationReadyOrAbortedListener? = null
 
@@ -31,6 +34,7 @@ abstract class AnimationChangeHandler(
 
     private var fromEnded = false
     private var toEnded = false
+    private var animatorCanceled = false
 
     init {
         this.duration = duration
@@ -89,9 +93,9 @@ abstract class AnimationChangeHandler(
         super.onAbortPush(newHandler, newTop)
         canceled = true
 
-        if (fromAnimation != null || toAnimation != null) {
-            fromAnimation?.cancel()
-            toAnimation?.cancel()
+        if (fromAnimator != null || toAnimator != null) {
+            fromAnimator?.cancel()
+            toAnimator?.cancel()
         } else if (onAnimationReadyOrAbortedListener != null) {
             onAnimationReadyOrAbortedListener?.onReadyOrAborted()
         }
@@ -100,35 +104,35 @@ abstract class AnimationChangeHandler(
     override fun completeImmediately() {
         super.completeImmediately()
         needsImmediateCompletion = true
-        if (fromAnimation != null || toAnimation != null) {
-            fromAnimation?.cancel()
-            toAnimation?.cancel()
+        if (fromAnimator != null || toAnimator != null) {
+            fromAnimator?.cancel()
+            toAnimator?.cancel()
         } else if (onAnimationReadyOrAbortedListener != null) {
             onAnimationReadyOrAbortedListener?.onReadyOrAborted()
         }
     }
 
     /**
-     * Returns the animation for the [from] view
+     * Returns the animator for the [from] view
      */
-    protected abstract fun getFromAnimation(
+    protected abstract fun getFromAnimator(
         container: ViewGroup,
         from: View?,
         to: View?,
         isPush: Boolean,
         toAddedToContainer: Boolean
-    ): Animation?
+    ): ViewPropertyAnimator?
 
     /**
-     * Returns the animation for the [to] view
+     * Returns the animator for the [to] view
      */
-    protected abstract fun getToAnimation(
+    protected abstract fun getToAnimator(
         container: ViewGroup,
         from: View?,
         to: View?,
         isPush: Boolean,
         toAddedToContainer: Boolean
-    ): Animation?
+    ): ViewPropertyAnimator?
 
     /**
      * Will be called after the animation is complete to reset the View that was removed to its pre-animation state.
@@ -143,12 +147,15 @@ abstract class AnimationChangeHandler(
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
     ) {
+        d { "perform animation" }
         if (canceled) {
+            d { "canceled" }
             complete(onChangeComplete)
             return
         }
 
         if (needsImmediateCompletion) {
+            d { "needs immerdiate" }
             if (from != null && (!isPush || removesFromViewOnPush)) {
                 container.removeView(from)
             }
@@ -159,64 +166,78 @@ abstract class AnimationChangeHandler(
             return
         }
 
-        fromAnimation = getFromAnimation(container, from, to, isPush, toAddedToContainer)?.apply {
-            if (this@AnimationChangeHandler.duration > 0) {
-                duration = this@AnimationChangeHandler.duration
+        fromAnimator = getFromAnimator(container, from, to, isPush, toAddedToContainer)?.apply {
+            if (this@ViewPropertyChangeHandler.duration > 0) {
+                duration = this@ViewPropertyChangeHandler.duration
             }
 
-            setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {
-                }
-
-                override fun onAnimationRepeat(animation: Animation?) {
-                }
-
-                override fun onAnimationEnd(animation: Animation?) {
+            setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationCancel(animation: Animator?) {
+                    super.onAnimationCancel(animation)
+                    animatorCanceled = true
                     fromEnded = true
-                    container.post {
-                        onAnimationEnd(
-                            container,
-                            from,
-                            to,
-                            isPush,
-                            toAddedToContainer,
-                            onChangeComplete
-                        )
-                    }
+                    onAnimationEnd(
+                        container,
+                        from,
+                        to,
+                        isPush,
+                        toAddedToContainer,
+                        onChangeComplete
+                    )
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    super.onAnimationEnd(animation)
+                    fromEnded = true
+                    onAnimationEnd(
+                        container,
+                        from,
+                        to,
+                        isPush,
+                        toAddedToContainer,
+                        onChangeComplete
+                    )
                 }
             })
 
-            from?.startAnimation(this)
+            start()
         }
 
-        toAnimation = getToAnimation(container, from, to, isPush, toAddedToContainer)?.apply {
-            if (this@AnimationChangeHandler.duration > 0) {
-                duration = this@AnimationChangeHandler.duration
+        toAnimator = getToAnimator(container, from, to, isPush, toAddedToContainer)?.apply {
+            if (this@ViewPropertyChangeHandler.duration > 0) {
+                duration = this@ViewPropertyChangeHandler.duration
             }
 
-            setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {
-                }
-
-                override fun onAnimationRepeat(animation: Animation?) {
-                }
-
-                override fun onAnimationEnd(animation: Animation?) {
+            setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationCancel(animation: Animator?) {
+                    super.onAnimationCancel(animation)
+                    animatorCanceled = true
                     toEnded = true
-                    container.post {
-                        onAnimationEnd(
-                            container,
-                            from,
-                            to,
-                            isPush,
-                            toAddedToContainer,
-                            onChangeComplete
-                        )
-                    }
+                    onAnimationEnd(
+                        container,
+                        from,
+                        to,
+                        isPush,
+                        toAddedToContainer,
+                        onChangeComplete
+                    )
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    super.onAnimationEnd(animation)
+                    toEnded = true
+                    onAnimationEnd(
+                        container,
+                        from,
+                        to,
+                        isPush,
+                        toAddedToContainer,
+                        onChangeComplete
+                    )
                 }
             })
 
-            to?.startAnimation(this)
+            start()
         }
     }
 
@@ -228,9 +249,14 @@ abstract class AnimationChangeHandler(
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        if ((fromAnimation != null && !fromEnded) || (toAnimation != null && !toEnded)) return
+        if ((fromAnimator != null && !fromEnded) || (toAnimator != null && !toEnded)) {
+            d { "wait for all animations to complete" }
+            return
+        }
 
-        if (canceled) {
+        d { "all done" }
+
+        if (animatorCanceled) {
             if (from != null) {
                 resetFromView(from)
             }
@@ -241,7 +267,7 @@ abstract class AnimationChangeHandler(
 
             complete(onChangeComplete)
         } else {
-            if (!canceled && (fromAnimation != null || toAnimation != null)) {
+            if (!canceled && (fromAnimator != null || toAnimator != null)) {
                 if (from != null && (!isPush || removesFromViewOnPush)) {
                     container.removeView(from)
                 }
@@ -257,17 +283,18 @@ abstract class AnimationChangeHandler(
 
     private fun complete(onChangeComplete: () -> Unit) {
         if (!completed) {
+            d { "complete" }
             completed = true
             onChangeComplete()
         }
 
-        fromAnimation?.let { animation ->
-            animation.setAnimationListener(null)
+        fromAnimator?.let { animation ->
+            animation.setListener(null)
             animation.cancel()
         }
 
-        toAnimation?.let { animation ->
-            animation.setAnimationListener(null)
+        toAnimator?.let { animation ->
+            animation.setListener(null)
             animation.cancel()
         }
 

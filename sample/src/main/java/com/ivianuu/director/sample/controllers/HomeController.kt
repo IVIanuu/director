@@ -30,6 +30,7 @@ import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireResources
 import com.ivianuu.director.sample.LoggingLifecycleListener
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.TestChangeHandler
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FabToDialogTransitionChangeHandler
 import com.ivianuu.director.tag
@@ -237,8 +238,8 @@ class HomeController : BaseController() {
                 router.pushController(
                     MultipleChildRouterController()
                         .toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .pushChangeHandler(TestChangeHandler())
+                        .popChangeHandler(TestChangeHandler())
                 )
             }
             HomeController.DemoModel.MASTER_DETAIL -> {
