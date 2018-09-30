@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
-import android.view.ViewTreeObserver
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.internal.d
@@ -26,7 +25,7 @@ abstract class ViewPropertyChangeHandler(
     private var fromAnimator: ViewPropertyAnimator? = null
     private var toAnimator: ViewPropertyAnimator? = null
 
-    private var onAnimationReadyOrAbortedListener: OnAnimationReadyOrAbortedListener? = null
+    private var onReadyOrAbortedListener: OnReadyOrAbortedListener? = null
 
     private var canceled = false
     private var needsImmediateCompletion = false
@@ -59,16 +58,16 @@ abstract class ViewPropertyChangeHandler(
 
             if (to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
-                onAnimationReadyOrAbortedListener = OnAnimationReadyOrAbortedListener(
-                    container,
-                    from,
-                    to,
-                    isPush,
-                    true,
-                    onChangeComplete
-                )
-
-                to.viewTreeObserver.addOnPreDrawListener(onAnimationReadyOrAbortedListener)
+                onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
+                    performAnimation(
+                        container,
+                        from,
+                        to,
+                        isPush,
+                        true,
+                        onChangeComplete
+                    )
+                }
             }
         }
 
@@ -96,8 +95,8 @@ abstract class ViewPropertyChangeHandler(
         if (fromAnimator != null || toAnimator != null) {
             fromAnimator?.cancel()
             toAnimator?.cancel()
-        } else if (onAnimationReadyOrAbortedListener != null) {
-            onAnimationReadyOrAbortedListener?.onReadyOrAborted()
+        } else if (onReadyOrAbortedListener != null) {
+            onReadyOrAbortedListener?.onReadyOrAborted()
         }
     }
 
@@ -107,8 +106,8 @@ abstract class ViewPropertyChangeHandler(
         if (fromAnimator != null || toAnimator != null) {
             fromAnimator?.cancel()
             toAnimator?.cancel()
-        } else if (onAnimationReadyOrAbortedListener != null) {
-            onAnimationReadyOrAbortedListener?.onReadyOrAborted()
+        } else if (onReadyOrAbortedListener != null) {
+            onReadyOrAbortedListener?.onReadyOrAborted()
         }
     }
 
@@ -298,38 +297,7 @@ abstract class ViewPropertyChangeHandler(
             animation.cancel()
         }
 
-        onAnimationReadyOrAbortedListener = null
-    }
-
-    private inner class OnAnimationReadyOrAbortedListener(
-        val container: ViewGroup,
-        val from: View?,
-        val to: View?,
-        val isPush: Boolean,
-        val addingToView: Boolean,
-        val onChangeComplete: () -> Unit
-    ) : ViewTreeObserver.OnPreDrawListener {
-
-        private var hasRun = false
-
-        override fun onPreDraw(): Boolean {
-            onReadyOrAborted()
-            return true
-        }
-
-        fun onReadyOrAborted() {
-            if (hasRun) return
-            hasRun = true
-
-            if (to != null) {
-                val observer = to.viewTreeObserver
-                if (observer.isAlive) {
-                    observer.removeOnPreDrawListener(this)
-                }
-            }
-
-            performAnimation(container, from, to, isPush, addingToView, onChangeComplete)
-        }
+        onReadyOrAbortedListener = null
     }
 
     companion object {

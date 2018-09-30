@@ -28,7 +28,13 @@ fun Controller.requireApplication() =
 fun Controller.requireActivity() =
     activity ?: throw IllegalStateException("not attached to a router")
 
+fun Controller.requireParentController() =
+    parentController ?: throw IllegalStateException("no parent controller set")
+
 fun Controller.requireResources() =
     resources ?: throw IllegalStateException("not attached to a router")
+
+fun Controller.requireTargetController() =
+    targetController ?: throw IllegalStateException("no target controller set")
 
 fun Controller.requireView() = view ?: throw IllegalStateException("no view is attached")

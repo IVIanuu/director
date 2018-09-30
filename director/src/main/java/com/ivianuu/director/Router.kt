@@ -48,6 +48,9 @@ abstract class Router {
     private val pendingControllerChanges = mutableListOf<ChangeTransaction>()
     protected val destroyingControllers = mutableListOf<Controller>()
 
+    /**
+     * Whether or not the last view should be popped
+     */
     var popsLastView = false
 
     private var containerFullyAttached = false
@@ -60,6 +63,9 @@ abstract class Router {
             field = value
         }
 
+    /**
+     * The container id which will be used by this router
+     */
     val containerId: Int
         get() = container?.id ?: 0
 

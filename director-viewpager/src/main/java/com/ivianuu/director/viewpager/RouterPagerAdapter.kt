@@ -24,7 +24,7 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import java.util.ArrayList
+import java.util.*
 
 /**
  * An adapter for ViewPagers that uses Routers as pages
@@ -101,10 +101,7 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
     override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
         val router = `object` as Router
         if (router != currentPrimaryRouter) {
-            currentPrimaryRouter?.let {
-                it.backstack.forEach { transaction -> transaction.controller.optionsMenuHidden = true }
-            }
-
+            currentPrimaryRouter?.backstack?.forEach { it.controller.optionsMenuHidden = true }
             router.backstack.forEach { it.controller.optionsMenuHidden = false }
 
             currentPrimaryRouter = router
