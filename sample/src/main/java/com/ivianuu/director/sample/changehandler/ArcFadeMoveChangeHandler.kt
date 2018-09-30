@@ -18,8 +18,7 @@ import com.ivianuu.director.common.TransitionUtils
 import java.util.*
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class ArcFadeMoveChangeHandler :
-    SharedElementTransitionChangeHandler {
+class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
 
     private val sharedElementNames = mutableListOf<String>()
 

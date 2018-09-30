@@ -17,14 +17,13 @@ import com.ivianuu.director.common.SharedElementTransitionChangeHandler
 import java.util.*
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class CityGridSharedElementTransitionChangeHandler :
-    SharedElementTransitionChangeHandler {
+class CityGridSharedElementTransitionChangeHandler(
+    waitForTransitionNames: List<String> = emptyList()
+) : SharedElementTransitionChangeHandler() {
 
     private val names = mutableListOf<String>()
 
-    constructor()
-
-    constructor(waitForTransitionNames: List<String>) {
+    init {
         names.addAll(waitForTransitionNames)
     }
 

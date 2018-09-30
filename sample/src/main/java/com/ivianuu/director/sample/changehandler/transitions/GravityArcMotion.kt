@@ -34,12 +34,12 @@ import android.util.AttributeSet
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class GravityArcMotion : ArcMotion {
 
-    private var mMinimumHorizontalAngle = 0f
-    private var mMinimumVerticalAngle = 0f
-    private var mMaximumAngle = DEFAULT_MAX_ANGLE_DEGREES
-    private var mMinimumHorizontalTangent = 0f
-    private var mMinimumVerticalTangent = 0f
-    private var mMaximumTangent = DEFAULT_MAX_TANGENT
+    private var minimumHorizontalAngle = 0f
+    private var minimumVerticalAngle = 0f
+    private var maximumAngle = DEFAULT_MAX_ANGLE_DEGREES
+    private var minimumHorizontalTangent = 0f
+    private var minimumVerticalTangent = 0f
+    private var maximumTangent = DEFAULT_MAX_TANGENT
 
     constructor() {}
 
@@ -49,45 +49,45 @@ class GravityArcMotion : ArcMotion {
      * @inheritDoc
      */
     override fun setMinimumHorizontalAngle(angleInDegrees: Float) {
-        mMinimumHorizontalAngle = angleInDegrees
-        mMinimumHorizontalTangent = toTangent(angleInDegrees)
+        minimumHorizontalAngle = angleInDegrees
+        minimumHorizontalTangent = toTangent(angleInDegrees)
     }
 
     /**
      * @inheritDoc
      */
     override fun getMinimumHorizontalAngle(): Float {
-        return mMinimumHorizontalAngle
+        return minimumHorizontalAngle
     }
 
     /**
      * @inheritDoc
      */
     override fun setMinimumVerticalAngle(angleInDegrees: Float) {
-        mMinimumVerticalAngle = angleInDegrees
-        mMinimumVerticalTangent = toTangent(angleInDegrees)
+        minimumVerticalAngle = angleInDegrees
+        minimumVerticalTangent = toTangent(angleInDegrees)
     }
 
     /**
      * @inheritDoc
      */
     override fun getMinimumVerticalAngle(): Float {
-        return mMinimumVerticalAngle
+        return minimumVerticalAngle
     }
 
     /**
      * @inheritDoc
      */
     override fun setMaximumAngle(angleInDegrees: Float) {
-        mMaximumAngle = angleInDegrees
-        mMaximumTangent = toTangent(angleInDegrees)
+        maximumAngle = angleInDegrees
+        maximumTangent = toTangent(angleInDegrees)
     }
 
     /**
      * @inheritDoc
      */
     override fun getMaximumAngle(): Float {
-        return mMaximumAngle
+        return maximumAngle
     }
 
     override fun getPath(startX: Float, startY: Float, endX: Float, endY: Float): Path {
@@ -114,9 +114,9 @@ class GravityArcMotion : ArcMotion {
         var ey: Float
         if (startY == endY) {
             ex = (startX + endX) / 2
-            ey = startY + mMinimumHorizontalTangent * Math.abs(endX - startX) / 2
+            ey = startY + minimumHorizontalTangent * Math.abs(endX - startX) / 2
         } else if (startX == endX) {
-            ex = startX + mMinimumVerticalTangent * Math.abs(endY - startY) / 2
+            ex = startX + minimumVerticalTangent * Math.abs(endY - startY) / 2
             ey = (startY + endY) / 2
         } else {
             val deltaX = endX - startX
@@ -156,22 +156,22 @@ class GravityArcMotion : ArcMotion {
                 ey = endY + eDistY
                 ex = endX
 
-                minimumArcDist2 = (midDist2 * mMinimumVerticalTangent
-                        * mMinimumVerticalTangent)
+                minimumArcDist2 = (midDist2 * minimumVerticalTangent
+                        * minimumVerticalTangent)
             } else {
                 // Same as above, but flip X & Y
                 val eDistX = h2 / (2 * deltaX)
                 ex = endX + eDistX
                 ey = endY
 
-                minimumArcDist2 = (midDist2 * mMinimumHorizontalTangent
-                        * mMinimumHorizontalTangent)
+                minimumArcDist2 = (midDist2 * minimumHorizontalTangent
+                        * minimumHorizontalTangent)
             }
             val arcDistX = dx - ex
             val arcDistY = dy - ey
             val arcDist2 = arcDistX * arcDistX + arcDistY * arcDistY
 
-            val maximumArcDist2 = midDist2 * mMaximumTangent * mMaximumTangent
+            val maximumArcDist2 = midDist2 * maximumTangent * maximumTangent
 
             var newArcDistance2 = 0f
             if (arcDist2 < minimumArcDist2) {

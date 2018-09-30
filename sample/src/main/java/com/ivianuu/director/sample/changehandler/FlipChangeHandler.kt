@@ -26,8 +26,6 @@ class FlipChangeHandler(
         DOWN(180f, -180f, View.ROTATION_X)
     }
 
-    constructor(animationDuration: Long) : this(FlipDirection.RIGHT, animationDuration) {}
-
     override fun getAnimator(
         container: ViewGroup,
         from: View?,
