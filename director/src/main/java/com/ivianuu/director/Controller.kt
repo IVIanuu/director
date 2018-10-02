@@ -33,7 +33,7 @@ import kotlin.collections.ArrayList
 abstract class Controller {
 
     /**
-     * Returns any arguments that were set in this Controller's constructor
+     * The arguments of this controller
      */
     var args = Bundle(javaClass.classLoader)
 
