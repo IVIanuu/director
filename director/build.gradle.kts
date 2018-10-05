@@ -48,39 +48,25 @@ dependencies {
     api(Deps.kotlinStdLib)
 }
 
-if (project.hasProperty("android")) {
-    task("sourcesJar", Jar::class) {
-        from(android.sourceSets["main"].java.srcDirs)
-        classifier = "sources"
-    }
+val sourcesJar = task("sourcesJar", Jar::class) {
+    from(android.sourceSets["main"].java.srcDirs)
+    classifier = "sources"
+}
 
-    task("javadoc", Javadoc::class) {
-        isFailOnError = false
-        source = android.sourceSets["main"].java.sourceFiles
-        classpath += project.files(android.bootClasspath.joinToString(File.pathSeparator))
-        classpath += configurations.compile
-    }
+val javadoc = task("javadoc", Javadoc::class) {
+    isFailOnError = false
+    source = android.sourceSets["main"].java.sourceFiles
+    classpath += project.files(android.bootClasspath.joinToString(File.pathSeparator))
+    classpath += configurations.compile
+}
 
-    task("javadocJar", Jar::class) {
-        val javadoc = dependsOn("javadoc")
-        classifier = "javadoc"
-        from(javadoc.property("destinationDir"))
-    }
-} else {
-    task("sourcesJar", Jar::class) {
-        dependsOn("classes")
-        from(sourceSets.getByName("main").allSource)
-        classifier = "sources"
-    }
-
-    task("javadocJar", Jar::class) {
-        val javadoc = dependsOn("javadoc")
-        classifier = "javadoc"
-        from(javadoc.property("destinationDir"))
-    }
+val javadocJar = task("javadocJar", Jar::class) {
+    dependsOn(javadoc)
+    classifier = "javadoc"
+    from(javadoc.destinationDir)
 }
 
 artifacts {
-    add("archives", tasks.getByName("sourcesJar"))
-    add("archives", tasks.getByName("javadocJar"))
+    add("archives", sourcesJar)
+    add("archives", javadocJar)
 }
