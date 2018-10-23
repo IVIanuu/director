@@ -301,8 +301,9 @@ abstract class ViewPropertyChangeHandler(
     }
 
     companion object {
-        private const val KEY_DURATION = "AnimationChangeHandler.duration"
-        private const val KEY_REMOVES_FROM_ON_PUSH = "AnimationChangeHandler.removesFromViewOnPush"
+        private const val KEY_DURATION = "ViewPropertyChangeHandler.duration"
+        private const val KEY_REMOVES_FROM_ON_PUSH =
+            "ViewPropertyChangeHandler.removesFromViewOnPush"
         const val DEFAULT_ANIMATION_DURATION = -1L
     }
 }
