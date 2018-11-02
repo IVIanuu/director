@@ -2,7 +2,7 @@
 
 object Build {
     const val applicationId = "com.ivianuu.director.sample"
-    const val buildToolsVersion = "28.0.2"
+    const val buildToolsVersion = "28.0.3"
     const val compileSdk = 28
     const val minSdk = 16
     const val targetSdk = 28
@@ -17,7 +17,7 @@ object Versions {
     const val androidx = "1.0.0"
     const val androidxArch = "2.0.0-rc01"
 
-    const val kotlin = "1.3.0-rc-57"
+    const val kotlin = "1.3.0"
 
     const val leakCanary = "1.6.1"
 

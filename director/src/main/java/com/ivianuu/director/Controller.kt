@@ -948,9 +948,8 @@ abstract class Controller {
         }
     }
 
-    internal fun optionsItemSelected(item: MenuItem): Boolean {
-        return isAttached && hasOptionsMenu && !optionsMenuHidden && onOptionsItemSelected(item)
-    }
+    internal fun optionsItemSelected(item: MenuItem) =
+        isAttached && hasOptionsMenu && !optionsMenuHidden && onOptionsItemSelected(item)
 
     private fun withRouter(action: (Router) -> Unit) {
         val router = router
