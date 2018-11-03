@@ -18,13 +18,7 @@ abstract class ControllerChangeHandler {
      */
     open val removesFromViewOnPush get() = forceRemoveViewOnPush
 
-    /**
-     * Whether or not this change handler is reusable
-     */
-    open val isReusable = false
-
     open var forceRemoveViewOnPush = false
-    internal var hasBeenUsed = false
 
     /**
      * Responsible for swapping Views from one Controller to another.

@@ -62,15 +62,11 @@ internal fun executeChange(transaction: ChangeTransaction) {
 
     val handler = if (inHandler == null) {
         SimpleSwapChangeHandler()
-    } else if (inHandler.hasBeenUsed && !inHandler.isReusable) {
-        inHandler.copy()
     } else {
-        inHandler
+        inHandler.copy()
     }
 
     d { "handler is $handler" }
-
-    handler.hasBeenUsed = true
 
     if (from != null) {
         d { "from is not null" }

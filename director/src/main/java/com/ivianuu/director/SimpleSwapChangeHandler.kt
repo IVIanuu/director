@@ -25,8 +25,6 @@ import android.view.ViewGroup
  */
 open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean = true) : ControllerChangeHandler() {
 
-    override val isReusable get() = true
-
     private var canceled = false
 
     private var container: ViewGroup? = null

@@ -7,9 +7,6 @@ import com.ivianuu.director.ControllerChangeHandler
 
 internal class NoOpControllerChangeHandler : ControllerChangeHandler() {
 
-    override val isReusable: Boolean
-        get() = true
-
     override fun performChange(
         container: ViewGroup,
         from: View?,
