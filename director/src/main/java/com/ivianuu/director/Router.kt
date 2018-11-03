@@ -32,6 +32,8 @@ abstract class Router {
     val backstack get() = _backstack.entries
     private val _backstack = Backstack()
 
+    private val reversedBackstack get() = _backstack.reversedEntries
+
     /**
      * Whether or not this router has root [Controller]
      */
@@ -133,7 +135,7 @@ abstract class Router {
             var removedTransaction: RouterTransaction? = null
             var nextTransaction: RouterTransaction? = null
 
-            val backstack = _backstack.reversedEntries
+            val backstack = reversedBackstack
 
             val topPushHandler = topTransaction?.pushChangeHandler
 
@@ -211,7 +213,7 @@ abstract class Router {
             val newHandlerRemovesViews = handler == null || handler.removesFromViewOnPush
 
             if (!oldHandlerRemovedViews && newHandlerRemovesViews) {
-                _backstack.reversedEntries
+                reversedBackstack
                     .filterVisible()
                     .forEach {
                         performControllerChange(null, it, true, handler)
@@ -268,7 +270,7 @@ abstract class Router {
      * Returns the hosted Controller with the given instance id or `null` if no such
      * Controller exists in this Router.
      */
-    fun findControllerByInstanceId(instanceId: String) = _backstack.entries
+    fun findControllerByInstanceId(instanceId: String) = backstack
         .firstOrNull { it.controller.instanceId == instanceId }
         ?.controller
 
@@ -277,7 +279,7 @@ abstract class Router {
      * such Controller exists in this Router.
      */
     fun findControllerByTag(tag: String) =
-        _backstack.entries.firstOrNull { it.tag == tag }?.controller
+        backstack.firstOrNull { it.tag == tag }?.controller
 
     /**
      * Pops all [Controller] until only the root is left
@@ -299,7 +301,7 @@ abstract class Router {
      */
     fun popToTag(tag: String, changeHandler: ControllerChangeHandler? = null): Boolean {
         requireMainThread()
-        val transaction = _backstack.entries.firstOrNull { it.tag == tag } ?: return false
+        val transaction = backstack.firstOrNull { it.tag == tag } ?: return false
         popToTransaction(transaction, changeHandler)
         return true
     }
@@ -313,7 +315,7 @@ abstract class Router {
     ): Boolean {
         requireMainThread()
         val transaction =
-            _backstack.entries.firstOrNull { it.controller == controller } ?: return false
+            backstack.firstOrNull { it.controller == controller } ?: return false
         popToTransaction(transaction, changeHandler)
         return true
     }
@@ -338,11 +340,11 @@ abstract class Router {
 
         d { "set backstack -> $newBackstack" }
 
-        val oldTransactions = _backstack.entries
+        val oldTransactions = backstack
 
         d { "old transactions $oldTransactions" }
 
-        val oldVisibleTransactions = _backstack.reversedEntries.filterVisible()
+        val oldVisibleTransactions = reversedBackstack.filterVisible()
 
         d { "old visible transactions $oldVisibleTransactions" }
 
@@ -362,7 +364,7 @@ abstract class Router {
         d { "transactions to be removed $transactionsToBeRemoved" }
 
         // Ensure all new controllers have a valid router set
-        _backstack.entries.forEach {
+        backstack.forEach {
             it.attachedToRouter = true
             setControllerRouter(it.controller)
         }
@@ -544,7 +546,7 @@ abstract class Router {
 
         d { "rebind if needed" }
 
-        _backstack.entries
+        backstack
             .filter { it.controller.needsAttach.apply {
                 d { "needs attach ? $it ${it.controller.needsAttach}" }
             } }
@@ -556,28 +558,28 @@ abstract class Router {
     fun onActivityStarted(activity: Activity) {
         isActivityStopped = false
 
-        _backstack.reversedEntries.forEach { transaction ->
+        reversedBackstack.forEach { transaction ->
             transaction.controller.activityStarted(activity)
             transaction.controller.childRouters.forEach { it.onActivityStarted(activity) }
         }
     }
 
     fun onActivityResumed(activity: Activity) {
-        _backstack.reversedEntries.forEach { transaction ->
+        reversedBackstack.forEach { transaction ->
             transaction.controller.activityResumed(activity)
             transaction.controller.childRouters.forEach { it.onActivityResumed(activity) }
         }
     }
 
     fun onActivityPaused(activity: Activity) {
-        _backstack.reversedEntries.forEach { transaction ->
+        reversedBackstack.forEach { transaction ->
             transaction.controller.activityPaused(activity)
             transaction.controller.childRouters.forEach { it.onActivityPaused(activity) }
         }
     }
 
     fun onActivityStopped(activity: Activity) {
-        _backstack.reversedEntries.forEach { transaction ->
+        reversedBackstack.forEach { transaction ->
             transaction.controller.activityStopped(activity)
             transaction.controller.childRouters.forEach { it.onActivityStopped(activity) }
         }
@@ -590,7 +592,7 @@ abstract class Router {
         // todo changeListeners.clear()
         // todo lifecycleListeners.clear()
 
-        _backstack.reversedEntries.forEach { transaction ->
+        reversedBackstack.forEach { transaction ->
             transaction.controller.activityDestroyed(activity)
             transaction.controller.childRouters.forEach { it.onActivityDestroyed(activity) }
         }
@@ -604,7 +606,7 @@ abstract class Router {
     }
 
     fun prepareForHostDetach() {
-        _backstack.reversedEntries.forEach {
+        reversedBackstack.forEach {
             if (completeChangeImmediately(it.controller.instanceId)) {
                 it.controller.needsAttach = true
             }
@@ -626,7 +628,7 @@ abstract class Router {
         _backstack.restoreInstanceState(backstackBundle)
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
-        _backstack.entries.forEach { setControllerRouter(it.controller) }
+        backstack.forEach { setControllerRouter(it.controller) }
     }
 
     fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -666,9 +668,8 @@ abstract class Router {
             val topTransaction = _backstack.peek()
 
             val updatedBackstack = mutableListOf<RouterTransaction>()
-            val backstackIterator = _backstack.entries
 
-            for (existingTransaction in backstackIterator) {
+            for (existingTransaction in backstack) {
                 updatedBackstack.add(existingTransaction)
                 if (existingTransaction == transaction) {
                     break
@@ -689,10 +690,10 @@ abstract class Router {
     }
 
     internal open fun onContextAvailable() {
-        _backstack.reversedEntries.forEach { it.controller.contextAvailable() }
+        reversedBackstack.forEach { it.controller.contextAvailable() }
     }
 
-    fun handleRequestedPermission(permission: String) = backstack
+    internal fun handleRequestedPermission(permission: String) = backstack
         .map { it.controller }
         .filter { it.didRequestPermission(permission) }
         .filter { it.shouldShowRequestPermissionRationale(permission) }
@@ -823,10 +824,9 @@ abstract class Router {
     }
 
     private fun removeAllExceptVisibleAndUnowned() {
-
         val views = mutableListOf<View>()
 
-        _backstack.reversedEntries
+        reversedBackstack
             .filterVisible()
             .mapNotNull { it.controller.view }
             .forEach { views.add(it) }
@@ -834,7 +834,6 @@ abstract class Router {
         siblingRouters
             .filter { it.container == container }
             .forEach { addRouterViewsToList(it, views) }
-
 
         val container = container ?: return
         (container.childCount -1 downTo 0)
