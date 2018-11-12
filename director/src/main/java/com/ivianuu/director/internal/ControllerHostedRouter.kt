@@ -19,11 +19,8 @@ internal class ControllerHostedRouter : Router {
 
     override val siblingRouters: List<Router>
         get() {
-            return hostController?.let { hostController ->
-                mutableListOf<Router>().apply {
-                    addAll(hostController.childRouters)
-                    addAll(hostController.router.siblingRouters)
-                }
+            return hostController?.let {
+                it.childRouters + it.router.siblingRouters
             } ?: emptyList()
         }
 

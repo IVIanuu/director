@@ -27,11 +27,9 @@ internal class Backstack {
     }
 
     fun popAll(): List<RouterTransaction> {
-        val list = mutableListOf<RouterTransaction>()
-        while (!isEmpty) {
-            list.add(pop())
-        }
-        return list
+        val entries = reversedEntries
+        _entries.clear()
+        return entries
     }
 
     fun setEntries(entries: List<RouterTransaction>) {

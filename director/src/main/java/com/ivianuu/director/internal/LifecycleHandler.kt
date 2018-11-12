@@ -56,6 +56,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
             }
 
         destroyed = false
+
         routers.forEach { it.onContextAvailable() }
     }
 

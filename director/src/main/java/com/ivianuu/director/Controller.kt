@@ -19,6 +19,7 @@ import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
 import com.ivianuu.director.internal.ViewAttachHandler.ViewAttachListener
 import com.ivianuu.director.internal.classForNameOrThrow
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.newInstanceOrThrow
 import java.lang.ref.WeakReference
 import java.util.*
@@ -38,7 +39,7 @@ abstract class Controller {
     var args = Bundle(javaClass.classLoader)
 
     /**
-     * Returns the router of this controller
+     * The router of this controller
      */
     var router: Router
         get() = if (routerSet) _router else throw IllegalStateException("router is only available after onCreate")
@@ -64,52 +65,58 @@ abstract class Controller {
     private var routerSet = false
 
     /**
-     * Return this Controller's View or `null` if it has not yet been created or has been
-     * destroyed.
+     * Returns the host activity of this controller
+     */
+    val activity: Activity?
+        get() = router.activity
+
+    /**
+     * The view of this controller or null
      */
     var view: View? = null
         private set
 
     /**
-     * Returns this Controller's parent Controller if it is a child Controller or `null` if
-     * it has no parent.
+     * The parent controller of this controller or null
      */
     var parentController: Controller? = null
         internal set
 
     /**
-     * Returns this Controller's instance ID, which is generated when the instance is created and
-     * retained across restarts.
+     * The instance id of this controller
      */
     var instanceId = UUID.randomUUID().toString()
         private set
 
-    private var targetInstanceId: String? = null
-
+    /**
+     * The target controller of this controller
+     */
     var targetController: Controller?
         get() = targetInstanceId?.let { _router.rootRouter.findControllerByInstanceId(it) }
         set(value) { targetInstanceId = value?.instanceId }
 
+    private var targetInstanceId: String? = null
+
     /**
-     * Returns whether or not this controller is already created
+     * Whether or not this controller is already created
      */
     var isCreated = false
         private set
 
     /**
-     * Returns whether or not this Controller is currently attached to a host View.
+     * Whether or not this Controller is currently attached to a host View.
      */
     var isAttached = false
         private set
 
     /**
-     * Returns whether or not this Controller has been destroyed.
+     * Whether or not this Controller has been destroyed.
      */
     var isDestroyed = false
         private set
 
     /**
-     * Returns whether or not this Controller is currently in the process of being destroyed.
+     * Whether or not this Controller is currently in the process of being destroyed.
      */
     var isBeingDestroyed = false
         internal set
@@ -164,7 +171,7 @@ abstract class Controller {
     var overriddenPushHandler: ControllerChangeHandler? = null
 
     /**
-     * Overries the pop handler which will be used when this controller gets popped
+     * Overrides the pop handler which will be used when this controller gets popped
      */
     var overriddenPopHandler: ControllerChangeHandler? = null
 
@@ -182,7 +189,7 @@ abstract class Controller {
     private var viewAttachHandler: ViewAttachHandler? = null
 
     /**
-     * Returns all of this Controller's child Routers
+     * All child routers of this controller
      */
     val childRouters: List<Router>
         get() = _childRouters.toList()
@@ -191,15 +198,10 @@ abstract class Controller {
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
     private val requestedPermissions = mutableListOf<String>()
     private val onRouterSetListeners = mutableListOf<((Router) -> Unit)>()
+
     private var destroyedView: WeakReference<View>? = null
     private var isPerformingExitTransition = false
     private var isContextAvailable = false
-
-    /**
-     * Returns the host activity of this controller
-     */
-    val activity: Activity?
-        get() = router.activity
 
     /**
      * Will be called once when the router was set for the first time
@@ -399,10 +401,9 @@ abstract class Controller {
      * Gets whether you should show UI with rationale for requesting a permission.
      * {@see android.app.Activity#shouldShowRequestPermissionRationale(String)}
      */
-    open fun shouldShowRequestPermissionRationale(permission: String): Boolean {
-        return Build.VERSION.SDK_INT >= 23
-                && activity?.shouldShowRequestPermissionRationale(permission) ?: false
-    }
+    open fun shouldShowRequestPermissionRationale(permission: String) =
+        (Build.VERSION.SDK_INT >= 23
+                && activity?.shouldShowRequestPermissionRationale(permission) ?: false)
 
     /**
      * Should be overridden if this Controller has requested runtime permissions and needs to handle the user's response.
@@ -465,6 +466,7 @@ abstract class Controller {
                     container.id,
                     tag
                 )
+
                 childRouter.setHost(this, container)
                 _childRouters.add(childRouter)
 
@@ -481,8 +483,8 @@ abstract class Controller {
     }
 
     /**
-     * Removes a child [Router] from this Controller. When removed, all Controllers currently managed by
-     * the [Router] will be destroyed.
+     * Removes the [childRouter]. All Controllers currently managed by
+     * the [childRouter] will be destroyed.
      */
     fun removeChildRouter(childRouter: Router) {
         if (childRouter is ControllerHostedRouter && _childRouters.remove(childRouter)) {
@@ -492,7 +494,7 @@ abstract class Controller {
 
     /**
      * Adds option items to the host Activity's standard options menu. This will only be called if
-     * [.setHasOptionsMenu] has been called.
+     * [Controller.hasOptionsMenu] is true.
      */
     open fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
     }
@@ -586,6 +588,8 @@ abstract class Controller {
 
     internal fun inflate(parent: ViewGroup): View {
         var view = view
+
+        // todo should we take this into count?
         if (view != null && view.parent != null && view.parent != parent) {
             detach(view, true, false, false)
             removeViewReference(false)
@@ -642,6 +646,7 @@ abstract class Controller {
 
         attachedToUnownedParent = view.parent != router.container
 
+        // this can happen while transitions just ignore it
         if (attachedToUnownedParent) {
             return
         }
@@ -924,12 +929,14 @@ abstract class Controller {
 
         val destroyedView = destroyedView
 
+        // todo can this be removed?
         if (isBeingDestroyed && !viewIsAttached && !isAttached && destroyedView != null) {
             val view = destroyedView.get()
             val router = router
 
             val container = router.container
             if (container != null && view != null && view.parent == router.container) {
+                d { "remove view from change ended" }
                 container.removeView(view)
             }
 
@@ -986,7 +993,7 @@ abstract class Controller {
         private const val KEY_CHILD_ROUTERS = "Controller.childRouters"
         private const val KEY_SAVED_STATE = "Controller.savedState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
-        private const val KEY_TARGET_INSTANCE_ID = "Controller.targedInstanceId"
+        private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"
         private const val KEY_ARGS = "Controller.args"
         private const val KEY_NEEDS_ATTACH = "Controller.needsAttach"
         private const val KEY_OVERRIDDEN_PUSH_HANDLER = "Controller.overriddenPushHandler"
