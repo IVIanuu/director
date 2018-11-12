@@ -103,15 +103,22 @@ internal class ControllerHostedRouter : Router {
     fun removeHost(forceViewRemoval: Boolean) {
         destroyingControllers.toList()
             .filter { it.view != null }
-            .forEach { it.detach(it.view!!, true, false, true) }
+            .forEach { it.detach(it.view!!, true, false, true, true) }
 
         backstack
             .filter { it.controller.view != null }
-            .forEach { it.controller.detach(it.controller.view!!, forceViewRemoval, false, forceViewRemoval) }
+            .forEach {
+                it.controller.detach(
+                    it.controller.view!!,
+                    forceViewRemoval,
+                    false,
+                    forceViewRemoval,
+                    true
+                )
+            }
 
         prepareForContainerRemoval()
         hostController = null
-        container?.removeAllViews()
         container = null
     }
 

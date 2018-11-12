@@ -8,11 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
-import com.ivianuu.director.internal.LoggingLifecycleListener
+import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.completeChangeImmediately
-import com.ivianuu.director.internal.executeChange
 import com.ivianuu.director.internal.requireMainThread
 
 /**
@@ -72,8 +70,10 @@ abstract class Router {
     internal abstract val rootRouter: Router
     internal abstract val transactionIndexer: TransactionIndexer
 
+    private val changeManager = ControllerChangeManager()
+
     init {
-        addLifecycleListener(LoggingLifecycleListener())
+        //addLifecycleListener(LoggingLifecycleListener())
     }
 
     /**
@@ -330,10 +330,10 @@ abstract class Router {
         requireMainThread()
 
         val oldTransactions = backstack
-
         val oldVisibleTransactions = reversedBackstack.filterVisible()
 
         removeAllExceptVisibleAndUnowned()
+
         ensureOrderedTransactionIndices(newBackstack)
         ensureNoDuplicateControllers(newBackstack)
 
@@ -370,7 +370,7 @@ abstract class Router {
                 if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
                     // Ensure the existing root controller is fully pushed to the view hierarchy
                     if (oldRootTransaction != null) {
-                        completeChangeImmediately(oldRootTransaction.controller.instanceId)
+                        changeManager.completeChangeImmediately(oldRootTransaction.controller.instanceId)
                     }
 
                     performControllerChange(
@@ -388,7 +388,7 @@ abstract class Router {
                     .forEach {
                         val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
                         localHandler.forceRemoveViewOnPush = true
-                        completeChangeImmediately(it.controller.instanceId)
+                        changeManager.completeChangeImmediately(it.controller.instanceId)
                         performControllerChange(
                             null,
                             it,
@@ -420,7 +420,7 @@ abstract class Router {
             // Remove all visible controllers that were previously on the backstack
             oldVisibleTransactions.reversed().forEach {
                 val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
-                completeChangeImmediately(it.controller.instanceId)
+                changeManager.completeChangeImmediately(it.controller.instanceId)
                 performControllerChange(null, it, false, localHandler)
             }
         }
@@ -558,7 +558,7 @@ abstract class Router {
 
     fun prepareForHostDetach() {
         reversedBackstack.forEach {
-            if (completeChangeImmediately(it.controller.instanceId)) {
+            if (changeManager.completeChangeImmediately(it.controller.instanceId)) {
                 it.controller.needsAttach = true
             }
             it.controller.prepareForHostDetach()
@@ -657,7 +657,7 @@ abstract class Router {
 
         val fromView = fromController?.view
         if (forceDetachDestroy && fromView != null) {
-            fromController.detach(fromView, true, false, true)
+            fromController.detach(fromView, true, false, true, false)
         }
     }
 
@@ -691,7 +691,7 @@ abstract class Router {
             pendingControllerChanges.add(transaction)
             container!!.post { performPendingControllerChanges() }
         } else {
-            executeChange(transaction)
+            changeManager.executeChange(transaction)
         }
     }
 
@@ -700,7 +700,7 @@ abstract class Router {
         // that occur during this loop (ex: if a controller is popped from within onAttach)
         pendingControllerChanges.indices
             .map { pendingControllerChanges[it] }
-            .forEach { executeChange(it) }
+            .forEach { changeManager.executeChange(it) }
         pendingControllerChanges.clear()
     }
 
@@ -729,6 +729,8 @@ abstract class Router {
     }
 
     private fun removeAllExceptVisibleAndUnowned() {
+        val container = container ?: return
+
         val views = mutableListOf<View>()
 
         reversedBackstack
@@ -740,7 +742,6 @@ abstract class Router {
             .filter { it.container == container }
             .forEach { addRouterViewsToList(it, views) }
 
-        val container = container ?: return
         (container.childCount - 1 downTo 0)
             .map { container.getChildAt(it) }
             .filterNot { views.contains(it) }

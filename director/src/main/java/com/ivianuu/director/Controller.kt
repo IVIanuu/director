@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.newInstanceOrThrow
 import java.lang.ref.WeakReference
 import java.util.*
@@ -134,7 +135,7 @@ abstract class Controller {
 
                 val view = view
                 if (!value && view != null && viewWasDetached) {
-                    detach(view, false, false, false)
+                    detach(view, false, false, false, false)
                 }
             }
         }
@@ -528,7 +529,7 @@ abstract class Controller {
 
     internal fun activityDestroyed(activity: Activity) {
         if (activity.isChangingConfigurations) {
-            view?.let { detach(it, true, false, true) }
+            view?.let { detach(it, true, false, true, false) }
         } else {
             destroy(true)
         }
@@ -546,8 +547,9 @@ abstract class Controller {
 
         // todo should we take this into count?
         if (view != null && view.parent != null && view.parent != parent) {
-            detach(view, true, false, false)
+            detach(view, true, false, false, false)
             removeViewReference(false)
+            view = null
         }
 
         if (view == null) {
@@ -579,13 +581,13 @@ abstract class Controller {
                     viewWasDetached = true
 
                     if (!isDetachFrozen) {
-                        detach(view, false, fromActivityStop, false)
+                        detach(view, false, fromActivityStop, false, false)
                     }
                 }
 
                 override fun onViewDetachAfterStop() {
                     if (!isDetachFrozen) {
-                        detach(view, false, false, false)
+                        detach(view, false, false, false, false)
                     }
                 }
             }).also { it.listenForAttach(view) }
@@ -632,7 +634,13 @@ abstract class Controller {
             .forEach { it.controller.attach(it.controller.view!!) }
     }
 
-    internal fun detach(view: View, forceViewRemoval: Boolean, blockViewRemoval: Boolean, forceChildViewRemoval: Boolean) {
+    internal fun detach(
+        view: View,
+        forceViewRemoval: Boolean,
+        blockViewRemoval: Boolean,
+        forceChildViewRemoval: Boolean,
+        fromHostRemoval: Boolean
+    ) {
         if (!attachedToUnownedParent) {
             _childRouters.forEach { it.prepareForHostDetach() }
         }
@@ -653,6 +661,15 @@ abstract class Controller {
 
         if (removeViewRef) {
             removeViewReference(forceChildViewRemoval)
+        } else if (retainViewMode == RetainViewMode.RETAIN_DETACH && fromHostRemoval) {
+            // this happens if we are a child controller, have RETAIN_DETACH
+            // and the parent does not RETAIN_DETACH
+            // we remove the view from the container to make sure that
+            // we dont reinflate the view in Controller.inflate
+            // because we would be attached to the old container otherwise
+            (view.parent as? ViewGroup)?.removeView(view)?.also {
+                d { "remove view due to retain detach" }
+            }
         }
     }
 
@@ -675,6 +692,7 @@ abstract class Controller {
                 destroyedView = WeakReference(view)
             }
 
+            d { "nullify view" }
             this.view = null
 
             notifyLifecycleListeners { it.postDestroyView(this) }
@@ -733,7 +751,7 @@ abstract class Controller {
         if (!isAttached) {
             removeViewReference(true)
         } else if (removeViews) {
-            view?.let { detach(it, true, false, true) }
+            view?.let { detach(it, true, false, true, false) }
         }
     }
 
@@ -886,6 +904,7 @@ abstract class Controller {
 
             val container = router.container
             if (container != null && view != null && view.parent == router.container) {
+                d { "should remove view $view" }
                 container.removeView(view)
             }
 
