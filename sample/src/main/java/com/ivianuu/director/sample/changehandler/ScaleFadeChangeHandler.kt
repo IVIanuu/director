@@ -6,7 +6,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 
-import com.ivianuu.director.common.AnimatorChangeHandler
+import com.ivianuu.director.common.changehandler.AnimatorChangeHandler
 
 class ScaleFadeChangeHandler : AnimatorChangeHandler() {
 

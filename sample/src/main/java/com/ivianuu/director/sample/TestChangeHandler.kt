@@ -3,7 +3,7 @@ package com.ivianuu.director.sample
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
-import com.ivianuu.director.common.ViewPropertyChangeHandler
+import com.ivianuu.director.common.changehandler.ViewPropertyChangeHandler
 
 /**
  * @author Manuel Wrage (IVIanuu)

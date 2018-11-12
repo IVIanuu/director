@@ -24,7 +24,6 @@ import android.widget.FrameLayout
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeListener
-import com.ivianuu.director.internal.d
 
 /**
  * A FrameLayout implementation that can be used to block user interactions while
@@ -37,10 +36,6 @@ open class ChangeHandlerFrameLayout @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), ControllerChangeListener {
 
     private var inProgressTransactionCount = 0
-        set(value) {
-            field = value
-            d { "in progress transaction count $value" }
-        }
 
     override fun onInterceptTouchEvent(ev: MotionEvent) =
         inProgressTransactionCount > 0 || super.onInterceptTouchEvent(ev)

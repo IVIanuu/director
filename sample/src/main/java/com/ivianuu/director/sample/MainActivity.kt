@@ -5,7 +5,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.attachRouter
-import com.ivianuu.director.sample.controllers.HomeController
+import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,8 +23,6 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         setSupportActionBar(toolbar)
 
         router = attachRouter(controller_container, savedInstanceState).apply {
-            //            addLifecycleListener(LoggingLifecycleListener(), true)
-
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())
             }

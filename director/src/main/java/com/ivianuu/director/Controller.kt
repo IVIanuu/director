@@ -18,8 +18,6 @@ import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
 import com.ivianuu.director.internal.ViewAttachHandler.ViewAttachListener
-import com.ivianuu.director.internal.classForNameOrThrow
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.newInstanceOrThrow
 import java.lang.ref.WeakReference
 import java.util.*
@@ -49,7 +47,7 @@ abstract class Controller {
             _router = value
 
             // restore the internal state
-            savedState?.let { restoreInstanceState(it) }
+            allState?.let { restoreInstanceState(it) }
 
             // create
             performCreate()
@@ -141,8 +139,8 @@ abstract class Controller {
             if (invalidate) withRouter { it.invalidateOptionsMenu() }
         }
 
+    private var allState: Bundle? = null
     private var savedState: Bundle? = null
-    private var savedInstanceState: Bundle? = null
     private var viewState: Bundle? = null
 
     internal var needsAttach = false
@@ -828,6 +826,13 @@ abstract class Controller {
     }
 
     private fun restoreInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.getBundle(KEY_ARGS)?.let { bundle ->
+            args = bundle.apply { classLoader = this@Controller.javaClass.classLoader }
+        }
+
+        savedState = savedInstanceState.getBundle(KEY_SAVED_STATE)
+            ?.also { it.classLoader = javaClass.classLoader }
+
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
             ?.also { it.classLoader = javaClass.classLoader }
 
@@ -840,14 +845,12 @@ abstract class Controller {
             ?.let { ControllerChangeHandler.fromBundle(it) }
 
         needsAttach = savedInstanceState.getBoolean(KEY_NEEDS_ATTACH)
+
         retainViewMode = RetainViewMode.values()[savedInstanceState.getInt(KEY_RETAIN_VIEW_MODE, 0)]
 
         savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)
             ?.map { bundle -> ControllerHostedRouter().also { it.restoreInstanceState(bundle) } }
             ?.forEach { _childRouters.add(it) }
-
-        this.savedInstanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)
-            ?.also { it.classLoader = javaClass.classLoader }
     }
 
     private fun saveViewState(view: View) {
@@ -890,13 +893,13 @@ abstract class Controller {
     }
 
     private fun performRestoreInstanceState() {
-        val savedInstanceState = savedInstanceState
+        val savedInstanceState = savedState
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
 
             notifyLifecycleListeners { it.onRestoreInstanceState(this, savedInstanceState) }
 
-            this.savedInstanceState = null
+            savedState = null
         }
     }
 
@@ -936,7 +939,6 @@ abstract class Controller {
 
             val container = router.container
             if (container != null && view != null && view.parent == router.container) {
-                d { "remove view from change ended" }
                 container.removeView(view)
             }
 
@@ -1004,15 +1006,8 @@ abstract class Controller {
 
         internal fun fromBundle(bundle: Bundle): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
-            val clazz = classForNameOrThrow<Controller>(className)
-
-            val args = bundle.getBundle(KEY_ARGS)
-                ?.also { it.classLoader = clazz.classLoader }
-
             return newInstanceOrThrow<Controller>(className).apply {
-                // Restore the args that existed before the last process death
-                this.args = args ?: Bundle(clazz.classLoader!!)
-                this.savedState = bundle
+                allState = bundle
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.ivianuu.director.internal
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
@@ -56,8 +55,6 @@ internal fun executeChange(transaction: ChangeTransaction) {
     val (to, from, isPush, container, inHandler,
             listeners) = transaction
 
-    d { "execute change $transaction" }
-
     if (container == null) return
 
     val handler = if (inHandler == null) {
@@ -66,15 +63,10 @@ internal fun executeChange(transaction: ChangeTransaction) {
         inHandler.copy()
     }
 
-    d { "handler is $handler" }
-
     if (from != null) {
-        d { "from is not null" }
         if (isPush) {
-            d { "complete change immediately" }
             completeChangeImmediately(from.instanceId)
         } else {
-            d { "abort or complete" }
             abortOrCompleteChange(from, to, handler)
         }
     }
@@ -91,25 +83,19 @@ internal fun executeChange(transaction: ChangeTransaction) {
     val fromChangeType =
         if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
-    d { "to change type $toChangeType, from change type $fromChangeType" }
-
     val toView: View?
     if (to != null) {
-        d { "inflate to view" }
         toView = to.inflate(container)
         to.changeStarted(handler, toChangeType)
     } else {
-        d { "to is null" }
         toView = null
     }
 
     val fromView: View?
     if (from != null) {
-        d { "get from view" }
         fromView = from.view
         from.changeStarted(handler, fromChangeType)
     } else {
-        d { "from is null" }
         fromView = null
     }
 
@@ -129,21 +115,14 @@ internal fun executeChange(transaction: ChangeTransaction) {
         listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handler) }
 
         if (handler.removesFromViewOnPush && fromView != null) {
-            d { "try to remove from view" }
             val fromParent = fromView.parent as? ViewGroup
             if (fromParent != null) {
-                d { "remove from view" }
                 fromParent.removeView(fromView)
             }
         }
 
         if (handler.removesFromViewOnPush && from != null) {
-            d { "from needs attach" }
             from.needsAttach = false
         }
     }
-}
-
-private inline fun d(m: () -> String) {
-    if (DEBUG) Log.d("ChangeHandlers", m())
 }

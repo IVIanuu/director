@@ -11,10 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
+import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.director.internal.completeChangeImmediately
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.executeChange
 import com.ivianuu.director.internal.requireMainThread
 
@@ -75,6 +75,10 @@ abstract class Router {
     internal abstract val rootRouter: Router
     internal abstract val transactionIndexer: TransactionIndexer
 
+    init {
+        addLifecycleListener(LoggingLifecycleListener())
+    }
+
     /**
      * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
      * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
@@ -114,14 +118,11 @@ abstract class Router {
     ): Boolean {
         requireMainThread()
 
-        d { "pop controller $controller" }
-
         val topTransaction = _backstack.peek()
         val poppingTopController =
             topTransaction != null && topTransaction.controller == controller
 
         if (poppingTopController) {
-            d { "popping top controller" }
             trackDestroyingController(_backstack.pop().also { it.controller.destroy() })
             if (changeHandler != null) {
                 performControllerChange(_backstack.peek(), topTransaction, false, changeHandler)
@@ -129,8 +130,6 @@ abstract class Router {
                 performControllerChange(_backstack.peek(), topTransaction, false)
             }
         } else {
-            d { "not popping top controller" }
-
             var removedTransaction: RouterTransaction? = null
             var nextTransaction: RouterTransaction? = null
 
@@ -156,10 +155,6 @@ abstract class Router {
                     break
                 }
             }
-
-            d { "next transaction attach $needsNextTransactionAttach" }
-            d { "removed transaction ${removedTransaction?.controller}" }
-            d { "next transaction ${nextTransaction?.controller}" }
 
             if (removedTransaction != null) {
                 if (changeHandler != null) {
@@ -337,15 +332,9 @@ abstract class Router {
     ) {
         requireMainThread()
 
-        d { "set backstack -> $newBackstack" }
-
         val oldTransactions = backstack
 
-        d { "old transactions $oldTransactions" }
-
         val oldVisibleTransactions = reversedBackstack.filterVisible()
-
-        d { "old visible transactions $oldVisibleTransactions" }
 
         removeAllExceptVisibleAndUnowned()
         ensureOrderedTransactionIndices(newBackstack)
@@ -360,8 +349,6 @@ abstract class Router {
                 it.controller.isBeingDestroyed = true
             }
 
-        d { "transactions to be removed $transactionsToBeRemoved" }
-
         // Ensure all new controllers have a valid router set
         backstack.forEach {
             it.attachedToRouter = true
@@ -369,36 +356,21 @@ abstract class Router {
         }
 
         if (newBackstack.isNotEmpty()) {
-            d { "new backstack is not empty" }
-
             val newVisibleTransactions = newBackstack.reversed().filterVisible()
-
-            d { "new visible transactions $newVisibleTransactions" }
 
             val newRootRequiresPush =
                 newVisibleTransactions.isEmpty() ||
                         !oldTransactions.contains(newVisibleTransactions.first())
 
-            d { "new visible is empty -> ${newVisibleTransactions.isEmpty()}" }
-            d { "old transaction containts new ${oldTransactions.contains(newVisibleTransactions.first())}" }
-
-            d { "new root requires push $newRootRequiresPush" }
-
             val visibleTransactionsChanged =
                 !backstacksAreEqual(newVisibleTransactions, oldVisibleTransactions)
-
-            d { "visible transactions changed $visibleTransactionsChanged" }
 
             if (visibleTransactionsChanged) {
                 val oldRootTransaction = oldVisibleTransactions.firstOrNull()
                 val newRootTransaction = newVisibleTransactions.first()
 
-                d { "old root transaction $oldRootTransaction, new root transaction $newRootTransaction" }
-
                 // Replace the old root with the new one
                 if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
-                    d { "set new root" }
-
                     // Ensure the existing root controller is fully pushed to the view hierarchy
                     if (oldRootTransaction != null) {
                         completeChangeImmediately(oldRootTransaction.controller.instanceId)
@@ -417,7 +389,6 @@ abstract class Router {
                     .reversed()
                     .filterNot { newVisibleTransactions.contains(it) }
                     .forEach {
-                        d { "remove visible controller old -> $it" }
                         val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
                         localHandler.forceRemoveViewOnPush = true
                         completeChangeImmediately(it.controller.instanceId)
@@ -437,8 +408,6 @@ abstract class Router {
                     .drop(1)
                     .filterNot { oldVisibleTransactions.contains(it) }
                     .forEach {
-                        d { "add new controller tp backstack -> $it" }
-
                         performControllerChange(
                             it,
                             lastVisibleTransaction,
@@ -453,7 +422,6 @@ abstract class Router {
             // todo check
             // Remove all visible controllers that were previously on the backstack
             oldVisibleTransactions.reversed().forEach {
-                d { "remove visible controller nue -> $it" }
                 val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
                 completeChangeImmediately(it.controller.instanceId)
                 performControllerChange(null, it, false, localHandler)
@@ -463,7 +431,6 @@ abstract class Router {
         // Destroy all old controllers that are no longer on the backstack. We don't do this when we initially
         // set the backstack to prevent the possibility that they'll be destroyed before the controller
         // change handler runs.
-        d { "destroy removed transactions $transactionsToBeRemoved" }
         transactionsToBeRemoved.forEach { it.controller.destroy() }
     }
 
@@ -493,7 +460,6 @@ abstract class Router {
      */
     fun addLifecycleListener(listener: ControllerLifecycleListener, recursive: Boolean = false) {
         if (!getAllLifecycleListeners(false).contains(listener)) {
-            d { "actual add listener $listener, $recursive" }
             lifecycleListeners.add(LifecycleListenerEntry(listener, recursive))
         }
     }
@@ -510,9 +476,7 @@ abstract class Router {
 
     internal open fun getAllLifecycleListeners(recursiveOnly: Boolean) =
         lifecycleListeners
-            .also { d { "get all listeners $recursiveOnly, listeners $lifecycleListeners" } }
             .filter { !recursiveOnly || it.recursive }
-            .also { d { "get all listeners $recursiveOnly, filtered $it" } }
             .map { it.listener }
 
     internal fun onActivityResult(instanceIds: Set<String>, requestCode: Int, resultCode: Int, data: Intent?) {
@@ -538,12 +502,8 @@ abstract class Router {
     fun rebindIfNeeded() {
         requireMainThread()
 
-        d { "rebind if needed" }
-
         backstack
-            .filter { it.controller.needsAttach.apply {
-                d { "needs attach ? $it ${it.controller.needsAttach}" }
-            } }
+            .filter { it.controller.needsAttach }
             .forEach { performControllerChange(it, null, true,
                 SimpleSwapChangeHandler(false)
             ) }
@@ -699,8 +659,6 @@ abstract class Router {
             else -> null
         }
 
-        d { "change handler is $changeHandler" }
-
         performControllerChange(to, from, isPush, changeHandler)
     }
 
@@ -726,8 +684,6 @@ abstract class Router {
             changeHandler = NoOpControllerChangeHandler()
             forceDetachDestroy = true
         }
-
-        d { "perform controller change to $toController, from $from, force detach $forceDetachDestroy" }
 
         performControllerChange(toController, fromController, isPush, changeHandler)
 

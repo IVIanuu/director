@@ -13,7 +13,7 @@ import android.transition.TransitionSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.common.SharedElementTransitionChangeHandler
+import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
 import java.util.*
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)

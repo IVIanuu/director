@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 
-import com.ivianuu.director.common.AnimatorChangeHandler
+import com.ivianuu.director.common.changehandler.AnimatorChangeHandler
 
 class FlipChangeHandler(
     private val flipDirection: FlipDirection = FlipDirection.RIGHT,
