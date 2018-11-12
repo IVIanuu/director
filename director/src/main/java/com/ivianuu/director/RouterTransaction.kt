@@ -9,14 +9,23 @@ import com.ivianuu.director.internal.TransactionIndexer
  */
 class RouterTransaction {
 
+    /**
+     * The controller of this transaction
+     */
     val controller: Controller
 
+    /**
+     * The tag of this transaction
+     */
     var tag: String? = null
         set(value) {
             checkModify()
             field = value
         }
 
+    /**
+     * The push change handler of this transaction
+     */
     var pushChangeHandler: ControllerChangeHandler? = null
         get() = controller.overriddenPushHandler ?: field
         set(value) {
@@ -24,6 +33,9 @@ class RouterTransaction {
             field = value
         }
 
+    /**
+     * The pop change handler of this transaction
+     */
     var popChangeHandler: ControllerChangeHandler? = null
         get() = controller.overriddenPopHandler ?: field
         set(value) {
@@ -70,6 +82,11 @@ class RouterTransaction {
         putString(KEY_TAG, tag)
         putInt(KEY_INDEX, transactionIndex)
         putBoolean(KEY_ATTACHED_TO_ROUTER, attachedToRouter)
+    }
+
+    // todo remove
+    override fun toString(): String {
+        return controller.toString()
     }
 
     private fun checkModify() {

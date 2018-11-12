@@ -21,13 +21,12 @@ class MasterDetailListController : BaseController() {
     private var selectedIndex = 0
     private var twoPaneView = false
 
-    override var title: String?
-        get() = "Master/Detail Flow"
-        set(value) {
-            super.title = value
-        }
+    override val layoutRes get() = R.layout.controller_master_detail_list
 
-    override val layoutRes = R.layout.controller_master_detail_list
+    override fun onCreate() {
+        super.onCreate()
+        title = "Master/Detail Flow"
+    }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

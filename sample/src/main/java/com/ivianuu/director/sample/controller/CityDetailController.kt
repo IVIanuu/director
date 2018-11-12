@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.row_city_header.*
 
 class CityDetailController : BaseController() {
 
-    override val layoutRes = R.layout.controller_city_detail
+    override val layoutRes get() = R.layout.controller_city_detail
 
     override fun onCreate() {
         super.onCreate()

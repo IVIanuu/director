@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.controller_child.*
 
 class ChildController : BaseController() {
 
-    override val layoutRes = R.layout.controller_child
+    override val layoutRes get() = R.layout.controller_child
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

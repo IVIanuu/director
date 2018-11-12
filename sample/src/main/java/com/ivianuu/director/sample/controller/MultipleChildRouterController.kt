@@ -10,11 +10,12 @@ import kotlinx.android.synthetic.main.controller_multiple_child_routers.*
 
 class MultipleChildRouterController : BaseController() {
 
-    override var title: String?
-        get() = "Child Router Demo"
-        set(value) { super.title = value }
+    override val layoutRes get() = R.layout.controller_multiple_child_routers
 
-    override val layoutRes = R.layout.controller_multiple_child_routers
+    override fun onCreate() {
+        super.onCreate()
+        title = "Child Router Demo"
+    }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

@@ -11,6 +11,8 @@ import com.ivianuu.director.sample.widget.ElasticDragDismissFrameLayout.ElasticD
 @TargetApi(VERSION_CODES.LOLLIPOP)
 class DragDismissController : BaseController() {
 
+    override val layoutRes get() = R.layout.controller_drag_dismiss
+
     private val dragDismissListener = object : ElasticDragDismissCallback() {
         override fun onDragDismissed() {
             overriddenPopHandler = ScaleFadeChangeHandler()
@@ -18,11 +20,10 @@ class DragDismissController : BaseController() {
         }
     }
 
-    override var title: String?
-        get() = "Drag to Dismiss"
-        set(value) { super.title = value }
-
-    override val layoutRes = R.layout.controller_drag_dismiss
+    override fun onCreate() {
+        super.onCreate()
+        title = "Drag to Dismiss"
+    }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

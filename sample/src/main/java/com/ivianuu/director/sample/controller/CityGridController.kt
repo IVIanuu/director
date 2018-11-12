@@ -27,7 +27,7 @@ class CityGridController : BaseController() {
     private val dotColor by lazy { args.getInt(KEY_DOT_COLOR) }
     private val fromPosition by lazy { args.getInt(KEY_FROM_POSITION) }
 
-    override val layoutRes = R.layout.controller_city_grid
+    override val layoutRes get() = R.layout.controller_city_grid
 
     override fun onCreate() {
         super.onCreate()

@@ -20,14 +20,11 @@ class NavigationDemoController : BaseController() {
     private val index by lazy { args.getInt(KEY_INDEX) }
     private val displayUpMode by lazy { DisplayUpMode.values()[args.getInt(KEY_DISPLAY_UP_MODE)] }
 
-    override var title: String?
-        get() = "Navigation Demos"
-        set(value) { super.title = value }
-
-    override val layoutRes = R.layout.controller_navigation_demo
+    override val layoutRes get() = R.layout.controller_navigation_demo
 
     override fun onCreate() {
         super.onCreate()
+        title = "Navigation Demos"
         retainViewMode = RetainViewMode.RETAIN_DETACH
     }
 

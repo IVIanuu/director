@@ -9,17 +9,12 @@ import kotlinx.android.synthetic.main.controller_target_title_entry.*
 
 class TargetTitleEntryController : BaseController() {
 
-    override var title: String?
-        get() = "Target Controller Demo"
-        set(value) {
-            super.title = value
-        }
+    override val layoutRes get() = R.layout.controller_target_title_entry
 
-    interface TargetTitleEntryControllerListener {
-        fun onTitlePicked(option: String)
+    override fun onCreate() {
+        super.onCreate()
+        title = "Target Controller Demo"
     }
-
-    override val layoutRes = R.layout.controller_target_title_entry
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
@@ -34,6 +29,10 @@ class TargetTitleEntryController : BaseController() {
         val imm =
             edit_text.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(edit_text!!.windowToken, 0)
+    }
+
+    interface TargetTitleEntryControllerListener {
+        fun onTitlePicked(option: String)
     }
 
     companion object {

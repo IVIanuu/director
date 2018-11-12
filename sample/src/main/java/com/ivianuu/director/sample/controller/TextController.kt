@@ -7,7 +7,7 @@ import kotlinx.android.synthetic.main.controller_text.*
 
 class TextController : BaseController() {
 
-    override val layoutRes = R.layout.controller_text
+    override val layoutRes get() = R.layout.controller_text
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

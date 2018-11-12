@@ -16,14 +16,15 @@ import kotlinx.android.synthetic.main.controller_target_display.*
 class TargetDisplayController : BaseController(),
     TargetTitleEntryController.TargetTitleEntryControllerListener {
 
+    override val layoutRes get() = R.layout.controller_target_display
+
     private var selectedText: String? = null
     private var imageUri: Uri? = null
 
-    override var title: String?
-        get() = "Target Controller Demo"
-        set(value) { super.title = value }
-
-    override val layoutRes = R.layout.controller_target_display
+    override fun onCreate() {
+        super.onCreate()
+        title = "Target Controller Demo"
+    }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

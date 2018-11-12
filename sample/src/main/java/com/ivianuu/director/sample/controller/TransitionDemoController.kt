@@ -23,14 +23,15 @@ import kotlinx.android.synthetic.main.controller_transition_demo.*
 
 class TransitionDemoController : BaseController() {
 
-    override var title: String?
-        get() = "Transition Demos"
-        set(value) { super.title = value }
+    override val layoutRes: Int
+        get() = transitionDemo.layoutId
 
     private val transitionDemo by lazy { TransitionDemo.fromIndex(args.getInt(KEY_INDEX)) }
 
-    override val layoutRes: Int
-        get() = transitionDemo.layoutId
+    override fun onCreate() {
+        super.onCreate()
+        title = "Transition Demos"
+    }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)

@@ -16,11 +16,10 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
     override var containerView: View? = null
 
     protected open val layoutRes = 0
+    protected var title: String? = null
 
-    protected val actionBar: ActionBar?
+    private val actionBar: ActionBar?
         get() = (requireActivity() as ActionBarProvider).providedActionBar
-
-    protected open var title: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,4 +65,7 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         }
     }
 
+    override fun toString(): String {
+        return "${javaClass.simpleName} ${System.identityHashCode(this)}"
+    }
 }

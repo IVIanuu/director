@@ -11,13 +11,7 @@ import java.util.*
 
 class PagerController : BaseController() {
 
-    override var title: String?
-        get() = "ViewPager Demo"
-        set(value) {
-            super.title = value
-        }
-
-    override val layoutRes = R.layout.controller_pager
+    override val layoutRes get() = R.layout.controller_pager
 
     private val pagerAdapter = object : RouterPagerAdapter(this@PagerController) {
 
@@ -38,6 +32,11 @@ class PagerController : BaseController() {
         override fun getPageTitle(position: Int) = "Page $position"
 
         override fun getCount() = PAGE_COLORS.size
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        title = "ViewPager Demo"
     }
 
     override fun onViewCreated(view: View) {

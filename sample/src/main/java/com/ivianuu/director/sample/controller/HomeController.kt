@@ -26,25 +26,12 @@ import kotlinx.android.synthetic.main.row_home.*
 
 class HomeController : BaseController() {
 
-    override var title: String?
-        get() = "Director Sample"
-        set(value) { super.title = value }
+    override val layoutRes get() = R.layout.controller_home
 
-    enum class DemoModel(var title: String, var color: Int) {
-        NAVIGATION("Navigation Demos", R.color.red_300),
-        TRANSITIONS("Transition Demos", R.color.blue_grey_300),
-        SHARED_ELEMENT_TRANSITIONS("Shared Element Demos", R.color.purple_300),
-        CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
-        VIEW_PAGER("ViewPager", R.color.green_300),
-        TARGET_CONTROLLER("Target Controller", R.color.pink_300),
-        MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
-        MASTER_DETAIL("Master Detail", R.color.grey_300),
-        DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
-        DIALOG("Dialog", R.color.blue_300),
-        ARCH("Arch", R.color.yellow_300)
+    override fun onCreate() {
+        super.onCreate()
+        title = "Director Sample"
     }
-
-    override val layoutRes = R.layout.controller_home
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
@@ -97,6 +84,13 @@ class HomeController : BaseController() {
             HomeController.DemoModel.VIEW_PAGER -> {
                 router.pushController(
                     PagerController().toTransaction()
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler())
+                )
+            }
+            DemoModel.BOTTOM_NAV -> {
+                router.pushController(
+                    BottomNavController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
@@ -212,5 +206,20 @@ class HomeController : BaseController() {
                 itemView.setOnClickListener { onModelRowClick(model, position) }
             }
         }
+    }
+
+    enum class DemoModel(var title: String, var color: Int) {
+        NAVIGATION("Navigation Demos", R.color.red_300),
+        TRANSITIONS("Transition Demos", R.color.blue_grey_300),
+        SHARED_ELEMENT_TRANSITIONS("Shared Element Demos", R.color.purple_300),
+        CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
+        VIEW_PAGER("ViewPager", R.color.green_300),
+        BOTTOM_NAV("Bottom Nav", R.color.blue_300),
+        TARGET_CONTROLLER("Target Controller", R.color.pink_300),
+        MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
+        MASTER_DETAIL("Master Detail", R.color.grey_300),
+        DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
+        DIALOG("Dialog", R.color.blue_300),
+        ARCH("Arch", R.color.yellow_300)
     }
 }

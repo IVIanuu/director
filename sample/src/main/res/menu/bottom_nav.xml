@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/one"
+        android:title="One"
+        android:icon="@drawable/looks_one" />
+
+    <item
+        android:id="@+id/two"
+        android:title="Two"
+        android:icon="@drawable/looks_two" />
+
+    <item
+        android:id="@+id/three"
+        android:title="Three"
+        android:icon="@drawable/looks_three" />
+
+    <item
+        android:id="@+id/four"
+        android:title="Four"
+        android:icon="@drawable/looks_four" />
+
+    <item
+        android:id="@+id/five"
+        android:title="Five"
+        android:icon="@drawable/looks_five" />
+
+</menu>

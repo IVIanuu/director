@@ -20,13 +20,12 @@ class ParentController : BaseController() {
     private var finishing = false
     private var hasShownAll = false
 
-    override var title: String?
-        get() = "Parent/Child Demo"
-        set(value) {
-            super.title = value
-        }
+    override val layoutRes get() = R.layout.controller_parent
 
-    override val layoutRes = R.layout.controller_parent
+    override fun onCreate() {
+        super.onCreate()
+        title = "Parent/Child Demo"
+    }
 
     override fun onChangeEnded(
         changeHandler: ControllerChangeHandler,

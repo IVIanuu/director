@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.newInstanceOrThrow
 import java.lang.ref.WeakReference
 import java.util.*
@@ -545,7 +544,6 @@ abstract class Controller {
     internal fun inflate(parent: ViewGroup): View {
         var view = view
 
-        // todo should we take this into count?
         if (view != null && view.parent != null && view.parent != parent) {
             detach(view, true, false, false, false)
             removeViewReference(false)
@@ -560,10 +558,6 @@ abstract class Controller {
                 parent,
                 viewState
             ).also { this.view = it }
-
-            if (view == parent) {
-                throw IllegalStateException("Controller's onCreateView method returned the parent ViewGroup. Perhaps you forgot to pass false for LayoutInflater.inflate's attachToRoot parameter?")
-            }
 
             notifyLifecycleListeners { it.postCreateView(this, view) }
 
@@ -667,9 +661,7 @@ abstract class Controller {
             // we remove the view from the container to make sure that
             // we dont reinflate the view in Controller.inflate
             // because we would be attached to the old container otherwise
-            (view.parent as? ViewGroup)?.removeView(view)?.also {
-                d { "remove view due to retain detach" }
-            }
+            (view.parent as? ViewGroup)?.removeView(view)
         }
     }
 
@@ -692,7 +684,6 @@ abstract class Controller {
                 destroyedView = WeakReference(view)
             }
 
-            d { "nullify view" }
             this.view = null
 
             notifyLifecycleListeners { it.postDestroyView(this) }
@@ -895,17 +886,14 @@ abstract class Controller {
 
         notifyLifecycleListeners { it.onChangeEnd(this, changeHandler, changeType) }
 
-        val destroyedView = destroyedView
+        val destroyedView = destroyedView?.get()
 
-        // todo can this be removed?
         if (isBeingDestroyed && !viewIsAttached && !isAttached && destroyedView != null) {
-            val view = destroyedView.get()
             val router = router
 
             val container = router.container
-            if (container != null && view != null && view.parent == router.container) {
-                d { "should remove view $view" }
-                container.removeView(view)
+            if (container != null && destroyedView.parent == router.container) {
+                container.removeView(destroyedView)
             }
 
             this.destroyedView = null

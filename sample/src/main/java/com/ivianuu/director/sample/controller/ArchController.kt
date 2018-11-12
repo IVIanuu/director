@@ -23,26 +23,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ivianuu.director.common.contextRef
 import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_arch.*
-
-annotation class Inject
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
 class ArchController : BaseController() {
 
-    override val layoutRes = R.layout.controller_arch
+    override val layoutRes get() = R.layout.controller_arch
 
     private val viewModel by lazy {
         ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
             .get(ArchViewModel::class.java)
     }
-
-    @Inject var haha by contextRef<Boolean>()
 
     override fun onAttach(view: View) {
         super.onAttach(view)

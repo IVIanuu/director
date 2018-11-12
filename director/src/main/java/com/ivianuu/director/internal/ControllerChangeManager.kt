@@ -99,14 +99,8 @@ internal class ControllerChangeManager {
             listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handler) }
 
             if (handler.removesFromViewOnPush && fromView != null) {
-                d { "try to remove view" }
-                (fromView.parent as? ViewGroup)?.removeView(fromView)?.also {
-                    d { "removed from view!!" }
-                }
-            }
-
-            if (handler.removesFromViewOnPush && from != null) {
-                from.needsAttach = false
+                (fromView.parent as? ViewGroup)?.removeView(fromView)
+                from!!.needsAttach = false
             }
         }
     }

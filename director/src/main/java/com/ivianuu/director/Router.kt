@@ -14,7 +14,8 @@ import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.director.internal.requireMainThread
 
 /**
- * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
+ * A Router implements navigation and backstack handling for [Co
+ * ntroller]s. Router objects are attached
  * to Activity/containing ViewGroup pairs. Routers do not directly render or push Views to the container ViewGroup,
  * but instead defer this responsibility to the [ControllerChangeHandler] specified in a given transaction.
  */
@@ -204,7 +205,7 @@ abstract class Router {
             val newHandlerRemovesViews = handler == null || handler.removesFromViewOnPush
 
             if (!oldHandlerRemovedViews && newHandlerRemovesViews) {
-                reversedBackstack
+                backstack
                     .filterVisible()
                     .forEach {
                         performControllerChange(null, it, true, handler)
@@ -330,12 +331,24 @@ abstract class Router {
         requireMainThread()
 
         val oldTransactions = backstack
-        val oldVisibleTransactions = reversedBackstack.filterVisible()
+        val oldVisibleTransactions = oldTransactions.filterVisible()
 
         removeAllExceptVisibleAndUnowned()
 
-        ensureOrderedTransactionIndices(newBackstack)
-        ensureNoDuplicateControllers(newBackstack)
+        if (newBackstack.size != newBackstack.distinctBy { it.controller }.size) {
+            throw IllegalStateException("Trying to push the same controller to the backstack more than once.")
+        }
+
+        // Swap around transaction indices to ensure they don't get thrown out of order by the
+        // developer rearranging the backstack at runtime.
+        val indices = newBackstack
+            .onEach { it.ensureValidIndex(transactionIndexer) }
+            .map { it.transactionIndex }
+            .sorted()
+
+        newBackstack.forEachIndexed { i, transaction ->
+            transaction.transactionIndex = indices[i]
+        }
 
         _backstack.setEntries(newBackstack)
 
@@ -353,7 +366,7 @@ abstract class Router {
         }
 
         if (newBackstack.isNotEmpty()) {
-            val newVisibleTransactions = newBackstack.reversed().filterVisible()
+            val newVisibleTransactions = newBackstack.filterVisible()
 
             val newRootRequiresPush =
                 newVisibleTransactions.isEmpty() ||
@@ -582,17 +595,6 @@ abstract class Router {
         backstack.forEach { setControllerRouter(it.controller) }
     }
 
-    private fun popToTransaction(
-        transaction: RouterTransaction,
-        changeHandler: ControllerChangeHandler? = null
-    ) {
-        if (_backstack.size > 0) {
-            val topTransaction = _backstack.peek()
-            val updatedBackstack = backstack.dropLastWhile { it != transaction }
-            setBackstack(updatedBackstack, changeHandler ?: topTransaction?.popChangeHandler)
-        }
-    }
-
     internal fun watchContainerAttach() {
         container?.post { containerFullyAttached = true }
     }
@@ -611,6 +613,17 @@ abstract class Router {
         .filter { it.didRequestPermission(permission) }
         .filter { it.shouldShowRequestPermissionRationale(permission) }
         .any()
+
+    private fun popToTransaction(
+        transaction: RouterTransaction,
+        changeHandler: ControllerChangeHandler? = null
+    ) {
+        if (_backstack.size > 0) {
+            val topTransaction = _backstack.peek()
+            val updatedBackstack = backstack.dropLastWhile { it != transaction }
+            setBackstack(updatedBackstack, changeHandler ?: topTransaction?.popChangeHandler)
+        }
+    }
 
     private fun performControllerChange(
         to: RouterTransaction?,
@@ -733,7 +746,7 @@ abstract class Router {
 
         val views = mutableListOf<View>()
 
-        reversedBackstack
+        backstack
             .filterVisible()
             .mapNotNull { it.controller.view }
             .forEach { views.add(it) }
@@ -748,39 +761,23 @@ abstract class Router {
             .forEach { container.removeView(it) }
     }
 
-    // Swap around transaction indices to ensure they don't get thrown out of order by the
-    // developer rearranging the backstack at runtime.
-    private fun ensureOrderedTransactionIndices(backstack: List<RouterTransaction>) {
-        val indices = backstack
-            .onEach { it.ensureValidIndex(transactionIndexer) }
-            .map { it.transactionIndex }
-            .sorted()
-
-        backstack.forEachIndexed { i, transaction ->
-            transaction.transactionIndex = indices[i]
-        }
-    }
-
-    private fun ensureNoDuplicateControllers(backstack: List<RouterTransaction>) {
-        if (backstack.size != backstack.distinctBy { it.controller }.size) {
-            throw IllegalStateException("Trying to push the same controller to the backstack more than once.")
-        }
-    }
-
     private fun addRouterViewsToList(router: Router, list: MutableList<View>) {
-        router.backstack.map { it.controller }.forEach { controller ->
-            controller.view?.let { list.add(it) }
-            controller.childRouters.forEach { addRouterViewsToList(it, list) }
-        }
+        router.backstack
+            .map { it.controller }
+            .forEach { controller ->
+                controller.view?.let { list.add(it) }
+                controller.childRouters.forEach { addRouterViewsToList(it, list) }
+            }
     }
 
     private fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> {
         val visible = mutableListOf<RouterTransaction>()
 
-        for (transaction in this) {
+        for (transaction in this.reversed()) {
             visible.add(transaction)
-            //noinspection ConstantConditions
-            if (transaction.pushChangeHandler == null || transaction.pushChangeHandler!!.removesFromViewOnPush) {
+            if (transaction.pushChangeHandler == null
+                    || transaction.pushChangeHandler!!.removesFromViewOnPush
+            ) {
                 break
             }
         }

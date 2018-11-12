@@ -129,24 +129,24 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         .filter { it.handleRequestedPermission(permission) }
         .any() || super.shouldShowRequestPermissionRationale(permission)
 
-    fun registerForActivityResult(instanceId: String, requestCode: Int) {
+    internal fun registerForActivityResult(instanceId: String, requestCode: Int) {
         activityRequestMap.getOrPut(requestCode) { mutableSetOf() }
             .add(instanceId)
     }
 
-    fun unregisterForActivityResults(instanceId: String) {
+    internal fun unregisterForActivityResults(instanceId: String) {
         activityRequestMap
             .filterValues { it.contains(instanceId) }
             .keys
             .forEach { activityRequestMap.remove(it) }
     }
 
-    fun startActivityForResult(instanceId: String, intent: Intent, requestCode: Int) {
+    internal fun startActivityForResult(instanceId: String, intent: Intent, requestCode: Int) {
         registerForActivityResult(instanceId, requestCode)
         startActivityForResult(intent, requestCode)
     }
 
-    fun startActivityForResult(
+    internal fun startActivityForResult(
         instanceId: String,
         intent: Intent,
         requestCode: Int,
@@ -157,7 +157,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    fun startIntentSenderForResult(
+    internal fun startIntentSenderForResult(
         instanceId: String, intent: IntentSender, requestCode: Int,
         fillInIntent: Intent?, flagsMask: Int, flagsValues: Int, extraFlags: Int,
         options: Bundle?
@@ -175,7 +175,11 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    fun requestPermissions(instanceId: String, permissions: Array<String>, requestCode: Int) {
+    internal fun requestPermissions(
+        instanceId: String,
+        permissions: Array<String>,
+        requestCode: Int
+    ) {
         if (attached) {
             permissionRequestMap.getOrPut(requestCode) { mutableSetOf() }
                 .add(instanceId)
@@ -279,7 +283,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         private const val KEY_PERMISSION_REQUEST_CODES = "LifecycleHandler.permissionRequests"
         private const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
 
-        fun install(activity: FragmentActivity) =
+        internal fun install(activity: FragmentActivity) =
             (findInActivity(activity) ?: LifecycleHandler().also {
                 activity.supportFragmentManager.beginTransaction()
                     .add(it, FRAGMENT_TAG)

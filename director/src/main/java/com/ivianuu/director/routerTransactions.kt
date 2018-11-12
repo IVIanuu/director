@@ -16,14 +16,23 @@
 
 package com.ivianuu.director
 
+/**
+ * Sets the push change handler
+ */
 fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
     pushChangeHandler = changeHandler
 }
 
+/**
+ * Sets the pop change handler
+ */
 fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
     popChangeHandler = changeHandler
 }
 
+/**
+ * Sets the tag
+ */
 fun RouterTransaction.tag(tag: String?) = apply {
     this.tag = tag
 }
