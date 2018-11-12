@@ -46,11 +46,6 @@ class HomeController : BaseController() {
 
     override val layoutRes = R.layout.controller_home
 
-    override fun onCreate() {
-        super.onCreate()
-        hasOptionsMenu = true
-    }
-
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
@@ -65,8 +60,6 @@ class HomeController : BaseController() {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
-        optionsMenuHidden = !changeType.isEnter
-
         if (changeType.isEnter) {
             setTitle()
         }

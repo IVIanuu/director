@@ -159,10 +159,6 @@ internal class ControllerHostedRouter : Router {
         super.setControllerRouter(controller)
     }
 
-    public override fun invalidateOptionsMenu() {
-        hostController?.router?.invalidateOptionsMenu()
-    }
-
     override fun startActivity(intent: Intent) {
         hostController?.router?.startActivity(intent)
     }

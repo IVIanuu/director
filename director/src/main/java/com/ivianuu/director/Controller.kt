@@ -10,9 +10,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerHostedRouter
@@ -118,26 +115,6 @@ abstract class Controller {
      */
     var isBeingDestroyed = false
         internal set
-
-    /**
-     * Whether or not this controller has an options menu
-     */
-    var hasOptionsMenu = false
-        set(value) {
-            val invalidate = isAttached && !optionsMenuHidden && field != value
-            field = value
-            if (invalidate) withRouter { it.invalidateOptionsMenu() }
-        }
-
-    /**
-     * Whether or not the options menu of this controller should be hidden
-     */
-    var optionsMenuHidden = false
-        set(value) {
-            val invalidate = isAttached && hasOptionsMenu && field != value
-            field = value
-            if (invalidate) withRouter { it.invalidateOptionsMenu() }
-        }
 
     private var allState: Bundle? = null
     private var savedState: Bundle? = null
@@ -490,25 +467,6 @@ abstract class Controller {
         }
     }
 
-    /**
-     * Adds option items to the host Activity's standard options menu. This will only be called if
-     * [Controller.hasOptionsMenu] is true.
-     */
-    open fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-    }
-
-    /**
-     * Prepare the screen's options menu to be displayed. This is called directly before showing the
-     * menu and can be used modify its contents.
-     */
-    open fun onPrepareOptionsMenu(menu: Menu) {
-    }
-
-    /**
-     * Called when an option menu item has been selected by the user.
-     */
-    open fun onOptionsItemSelected(item: MenuItem) = false
-
     internal fun prepareForHostDetach() {
         needsAttach = needsAttach || isAttached
         _childRouters.forEach { it.prepareForHostDetach() }
@@ -667,10 +625,6 @@ abstract class Controller {
 
         onAttach(view)
 
-        if (hasOptionsMenu && !optionsMenuHidden) {
-            router.invalidateOptionsMenu()
-        }
-
         notifyLifecycleListeners { it.postAttach(this, view) }
 
         _childRouters
@@ -693,10 +647,6 @@ abstract class Controller {
 
             if (!awaitingParentAttach) {
                 onDetach(view)
-            }
-
-            if (hasOptionsMenu && !optionsMenuHidden) {
-                router.invalidateOptionsMenu()
             }
 
             notifyLifecycleListeners { it.postDetach(this, view) }
@@ -945,21 +895,6 @@ abstract class Controller {
             this.destroyedView = null
         }
     }
-
-    internal fun createOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if (isAttached && hasOptionsMenu && !optionsMenuHidden) {
-            onCreateOptionsMenu(menu, inflater)
-        }
-    }
-
-    internal fun prepareOptionsMenu(menu: Menu) {
-        if (isAttached && hasOptionsMenu && !optionsMenuHidden) {
-            onPrepareOptionsMenu(menu)
-        }
-    }
-
-    internal fun optionsItemSelected(item: MenuItem) =
-        isAttached && hasOptionsMenu && !optionsMenuHidden && onOptionsItemSelected(item)
 
     private fun withRouter(action: (Router) -> Unit) {
         val router = router

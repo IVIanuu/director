@@ -9,9 +9,6 @@ import android.content.IntentSender
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -40,7 +37,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     private var hasRegisteredCallbacks = false
 
     init {
-        setHasOptionsMenu(true)
         retainInstance = true
     }
 
@@ -132,20 +128,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun shouldShowRequestPermissionRationale(permission: String) = routers
         .filter { it.handleRequestedPermission(permission) }
         .any() || super.shouldShowRequestPermissionRationale(permission)
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        routers.forEach { it.onCreateOptionsMenu(menu, inflater) }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        routers.forEach { it.onPrepareOptionsMenu(menu) }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = routers
-        .filter { it.onOptionsItemSelected(item) }
-        .any() || super.onOptionsItemSelected(item)
 
     fun registerForActivityResult(instanceId: String, requestCode: Int) {
         activityRequestMap.getOrPut(requestCode) { mutableSetOf() }

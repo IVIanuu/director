@@ -46,8 +46,6 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
     private val visibleRouters = SparseArray<Router>()
     private val savedPageHistory = ArrayList<Int>()
 
-    private var currentPrimaryRouter: Router? = null
-
     /**
      * Called when a router is instantiated. Here the router's root should be set if needed.
      */
@@ -73,10 +71,6 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
         router.rebindIfNeeded()
         configureRouter(router, position)
 
-        if (router != currentPrimaryRouter) {
-            router.backstack.forEach { it.controller.optionsMenuHidden = true }
-        }
-
         visibleRouters.put(position, router)
         return router
     }
@@ -96,16 +90,6 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
         host.removeChildRouter(router)
 
         visibleRouters.remove(position)
-    }
-
-    override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
-        val router = `object` as Router
-        if (router != currentPrimaryRouter) {
-            currentPrimaryRouter?.backstack?.forEach { it.controller.optionsMenuHidden = true }
-            router.backstack.forEach { it.controller.optionsMenuHidden = false }
-
-            currentPrimaryRouter = router
-        }
     }
 
     override fun isViewFromObject(view: View, `object`: Any) =

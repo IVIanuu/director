@@ -40,10 +40,6 @@ internal class ActivityHostedRouter : Router() {
         lifecycleHandler = null
     }
 
-    public override fun invalidateOptionsMenu() {
-        lifecycleHandler?.activity?.invalidateOptionsMenu()
-    }
-
     override fun startActivity(intent: Intent) {
         lifecycleHandler?.startActivity(intent)
     }

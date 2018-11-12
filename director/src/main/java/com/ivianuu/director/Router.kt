@@ -4,9 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.Backstack
@@ -585,35 +582,6 @@ abstract class Router {
         backstack.forEach { setControllerRouter(it.controller) }
     }
 
-    fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        backstack
-            .map { it.controller }
-            .forEach { controller ->
-                controller.createOptionsMenu(menu, inflater)
-                controller.childRouters.forEach { it.onCreateOptionsMenu(menu, inflater) }
-            }
-    }
-
-    fun onPrepareOptionsMenu(menu: Menu) {
-        backstack
-            .map { it.controller }
-            .forEach { controller ->
-                controller.prepareOptionsMenu(menu)
-                controller.childRouters.forEach { it.onPrepareOptionsMenu(menu) }
-            }
-    }
-
-    fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return backstack
-            .map { it.controller }
-            .any { controller ->
-                controller.optionsItemSelected(item)
-                        || controller.childRouters.any {
-                    it.onOptionsItemSelected(item)
-                }
-            }
-    }
-
     private fun popToTransaction(
         transaction: RouterTransaction,
         changeHandler: ControllerChangeHandler? = null
@@ -832,7 +800,6 @@ abstract class Router {
         return true
     }
 
-    internal abstract fun invalidateOptionsMenu()
     internal abstract fun startActivity(intent: Intent)
     internal abstract fun startActivityForResult(
         instanceId: String,
