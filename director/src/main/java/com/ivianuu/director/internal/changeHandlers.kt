@@ -57,11 +57,7 @@ internal fun executeChange(transaction: ChangeTransaction) {
 
     if (container == null) return
 
-    val handler = if (inHandler == null) {
-        SimpleSwapChangeHandler()
-    } else {
-        inHandler.copy()
-    }
+    val handler = inHandler?.copy() ?: SimpleSwapChangeHandler()
 
     if (from != null) {
         if (isPush) {
@@ -115,10 +111,7 @@ internal fun executeChange(transaction: ChangeTransaction) {
         listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handler) }
 
         if (handler.removesFromViewOnPush && fromView != null) {
-            val fromParent = fromView.parent as? ViewGroup
-            if (fromParent != null) {
-                fromParent.removeView(fromView)
-            }
+            (fromView.parent as? ViewGroup)?.removeView(fromView)
         }
 
         if (handler.removesFromViewOnPush && from != null) {

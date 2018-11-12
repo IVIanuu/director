@@ -11,17 +11,9 @@ import java.util.*
 
 class PagerController : BaseController() {
 
-    private val PAGE_COLORS = intArrayOf(
-        R.color.green_300,
-        R.color.cyan_300,
-        R.color.deep_purple_300,
-        R.color.lime_300,
-        R.color.red_300
-    )
-
     override var title: String?
         get() = "ViewPager Demo"
-        set(value: String?) {
+        set(value) {
             super.title = value
         }
 
@@ -61,5 +53,15 @@ class PagerController : BaseController() {
         tab_layout.setupWithViewPager(null)
 
         super.onDestroyView(view)
+    }
+
+    private companion object {
+        private val PAGE_COLORS = intArrayOf(
+            R.color.green_300,
+            R.color.cyan_300,
+            R.color.deep_purple_300,
+            R.color.lime_300,
+            R.color.red_300
+        )
     }
 }

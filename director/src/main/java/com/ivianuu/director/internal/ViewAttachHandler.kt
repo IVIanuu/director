@@ -4,7 +4,7 @@ import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 
-internal class ViewAttachHandler(private val attachListener: ViewAttachListener) :
+internal class ViewAttachHandler(private val listener: Listener) :
     OnAttachStateChangeListener {
 
     private var rootAttached = false
@@ -59,7 +59,7 @@ internal class ViewAttachHandler(private val attachListener: ViewAttachListener)
     private fun reportAttached() {
         if (rootAttached && childrenAttached && !activityStopped && reportedState != ReportedState.ATTACHED) {
             reportedState = ReportedState.ATTACHED
-            attachListener.onAttached()
+            listener.onAttached()
         }
     }
 
@@ -73,31 +73,31 @@ internal class ViewAttachHandler(private val attachListener: ViewAttachListener)
         }
 
         if (wasDetachedForActivity && !detachedForActivity) {
-            attachListener.onViewDetachAfterStop()
+            listener.onViewDetachAfterStop()
         } else {
-            attachListener.onDetached(detachedForActivity)
+            listener.onDetached(detachedForActivity)
         }
     }
 
-    private fun listenForDeepestChildAttach(view: View, attachListener: () -> Unit) {
+    private fun listenForDeepestChildAttach(view: View, onAttach: () -> Unit) {
         if (view !is ViewGroup) {
-            attachListener()
+            onAttach()
             return
         }
 
         if (view.childCount == 0) {
-            attachListener()
+            onAttach()
             return
         }
 
         childOnAttachStateChangeListener = object : OnAttachStateChangeListener {
 
-            var attached = false
+            private var attached = false
 
             override fun onViewAttachedToWindow(v: View) {
                 if (!attached) {
                     attached = true
-                    attachListener()
+                    onAttach()
                     v.removeOnAttachStateChangeListener(this)
                     childOnAttachStateChangeListener = null
                 }
@@ -127,7 +127,7 @@ internal class ViewAttachHandler(private val attachListener: ViewAttachListener)
         ATTACHED
     }
 
-    interface ViewAttachListener {
+    interface Listener {
         fun onAttached()
         fun onDetached(fromActivityStop: Boolean)
         fun onViewDetachAfterStop()

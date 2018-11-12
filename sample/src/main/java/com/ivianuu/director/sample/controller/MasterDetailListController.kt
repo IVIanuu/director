@@ -23,7 +23,7 @@ class MasterDetailListController : BaseController() {
 
     override var title: String?
         get() = "Master/Detail Flow"
-        set(value: String?) {
+        set(value) {
             super.title = value
         }
 

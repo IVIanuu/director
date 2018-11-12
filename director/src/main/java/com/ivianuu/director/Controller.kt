@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
-import com.ivianuu.director.internal.ViewAttachHandler.ViewAttachListener
 import com.ivianuu.director.internal.newInstanceOrThrow
 import java.lang.ref.WeakReference
 import java.util.*
@@ -568,7 +567,7 @@ abstract class Controller {
 
             restoreViewState(view)
 
-            viewAttachHandler = ViewAttachHandler(object : ViewAttachListener {
+            viewAttachHandler = ViewAttachHandler(object : ViewAttachHandler.Listener {
                 override fun onAttached() {
                     viewIsAttached = true
                     viewWasDetached = false
@@ -846,9 +845,7 @@ abstract class Controller {
         val savedInstanceState = savedState
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState)
-
             notifyLifecycleListeners { it.onRestoreInstanceState(this, savedInstanceState) }
-
             savedState = null
         }
     }
