@@ -144,4 +144,6 @@ internal fun executeChange(transaction: ChangeTransaction) {
     }
 }
 
-private fun d(m: () -> String) { Log.d("ChangeHandlers", m()) }
+private inline fun d(m: () -> String) {
+    if (DEBUG) Log.d("ChangeHandlers", m())
+}

@@ -419,6 +419,7 @@ abstract class Controller {
      */
     open fun handleBack() = _childRouters
         .flatMap { it.backstack }
+        .asSequence()
         .sortedByDescending { it.transactionIndex }
         .any { it.controller.isAttached && it.controller.router.handleBack() }
 

@@ -17,7 +17,6 @@ import com.ivianuu.director.internal.completeChangeImmediately
 import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.executeChange
 import com.ivianuu.director.internal.requireMainThread
-import java.util.*
 
 /**
  * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
@@ -236,8 +235,7 @@ abstract class Router {
 
         val poppedControllers = _backstack.popAll()
             .onEach { it.controller.destroy() }
-
-        trackDestroyingControllers(poppedControllers)
+            .onEach { trackDestroyingController(it) }
 
         if (popViews && poppedControllers.isNotEmpty()) {
             val topTransaction = poppedControllers.first()
@@ -248,8 +246,9 @@ abstract class Router {
                     changeType: ControllerChangeType
                 ) {
                     if (changeType == ControllerChangeType.POP_EXIT) {
-                        (poppedControllers.lastIndex downTo 1)
-                            .map { poppedControllers[it] }
+                        poppedControllers
+                            .drop(1)
+                            .reversed()
                             .forEach {
                                 performControllerChange(
                                     null,
@@ -430,7 +429,9 @@ abstract class Router {
                         )
                     }
 
+
                 var lastVisibleTransaction: RouterTransaction? = null
+
                 // Add any new controllers to the backstack
                 newVisibleTransactions
                     .drop(1)
@@ -449,20 +450,13 @@ abstract class Router {
                     }
             }
         } else {
+            // todo check
             // Remove all visible controllers that were previously on the backstack
-            /**oldVisibleTransactions.reversed().forEach {
-            d { "remove visible controller new -> $it" }
-            val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
-            completeChangeImmediately(it.controller.instanceId)
-            performControllerChange(null, it, false, localHandler)
-            }*/
-
-            for (i in oldVisibleTransactions.size - 1 downTo 0) {
-                d { "remove visible controller old -> ${oldVisibleTransactions[i]}" }
-                val transaction = oldVisibleTransactions[i]
+            oldVisibleTransactions.reversed().forEach {
+                d { "remove visible controller nue -> $it" }
                 val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
-                completeChangeImmediately(transaction.controller.instanceId)
-                performControllerChange(null, transaction, false, localHandler)
+                completeChangeImmediately(it.controller.instanceId)
+                performControllerChange(null, it, false, localHandler)
             }
         }
 
@@ -666,16 +660,7 @@ abstract class Router {
     ) {
         if (_backstack.size > 0) {
             val topTransaction = _backstack.peek()
-
-            val updatedBackstack = mutableListOf<RouterTransaction>()
-
-            for (existingTransaction in backstack) {
-                updatedBackstack.add(existingTransaction)
-                if (existingTransaction == transaction) {
-                    break
-                }
-            }
-
+            val updatedBackstack = backstack.dropLastWhile { it != transaction }
             setBackstack(updatedBackstack, changeHandler ?: topTransaction?.popChangeHandler)
         }
     }
@@ -819,10 +804,6 @@ abstract class Router {
         }
     }
 
-    private fun trackDestroyingControllers(transactions: List<RouterTransaction>) {
-        transactions.forEach { trackDestroyingController(it) }
-    }
-
     private fun removeAllExceptVisibleAndUnowned() {
         val views = mutableListOf<View>()
 
@@ -836,7 +817,7 @@ abstract class Router {
             .forEach { addRouterViewsToList(it, views) }
 
         val container = container ?: return
-        (container.childCount -1 downTo 0)
+        (container.childCount - 1 downTo 0)
             .map { container.getChildAt(it) }
             .filterNot { views.contains(it) }
             .forEach { container.removeView(it) }
@@ -845,15 +826,14 @@ abstract class Router {
     // Swap around transaction indices to ensure they don't get thrown out of order by the
     // developer rearranging the backstack at runtime.
     private fun ensureOrderedTransactionIndices(backstack: List<RouterTransaction>) {
-        val indices = ArrayList<Int>(backstack.size)
-        for (transaction in backstack) {
-            transaction.ensureValidIndex(transactionIndexer)
-            indices.add(transaction.transactionIndex)
+        val indices = backstack
+            .onEach { it.ensureValidIndex(transactionIndexer) }
+            .map { it.transactionIndex }
+            .sorted()
+
+        backstack.forEachIndexed { i, transaction ->
+            transaction.transactionIndex = indices[i]
         }
-
-        indices.sort()
-
-        backstack.indices.forEach { backstack[it].transactionIndex = indices[it] }
     }
 
     private fun ensureNoDuplicateControllers(backstack: List<RouterTransaction>) {
@@ -887,14 +867,10 @@ abstract class Router {
         lhs: List<RouterTransaction>,
         rhs: List<RouterTransaction>
     ): Boolean {
-        if (lhs.size != rhs.size) {
-            return false
-        }
+        if (lhs.size != rhs.size) return false
 
-        for (i in rhs.indices) {
-            if (rhs[i].controller != lhs[i].controller) {
-                return false
-            }
+        lhs.forEachIndexed { i, transaction ->
+            if (transaction != rhs[i]) return false
         }
 
         return true

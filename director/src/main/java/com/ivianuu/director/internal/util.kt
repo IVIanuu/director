@@ -21,9 +21,10 @@ internal fun requireMainThread() {
     }
 }
 
-internal val DEBUG = false
+@PublishedApi
+internal val DEBUG = true
 
-fun Any.d(m: () -> String) {
+inline fun Any.d(m: () -> String) {
     if (DEBUG) {
         Log.d(javaClass.simpleName, m())
     }

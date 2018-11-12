@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
 import kotlinx.android.parcel.Parcelize
-import java.util.ArrayList
+import java.util.*
 
 class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
@@ -48,10 +48,12 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         super.onAttach(context)
         attached = true
 
-        for (i in pendingPermissionRequests.indices.reversed()) {
-            val request = pendingPermissionRequests.removeAt(i)
-            requestPermissions(request.instanceId, request.permissions, request.requestCode)
-        }
+        pendingPermissionRequests
+            .reversed()
+            .forEach {
+                pendingPermissionRequests.remove(it)
+                requestPermissions(it.instanceId, it.permissions, it.requestCode)
+            }
 
         destroyed = false
         routers.forEach { it.onContextAvailable() }
