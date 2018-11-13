@@ -45,12 +45,6 @@ abstract class Controller {
             // restore the internal state
             allState?.let { restoreInstanceState(it) }
 
-            // create
-            performCreate()
-
-            // restore instance state
-            performRestoreInstanceState()
-
             onRouterSetListeners.forEach { it(value) }
             onRouterSetListeners.clear()
         }
@@ -177,10 +171,18 @@ abstract class Controller {
     private var isPerformingExitTransition = false
     private var isContextAvailable = false
 
+    private var superCalled = false
+
     /**
      * Will be called once when the router was set for the first time
      */
     protected open fun onCreate() {
+        allState?.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)
+            ?.forEachIndexed { index, bundle ->
+                _childRouters[index].restoreInstanceState(bundle)
+            }
+
+        superCalled = true
     }
 
     /**
@@ -416,44 +418,51 @@ abstract class Controller {
      * Returns the child router for [container] and [tag] or creates a new instance
      */
     fun getChildRouter(container: ViewGroup, tag: String? = null) =
-            getChildRouter(container, tag, true)!!
+        getChildRouter(container.id, tag)
 
     /**
      * Returns the child router for [container] and [tag] if already created
      */
     fun getChildRouterOrNull(container: ViewGroup, tag: String? = null) =
-        getChildRouter(container, tag, false)
+        getChildRouter(container.id, tag)
+
+    /**
+     * Returns the child router for [containerId] and [tag] or creates a new instance
+     */
+    fun getChildRouter(containerId: Int, tag: String? = null): Router =
+        getChildRouter(containerId, tag, true)!!
+
+    /**
+     * Returns the child router for [containerId] and [tag] if already created
+     */
+    fun getChildRouterOrNull(containerId: Int, tag: String? = null): Router? =
+        getChildRouter(containerId, tag, false)
 
     private fun getChildRouter(
-        container: ViewGroup,
+        containerId: Int,
         tag: String?,
         createIfNeeded: Boolean
-    ): Router? {
-        val containerId = container.id
-
+    ): ControllerHostedRouter? {
         var childRouter = _childRouters
             .firstOrNull { it.hostId == containerId && it.tag == tag }
 
         if (childRouter == null) {
             if (createIfNeeded) {
                 childRouter = ControllerHostedRouter(
-                    container.id,
+                    containerId,
                     tag
                 )
 
-                childRouter.setHost(this, container)
+                childRouter.setHost(this)
                 _childRouters.add(childRouter)
 
                 if (isPerformingExitTransition) {
                     childRouter.isDetachFrozen = true
                 }
             }
-        } else if (!childRouter.hasHost) {
-            childRouter.setHost(this, container)
-            childRouter.rebindIfNeeded()
         }
 
-        return childRouter
+        return childRouter.also { restoreChildControllerContainers() }
     }
 
     /**
@@ -511,7 +520,14 @@ abstract class Controller {
             notifyLifecycleListeners { it.postContextAvailable(this, context) }
         }
 
+        // create
+        performCreate()
+
+        // restore instance state
+        performRestoreInstanceState()
+
         _childRouters.forEach { it.onContextAvailable() }
+
     }
 
     internal fun activityStarted(activity: Activity) {
@@ -578,6 +594,8 @@ abstract class Controller {
                 viewState
             ).also { this.view = it }
 
+            restoreChildControllerContainers()
+
             notifyLifecycleListeners { it.postCreateView(this, view) }
 
             restoreViewState(view)
@@ -605,7 +623,7 @@ abstract class Controller {
                 }
             }).also { it.listenForAttach(view) }
         } else if (retainViewMode == RetainViewMode.RETAIN_DETACH) {
-            restoreChildControllerHosts()
+            restoreChildControllerContainers()
         }
 
         return view
@@ -707,7 +725,7 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.postDestroyView(this) }
 
-            _childRouters.forEach { it.removeHost(forceChildViewRemoval) }
+            _childRouters.forEach { it.removeContainer(forceChildViewRemoval) }
         }
 
         if (isBeingDestroyed) {
@@ -715,14 +733,14 @@ abstract class Controller {
         }
     }
 
-    private fun restoreChildControllerHosts() {
+    private fun restoreChildControllerContainers() {
         _childRouters
-            .filterNot { it.hasHost }
+            .filterNot { it.hasContainer }
             .forEach {
                 val containerView = view?.findViewById(it.hostId) as? ViewGroup
 
                 if (containerView != null) {
-                    it.setHost(this, containerView)
+                    it.setContainer(containerView)
                     it.rebindIfNeeded()
                 }
             }
@@ -826,7 +844,12 @@ abstract class Controller {
         retainViewMode = RetainViewMode.values()[savedInstanceState.getInt(KEY_RETAIN_VIEW_MODE, 0)]
 
         savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)
-            ?.map { bundle -> ControllerHostedRouter().also { it.restoreInstanceState(bundle) } }
+            ?.map { bundle ->
+                ControllerHostedRouter().also {
+                    it.setHost(this)
+                    // todo it.restoreInstanceState(bundle)
+                }
+            }
             ?.forEach { _childRouters.add(it) }
     }
 
@@ -854,7 +877,7 @@ abstract class Controller {
             savedViewState.classLoader = javaClass.classLoader
             onRestoreViewState(view, savedViewState)
 
-            restoreChildControllerHosts()
+            restoreChildControllerContainers()
 
             notifyLifecycleListeners { it.onRestoreViewState(this, viewState) }
         }
@@ -863,7 +886,15 @@ abstract class Controller {
     private fun performCreate() {
         if (!isCreated && routerSet) {
             notifyLifecycleListeners { it.preCreate(this) }
+
+            superCalled = false
+
             onCreate()
+
+            if (!superCalled) {
+                throw IllegalStateException("${javaClass.name} did not call super.onCreate()")
+            }
+
             isCreated = true
             notifyLifecycleListeners { it.postCreate(this) }
         }

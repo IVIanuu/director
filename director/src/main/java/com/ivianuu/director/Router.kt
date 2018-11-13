@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
+import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.requireMainThread
 
 /**
@@ -64,6 +66,7 @@ abstract class Router {
      */
     val containerId: Int
         get() = container?.id ?: 0
+    internal val hasContainer get() = container != null
 
     internal abstract val hasHost: Boolean
     internal abstract val siblingRouters: List<Router>
@@ -73,7 +76,7 @@ abstract class Router {
     private val changeManager = ControllerChangeManager()
 
     init {
-        //addLifecycleListener(LoggingLifecycleListener())
+        addLifecycleListener(LoggingLifecycleListener())
     }
 
     /**
@@ -607,7 +610,10 @@ abstract class Router {
     }
 
     internal fun watchContainerAttach() {
-        container?.post { containerFullyAttached = true }
+        container!!.post {
+            containerFullyAttached = true
+            performPendingControllerChanges()
+        }
     }
 
     internal fun prepareForContainerRemoval() {
@@ -708,22 +714,26 @@ abstract class Router {
             // If we already have changes queued up (awaiting full container attach), queue this one up as well so they don't happen
             // out of order.
             pendingControllerChanges.add(transaction)
-        } else if (from != null && (changeHandler == null || changeHandler.removesFromViewOnPush) && !containerFullyAttached) {
-            // If the change handler will remove the from view, we have to make sure the container is fully attached first so we avoid NPEs
-            // within ViewGroup (details on issue #287). Post this to the container to ensure the attach is complete before we try to remove
-            // anything.
+        } else if (container == null || !containerFullyAttached) {
             pendingControllerChanges.add(transaction)
-            container!!.post { performPendingControllerChanges() }
+            container?.post { performPendingControllerChanges() }
         } else {
             changeManager.executeChange(transaction)
         }
     }
 
     private fun performPendingControllerChanges() {
+        d { "perform pending controller changes ${pendingControllerChanges.size}" }
         // We're intentionally using dynamic size checking (list.size()) here so we can account for changes
         // that occur during this loop (ex: if a controller is popped from within onAttach)
         pendingControllerChanges.indices
             .map { pendingControllerChanges[it] }
+            .map {
+                // we need to make sure that were using the current container
+                // because it could be changed since we enqueued this change
+                it.copy(container = container)
+            }
+            .onEach { d { "execute change $it" } }
             .forEach { changeManager.executeChange(it) }
         pendingControllerChanges.clear()
     }

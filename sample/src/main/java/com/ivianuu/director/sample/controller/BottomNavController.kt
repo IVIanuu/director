@@ -27,13 +27,12 @@ class BottomNavController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
+        bottomNavRouter = getChildRouter(R.id.bottom_nav_container)
         title = "Bottom Nav Demo"
     }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
-
-        bottomNavRouter = getChildRouter(bottom_nav_container)
 
         bottom_nav_view.setOnNavigationItemSelectedListener { item ->
             val i = (0 until bottom_nav_view.menu.size())
@@ -66,15 +65,18 @@ class BottomNavController : BaseController() {
         }
     }
 
-    /*override fun handleBack(): Boolean {
-        return if (view_pager.currentItem != 0) {
-            d { "not first item" }
-            val router = pagerAdapter.getRouter(view_pager.currentItem)
-            if (router!!.backstack.size == 1) {
-                d { "router size is one" }
-                view_pager.currentItem = 0
+    override fun handleBack(): Boolean {
+        return if (currentIndex != 0) {
+            val router = (bottomNavRouter.backstack
+                .first()
+                .controller as BottomNavChildController)
+                .childRouters
+                .first()
+
+            if (router.backstack.size == 1) {
+                swapTo(0)
                 bottom_nav_view.selectedItemId =
-                        bottom_nav_view.menu.getItem(view_pager.currentItem).itemId
+                        bottom_nav_view.menu.getItem(currentIndex).itemId
                 true
             } else {
                 super.handleBack()
@@ -82,7 +84,7 @@ class BottomNavController : BaseController() {
         } else {
             super.handleBack()
         }
-    }*/
+    }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -119,8 +121,6 @@ class BottomNavController : BaseController() {
         val newController = BottomNavChildController()
 
         val savedState = savedStates[index]
-
-        d { "saved state of the new controller $savedState" }
 
         if (savedState != null) {
             newController.setInitialSavedState(savedState)

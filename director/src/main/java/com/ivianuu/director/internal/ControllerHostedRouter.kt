@@ -87,41 +87,6 @@ internal class ControllerHostedRouter : Router {
         return listeners
     }
 
-    fun setHost(controller: Controller, container: ViewGroup) {
-        if (hostController != controller || this.container != container) {
-            removeHost(false)
-
-            hostController = controller
-            this.container = container
-
-            backstack.forEach { it.controller.parentController = controller }
-
-            watchContainerAttach()
-        }
-    }
-
-    fun removeHost(forceViewRemoval: Boolean) {
-        destroyingControllers.toList()
-            .filter { it.view != null }
-            .forEach { it.detach(it.view!!, true, false, true, true) }
-
-        backstack
-            .filter { it.controller.view != null }
-            .forEach {
-                it.controller.detach(
-                    it.controller.view!!,
-                    forceViewRemoval,
-                    false,
-                    forceViewRemoval,
-                    true
-                )
-            }
-
-        prepareForContainerRemoval()
-        hostController = null
-        container = null
-    }
-
     override fun destroy(popViews: Boolean) {
         isDetachFrozen = false
         super.destroy(popViews)
@@ -146,7 +111,7 @@ internal class ControllerHostedRouter : Router {
 
     override fun onActivityDestroyed(activity: Activity) {
         super.onActivityDestroyed(activity)
-        removeHost(true)
+        removeContainer(true)
     }
 
     override fun saveInstanceState(outState: Bundle) {
@@ -219,6 +184,41 @@ internal class ControllerHostedRouter : Router {
         requestCode: Int
     ) {
         hostController?.router?.requestPermissions(instanceId, permissions, requestCode)
+    }
+
+    fun setHost(controller: Controller) {
+        if (hostController != controller) {
+            hostController = controller
+            backstack.forEach { it.controller.parentController = controller }
+        }
+    }
+
+    fun setContainer(container: ViewGroup) {
+        if (this.container != container) {
+            this.container = container
+            watchContainerAttach()
+        }
+    }
+
+    fun removeContainer(forceViewRemoval: Boolean) {
+        destroyingControllers.toList()
+            .filter { it.view != null }
+            .forEach { it.detach(it.view!!, true, false, true, true) }
+
+        backstack
+            .filter { it.controller.view != null }
+            .forEach {
+                it.controller.detach(
+                    it.controller.view!!,
+                    forceViewRemoval,
+                    false,
+                    forceViewRemoval,
+                    true
+                )
+            }
+
+        prepareForContainerRemoval()
+        container = null
     }
 
     private companion object {

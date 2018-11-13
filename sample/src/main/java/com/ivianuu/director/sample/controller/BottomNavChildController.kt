@@ -32,7 +32,7 @@ class BottomNavChildController : BaseController() {
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        val childRouter = getChildRouter(bottom_nav_child_container)
+        val childRouter = getChildRouter(bottom_nav_child_container.id)
 
         if (!childRouter.hasRootController) {
             childRouter.pushController(
