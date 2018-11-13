@@ -31,8 +31,9 @@ import com.ivianuu.director.internal.requireMainThread
 @JvmName("attachRouterWithReceiver")
 fun FragmentActivity.attachRouter(
     container: ViewGroup,
-    savedInstanceState: Bundle?
-) = attachRouter(this, container, savedInstanceState)
+    savedInstanceState: Bundle?,
+    controllerFactory: ControllerFactory? = null
+) = attachRouter(this, container, savedInstanceState, controllerFactory)
 
 /**
  * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
@@ -43,13 +44,14 @@ fun FragmentActivity.attachRouter(
 fun attachRouter(
     activity: FragmentActivity,
     container: ViewGroup,
-    savedInstanceState: Bundle? = null
+    savedInstanceState: Bundle? = null,
+    controllerFactory: ControllerFactory? = null
 ): Router {
     requireMainThread()
 
     val lifecycleHandler = LifecycleHandler.install(activity)
 
-    val router = lifecycleHandler.router(container, savedInstanceState)
+    val router = lifecycleHandler.router(container, savedInstanceState, controllerFactory)
     router.rebindIfNeeded()
 
     return router

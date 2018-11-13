@@ -12,6 +12,7 @@ import android.os.Parcelable
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -243,11 +244,13 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     internal fun router(
         container: ViewGroup,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
+        controllerFactory: ControllerFactory?
     ) =
         routerMap.getOrPut(container.id) {
             ActivityHostedRouter().apply {
                 setHost(this@LifecycleHandler, container)
+                controllerFactory?.let { this.controllerFactory = it }
                 savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + container.id)?.let {
                     restoreInstanceState(it)
                 }
@@ -281,7 +284,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         private const val KEY_ACTIVITY_REQUEST_CODES = "LifecycleHandler.activityRequests"
         private const val KEY_PENDING_PERMISSION_REQUESTS = "LifecycleHandler.pendingPermissionRequests"
         private const val KEY_PERMISSION_REQUEST_CODES = "LifecycleHandler.permissionRequests"
-        internal const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
+        private const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
 
         internal fun install(activity: FragmentActivity) =
             (findInActivity(activity) ?: LifecycleHandler().also {

@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
-import com.ivianuu.director.internal.LifecycleHandler
 import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
@@ -68,6 +67,9 @@ abstract class Router {
         get() = container?.id ?: 0
     internal val hasContainer get() = container != null
 
+    /**
+     * Will be used to instantiate controllers after process death
+     */
     var controllerFactory: ControllerFactory = object : ControllerFactory {}
 
     internal abstract val hasHost: Boolean
@@ -530,9 +532,9 @@ abstract class Router {
 
         backstack
             .filter { it.controller.needsAttach }
-            .forEach { performControllerChange(it, null, true,
-                SimpleSwapChangeHandler(false)
-            ) }
+            .forEach {
+                performControllerChange(it, null, true, SimpleSwapChangeHandler(false))
+            }
     }
 
     fun onActivityStarted(activity: Activity) {
@@ -865,12 +867,5 @@ abstract class Router {
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
-
-        /**
-         * Returns the router state from the [bundle] for the router with the [containerId] or null
-         */
-        // todo remove once we find a better solution
-        fun extractRouterState(containerId: Int, bundle: Bundle?): Bundle? =
-            bundle?.getBundle(LifecycleHandler.KEY_ROUTER_STATE_PREFIX + containerId)
     }
 }
