@@ -135,13 +135,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         }
     }
 
-    override fun onActivityStopped(activity: Activity) {
-        if (this.activity == activity) {
-            prepareForHostDetachIfNeeded()
-            routers.forEach { it.onActivityStopped(requireActivity()) }
-        }
-    }
-
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
         if (this.activity == activity) {
             prepareForHostDetachIfNeeded()
@@ -150,6 +143,13 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
                 val bundle = Bundle().also { router.saveInstanceState(it) }
                 outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
             }
+        }
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+        if (this.activity == activity) {
+            prepareForHostDetachIfNeeded()
+            routers.forEach { it.onActivityStopped(requireActivity()) }
         }
     }
 

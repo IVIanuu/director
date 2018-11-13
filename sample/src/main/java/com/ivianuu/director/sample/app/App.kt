@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.sample
+package com.ivianuu.director.sample.app
 
 import com.ivianuu.director.sample.dagger.DaggerAppComponent
 import com.squareup.leakcanary.LeakCanary

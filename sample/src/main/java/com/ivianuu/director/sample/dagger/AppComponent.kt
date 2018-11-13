@@ -18,8 +18,8 @@ package com.ivianuu.director.sample.dagger
 
 import com.ivianuu.contributor.ContributeInjector
 import com.ivianuu.director.contributor.DirectorInjectionModule
-import com.ivianuu.director.sample.App
 import com.ivianuu.director.sample.MainActivity
+import com.ivianuu.director.sample.app.App
 import com.ivianuu.director.sample.controller.DaggerController
 import dagger.Component
 import dagger.Module

@@ -1,7 +1,6 @@
 package com.ivianuu.director
 
 import android.annotation.TargetApi
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.content.IntentSender
@@ -532,11 +531,11 @@ abstract class Controller {
         onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    internal fun activityStarted(activity: Activity) {
+    internal fun activityStarted(activity: FragmentActivity) {
         viewAttachHandler?.onActivityStarted()
     }
 
-    internal fun activityResumed(activity: Activity) {
+    internal fun activityResumed(activity: FragmentActivity) {
         val view = view
         if (!isAttached && view != null && viewIsAttached) {
             attach(view)

@@ -136,6 +136,7 @@ abstract class Router {
 
         if (poppingTopController) {
             trackDestroyingController(_backstack.pop().also { it.controller.destroy() })
+
             if (changeHandler != null) {
                 performControllerChange(_backstack.peek(), topTransaction, false, changeHandler)
             } else {
@@ -443,7 +444,6 @@ abstract class Router {
                     }
             }
         } else {
-            // todo check
             // Remove all visible controllers that were previously on the backstack
             oldVisibleTransactions.reversed().forEach {
                 val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()

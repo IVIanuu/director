@@ -31,7 +31,8 @@ class MainActivity : AppCompatActivity(), ActionBarProvider, HasControllerInject
 
         router = attachRouter(
             controller_container,
-            savedInstanceState, LoggingControllerFactory()
+            savedInstanceState,
+            LoggingControllerFactory()
         ).apply {
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())
