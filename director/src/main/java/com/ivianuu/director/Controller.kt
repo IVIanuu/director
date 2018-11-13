@@ -762,13 +762,6 @@ abstract class Controller {
     }
 
     private fun performDestroy() {
-        if (isContextAvailable) {
-            notifyLifecycleListeners { it.preContextUnavailable(this, activity!!) }
-            isContextAvailable = false
-            requireSuperCalled { onContextUnavailable() }
-            notifyLifecycleListeners { it.postContextUnavailable(this) }
-        }
-
         if (!isDestroyed) {
             notifyLifecycleListeners { it.preDestroy(this) }
             isDestroyed = true
@@ -777,6 +770,13 @@ abstract class Controller {
 
             parentController = null
             notifyLifecycleListeners { it.postDestroy(this) }
+        }
+
+        if (isContextAvailable) {
+            notifyLifecycleListeners { it.preContextUnavailable(this, activity!!) }
+            isContextAvailable = false
+            requireSuperCalled { onContextUnavailable() }
+            notifyLifecycleListeners { it.postContextUnavailable(this) }
         }
     }
 
