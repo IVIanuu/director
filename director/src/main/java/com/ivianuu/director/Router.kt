@@ -10,6 +10,7 @@ import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DEBUG
+import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
