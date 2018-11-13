@@ -207,6 +207,13 @@ abstract class Controller {
     ): View
 
     /**
+     * Called when this controllers view was created
+     */
+    protected open fun onViewCreated(view: View) {
+        superCalled = true
+    }
+
+    /**
      * Called when this Controller's View is being destroyed. This should overridden to unbind the View
      * from any local variables.
      */
@@ -612,6 +619,8 @@ abstract class Controller {
             restoreChildControllerContainers()
 
             notifyLifecycleListeners { it.postCreateView(this, view) }
+
+            requireSuperCalled { onViewCreated(view) }
 
             restoreViewState(view)
 

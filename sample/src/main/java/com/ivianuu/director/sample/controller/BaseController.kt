@@ -6,15 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.arch.lifecycle.LifecycleController
+import com.ivianuu.director.common.ControllerLayoutContainer
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.LoggingControllerFactory
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.*
 
 abstract class BaseController : LifecycleController(), LayoutContainer {
 
-    override var containerView: View? = null
+    override val containerView: View?
+        get() = controllerLayoutContainer.containerView
+    private val controllerLayoutContainer = ControllerLayoutContainer()
 
     protected open val layoutRes = 0
     protected var title: String? = null
@@ -34,8 +36,6 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
     ): View {
         return if (layoutRes != 0) {
             inflater.inflate(layoutRes, container, false)
-                .also { containerView = it }
-                .also { onViewCreated(it) }
         } else {
             throw IllegalStateException("no layout res provided")
         }
@@ -46,13 +46,11 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         super.onAttach(view)
     }
 
-    protected open fun onViewCreated(view: View) {
+    protected open fun onBindView(view: View) {
+
     }
 
-    override fun onDestroyView(view: View) {
-        containerView = null
-        clearFindViewByIdCache()
-        super.onDestroyView(view)
+    protected open fun onUnbindView(view: View) {
     }
 
     protected fun setTitle() {
