@@ -17,8 +17,8 @@ class MultipleChildRouterController : BaseController() {
         title = "Child Router Demo"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
         listOf(container_0, container_1, container_2)
             .map { getChildRouter(it) }
             .filterNot { it.hasRootController }

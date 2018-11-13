@@ -32,8 +32,8 @@ class BottomNavChildController : BaseController() {
 
     private val childRouter by lazy { getChildRouter(R.id.bottom_nav_child_container) }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
 
         if (!childRouter.hasRootController) {
             childRouter.setRoot(

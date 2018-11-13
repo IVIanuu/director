@@ -40,9 +40,9 @@ class ControllerLifecycle(
                 onEvent(ControllerEvent.CONTEXT_AVAILABLE)
             }
 
-            override fun preCreateView(controller: Controller) {
-                super.preCreateView(controller)
-                onEvent(ControllerEvent.CREATE_VIEW)
+            override fun preBindView(controller: Controller, view: View) {
+                super.preBindView(controller, view)
+                onEvent(ControllerEvent.BIND_VIEW)
             }
 
             override fun preAttach(controller: Controller, view: View) {
@@ -55,9 +55,9 @@ class ControllerLifecycle(
                 onEvent(ControllerEvent.DETACH)
             }
 
-            override fun postDestroyView(controller: Controller) {
-                super.postDestroyView(controller)
-                onEvent(ControllerEvent.DESTROY_VIEW)
+            override fun postUnbindView(controller: Controller) {
+                super.postUnbindView(controller)
+                onEvent(ControllerEvent.UNBIND_VIEW)
             }
 
             override fun postContextUnavailable(controller: Controller) {

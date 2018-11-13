@@ -6,17 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.arch.lifecycle.LifecycleController
-import com.ivianuu.director.common.ControllerLayoutContainer
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.LoggingControllerFactory
 import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.*
 
 abstract class BaseController : LifecycleController(), LayoutContainer {
 
     override val containerView: View?
-        get() = controllerLayoutContainer.containerView
-    private val controllerLayoutContainer = ControllerLayoutContainer()
+        get() = view
 
     protected open val layoutRes = 0
     protected var title: String? = null
@@ -29,7 +28,7 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         super.onCreate()
     }
 
-    override fun onCreateView(
+    override fun onInflateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
@@ -46,11 +45,9 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         super.onAttach(view)
     }
 
-    protected open fun onBindView(view: View) {
-
-    }
-
-    protected open fun onUnbindView(view: View) {
+    override fun onUnbindView(view: View) {
+        clearFindViewByIdCache()
+        super.onUnbindView(view)
     }
 
     protected fun setTitle() {

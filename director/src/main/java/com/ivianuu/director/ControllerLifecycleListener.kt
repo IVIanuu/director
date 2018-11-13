@@ -31,10 +31,16 @@ interface ControllerLifecycleListener {
     fun postCreate(controller: Controller) {
     }
 
-    fun preCreateView(controller: Controller) {
+    fun preInflateView(controller: Controller) {
     }
 
-    fun postCreateView(controller: Controller, view: View) {
+    fun postInflateView(controller: Controller, view: View) {
+    }
+
+    fun preBindView(controller: Controller, view: View) {
+    }
+
+    fun postBindView(controller: Controller, view: View) {
     }
 
     fun preAttach(controller: Controller, view: View) {
@@ -49,10 +55,10 @@ interface ControllerLifecycleListener {
     fun postDetach(controller: Controller, view: View) {
     }
 
-    fun preDestroyView(controller: Controller, view: View) {
+    fun preUnbindView(controller: Controller, view: View) {
     }
 
-    fun postDestroyView(controller: Controller) {
+    fun postUnbindView(controller: Controller) {
     }
 
     fun preDestroy(controller: Controller) {

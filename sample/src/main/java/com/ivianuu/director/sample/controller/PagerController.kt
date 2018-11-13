@@ -39,19 +39,19 @@ class PagerController : BaseController() {
         title = "ViewPager Demo"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
         view_pager.adapter = pagerAdapter
         tab_layout.setupWithViewPager(view_pager)
     }
 
-    override fun onDestroyView(view: View) {
+    override fun onUnbindView(view: View) {
         if (requireActivity().isChangingConfigurations) {
             view_pager.adapter = null
         }
         tab_layout.setupWithViewPager(null)
 
-        super.onDestroyView(view)
+        super.onUnbindView(view)
     }
 
     private companion object {

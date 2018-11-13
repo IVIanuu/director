@@ -49,16 +49,16 @@ class ScopesController : BaseController() {
             .disposeBy(destroy)
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
-        d { "onViewCreated() called" }
+    override fun onBindView(view: View) {
+        super.onBindView(view)
+        d { "onBindView() called" }
 
         btn_next_release_view.setOnClickListener {
             retainViewMode = RetainViewMode.RELEASE_DETACH
 
             router.pushController(
                 TextController.newInstance(
-                    "Logcat should now report that the observables from onAttach() and onViewCreated() have been disposed of, while the onCreate() observable is still running."
+                    "Logcat should now report that the observables from onAttach() and onBindView() have been disposed of, while the onCreate() observable is still running."
                 )
                     .toTransaction()
                     .pushChangeHandler(HorizontalChangeHandler())
@@ -71,7 +71,7 @@ class ScopesController : BaseController() {
 
             router.pushController(
                 TextController.newInstance(
-                    "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onViewCreated() observables are still running."
+                    "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onBindView() observables are still running."
                 )
                     .toTransaction()
                     .pushChangeHandler(HorizontalChangeHandler())
@@ -80,9 +80,9 @@ class ScopesController : BaseController() {
         }
 
         Observable.interval(1, TimeUnit.SECONDS)
-            .doOnDispose { d { "Disposing from onViewCreated()" } }
+            .doOnDispose { d { "Disposing from onBindView()" } }
             .subscribe {
-                d { "Started in onViewCreated(), running until onDestroyView(): $it" }
+                d { "Started in onBindView(), running until onUnbindView(): $it" }
             }
             .disposeBy(destroyView)
     }
@@ -105,9 +105,9 @@ class ScopesController : BaseController() {
         d { "onDetach() called" }
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
-        d { "onDestroyView() called" }
+    override fun onUnbindView(view: View) {
+        super.onUnbindView(view)
+        d { "onUnbindView() called" }
     }
 
     override fun onDestroy() {

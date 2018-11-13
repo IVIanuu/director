@@ -64,14 +64,14 @@ internal class LoggingLifecycleListener : ControllerLifecycleListener {
         controller.d { "Lifecycle: post context available" }
     }
 
-    override fun preCreateView(controller: Controller) {
-        super.preCreateView(controller)
-        controller.d { "Lifecycle: pre create view" }
+    override fun preBindView(controller: Controller, view: View) {
+        super.preBindView(controller, view)
+        controller.d { "Lifecycle: pre bind view" }
     }
 
-    override fun postCreateView(controller: Controller, view: View) {
-        super.postCreateView(controller, view)
-        controller.d { "Lifecycle: post create view" }
+    override fun postBindView(controller: Controller, view: View) {
+        super.postBindView(controller, view)
+        controller.d { "Lifecycle: post bind view" }
     }
 
     override fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
@@ -109,14 +109,14 @@ internal class LoggingLifecycleListener : ControllerLifecycleListener {
         controller.d { "Lifecycle: on save instance state" }
     }
 
-    override fun preDestroyView(controller: Controller, view: View) {
-        super.preDestroyView(controller, view)
-        controller.d { "Lifecycle: pre destroy view" }
+    override fun preUnbindView(controller: Controller, view: View) {
+        super.preUnbindView(controller, view)
+        controller.d { "Lifecycle: pre unbind view" }
     }
 
-    override fun postDestroyView(controller: Controller) {
-        super.postDestroyView(controller)
-        controller.d { "Lifecycle: post destroy view" }
+    override fun postUnbindView(controller: Controller) {
+        super.postUnbindView(controller)
+        controller.d { "Lifecycle: post unbind view" }
     }
 
     override fun preContextUnavailable(controller: Controller, context: Context) {

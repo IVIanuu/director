@@ -37,8 +37,8 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }
 
-        override fun postCreateView(controller: Controller, view: View) {
-            super.postCreateView(controller, view)
+        override fun postBindView(controller: Controller, view: View) {
+            super.postBindView(controller, view)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         }
 
@@ -52,8 +52,8 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         }
 
-        override fun preDestroyView(controller: Controller, view: View) {
-            super.preDestroyView(controller, view)
+        override fun preUnbindView(controller: Controller, view: View) {
+            super.preUnbindView(controller, view)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         }
 

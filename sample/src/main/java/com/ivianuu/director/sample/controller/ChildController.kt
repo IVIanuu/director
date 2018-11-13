@@ -11,8 +11,8 @@ class ChildController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_child
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
 
         tv_title.text = args.getString(KEY_TITLE)
 

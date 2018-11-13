@@ -200,7 +200,7 @@ abstract class Controller {
      * for this method will be `return inflater.inflate(R.layout.my_layout, container, false);`, plus
      * any binding code.
      */
-    protected abstract fun onCreateView(
+    protected abstract fun onInflateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
@@ -209,7 +209,7 @@ abstract class Controller {
     /**
      * Called when this controllers view was created
      */
-    protected open fun onViewCreated(view: View) {
+    protected open fun onBindView(view: View) {
         superCalled = true
     }
 
@@ -217,7 +217,7 @@ abstract class Controller {
      * Called when this Controller's View is being destroyed. This should overridden to unbind the View
      * from any local variables.
      */
-    protected open fun onDestroyView(view: View) {
+    protected open fun onUnbindView(view: View) {
         superCalled = true
     }
 
@@ -608,9 +608,9 @@ abstract class Controller {
         }
 
         if (view == null) {
-            notifyLifecycleListeners { it.preCreateView(this) }
+            notifyLifecycleListeners { it.preInflateView(this) }
 
-            view = onCreateView(
+            view = onInflateView(
                 LayoutInflater.from(parent.context),
                 parent,
                 viewState
@@ -618,9 +618,13 @@ abstract class Controller {
 
             restoreChildControllerContainers()
 
-            notifyLifecycleListeners { it.postCreateView(this, view) }
+            notifyLifecycleListeners { it.postInflateView(this, view) }
 
-            requireSuperCalled { onViewCreated(view) }
+            notifyLifecycleListeners { it.preBindView(this, view) }
+
+            requireSuperCalled { onBindView(view) }
+
+            notifyLifecycleListeners { it.postBindView(this, view) }
 
             restoreViewState(view)
 
@@ -733,9 +737,9 @@ abstract class Controller {
                 saveViewState(view)
             }
 
-            notifyLifecycleListeners { it.preDestroyView(this, view) }
+            notifyLifecycleListeners { it.preUnbindView(this, view) }
 
-            requireSuperCalled { onDestroyView(view) }
+            requireSuperCalled { onUnbindView(view) }
 
             viewAttachHandler?.unregisterAttachListener(view)
             viewAttachHandler = null
@@ -747,7 +751,7 @@ abstract class Controller {
 
             this.view = null
 
-            notifyLifecycleListeners { it.postDestroyView(this) }
+            notifyLifecycleListeners { it.postUnbindView(this) }
 
             _childRouters.forEach { it.removeContainer(forceChildViewRemoval) }
         }

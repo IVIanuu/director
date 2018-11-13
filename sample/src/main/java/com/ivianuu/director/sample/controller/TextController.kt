@@ -9,8 +9,8 @@ class TextController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_text
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
         text_view.text = args.getString(KEY_TEXT)
     }
 

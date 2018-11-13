@@ -28,8 +28,8 @@ class MasterDetailListController : BaseController() {
         title = "Master/Detail Flow"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
         recycler_view.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)

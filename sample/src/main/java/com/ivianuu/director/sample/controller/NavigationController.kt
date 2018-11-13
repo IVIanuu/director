@@ -36,8 +36,8 @@ class NavigationController : BaseController() {
         retainViewMode = RetainViewMode.RETAIN_DETACH
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
 
         if (displayUpMode != DisplayUpMode.SHOW) {
             view.btn_up.visibility = View.GONE

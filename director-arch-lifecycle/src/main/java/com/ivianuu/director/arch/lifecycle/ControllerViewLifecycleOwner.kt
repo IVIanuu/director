@@ -16,13 +16,13 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private val lifecycleListener = object : ControllerLifecycleListener {
 
-        override fun preCreateView(controller: Controller) {
-            super.preCreateView(controller)
+        override fun preBindView(controller: Controller, view: View) {
+            super.preBindView(controller, view)
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
         }
 
-        override fun postCreateView(controller: Controller, view: View) {
-            super.postCreateView(controller, view)
+        override fun postBindView(controller: Controller, view: View) {
+            super.postBindView(controller, view)
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_START)
         }
@@ -37,14 +37,14 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         }
 
-        override fun preDestroyView(controller: Controller, view: View) {
-            super.preDestroyView(controller, view)
+        override fun preUnbindView(controller: Controller, view: View) {
+            super.preUnbindView(controller, view)
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         }
 
-        override fun postDestroyView(controller: Controller) {
-            super.postDestroyView(controller)
+        override fun postUnbindView(controller: Controller) {
+            super.postUnbindView(controller)
             lifecycleRegistry = null
         }
     }
@@ -54,7 +54,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
-        ?: throw IllegalStateException("only accessible between onCreateView and onDestroyView")
+        ?: throw IllegalStateException("only accessible between onBindView and onUnbindView")
 }
 
 /**

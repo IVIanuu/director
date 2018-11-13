@@ -44,8 +44,8 @@ class ExternalModulesController : BaseController() {
         title = "External Module Demo"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
 
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(requireActivity())

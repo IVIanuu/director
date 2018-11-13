@@ -67,7 +67,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
 
     private var dialogView: View? = null
 
-    override fun onCreateView(
+    override fun onInflateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
@@ -124,8 +124,8 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         dialog?.hide()
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
+    override fun onUnbindView(view: View) {
+        super.onUnbindView(view)
         dialog?.let {
             it.setOnShowListener(null)
             it.setOnCancelListener(null)
@@ -217,7 +217,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
 
         /**
          * Style for [.setStyle]: don't draw
-         * any frame at all; the view hierarchy returned by [.onCreateView]
+         * any frame at all; the view hierarchy returned by [.onInflateView]
          * is entirely responsible for drawing the dialog.
          */
         const val STYLE_NO_FRAME = 2

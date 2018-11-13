@@ -25,13 +25,13 @@ class DragDismissController : BaseController() {
         title = "Drag to Dismiss"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
         (view as ElasticDragDismissFrameLayout).addListener(dragDismissListener)
     }
 
-    override fun onDestroyView(view: View) {
-        super.onDestroyView(view)
+    override fun onUnbindView(view: View) {
+        super.onUnbindView(view)
 
         (view as ElasticDragDismissFrameLayout).removeListener(dragDismissListener)
     }

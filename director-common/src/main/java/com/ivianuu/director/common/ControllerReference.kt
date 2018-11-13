@@ -31,7 +31,7 @@ class ControllerRef<T : Any>(controller: Controller, mode: Mode) : ReadWriteProp
 
     init {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
-            override fun postDestroyView(controller: Controller) {
+            override fun postUnbindView(controller: Controller) {
                 if (mode == Mode.VIEW) {
                     value = null
                 }
@@ -47,7 +47,7 @@ class ControllerRef<T : Any>(controller: Controller, mode: Mode) : ReadWriteProp
     }
 
     override fun getValue(thisRef: Controller, property: KProperty<*>) = value
-        ?: throw IllegalStateException("Property ${property.name} should be initialized before get and not called after postDestroyView")
+        ?: throw IllegalStateException("Property ${property.name} should be initialized before get and not called after postUnbindView")
 
     override fun setValue(thisRef: Controller, property: KProperty<*>, value: T) {
         this.value = value
@@ -69,6 +69,6 @@ fun <T : Any> Controller.controllerRef(mode: ControllerRef.Mode): ReadWritePrope
 fun <T : Any> Controller.contextRef(): ReadWriteProperty<Controller, T> = controllerRef(ControllerRef.Mode.CONTEXT)
 
 /**
- * Clears the value in [Controller.onDestroyView]
+ * Clears the value in [Controller.onUnbindView]
  */
 fun <T : Any> Controller.viewRef(): ReadWriteProperty<Controller, T> = controllerRef(ControllerRef.Mode.VIEW)

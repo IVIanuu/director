@@ -16,8 +16,8 @@ class TargetTitleEntryController : BaseController() {
         title = "Target Controller Demo"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
         btn_use_title.setOnClickListener {
             (targetController as? TargetTitleEntryControllerListener)
                 ?.onTitlePicked(edit_text.text.toString())

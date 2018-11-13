@@ -32,8 +32,8 @@ class HomeController : BaseController() {
         title = "Director Sample"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
 
         recycler_view.apply {
             setHasFixedSize(true)

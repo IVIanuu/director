@@ -33,8 +33,8 @@ class TransitionDemoController : BaseController() {
         title = "Transition Demos"
     }
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onBindView(view: View) {
+        super.onBindView(view)
 
         if (transitionDemo.colorId != 0 && bg_view != null) {
             bg_view.setBackgroundColor(

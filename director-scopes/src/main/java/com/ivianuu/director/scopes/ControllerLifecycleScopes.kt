@@ -18,13 +18,13 @@ package com.ivianuu.director.scopes
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.scopes.ControllerEvent.ATTACH
+import com.ivianuu.director.scopes.ControllerEvent.BIND_VIEW
 import com.ivianuu.director.scopes.ControllerEvent.CONTEXT_AVAILABLE
 import com.ivianuu.director.scopes.ControllerEvent.CONTEXT_UNAVAILABLE
 import com.ivianuu.director.scopes.ControllerEvent.CREATE
-import com.ivianuu.director.scopes.ControllerEvent.CREATE_VIEW
 import com.ivianuu.director.scopes.ControllerEvent.DESTROY
-import com.ivianuu.director.scopes.ControllerEvent.DESTROY_VIEW
 import com.ivianuu.director.scopes.ControllerEvent.DETACH
+import com.ivianuu.director.scopes.ControllerEvent.UNBIND_VIEW
 import com.ivianuu.scopes.cache.LifecycleScopesStore
 import com.ivianuu.scopes.lifecycle.LifecycleScopes
 
@@ -42,13 +42,13 @@ val Controller.create get() = scopeFor(CREATE)
 
 val Controller.contextAvailable get() = scopeFor(CONTEXT_AVAILABLE)
 
-val Controller.createView get() = scopeFor(CREATE_VIEW)
+val Controller.createView get() = scopeFor(BIND_VIEW)
 
 val Controller.attach get() = scopeFor(ATTACH)
 
 val Controller.detach get() = scopeFor(DETACH)
 
-val Controller.destroyView get() = scopeFor(DESTROY_VIEW)
+val Controller.destroyView get() = scopeFor(UNBIND_VIEW)
 
 val Controller.contextUnavailable get() = scopeFor(CONTEXT_UNAVAILABLE)
 

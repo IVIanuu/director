@@ -22,10 +22,10 @@ package com.ivianuu.director.scopes
 enum class ControllerEvent {
     CREATE,
     CONTEXT_AVAILABLE,
-    CREATE_VIEW,
+    BIND_VIEW,
     ATTACH,
     DETACH,
-    DESTROY_VIEW,
+    UNBIND_VIEW,
     CONTEXT_UNAVAILABLE,
     DESTROY
 }
