@@ -14,8 +14,7 @@ import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.director.internal.requireMainThread
 
 /**
- * A Router implements navigation and backstack handling for [Co
- * ntroller]s. Router objects are attached
+ * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
  * to Activity/containing ViewGroup pairs. Routers do not directly render or push Views to the container ViewGroup,
  * but instead defer this responsibility to the [ControllerChangeHandler] specified in a given transaction.
  */

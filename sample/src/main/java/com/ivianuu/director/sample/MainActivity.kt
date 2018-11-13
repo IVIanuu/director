@@ -24,9 +24,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         router = attachRouter(controller_container, savedInstanceState).apply {
             if (!hasRootController) {
-                //  setRoot(PagerController().toTransaction())
                 setRoot(HomeController().toTransaction())
-                //    setRoot(MultipleChildRouterController().toTransaction())
             }
         }
     }

@@ -52,10 +52,7 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
     abstract fun configureRouter(router: Router, position: Int)
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val name = makeRouterName(
-            container.id,
-            getItemId(position)
-        )
+        val name = (container.id + position).toString()
 
         val router = host.getChildRouter(container, name)
         if (!router.hasRootController) {
@@ -127,8 +124,6 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
      * is no router associated with this position.
      */
     fun getRouter(position: Int): Router? = visibleRouters.get(position)
-
-    fun getItemId(position: Int) = position.toLong()
 
     private fun ensurePagesSaved() {
         while (savedPages.size() > maxPagesToStateSave) {

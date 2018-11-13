@@ -233,6 +233,6 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         private const val KEY_STYLE = "DialogController.style"
         private const val KEY_THEME = "DialogController.theme"
         private const val KEY_CANCELABLE = "DialogController.cancelable"
-        private const val KEY_DISMISSED = "DialogController.dismisse"
+        private const val KEY_DISMISSED = "DialogController.dismissed"
     }
 }
