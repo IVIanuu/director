@@ -83,7 +83,13 @@ abstract class Router {
     /**
      * Will be used to instantiate controllers after process death
      */
-    var controllerFactory: ControllerFactory = object : ControllerFactory {}
+    var controllerFactory: ControllerFactory?
+        get() = _controllerFactory
+        set(value) {
+            _controllerFactory = value ?: DefaultControllerFactory()
+        }
+
+    private var _controllerFactory: ControllerFactory = DefaultControllerFactory()
 
     internal abstract val siblingRouters: List<Router>
     internal abstract val rootRouter: Router
@@ -613,7 +619,7 @@ abstract class Router {
     open fun restoreInstanceState(savedInstanceState: Bundle) {
         val backstackBundle = savedInstanceState.getParcelable<Bundle>(KEY_BACKSTACK)!!
 
-        _backstack.restoreInstanceState(backstackBundle, controllerFactory)
+        _backstack.restoreInstanceState(backstackBundle, _controllerFactory)
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
         backstack.forEach { setControllerRouter(it.controller) }

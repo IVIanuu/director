@@ -24,9 +24,14 @@ import com.ivianuu.director.internal.newInstanceOrThrow
  */
 interface ControllerFactory {
 
+    /**
+     * Returns a new instance of a controller for [className]
+     */
     fun instantiateController(
         classLoader: ClassLoader,
         className: String,
         args: Bundle
     ): Controller = newInstanceOrThrow(className)
 }
+
+class DefaultControllerFactory : ControllerFactory
