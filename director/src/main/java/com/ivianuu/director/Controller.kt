@@ -125,7 +125,7 @@ abstract class Controller {
         set(value) {
             if (field != value) {
                 field = value
-                onChildRouters { it.isDetachFrozen = value }
+                _childRouters.forEach { it.isDetachFrozen = value }
 
                 val view = view
                 if (!value && view != null && viewWasDetached) {
@@ -192,6 +192,7 @@ abstract class Controller {
      * Called when this Controller has been destroyed.
      */
     protected open fun onDestroy() {
+        superCalled = true
     }
 
     /**
@@ -210,6 +211,7 @@ abstract class Controller {
      * from any local variables.
      */
     protected open fun onDestroyView(view: View) {
+        superCalled = true
     }
 
     /**
@@ -219,6 +221,7 @@ abstract class Controller {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
+        superCalled = true
     }
 
     /**
@@ -228,6 +231,7 @@ abstract class Controller {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
+        superCalled = true
     }
 
     /**
@@ -236,6 +240,7 @@ abstract class Controller {
      * called again when the new context is available.
      */
     protected open fun onContextAvailable(context: Context) {
+        superCalled = true
     }
 
     /**
@@ -243,18 +248,21 @@ abstract class Controller {
      * destroyed or when the host Activity is destroyed.
      */
     protected open fun onContextUnavailable() {
+        superCalled = true
     }
 
     /**
      * Called when this Controller is attached to its host ViewGroup
      */
     protected open fun onAttach(view: View) {
+        superCalled = true
     }
 
     /**
      * Called when this Controller is detached from its host ViewGroup
      */
     protected open fun onDetach(view: View) {
+        superCalled = true
     }
 
     /**
@@ -287,6 +295,7 @@ abstract class Controller {
      * to save anything needed to reconstruct the View.
      */
     protected open fun onSaveViewState(view: View, outState: Bundle) {
+        superCalled = true
     }
 
     /**
@@ -294,12 +303,14 @@ abstract class Controller {
      * to restore the View's state to where it was before it was destroyed.
      */
     protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        superCalled = true
     }
 
     /**
      * Called to save this Controller's state in the event that its host Activity is destroyed.
      */
     protected open fun onSaveInstanceState(outState: Bundle) {
+        superCalled = true
     }
 
     /**
@@ -307,6 +318,7 @@ abstract class Controller {
      * to restore this Controller's state to where it was before it was destroyed.
      */
     protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        superCalled = true
     }
 
     /**
@@ -519,7 +531,7 @@ abstract class Controller {
         if (context != null && !isContextAvailable) {
             notifyLifecycleListeners { it.preContextAvailable(this) }
             isContextAvailable = true
-            onContextAvailable(context)
+            requireSuperCalled { onContextAvailable(context) }
             notifyLifecycleListeners { it.postContextAvailable(this, context) }
         }
 
@@ -574,7 +586,7 @@ abstract class Controller {
         if (isContextAvailable) {
             notifyLifecycleListeners { it.preContextUnavailable(this, activity) }
             isContextAvailable = false
-            onContextUnavailable()
+            requireSuperCalled { onContextUnavailable() }
             notifyLifecycleListeners { it.postContextUnavailable(this) }
         }
     }
@@ -658,7 +670,7 @@ abstract class Controller {
         isAttached = true
         needsAttach = router.isActivityStopped == true
 
-        onAttach(view)
+        requireSuperCalled { onAttach(view) }
 
         notifyLifecycleListeners { it.postAttach(this, view) }
 
@@ -687,7 +699,7 @@ abstract class Controller {
             isAttached = false
 
             if (!awaitingParentAttach) {
-                onDetach(view)
+                requireSuperCalled { onDetach(view) }
             }
 
             notifyLifecycleListeners { it.postDetach(this, view) }
@@ -714,7 +726,7 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.preDestroyView(this, view) }
 
-            onDestroyView(view)
+            requireSuperCalled { onDestroyView(view) }
 
             viewAttachHandler?.unregisterAttachListener(view)
             viewAttachHandler = null
@@ -753,7 +765,7 @@ abstract class Controller {
         if (isContextAvailable) {
             notifyLifecycleListeners { it.preContextUnavailable(this, activity!!) }
             isContextAvailable = false
-            onContextUnavailable()
+            requireSuperCalled { onContextUnavailable() }
             notifyLifecycleListeners { it.postContextUnavailable(this) }
         }
 
@@ -761,7 +773,7 @@ abstract class Controller {
             notifyLifecycleListeners { it.preDestroy(this) }
             isDestroyed = true
 
-            onDestroy()
+            requireSuperCalled { onDestroy() }
 
             parentController = null
             notifyLifecycleListeners { it.postDestroy(this) }
@@ -819,7 +831,7 @@ abstract class Controller {
         outState.putParcelableArrayList(KEY_CHILD_ROUTERS, ArrayList(childBundles))
 
         val savedState = Bundle(javaClass.classLoader)
-        onSaveInstanceState(savedState)
+        requireSuperCalled { onSaveInstanceState(savedState) }
 
         notifyLifecycleListeners { it.onSaveInstanceState(this, savedState) }
 
@@ -874,7 +886,7 @@ abstract class Controller {
         viewState.putSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY, hierarchyState)
 
         val stateBundle = Bundle(javaClass.classLoader)
-        onSaveViewState(view, stateBundle)
+        requireSuperCalled { onSaveViewState(view, stateBundle) }
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
         notifyLifecycleListeners { it.onSaveViewState(this, viewState) }
@@ -977,8 +989,12 @@ abstract class Controller {
         listeners.forEach(block)
     }
 
-    private inline fun onChildRouters(block: (ControllerHostedRouter) -> Unit) {
-        _childRouters.forEach(block)
+    private inline fun requireSuperCalled(action: () -> Unit) {
+        superCalled = false
+        action()
+        if (!superCalled) {
+            throw IllegalStateException("super not called ${javaClass.name}")
+        }
     }
 
     /** Modes that will influence when the Controller will allow its view to be destroyed  */
