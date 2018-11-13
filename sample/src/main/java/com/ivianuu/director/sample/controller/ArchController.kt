@@ -16,7 +16,6 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +24,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.R
+import com.ivianuu.scopes.MutableScope
+import com.ivianuu.scopes.rx.disposeBy
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_arch.*
+import java.util.concurrent.TimeUnit
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -41,7 +44,6 @@ class ArchController : BaseController() {
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-
         viewModel.count.observe(this, Observer { tv_title.text = "Count: $it" })
     }
 }
@@ -49,24 +51,21 @@ class ArchController : BaseController() {
 class ArchViewModel : ViewModel() {
 
     val count: LiveData<Long> get() = _count
-    private val _count = MutableLiveData<Long>().apply { value = 0 }
+    private val _count = MutableLiveData<Long>()
 
-    private val handler = Handler()
-
-    private val runnable = object : Runnable {
-        override fun run() {
-            _count.value = _count.value!!.inc()
-            handler.postDelayed(this, 1000)
-        }
-    }
+    private val scope = MutableScope()
 
     init {
-        handler.postDelayed(runnable, 1000)
+        scope.addListener { d { "cleared" } }
+
+        Observable.interval(1, TimeUnit.SECONDS)
+            .startWith(0)
+            .subscribe { _count.postValue(it) }
+            .disposeBy(scope)
     }
 
     override fun onCleared() {
-        handler.removeCallbacksAndMessages(null)
-        d { "cleared" }
+        scope.close()
         super.onCleared()
     }
 }
