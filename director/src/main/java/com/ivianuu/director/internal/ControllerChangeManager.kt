@@ -12,33 +12,6 @@ internal class ControllerChangeManager {
 
     private val inProgressChangeHandlers = mutableMapOf<String, ChangeHandlerData>()
 
-    fun completeChangeImmediately(controllerInstanceId: String): Boolean {
-        val changeHandlerData = inProgressChangeHandlers[controllerInstanceId]
-        if (changeHandlerData != null) {
-            changeHandlerData.changeHandler.completeImmediately()
-            inProgressChangeHandlers.remove(controllerInstanceId)
-            return true
-        }
-        return false
-    }
-
-    fun abortOrCompleteChange(
-        toAbort: Controller,
-        newController: Controller?,
-        newChangeHandler: ControllerChangeHandler
-    ) {
-        val changeHandlerData = inProgressChangeHandlers[toAbort.instanceId]
-        if (changeHandlerData != null) {
-            if (changeHandlerData.isPush) {
-                changeHandlerData.changeHandler.onAbortPush(newChangeHandler, newController)
-            } else {
-                changeHandlerData.changeHandler.completeImmediately()
-            }
-
-            inProgressChangeHandlers.remove(toAbort.instanceId)
-        }
-    }
-
     fun executeChange(transaction: ChangeTransaction) {
         val (to, from, isPush, container, inHandler,
                 listeners) = transaction
@@ -104,6 +77,34 @@ internal class ControllerChangeManager {
             }
         }
     }
+
+    fun completeChangeImmediately(controllerInstanceId: String): Boolean {
+        val changeHandlerData = inProgressChangeHandlers[controllerInstanceId]
+        if (changeHandlerData != null) {
+            changeHandlerData.changeHandler.completeImmediately()
+            inProgressChangeHandlers.remove(controllerInstanceId)
+            return true
+        }
+        return false
+    }
+
+    private fun abortOrCompleteChange(
+        toAbort: Controller,
+        newController: Controller?,
+        newChangeHandler: ControllerChangeHandler
+    ) {
+        val changeHandlerData = inProgressChangeHandlers[toAbort.instanceId]
+        if (changeHandlerData != null) {
+            if (changeHandlerData.isPush) {
+                changeHandlerData.changeHandler.onAbortPush(newChangeHandler, newController)
+            } else {
+                changeHandlerData.changeHandler.completeImmediately()
+            }
+
+            inProgressChangeHandlers.remove(toAbort.instanceId)
+        }
+    }
+
 }
 
 internal data class ChangeTransaction(

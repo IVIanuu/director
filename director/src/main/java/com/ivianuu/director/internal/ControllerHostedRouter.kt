@@ -23,19 +23,7 @@ internal class ControllerHostedRouter : Router {
         get() = hostController.router.rootRouter
 
     override val transactionIndexer: TransactionIndexer
-        get() {
-            val rootRouter = rootRouter
-
-            // something must be wrong here
-            if (rootRouter == this) {
-                val hostController = hostController
-                val debugInfo =
-                    "${hostController.javaClass.simpleName}, ${hostController.isAttached}, ${hostController.isBeingDestroyed}, ${hostController.parentController}"
-                throw IllegalStateException("Unable to retrieve TransactionIndexer from $debugInfo")
-            } else {
-                return rootRouter.transactionIndexer
-            }
-        }
+        get() = rootRouter.transactionIndexer
 
     private val hostController: Controller
 
