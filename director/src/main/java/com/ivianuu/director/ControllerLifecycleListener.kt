@@ -16,7 +16,6 @@
 
 package com.ivianuu.director
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 
@@ -65,18 +64,6 @@ interface ControllerLifecycleListener {
     }
 
     fun postDestroy(controller: Controller) {
-    }
-
-    fun preContextAvailable(controller: Controller) {
-    }
-
-    fun postContextAvailable(controller: Controller, context: Context) {
-    }
-
-    fun preContextUnavailable(controller: Controller, context: Context) {
-    }
-
-    fun postContextUnavailable(controller: Controller) {
     }
 
     fun onSaveInstanceState(controller: Controller, outState: Bundle) {

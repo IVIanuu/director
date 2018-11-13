@@ -35,11 +35,6 @@ class ControllerLifecycle(
                 onEvent(ControllerEvent.CREATE)
             }
 
-            override fun preContextAvailable(controller: Controller) {
-                super.preContextAvailable(controller)
-                onEvent(ControllerEvent.CONTEXT_AVAILABLE)
-            }
-
             override fun preBindView(controller: Controller, view: View) {
                 super.preBindView(controller, view)
                 onEvent(ControllerEvent.BIND_VIEW)
@@ -58,11 +53,6 @@ class ControllerLifecycle(
             override fun postUnbindView(controller: Controller) {
                 super.postUnbindView(controller)
                 onEvent(ControllerEvent.UNBIND_VIEW)
-            }
-
-            override fun postContextUnavailable(controller: Controller) {
-                super.postContextUnavailable(controller)
-                onEvent(ControllerEvent.CONTEXT_UNAVAILABLE)
             }
 
             override fun postDestroy(controller: Controller) {

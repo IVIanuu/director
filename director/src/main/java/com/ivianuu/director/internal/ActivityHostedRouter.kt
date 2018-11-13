@@ -1,10 +1,10 @@
 package com.ivianuu.director.internal
 
-import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
 
 internal class ActivityHostedRouter(
@@ -14,7 +14,7 @@ internal class ActivityHostedRouter(
 
     override val transactionIndexer = TransactionIndexer()
 
-    override val activity: Activity
+    override val activity: FragmentActivity
         get() = lifecycleHandler.requireActivity()
 
     override val siblingRouters: List<Router>

@@ -1,9 +1,9 @@
 package com.ivianuu.director.internal
 
-import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeListener
@@ -13,7 +13,7 @@ import com.ivianuu.director.RouterTransaction
 
 internal class ControllerHostedRouter : Router {
 
-    override val activity: Activity
+    override val activity: FragmentActivity
         get() = hostController.activity
 
     override val siblingRouters: List<Router>
@@ -101,7 +101,7 @@ internal class ControllerHostedRouter : Router {
         super.setBackstack(newBackstack, changeHandler)
     }
 
-    override fun onActivityDestroyed(activity: Activity) {
+    override fun onActivityDestroyed(activity: FragmentActivity) {
         super.onActivityDestroyed(activity)
         removeContainer(true)
     }

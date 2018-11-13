@@ -3,7 +3,6 @@ package com.ivianuu.director
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.res.Resources
@@ -14,6 +13,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
 import java.lang.ref.WeakReference
@@ -52,7 +52,7 @@ abstract class Controller {
     /**
      * Returns the host activity of this controller
      */
-    val activity: Activity
+    val activity: FragmentActivity
         get() = router.activity
 
     /**
@@ -177,7 +177,6 @@ abstract class Controller {
 
     private var destroyedView: WeakReference<View>? = null
     private var isPerformingExitTransition = false
-    private var isContextAvailable = false
 
     private var superCalled = false
 
@@ -253,7 +252,7 @@ abstract class Controller {
      * (before a view is created). If the host activity is re-created (ex: for orientation change), this will be
      * called again when the new context is available.
      */
-    protected open fun onContextAvailable(context: Context) {
+    protected open fun onActivitySet(activity: FragmentActivity) {
         superCalled = true
     }
 
@@ -261,7 +260,7 @@ abstract class Controller {
      * Called when this Controller's Context is no longer available. This can happen when the Controller is
      * destroyed or when the host Activity is destroyed.
      */
-    protected open fun onContextUnavailable() {
+    protected open fun onActivityCleared() {
         superCalled = true
     }
 
@@ -277,30 +276,6 @@ abstract class Controller {
      */
     protected open fun onDetach(view: View) {
         superCalled = true
-    }
-
-    /**
-     * Called when this Controller's host Activity is started
-     */
-    protected open fun onActivityStarted(activity: Activity) {
-    }
-
-    /**
-     * Called when this Controller's host Activity is resumed
-     */
-    protected open fun onActivityResumed(activity: Activity) {
-    }
-
-    /**
-     * Called when this Controller's host Activity is paused
-     */
-    protected open fun onActivityPaused(activity: Activity) {
-    }
-
-    /**
-     * Called when this Controller's host Activity is stopped
-     */
-    protected open fun onActivityStopped(activity: Activity) {
     }
 
     /**
@@ -532,6 +507,12 @@ abstract class Controller {
 
         // get the retained objects back
         _retainedObjects = router.getRetainedObjects(instanceId)
+
+        // create
+        performCreate()
+
+        // restore instance state
+        performRestoreInstanceState()
     }
 
     internal fun prepareForHostDetach() {
@@ -551,26 +532,8 @@ abstract class Controller {
         onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    internal fun contextAvailable() {
-        if (!isContextAvailable) {
-            notifyLifecycleListeners { it.preContextAvailable(this) }
-            isContextAvailable = true
-            requireSuperCalled { onContextAvailable(activity) }
-            notifyLifecycleListeners { it.postContextAvailable(this, activity) }
-        }
-
-        // create
-        performCreate()
-
-        // restore instance state
-        performRestoreInstanceState()
-
-        _childRouters.forEach { it.onContextAvailable() }
-    }
-
     internal fun activityStarted(activity: Activity) {
         viewAttachHandler?.onActivityStarted()
-        onActivityStarted(activity)
     }
 
     internal fun activityResumed(activity: Activity) {
@@ -581,34 +544,22 @@ abstract class Controller {
             needsAttach = false
             hasSavedViewState = false
         }
-
-        onActivityResumed(activity)
     }
 
-    internal fun activityPaused(activity: Activity) {
-        onActivityPaused(activity)
+    internal fun activityPaused(activity: FragmentActivity) {
     }
 
-    internal fun activityStopped(activity: Activity) {
+    internal fun activityStopped(activity: FragmentActivity) {
         viewAttachHandler?.onActivityStopped()
 
         // todo check this
         if (isAttached && activity.isChangingConfigurations) {
             needsAttach = true
         }
-
-        onActivityStopped(activity)
     }
 
-    internal fun activityDestroyed(activity: Activity) {
+    internal fun activityDestroyed(activity: FragmentActivity) {
         destroy(true)
-
-        if (isContextAvailable) {
-            notifyLifecycleListeners { it.preContextUnavailable(this, activity) }
-            isContextAvailable = false
-            requireSuperCalled { onContextUnavailable() }
-            notifyLifecycleListeners { it.postContextUnavailable(this) }
-        }
     }
 
     internal fun inflate(parent: ViewGroup): View {
@@ -796,13 +747,6 @@ abstract class Controller {
 
             parentController = null
             notifyLifecycleListeners { it.postDestroy(this) }
-        }
-
-        if (isContextAvailable) {
-            notifyLifecycleListeners { it.preContextUnavailable(this, activity) }
-            isContextAvailable = false
-            requireSuperCalled { onContextUnavailable() }
-            notifyLifecycleListeners { it.postContextUnavailable(this) }
         }
     }
 

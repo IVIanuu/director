@@ -1,11 +1,11 @@
 package com.ivianuu.director
 
-import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
@@ -39,7 +39,7 @@ abstract class Router {
      * Returns this Router's host Activity or `null` if it has either not yet been attached to
      * an Activity or if the Activity has been destroyed.
      */
-    abstract val activity: Activity
+    abstract val activity: FragmentActivity
 
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
     private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>().apply {
@@ -545,7 +545,7 @@ abstract class Router {
             }
     }
 
-    fun onActivityStarted(activity: Activity) {
+    internal fun onActivityStarted(activity: FragmentActivity) {
         isActivityStopped = false
 
         reversedBackstack.forEach { transaction ->
@@ -554,21 +554,21 @@ abstract class Router {
         }
     }
 
-    fun onActivityResumed(activity: Activity) {
+    internal fun onActivityResumed(activity: FragmentActivity) {
         reversedBackstack.forEach { transaction ->
             transaction.controller.activityResumed(activity)
             transaction.controller.childRouters.forEach { it.onActivityResumed(activity) }
         }
     }
 
-    fun onActivityPaused(activity: Activity) {
+    internal fun onActivityPaused(activity: FragmentActivity) {
         reversedBackstack.forEach { transaction ->
             transaction.controller.activityPaused(activity)
             transaction.controller.childRouters.forEach { it.onActivityPaused(activity) }
         }
     }
 
-    fun onActivityStopped(activity: Activity) {
+    internal fun onActivityStopped(activity: FragmentActivity) {
         reversedBackstack.forEach { transaction ->
             transaction.controller.activityStopped(activity)
             transaction.controller.childRouters.forEach { it.onActivityStopped(activity) }
@@ -577,7 +577,7 @@ abstract class Router {
         isActivityStopped = true
     }
 
-    open fun onActivityDestroyed(activity: Activity) {
+    internal open fun onActivityDestroyed(activity: FragmentActivity) {
         prepareForContainerRemoval()
 
         reversedBackstack.forEach { transaction ->
@@ -622,10 +622,6 @@ abstract class Router {
     internal fun prepareForContainerRemoval() {
         containerFullyAttached = false
         container?.setOnHierarchyChangeListener(null)
-    }
-
-    internal open fun onContextAvailable() {
-        reversedBackstack.forEach { it.controller.contextAvailable() }
     }
 
     internal fun handleRequestedPermission(permission: String) = backstack
@@ -748,7 +744,6 @@ abstract class Router {
 
     protected open fun setControllerRouter(controller: Controller) {
         controller.setRouter(this)
-        controller.contextAvailable()
     }
 
     private fun trackDestroyingController(transaction: RouterTransaction) {

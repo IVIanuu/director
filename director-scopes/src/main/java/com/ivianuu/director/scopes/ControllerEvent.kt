@@ -20,12 +20,10 @@ package com.ivianuu.director.scopes
  * Lifecycle events for [com.ivianuu.director.Controller]'s
  */
 enum class ControllerEvent {
-    CONTEXT_AVAILABLE,
     CREATE,
     BIND_VIEW,
     ATTACH,
     DETACH,
     UNBIND_VIEW,
-    DESTROY,
-    CONTEXT_UNAVAILABLE
+    DESTROY
 }

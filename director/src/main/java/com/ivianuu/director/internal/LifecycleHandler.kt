@@ -119,26 +119,26 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun onActivityStarted(activity: Activity) {
         if (this.activity == activity) {
             hasPreparedForHostDetach = false
-            routers.forEach { it.onActivityStarted(activity) }
+            routers.forEach { it.onActivityStarted(requireActivity()) }
         }
     }
 
     override fun onActivityResumed(activity: Activity) {
         if (this.activity == activity) {
-            routers.forEach { it.onActivityResumed(activity) }
+            routers.forEach { it.onActivityResumed(requireActivity()) }
         }
     }
 
     override fun onActivityPaused(activity: Activity) {
         if (this.activity == activity) {
-            routers.forEach { it.onActivityPaused(activity) }
+            routers.forEach { it.onActivityPaused(requireActivity()) }
         }
     }
 
     override fun onActivityStopped(activity: Activity) {
         if (this.activity == activity) {
             prepareForHostDetachIfNeeded()
-            routers.forEach { it.onActivityStopped(activity) }
+            routers.forEach { it.onActivityStopped(requireActivity()) }
         }
     }
 

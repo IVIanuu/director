@@ -1,6 +1,5 @@
 package com.ivianuu.director.internal
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -52,16 +51,6 @@ internal class LoggingLifecycleListener : ControllerLifecycleListener {
     override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
         super.onRestoreInstanceState(controller, savedInstanceState)
         controller.d { "Lifecycle: on restore instance state" }
-    }
-
-    override fun preContextAvailable(controller: Controller) {
-        super.preContextAvailable(controller)
-        controller.d { "Lifecycle: pre context available" }
-    }
-
-    override fun postContextAvailable(controller: Controller, context: Context) {
-        super.postContextAvailable(controller, context)
-        controller.d { "Lifecycle: post context available" }
     }
 
     override fun preBindView(controller: Controller, view: View) {
@@ -117,16 +106,6 @@ internal class LoggingLifecycleListener : ControllerLifecycleListener {
     override fun postUnbindView(controller: Controller) {
         super.postUnbindView(controller)
         controller.d { "Lifecycle: post unbind view" }
-    }
-
-    override fun preContextUnavailable(controller: Controller, context: Context) {
-        super.preContextUnavailable(controller, context)
-        controller.d { "Lifecycle: pre context unavailable" }
-    }
-
-    override fun postContextUnavailable(controller: Controller) {
-        super.postContextUnavailable(controller)
-        controller.d { "Lifecycle: post context unavailable" }
     }
 
     override fun preDestroy(controller: Controller) {

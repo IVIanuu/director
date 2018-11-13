@@ -23,8 +23,8 @@ import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.scopes.destroy
-import com.ivianuu.director.scopes.destroyView
 import com.ivianuu.director.scopes.detach
+import com.ivianuu.director.scopes.unbindView
 import com.ivianuu.director.toTransaction
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
@@ -84,7 +84,7 @@ class ScopesController : BaseController() {
             .subscribe {
                 d { "Started in onBindView(), running until onUnbindView(): $it" }
             }
-            .disposeBy(destroyView)
+            .disposeBy(unbindView)
     }
 
     override fun onAttach(view: View) {
