@@ -16,31 +16,33 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.view.View
-import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.traveler.ControllerNavigator
+import com.ivianuu.traveler.Traveler
+import com.ivianuu.traveler.setRoot
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class BottomNavChildController : BaseController() {
+class TravelerController : BaseController() {
 
     override val layoutRes: Int
-        get() = R.layout.controller_bottom_nav_child
+        get() = R.layout.controller_traveler
 
-    private val childRouter by lazy { getChildRouter(R.id.bottom_nav_child_container) }
+    private val childRouter = getChildRouter(R.id.traveler_container)
 
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    private val traveler = Traveler().apply {
+        navigatorHolder.setNavigator(ControllerNavigator(childRouter))
+    }
 
+    val travelerRouter get() = traveler.router
+
+    override fun onCreate() {
+        super.onCreate()
+        title = "Traveler Demo"
         if (!childRouter.hasRootController) {
-            childRouter.setRoot(
-                NavigationController
-                    .newInstance(1, NavigationController.DisplayUpMode.HIDE, false)
-                    .toTransaction()
-                    .pushChangeHandler(FadeChangeHandler())
+            travelerRouter.setRoot(
+                NavigationControllerKey(0, NavigationController.DisplayUpMode.HIDE, false)
             )
         }
     }

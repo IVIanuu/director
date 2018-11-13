@@ -24,7 +24,11 @@ class MultipleChildRouterController : BaseController() {
             .filterNot { it.hasRootController }
             .forEach {
                 it.setRoot(
-                    NavigationDemoController.newInstance(0, NavigationDemoController.DisplayUpMode.HIDE)
+                    NavigationController.newInstance(
+                        0,
+                        NavigationController.DisplayUpMode.HIDE,
+                        false
+                    )
                         .toTransaction()
                 )
             }

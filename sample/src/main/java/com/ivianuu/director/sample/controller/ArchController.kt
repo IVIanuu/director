@@ -23,7 +23,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_arch.*
 
@@ -56,7 +55,6 @@ class ArchViewModel : ViewModel() {
     private val runnable = object : Runnable {
         override fun run() {
             _count.value = _count.value!!.inc()
-            d { "increased count $count" }
             handler.postDelayed(this, 1000)
         }
     }
@@ -66,7 +64,6 @@ class ArchViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        d { "on cleared" }
         handler.removeCallbacksAndMessages(null)
         super.onCleared()
     }

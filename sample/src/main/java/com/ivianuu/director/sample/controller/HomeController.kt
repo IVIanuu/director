@@ -55,13 +55,14 @@ class HomeController : BaseController() {
         when (model) {
             HomeController.DemoModel.NAVIGATION -> {
                 router.pushController(
-                    NavigationDemoController.newInstance(
+                    NavigationController.newInstance(
                         0,
-                        NavigationDemoController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY)
+                        NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
+                    )
                         .toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
-                        .tag(NavigationDemoController.TAG_UP_TRANSACTION)
+                        .tag(NavigationController.TAG_UP_TRANSACTION)
                 )
             }
             HomeController.DemoModel.TRANSITIONS -> {

@@ -20,7 +20,6 @@ import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -73,7 +72,11 @@ class ExternalModulesController : BaseController() {
                 )
             }
             DemoModel.TRAVELER -> {
-                Toast.makeText(requireActivity(), "Not implemented yet", Toast.LENGTH_SHORT).show()
+                router.pushController(
+                    TravelerController().toTransaction()
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler())
+                )
             }
         }
     }
