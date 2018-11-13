@@ -24,15 +24,12 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     private val routerMap = mutableMapOf<Int, ActivityHostedRouter>()
 
-    private val activityRequestMap =
+    private val activityRequests =
         mutableMapOf<Int, MutableSet<String>>()
-    private val permissionRequestMap =
+    private val permissionRequests =
         mutableMapOf<Int, MutableSet<String>>()
-
-    private val pendingPermissionRequests = ArrayList<PendingPermissionRequest>()
 
     private var destroyed = false
-    private var attached = false
     private var hasPreparedForHostDetach = false
     private var hasRegisteredCallbacks = false
 
@@ -42,15 +39,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        attached = true
-
-        pendingPermissionRequests
-            .reversed()
-            .forEach {
-                pendingPermissionRequests.remove(it)
-                requestPermissions(it.instanceId, it.permissions, it.requestCode)
-            }
-
         destroyed = false
     }
 
@@ -60,23 +48,14 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         if (savedInstanceState != null) {
             savedInstanceState.getParcelableArrayList<RequestInstanceIdsPair>(KEY_ACTIVITY_REQUEST_CODES)
                 ?.forEach { (requestCode, instanceIds) ->
-                    activityRequestMap[requestCode] = instanceIds
+                    activityRequests[requestCode] = instanceIds
                 }
 
             savedInstanceState.getParcelableArrayList<RequestInstanceIdsPair>(
                 KEY_PERMISSION_REQUEST_CODES)
                 ?.forEach { (requestCode, instanceIds) ->
-                    permissionRequestMap[requestCode] = instanceIds
+                    permissionRequests[requestCode] = instanceIds
                 }
-
-            val pendingRequests =
-                savedInstanceState.getParcelableArrayList<PendingPermissionRequest>(
-                    KEY_PENDING_PERMISSION_REQUESTS
-                )
-
-            if (pendingRequests != null) {
-                pendingPermissionRequests.addAll(pendingRequests)
-            }
         }
     }
 
@@ -84,14 +63,12 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         super.onSaveInstanceState(outState)
 
         val activityRequests =
-            activityRequestMap.entries.map { RequestInstanceIdsPair(it.key, it.value) }
+            activityRequests.entries.map { RequestInstanceIdsPair(it.key, it.value) }
         outState.putParcelableArrayList(KEY_ACTIVITY_REQUEST_CODES, ArrayList(activityRequests))
 
         val permissionRequests =
-            permissionRequestMap.entries.map { RequestInstanceIdsPair(it.key, it.value) }
+            permissionRequests.entries.map { RequestInstanceIdsPair(it.key, it.value) }
         outState.putParcelableArrayList(KEY_PERMISSION_REQUEST_CODES, ArrayList(permissionRequests))
-
-        outState.putParcelableArrayList(KEY_PENDING_PERMISSION_REQUESTS, pendingPermissionRequests)
     }
 
     override fun onDestroy() {
@@ -102,14 +79,13 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     override fun onDetach() {
         super.onDetach()
-        attached = false
         destroyRouters()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        activityRequestMap[requestCode]?.let { instanceIds ->
+        activityRequests[requestCode]?.let { instanceIds ->
             routers.forEach { it.onActivityResult(instanceIds, requestCode, resultCode, data) }
         }
     }
@@ -121,7 +97,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        permissionRequestMap[requestCode]?.let { instanceIds ->
+        permissionRequests[requestCode]?.let { instanceIds ->
             routers.forEach { it.onRequestPermissionsResult(instanceIds, requestCode, permissions, grantResults) }
         }
     }
@@ -131,15 +107,15 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         .any() || super.shouldShowRequestPermissionRationale(permission)
 
     internal fun registerForActivityResult(instanceId: String, requestCode: Int) {
-        activityRequestMap.getOrPut(requestCode) { mutableSetOf() }
+        activityRequests.getOrPut(requestCode) { mutableSetOf() }
             .add(instanceId)
     }
 
     internal fun unregisterForActivityResults(instanceId: String) {
-        activityRequestMap
+        activityRequests
             .filterValues { it.contains(instanceId) }
             .keys
-            .forEach { activityRequestMap.remove(it) }
+            .forEach { activityRequests.remove(it) }
     }
 
     internal fun startActivityForResult(instanceId: String, intent: Intent, requestCode: Int) {
@@ -181,19 +157,9 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         permissions: Array<String>,
         requestCode: Int
     ) {
-        if (attached) {
-            permissionRequestMap.getOrPut(requestCode) { mutableSetOf() }
-                .add(instanceId)
-            requestPermissions(permissions, requestCode)
-        } else {
-            pendingPermissionRequests.add(
-                PendingPermissionRequest(
-                    instanceId,
-                    permissions,
-                    requestCode
-                )
-            )
-        }
+        permissionRequests.getOrPut(requestCode) { mutableSetOf() }
+            .add(instanceId)
+        requestPermissions(permissions, requestCode)
     }
     
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -279,7 +245,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         private const val FRAGMENT_TAG = "LifecycleHandler"
 
         private const val KEY_ACTIVITY_REQUEST_CODES = "LifecycleHandler.activityRequests"
-        private const val KEY_PENDING_PERMISSION_REQUESTS = "LifecycleHandler.pendingPermissionRequests"
         private const val KEY_PERMISSION_REQUEST_CODES = "LifecycleHandler.permissionRequests"
         private const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
 
@@ -294,13 +259,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
             (activity as? FragmentActivity)?.supportFragmentManager
                 ?.findFragmentByTag(FRAGMENT_TAG) as? LifecycleHandler
     }
-
-    @Parcelize
-    private data class PendingPermissionRequest(
-        val instanceId: String,
-        val permissions: Array<String>,
-        val requestCode: Int
-    ) : Parcelable
 
     @Parcelize
     private data class RequestInstanceIdsPair(
