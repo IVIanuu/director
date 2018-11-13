@@ -17,9 +17,10 @@
 package com.ivianuu.director.sample.controller
 
 import android.view.View
+import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_bottom_nav_child.*
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -29,16 +30,17 @@ class BottomNavChildController : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_bottom_nav_child
 
+    private val childRouter by lazy { getChildRouter(R.id.bottom_nav_child_container) }
+
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        val childRouter = getChildRouter(bottom_nav_child_container.id)
-
         if (!childRouter.hasRootController) {
-            childRouter.pushController(
+            childRouter.setRoot(
                 NavigationDemoController
                     .newInstance(1, NavigationDemoController.DisplayUpMode.HIDE)
                     .toTransaction()
+                    .pushChangeHandler(FadeChangeHandler())
             )
         }
     }

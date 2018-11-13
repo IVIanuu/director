@@ -16,7 +16,6 @@ import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireResources
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.sample.TestChangeHandler
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
@@ -139,8 +138,8 @@ class HomeController : BaseController() {
                 router.pushController(
                     MultipleChildRouterController()
                         .toTransaction()
-                        .pushChangeHandler(TestChangeHandler())
-                        .popChangeHandler(TestChangeHandler())
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler())
                 )
             }
             HomeController.DemoModel.MASTER_DETAIL -> {

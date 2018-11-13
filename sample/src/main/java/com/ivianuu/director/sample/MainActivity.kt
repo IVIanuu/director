@@ -22,10 +22,18 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         setSupportActionBar(toolbar)
 
-        router = attachRouter(controller_container, savedInstanceState).apply {
-            if (!hasRootController) {
-                setRoot(HomeController().toTransaction())
+        router = attachRouter(controller_container, null)
+
+        router.controllerFactory = LoggingControllerFactory()
+
+        Router.extractRouterState(controller_container.id, savedInstanceState)
+            ?.let {
+                router.restoreInstanceState(it)
+                router.rebindIfNeeded()
             }
+
+        if (!router.hasRootController) {
+            router.setRoot(HomeController().toTransaction())
         }
     }
 

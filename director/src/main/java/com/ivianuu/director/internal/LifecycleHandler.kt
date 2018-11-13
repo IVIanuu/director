@@ -281,7 +281,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         private const val KEY_ACTIVITY_REQUEST_CODES = "LifecycleHandler.activityRequests"
         private const val KEY_PENDING_PERMISSION_REQUESTS = "LifecycleHandler.pendingPermissionRequests"
         private const val KEY_PERMISSION_REQUEST_CODES = "LifecycleHandler.permissionRequests"
-        private const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
+        internal const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
 
         internal fun install(activity: FragmentActivity) =
             (findInActivity(activity) ?: LifecycleHandler().also {

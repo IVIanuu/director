@@ -5,7 +5,6 @@ import android.os.Parcelable
 import android.view.View
 import com.ivianuu.director.Router
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
@@ -105,16 +104,10 @@ class BottomNavController : BaseController() {
     }
 
     private fun swapTo(index: Int) {
-        d { "swap to $index" }
         val currentController = bottomNavRouter.backstack.firstOrNull()?.controller
-
-        d { "current controller $currentController" }
 
         if (currentController != null) {
             val savedState = bottomNavRouter.saveControllerInstanceState(currentController)
-
-            d { "saved current state $savedState" }
-
             savedStates[currentIndex] = savedState
         }
 

@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.arch.lifecycle.LifecycleController
 import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.ActionBarProvider
+import com.ivianuu.director.sample.LoggingControllerFactory
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -20,6 +21,11 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
 
     private val actionBar: ActionBar?
         get() = (requireActivity() as ActionBarProvider).providedActionBar
+
+    override fun onCreate() {
+        childRouters.forEach { it.controllerFactory = LoggingControllerFactory() }
+        super.onCreate()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
