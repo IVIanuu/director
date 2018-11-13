@@ -64,6 +64,13 @@ class ExternalModulesController : BaseController() {
 
     fun onModelRowClick(model: DemoModel) {
         when (model) {
+            DemoModel.ARCH -> {
+                router.pushController(
+                    ArchController().toTransaction()
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler())
+                )
+            }
             DemoModel.SCOPES -> {
                 router.pushController(
                     ScopesController().toTransaction()
@@ -82,10 +89,9 @@ class ExternalModulesController : BaseController() {
     }
 
     enum class DemoModel(val title: String, val color: Int) {
-        SCOPES("Scopes", R.color.red_300),
-        TRAVELER("Traveler", R.color.blue_grey_300),
-        //AUTODISPOSE("Autodispose", R.color.purple_300),
-        //ARCH_LIFECYCLE("Arch Components Lifecycle", R.color.orange_300)
+        ARCH("Arch", R.color.red_300),
+        SCOPES("Scopes", R.color.blue_grey_300),
+        TRAVELER("Traveler", R.color.purple_300)
     }
 
     inner class AdditionalModulesAdapter(

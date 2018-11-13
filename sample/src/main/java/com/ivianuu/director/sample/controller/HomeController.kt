@@ -151,13 +151,6 @@ class HomeController : BaseController() {
             DemoModel.DIALOG -> {
                 SimpleDialogController().show(router)
             }
-            DemoModel.ARCH -> {
-                router.pushController(
-                    ArchController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
-                )
-            }
             DemoModel.EXTERNAL_MODULES -> {
                 router.pushController(
                     ExternalModulesController().toTransaction()
@@ -225,7 +218,6 @@ class HomeController : BaseController() {
         MASTER_DETAIL("Master Detail", R.color.grey_300),
         DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
         DIALOG("Dialog", R.color.blue_300),
-        ARCH("Arch", R.color.yellow_300),
         EXTERNAL_MODULES("Bonus Modules", R.color.teal_300);
     }
 }

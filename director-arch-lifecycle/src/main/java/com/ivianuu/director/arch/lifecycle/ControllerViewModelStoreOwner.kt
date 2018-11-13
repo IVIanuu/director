@@ -20,34 +20,27 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.retainedLazy
 
 /**
  * A [ViewModelStoreOwner] for [Controller]'s
  */
 class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwner {
 
-    private lateinit var viewModelStore: ViewModelStore
+    private val _viewModelStore by controller.retainedLazy(KEY_VIEW_MODEL_STORE) { ViewModelStore() }
 
     init {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
-
-            override fun preCreate(controller: Controller) {
-                super.preCreate(controller)
-                viewModelStore = controller.retainedObjects.getOrPut(KEY_VIEW_MODEL_STORE) {
-                    ViewModelStore()
-                }
-            }
-
             override fun postDestroy(controller: Controller) {
                 super.postDestroy(controller)
                 if (!controller.activity.isChangingConfigurations) {
-                    viewModelStore.clear()
+                    _viewModelStore.clear()
                 }
             }
         })
     }
 
-    override fun getViewModelStore(): ViewModelStore = viewModelStore
+    override fun getViewModelStore() = _viewModelStore
 
     private companion object {
         private const val KEY_VIEW_MODEL_STORE = "ControllerViewModelStoreOwner.viewModelStore"
