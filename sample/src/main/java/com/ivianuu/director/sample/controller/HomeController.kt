@@ -160,6 +160,13 @@ class HomeController : BaseController() {
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
+            DemoModel.EXTERNAL_MODULES -> {
+                router.pushController(
+                    ExternalModulesController().toTransaction()
+                        .pushChangeHandler(FadeChangeHandler())
+                        .popChangeHandler(FadeChangeHandler())
+                )
+            }
         }
     }
 
@@ -220,6 +227,7 @@ class HomeController : BaseController() {
         MASTER_DETAIL("Master Detail", R.color.grey_300),
         DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
         DIALOG("Dialog", R.color.blue_300),
-        ARCH("Arch", R.color.yellow_300)
+        ARCH("Arch", R.color.yellow_300),
+        EXTERNAL_MODULES("Bonus Modules", R.color.teal_300);
     }
 }

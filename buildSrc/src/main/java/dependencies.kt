@@ -24,6 +24,10 @@ object Versions {
     const val mavenGradlePlugin = "2.1"
     const val materialComponents = "1.0.0"
 
+    const val rxJava = "2.2.2"
+
+    const val scopes = "1a360d16ad"
+
     const val traveler = "21c2bf5f07"
 }
 
@@ -46,6 +50,13 @@ object Deps {
 
     const val materialComponents =
         "com.google.android.material:material:${Versions.materialComponents}"
+
+    const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
+
+    const val scopes = "com.github.IVIanuu.scopes:scopes:${Versions.scopes}"
+    const val scopesCache = "com.github.IVIanuu.scopes:scopes-cache:${Versions.scopes}"
+    const val scopesLifecycle = "com.github.IVIanuu.scopes:scopes-lifecycle:${Versions.scopes}"
+    const val scopesRx = "com.github.IVIanuu.scopes:scopes-rx:${Versions.scopes}"
 
     const val traveler = "com.github.IVIanuu.traveler:traveler:${Versions.traveler}"
     const val travelerAndroid = "com.github.IVIanuu.traveler:traveler-android:${Versions.traveler}"

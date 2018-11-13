@@ -3,6 +3,7 @@ include(
     ":director-arch-lifecycle",
     ":director-common",
     ":director-dialog",
+    ":director-scopes",
     ":director-traveler",
     ":director-viewpager",
     ":sample"

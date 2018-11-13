@@ -56,9 +56,15 @@ dependencies {
     implementation(project(":director-arch-lifecycle"))
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
+    implementation(project(":director-scopes"))
+    implementation(project(":director-traveler"))
     implementation(project(":director-viewpager"))
 
     implementation(Deps.kotlinStdLib)
     implementation(Deps.leakCanary)
     implementation(Deps.materialComponents)
+
+    implementation(Deps.rxJava)
+
+    implementation(Deps.scopesRx)
 }
