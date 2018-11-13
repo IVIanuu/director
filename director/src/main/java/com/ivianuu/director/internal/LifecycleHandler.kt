@@ -24,17 +24,16 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     private val routerMap = mutableMapOf<Int, ActivityHostedRouter>()
 
-    private var activityRequestMap =
+    private val activityRequestMap =
         mutableMapOf<Int, MutableSet<String>>()
-    private var permissionRequestMap =
+    private val permissionRequestMap =
         mutableMapOf<Int, MutableSet<String>>()
 
-    private var pendingPermissionRequests = ArrayList<PendingPermissionRequest>()
+    private val pendingPermissionRequests = ArrayList<PendingPermissionRequest>()
 
     private var destroyed = false
     private var attached = false
     private var hasPreparedForHostDetach = false
-
     private var hasRegisteredCallbacks = false
 
     init {
@@ -74,7 +73,10 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
                 savedInstanceState.getParcelableArrayList<PendingPermissionRequest>(
                     KEY_PENDING_PERMISSION_REQUESTS
                 )
-            pendingPermissionRequests = pendingRequests ?: arrayListOf()
+
+            if (pendingRequests != null) {
+                pendingPermissionRequests.addAll(pendingRequests)
+            }
         }
     }
 
