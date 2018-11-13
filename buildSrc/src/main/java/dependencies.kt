@@ -23,6 +23,8 @@ object Versions {
 
     const val mavenGradlePlugin = "2.1"
     const val materialComponents = "1.0.0"
+
+    const val traveler = "21c2bf5f07"
 }
 
 object Deps {
@@ -44,4 +46,9 @@ object Deps {
 
     const val materialComponents =
         "com.google.android.material:material:${Versions.materialComponents}"
+
+    const val traveler = "com.github.IVIanuu.traveler:traveler:${Versions.traveler}"
+    const val travelerAndroid = "com.github.IVIanuu.traveler:traveler-android:${Versions.traveler}"
+    const val travelerCommon =
+        "com.github.IVIanuu.traveler:traveler-common:${Versions.traveler}"
 }

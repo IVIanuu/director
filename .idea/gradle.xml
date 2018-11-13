@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/director-arch-lifecycle" />
             <option value="$PROJECT_DIR$/director-common" />
             <option value="$PROJECT_DIR$/director-dialog" />
+            <option value="$PROJECT_DIR$/director-traveler" />
             <option value="$PROJECT_DIR$/director-viewpager" />
             <option value="$PROJECT_DIR$/sample" />
           </set>
