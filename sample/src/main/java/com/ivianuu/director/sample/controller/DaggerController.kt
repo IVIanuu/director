@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.sample
-
-import com.ivianuu.director.sample.dagger.DaggerAppComponent
-import com.squareup.leakcanary.LeakCanary
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
+package com.ivianuu.director.sample.controller
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class App : DaggerApplication() {
-
-    override fun onCreate() {
-        super.onCreate()
-        if (LeakCanary.isInAnalyzerProcess(this)) return
-        //LeakCanary.install(this)
-    }
-
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
-        DaggerAppComponent.builder().create(this)
-
-}
+class DaggerController : BaseController()

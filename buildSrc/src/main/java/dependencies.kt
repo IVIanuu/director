@@ -17,6 +17,10 @@ object Versions {
     const val androidx = "1.0.0"
     const val androidxArch = "2.0.0-rc01"
 
+    const val contributor = "efa69d138b"
+
+    const val dagger = "2.19"
+
     const val kotlin = "1.3.0"
 
     const val leakCanary = "1.6.1"
@@ -40,6 +44,13 @@ object Deps {
 
     const val archLifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.androidxArch}"
+
+    const val contributor = "com.github.IVIanuu.contributor:contributor:${Versions.contributor}"
+    const val contributorCompiler =
+        "com.github.IVIanuu.contributor:contributor-compiler:${Versions.contributor}"
+
+    const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
+    const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
 
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"

@@ -52,9 +52,15 @@ android {
 dependencies {
     implementation(Deps.androidxAppCompat)
 
+    kapt(Deps.contributorCompiler)
+
+    implementation(Deps.dagger)
+    kapt(Deps.daggerCompiler)
+
     implementation(project(":director"))
     implementation(project(":director-arch-lifecycle"))
     implementation(project(":director-common"))
+    implementation(project(":director-contributor"))
     implementation(project(":director-dialog"))
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
