@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director
+package com.ivianuu.director.internal
 
-import android.os.Bundle
-import com.ivianuu.director.internal.newInstanceOrThrow
+import com.ivianuu.director.ControllerFactory
 
-/**
- * A factory for [Controller]'s and [ControllerChangeHandler]'s
- */
-interface ControllerFactory {
-
-    /**
-     * Returns a new instance of a controller for [className]
-     */
-    fun instantiateController(
-        classLoader: ClassLoader,
-        className: String,
-        args: Bundle
-    ): Controller = newInstanceOrThrow(className)
-}
+internal class DefaultControllerFactory : ControllerFactory
