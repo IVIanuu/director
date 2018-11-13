@@ -136,9 +136,5 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
         private const val KEY_SAVED_PAGES = "RouterPagerAdapter.savedStates"
         private const val KEY_MAX_PAGES_TO_STATE_SAVE = "RouterPagerAdapter.maxPagesToStateSave"
         private const val KEY_SAVE_PAGE_HISTORY = "RouterPagerAdapter.savedPageHistory"
-
-        private fun makeRouterName(viewId: Int, id: Long): String {
-            return viewId.toString() + ":" + id
-        }
     }
 }

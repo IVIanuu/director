@@ -466,6 +466,25 @@ abstract class Controller {
         }
     }
 
+    /**
+     * Sets the initial state of this controller which was previously created by
+     * [Router.saveControllerInstanceState]
+     */
+    fun setInitialSavedState(state: Bundle?) {
+        if (routerSet) {
+            throw IllegalStateException("controller already added")
+        }
+
+        if (state != null) {
+            val className = state.getString(KEY_CLASS_NAME)
+            if (javaClass.name != className) {
+                throw IllegalArgumentException("state of $className cannot be used for ${javaClass.name}")
+            }
+        }
+
+        allState = state
+    }
+
     internal fun prepareForHostDetach() {
         needsAttach = needsAttach || isAttached
         _childRouters.forEach { it.prepareForHostDetach() }

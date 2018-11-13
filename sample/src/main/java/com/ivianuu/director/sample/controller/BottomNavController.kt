@@ -1,12 +1,16 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import com.ivianuu.director.Router
+import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.internal.d
-import com.ivianuu.director.requireActivity
+import com.ivianuu.director.popChangeHandler
+import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
-import com.ivianuu.director.viewpager.RouterPagerAdapter
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.controller_bottom_nav.*
 
 /**
@@ -16,22 +20,10 @@ class BottomNavController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_bottom_nav
 
-    private val pagerAdapter = object : RouterPagerAdapter(this@BottomNavController) {
+    private val savedStates = mutableMapOf<Int, Bundle>()
+    private var currentIndex = -1
 
-        override fun configureRouter(router: Router, position: Int) {
-            if (!router.hasRootController) {
-                router.setRoot(
-                    NavigationDemoController
-                        .newInstance(1, NavigationDemoController.DisplayUpMode.HIDE)
-                        .toTransaction()
-                )
-            }
-        }
-
-        override fun getPageTitle(position: Int) = "Page $position"
-
-        override fun getCount() = PAGE_COLORS.size
-    }
+    private lateinit var bottomNavRouter: Router
 
     override fun onCreate() {
         super.onCreate()
@@ -40,14 +32,15 @@ class BottomNavController : BaseController() {
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
-        view_pager.adapter = pagerAdapter
+
+        bottomNavRouter = getChildRouter(bottom_nav_container)
 
         bottom_nav_view.setOnNavigationItemSelectedListener { item ->
             val i = (0 until bottom_nav_view.menu.size())
                 .map { bottom_nav_view.menu.getItem(it) }
                 .indexOfFirst { it == item }
 
-            view_pager.currentItem = i
+            swapTo(i)
 
             true
         }
@@ -58,20 +51,22 @@ class BottomNavController : BaseController() {
                 .indexOfFirst { it == item }
 
             if (i != -1) {
-                pagerAdapter.getRouter(i)!!.popToRoot()
+                // you would probably use a interface in a production app
+                (bottomNavRouter.backstack
+                    .first()
+                    .controller as BottomNavChildController)
+                    .childRouters
+                    .first()
+                    .popToRoot(FadeChangeHandler())
             }
         }
-    }
 
-    override fun onDestroyView(view: View) {
-        if (requireActivity().isChangingConfigurations) {
-            view_pager.adapter = null
+        if (currentIndex == -1) {
+            swapTo(0)
         }
-
-        super.onDestroyView(view)
     }
 
-    override fun handleBack(): Boolean {
+    /*override fun handleBack(): Boolean {
         return if (view_pager.currentItem != 0) {
             d { "not first item" }
             val router = pagerAdapter.getRouter(view_pager.currentItem)
@@ -87,15 +82,64 @@ class BottomNavController : BaseController() {
         } else {
             super.handleBack()
         }
+    }*/
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        savedInstanceState.getParcelableArrayList<SavedStateWithIndex>(KEY_SAVED_STATES)!!
+            .forEach { savedStates[it.index] = it.state }
+        currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
     }
 
-    private companion object {
-        private val PAGE_COLORS = intArrayOf(
-            R.color.green_300,
-            R.color.cyan_300,
-            R.color.deep_purple_300,
-            R.color.lime_300,
-            R.color.red_300
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(
+            KEY_SAVED_STATES, ArrayList(
+                savedStates.entries
+                    .map { SavedStateWithIndex(it.key, it.value) }
+            ))
+
+        outState.putInt(KEY_CURRENT_INDEX, currentIndex)
+    }
+
+    private fun swapTo(index: Int) {
+        d { "swap to $index" }
+        val currentController = bottomNavRouter.backstack.firstOrNull()?.controller
+
+        d { "current controller $currentController" }
+
+        if (currentController != null) {
+            val savedState = bottomNavRouter.saveControllerInstanceState(currentController)
+
+            d { "saved current state $savedState" }
+
+            savedStates[currentIndex] = savedState
+        }
+
+        val newController = BottomNavChildController()
+
+        val savedState = savedStates[index]
+
+        d { "saved state of the new controller $savedState" }
+
+        if (savedState != null) {
+            newController.setInitialSavedState(savedState)
+        }
+
+        bottomNavRouter.setRoot(
+            newController.toTransaction()
+                .pushChangeHandler(FadeChangeHandler())
+                .popChangeHandler(FadeChangeHandler())
         )
+
+        currentIndex = index
+    }
+
+    @Parcelize
+    private data class SavedStateWithIndex(val index: Int, val state: Bundle) : Parcelable
+
+    private companion object {
+        private const val KEY_SAVED_STATES = "saved_states"
+        private const val KEY_CURRENT_INDEX = "current_index"
     }
 }

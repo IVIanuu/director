@@ -488,6 +488,18 @@ abstract class Router {
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener }
 
+    /**
+     * Saves the instance state of [controller] this can later be used in
+     * [Controller.setInitialSavedState]
+     */
+    fun saveControllerInstanceState(controller: Controller): Bundle {
+        if (backstack.none { it.controller == controller }) {
+            throw IllegalArgumentException("controller is not attached to the router")
+        }
+
+        return controller.saveInstanceState()
+    }
+
     internal fun onActivityResult(instanceIds: Set<String>, requestCode: Int, resultCode: Int, data: Intent?) {
         instanceIds
             .mapNotNull { findControllerByInstanceId(it) }
