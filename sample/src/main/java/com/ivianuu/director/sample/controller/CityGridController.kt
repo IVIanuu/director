@@ -12,8 +12,7 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.TransitionChangeHandlerCompat
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireActivity
-import com.ivianuu.director.requireResources
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
 import com.ivianuu.director.sample.util.bundleOf
@@ -39,17 +38,17 @@ class CityGridController : BaseController() {
 
         tv_title.text = title
         img_dot.drawable.setColorFilter(
-            ContextCompat.getColor(requireActivity(), dotColor),
+            ContextCompat.getColor(activity, dotColor),
             Mode.SRC_ATOP
         )
 
         ViewCompat.setTransitionName(
             tv_title,
-            requireResources().getString(R.string.transition_tag_title_indexed, fromPosition)
+            resources.getString(R.string.transition_tag_title_indexed, fromPosition)
         )
         ViewCompat.setTransitionName(
             img_dot,
-            requireResources().getString(R.string.transition_tag_dot_indexed, fromPosition)
+            resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
         )
 
         recycler_view.apply {
@@ -61,8 +60,8 @@ class CityGridController : BaseController() {
 
     private fun onModelRowClick(model: CityModel) {
         val names = listOf(
-            requireResources().getString(R.string.transition_tag_image_named, model.title),
-            requireResources().getString(R.string.transition_tag_title_named, model.title)
+            resources.getString(R.string.transition_tag_image_named, model.title),
+            resources.getString(R.string.transition_tag_title_named, model.title)
         )
 
         router.pushController(
@@ -109,11 +108,11 @@ class CityGridController : BaseController() {
 
                 ViewCompat.setTransitionName(
                     itemView.tv_title,
-                    requireResources().getString(R.string.transition_tag_title_named, item.title)
+                    resources.getString(R.string.transition_tag_title_named, item.title)
                 )
                 ViewCompat.setTransitionName(
                     itemView.img_city,
-                    requireResources().getString(R.string.transition_tag_image_named, item.title)
+                    resources.getString(R.string.transition_tag_image_named, item.title)
                 )
 
                 itemView.setOnClickListener { onModelRowClick(item) }

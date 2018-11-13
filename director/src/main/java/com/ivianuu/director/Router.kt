@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
+import com.ivianuu.director.internal.DEBUG
 import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
@@ -38,10 +39,14 @@ abstract class Router {
      * Returns this Router's host Activity or `null` if it has either not yet been attached to
      * an Activity or if the Activity has been destroyed.
      */
-    abstract val activity: Activity?
+    abstract val activity: Activity
 
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
-    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
+    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>().apply {
+        if (DEBUG) {
+            add(LifecycleListenerEntry(LoggingLifecycleListener(), false))
+        }
+    }
     private val pendingControllerChanges = mutableListOf<ChangeTransaction>()
     protected val destroyingControllers = mutableListOf<Controller>()
 
@@ -55,9 +60,17 @@ abstract class Router {
 
     internal var container: ViewGroup? = null
         set(value) {
+            if (value == field) return
+
             (field as? ControllerChangeListener)?.let { removeChangeListener(it) }
             (value as? ControllerChangeListener)?.let { addChangeListener(it) }
+
             field = value
+
+            value?.post {
+                containerFullyAttached = true
+                performPendingControllerChanges()
+            }
         }
 
     /**
@@ -72,16 +85,11 @@ abstract class Router {
      */
     var controllerFactory: ControllerFactory = object : ControllerFactory {}
 
-    internal abstract val hasHost: Boolean
     internal abstract val siblingRouters: List<Router>
     internal abstract val rootRouter: Router
     internal abstract val transactionIndexer: TransactionIndexer
 
     private val changeManager = ControllerChangeManager()
-
-    init {
-        addLifecycleListener(LoggingLifecycleListener())
-    }
 
     /**
      * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
@@ -571,8 +579,6 @@ abstract class Router {
 
     open fun onActivityDestroyed(activity: Activity) {
         prepareForContainerRemoval()
-        // todo changeListeners.clear()
-        // todo lifecycleListeners.clear()
 
         reversedBackstack.forEach { transaction ->
             transaction.controller.activityDestroyed(activity)
@@ -611,13 +617,6 @@ abstract class Router {
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
         backstack.forEach { setControllerRouter(it.controller) }
-    }
-
-    internal fun watchContainerAttach() {
-        container!!.post {
-            containerFullyAttached = true
-            performPendingControllerChanges()
-        }
     }
 
     internal fun prepareForContainerRemoval() {

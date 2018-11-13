@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeListener
@@ -14,18 +13,14 @@ import com.ivianuu.director.RouterTransaction
 
 internal class ControllerHostedRouter : Router {
 
-    override val activity: Activity?
-        get() = hostController?.activity
+    override val activity: Activity
+        get() = hostController.activity
 
     override val siblingRouters: List<Router>
-        get() {
-            return hostController?.let {
-                it.childRouters + it.router.siblingRouters
-            } ?: emptyList()
-        }
+        get() = hostController.let { it.childRouters + it.router.siblingRouters }
 
     override val rootRouter: Router
-        get() = hostController?.router?.rootRouter ?: this
+        get() = hostController.router.rootRouter
 
     override val transactionIndexer: TransactionIndexer
         get() {
@@ -34,19 +29,15 @@ internal class ControllerHostedRouter : Router {
             // something must be wrong here
             if (rootRouter == this) {
                 val hostController = hostController
-                val debugInfo = if (hostController != null) {
+                val debugInfo =
                     "${hostController.javaClass.simpleName}, ${hostController.isAttached}, ${hostController.isBeingDestroyed}, ${hostController.parentController}"
-                } else {
-                    "null host controller"
-                }
                 throw IllegalStateException("Unable to retrieve TransactionIndexer from $debugInfo")
             } else {
                 return rootRouter.transactionIndexer
             }
         }
 
-    override val hasHost: Boolean
-        get() = hostController != null
+    private val hostController: Controller
 
     var hostId = 0
         private set
@@ -60,11 +51,12 @@ internal class ControllerHostedRouter : Router {
             backstack.forEach { it.controller.isDetachFrozen = value }
         }
 
-    private var hostController: Controller? = null
+    constructor(hostController: Controller) {
+        this.hostController = hostController
+    }
 
-    constructor()
-
-    constructor(hostId: Int, tag: String?) {
+    constructor(hostController: Controller, hostId: Int, tag: String?) {
+        this.hostController = hostController
         this.hostId = hostId
         this.tag = tag
     }
@@ -73,7 +65,7 @@ internal class ControllerHostedRouter : Router {
         val listeners =
             super.getAllChangeListeners(recursiveOnly).toMutableList()
 
-        hostController?.router?.let { listeners.addAll(it.getAllChangeListeners(true)) }
+        hostController.router.let { listeners.addAll(it.getAllChangeListeners(true)) }
 
         return listeners
     }
@@ -82,7 +74,7 @@ internal class ControllerHostedRouter : Router {
         val listeners =
             super.getAllLifecycleListeners(recursiveOnly).toMutableList()
 
-        hostController?.router?.let { listeners.addAll(it.getAllLifecycleListeners(true)) }
+        hostController.router.let { listeners.addAll(it.getAllLifecycleListeners(true)) }
 
         return listeners
     }
@@ -130,7 +122,7 @@ internal class ControllerHostedRouter : Router {
     }
 
     override fun startActivity(intent: Intent) {
-        hostController?.router?.startActivity(intent)
+        hostController.router.startActivity(intent)
     }
 
     override fun startActivityForResult(
@@ -138,7 +130,7 @@ internal class ControllerHostedRouter : Router {
         intent: Intent,
         requestCode: Int
     ) {
-        hostController?.router?.startActivityForResult(instanceId, intent, requestCode)
+        hostController.router.startActivityForResult(instanceId, intent, requestCode)
     }
 
     override fun startActivityForResult(
@@ -147,7 +139,7 @@ internal class ControllerHostedRouter : Router {
         requestCode: Int,
         options: Bundle?
     ) {
-        hostController?.router?.startActivityForResult(
+        hostController.router.startActivityForResult(
             instanceId, intent, requestCode, options
         )
     }
@@ -162,18 +154,18 @@ internal class ControllerHostedRouter : Router {
         extraFlags: Int,
         options: Bundle?
     ) {
-        hostController?.router?.startIntentSenderForResult(
+        hostController.router.startIntentSenderForResult(
             instanceId, intent, requestCode,
             fillInIntent, flagsMask, flagsValues, extraFlags, options
         )
     }
 
     override fun registerForActivityResult(instanceId: String, requestCode: Int) {
-        hostController?.router?.registerForActivityResult(instanceId, requestCode)
+        hostController.router.registerForActivityResult(instanceId, requestCode)
     }
 
     override fun unregisterForActivityResults(instanceId: String) {
-        hostController?.router?.unregisterForActivityResults(instanceId)
+        hostController.router.unregisterForActivityResults(instanceId)
     }
 
     override fun requestPermissions(
@@ -181,21 +173,7 @@ internal class ControllerHostedRouter : Router {
         permissions: Array<String>,
         requestCode: Int
     ) {
-        hostController?.router?.requestPermissions(instanceId, permissions, requestCode)
-    }
-
-    fun setHost(controller: Controller) {
-        if (hostController != controller) {
-            hostController = controller
-            backstack.forEach { it.controller.parentController = controller }
-        }
-    }
-
-    fun setContainer(container: ViewGroup) {
-        if (this.container != container) {
-            this.container = container
-            watchContainerAttach()
-        }
+        hostController.router.requestPermissions(instanceId, permissions, requestCode)
     }
 
     fun removeContainer(forceViewRemoval: Boolean) {

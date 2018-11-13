@@ -57,7 +57,7 @@ object DirectorInjection {
             return activity
         }
 
-        val application = activity?.application
+        val application = activity.application
         if (application is HasControllerInjector) {
             return application
         }

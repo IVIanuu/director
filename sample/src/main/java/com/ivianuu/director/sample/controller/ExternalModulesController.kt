@@ -28,7 +28,7 @@ import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireActivity
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_external_modules.*
@@ -48,7 +48,7 @@ class ExternalModulesController : BaseController() {
         super.onBindView(view)
 
         recycler_view.setHasFixedSize(true)
-        recycler_view.layoutManager = LinearLayoutManager(requireActivity())
+        recycler_view.layoutManager = LinearLayoutManager(activity)
         recycler_view.adapter = AdditionalModulesAdapter(DemoModel.values())
     }
 

@@ -8,7 +8,7 @@ import com.ivianuu.director.RouterTransaction
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireResources
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.sample.util.bundleOf
@@ -43,8 +43,8 @@ class NavigationController : BaseController() {
             view.btn_up.visibility = View.GONE
         }
 
-        view.setBackgroundColor(ColorUtil.getMaterialColor(requireResources(), index))
-        tv_title.text = requireResources().getString(R.string.navigation_title, index)
+        view.setBackgroundColor(ColorUtil.getMaterialColor(resources, index))
+        tv_title.text = resources.getString(R.string.navigation_title, index)
 
         btn_next.setOnClickListener {
             if (useTraveler) {

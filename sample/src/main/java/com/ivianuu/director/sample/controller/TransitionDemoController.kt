@@ -12,8 +12,7 @@ import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireActivity
-import com.ivianuu.director.requireResources
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
@@ -39,7 +38,7 @@ class TransitionDemoController : BaseController() {
         if (transitionDemo.colorId != 0 && bg_view != null) {
             bg_view.setBackgroundColor(
                 ContextCompat.getColor(
-                    requireActivity(),
+                    activity,
                     transitionDemo.colorId
                 )
             )
@@ -55,7 +54,7 @@ class TransitionDemoController : BaseController() {
         }
 
         btn_next.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), buttonColor))
+                ColorStateList.valueOf(ContextCompat.getColor(activity, buttonColor))
         tv_title.text = transitionDemo.title
 
         btn_next.setOnClickListener {
@@ -79,12 +78,12 @@ class TransitionDemoController : BaseController() {
         TransitionDemoController.TransitionDemo.FADE -> FadeChangeHandler()
         TransitionDemoController.TransitionDemo.FLIP -> FlipChangeHandler()
         TransitionDemoController.TransitionDemo.ARC_FADE -> ArcFadeMoveChangeHandler(
-            from.requireResources().getString(R.string.transition_tag_dot),
-            from.requireResources().getString(R.string.transition_tag_title)
+            from.resources.getString(R.string.transition_tag_dot),
+            from.resources.getString(R.string.transition_tag_title)
         )
         TransitionDemoController.TransitionDemo.ARC_FADE_RESET -> ArcFadeMoveChangeHandler(
-            from.requireResources().getString(R.string.transition_tag_dot),
-            from.requireResources().getString(R.string.transition_tag_title)
+            from.resources.getString(R.string.transition_tag_dot),
+            from.resources.getString(R.string.transition_tag_title)
         )
         TransitionDemoController.TransitionDemo.HORIZONTAL -> HorizontalChangeHandler()
     }

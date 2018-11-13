@@ -2,9 +2,11 @@ package com.ivianuu.director
 
 import android.annotation.TargetApi
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -55,8 +57,19 @@ abstract class Controller {
     /**
      * Returns the host activity of this controller
      */
-    val activity: Activity?
+    val activity: Activity
         get() = router.activity
+
+    /**
+     * The application of the [activity]
+     */
+    val application: Application
+        get() = activity.application
+
+    /**
+     * The [activity]s resources
+     */
+    val resources: Resources get() = activity.resources
 
     /**
      * The view of this controller or null
@@ -400,8 +413,8 @@ abstract class Controller {
      * {@see android.app.Activity#shouldShowRequestPermissionRationale(String)}
      */
     open fun shouldShowRequestPermissionRationale(permission: String) =
-        (Build.VERSION.SDK_INT >= 23
-                && activity?.shouldShowRequestPermissionRationale(permission) ?: false)
+        Build.VERSION.SDK_INT >= 23
+                && activity.shouldShowRequestPermissionRationale(permission)
 
     /**
      * Should be overridden if this Controller has requested runtime permissions and needs to handle the user's response.
@@ -471,11 +484,11 @@ abstract class Controller {
         if (childRouter == null) {
             if (createIfNeeded) {
                 childRouter = ControllerHostedRouter(
+                    this,
                     containerId,
                     tag
                 )
 
-                childRouter.setHost(this)
                 _childRouters.add(childRouter)
 
                 if (isPerformingExitTransition) {
@@ -534,12 +547,11 @@ abstract class Controller {
     }
 
     internal fun contextAvailable() {
-        val context = activity
-        if (context != null && !isContextAvailable) {
+        if (!isContextAvailable) {
             notifyLifecycleListeners { it.preContextAvailable(this) }
             isContextAvailable = true
-            requireSuperCalled { onContextAvailable(context) }
-            notifyLifecycleListeners { it.postContextAvailable(this, context) }
+            requireSuperCalled { onContextAvailable(activity) }
+            notifyLifecycleListeners { it.postContextAvailable(this, activity) }
         }
 
         // create
@@ -549,7 +561,6 @@ abstract class Controller {
         performRestoreInstanceState()
 
         _childRouters.forEach { it.onContextAvailable() }
-
     }
 
     internal fun activityStarted(activity: Activity) {
@@ -576,6 +587,7 @@ abstract class Controller {
     internal fun activityStopped(activity: Activity) {
         viewAttachHandler?.onActivityStopped()
 
+        // todo check this
         if (isAttached && activity.isChangingConfigurations) {
             needsAttach = true
         }
@@ -584,11 +596,7 @@ abstract class Controller {
     }
 
     internal fun activityDestroyed(activity: Activity) {
-        if (activity.isChangingConfigurations) {
-            view?.let { detach(it, true, false, true, false) }
-        } else {
-            destroy(true)
-        }
+        destroy(true)
 
         if (isContextAvailable) {
             notifyLifecycleListeners { it.preContextUnavailable(this, activity) }
@@ -768,7 +776,7 @@ abstract class Controller {
                 val containerView = view?.findViewById(it.hostId) as? ViewGroup
 
                 if (containerView != null) {
-                    it.setContainer(containerView)
+                    it.container = containerView
                     it.rebindIfNeeded()
                 }
             }
@@ -786,7 +794,7 @@ abstract class Controller {
         }
 
         if (isContextAvailable) {
-            notifyLifecycleListeners { it.preContextUnavailable(this, activity!!) }
+            notifyLifecycleListeners { it.preContextUnavailable(this, activity) }
             isContextAvailable = false
             requireSuperCalled { onContextUnavailable() }
             notifyLifecycleListeners { it.postContextUnavailable(this) }
@@ -878,11 +886,10 @@ abstract class Controller {
 
         childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
             .map { bundle ->
-                ControllerHostedRouter().also {
+                ControllerHostedRouter(this).also {
                     // we do not restore the full instance yet
                     // to give the user a chance to set a [ControllerFactory]
                     it.restoreBasicInstanceState(bundle)
-                    it.setHost(this)
                 } to bundle
             }
             .onEach { _childRouters.add(it.first) }
@@ -1036,7 +1043,7 @@ abstract class Controller {
         internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
             val args = bundle.getBundle(KEY_ARGS)
-            return factory.instantiateController(javaClass.classLoader, className, args).apply {
+            return factory.instantiateController(javaClass.classLoader, className, args!!).apply {
                 allState = bundle
             }
         }

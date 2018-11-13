@@ -53,8 +53,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
             }
 
         destroyed = false
-
-        routers.forEach { it.onContextAvailable() }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -197,9 +195,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     }
     
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        if (this.activity == activity) {
-            routers.forEach { it.onContextAvailable() }
-        }
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -248,18 +243,18 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         controllerFactory: ControllerFactory?
     ) =
         routerMap.getOrPut(container.id) {
-            ActivityHostedRouter().apply {
-                setHost(this@LifecycleHandler, container)
+            ActivityHostedRouter(this, container).apply {
                 controllerFactory?.let { this.controllerFactory = it }
                 savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + container.id)?.let {
                     restoreInstanceState(it)
                 }
             }
-        }.also { it.setHost(this, container) }
+        }
 
     private fun destroyRouters() {
         if (!destroyed) {
             activity?.let { act -> routers.forEach { it.onActivityDestroyed(act) } }
+            routerMap.clear()
             destroyed = true
         }
     }

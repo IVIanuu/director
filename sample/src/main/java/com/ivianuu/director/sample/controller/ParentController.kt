@@ -8,9 +8,7 @@ import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireActivity
-import com.ivianuu.director.requireResources
-import com.ivianuu.director.requireView
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.toTransaction
@@ -39,13 +37,13 @@ class ParentController : BaseController() {
     }
 
     private fun addChild(index: Int) {
-        val frameId = requireResources().getIdentifier(
+        val frameId = resources.getIdentifier(
             "child_content_" + (index + 1),
             "id",
-            requireActivity().packageName
+            activity.packageName
         )
 
-        val container = requireView().findViewById<ViewGroup>(frameId)
+        val container = view!!.findViewById<ViewGroup>(frameId)
 
         getChildRouter(container).let { childRouter ->
             childRouter.popsLastView = true
@@ -53,7 +51,7 @@ class ParentController : BaseController() {
             if (!childRouter.hasRootController) {
                 val childController = ChildController.newInstance(
                     "Child Controller #$index",
-                    ColorUtil.getMaterialColor(requireResources(), index),
+                    ColorUtil.getMaterialColor(resources, index),
                     false
                 )
 

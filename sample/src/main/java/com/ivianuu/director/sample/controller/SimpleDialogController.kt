@@ -20,19 +20,19 @@ import android.app.Dialog
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.ivianuu.director.dialog.DialogController
-import com.ivianuu.director.requireActivity
+
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(): Dialog = AlertDialog.Builder(requireActivity())
+    override fun onCreateDialog(): Dialog = AlertDialog.Builder(activity)
         .setTitle("Hello")
         .setMessage("This is a simple dialog controller.")
         .setCancelable(isCancelable)
         .setPositiveButton("OK") { _, _ ->
-            Toast.makeText(requireActivity(), "Ok clicked!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "Ok clicked!", Toast.LENGTH_SHORT).show()
         }
         .setNegativeButton("Cancel") { _, _  -> dismiss() }
         .create()

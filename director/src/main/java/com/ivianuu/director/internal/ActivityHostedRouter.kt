@@ -7,23 +7,25 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.Router
 
-internal class ActivityHostedRouter : Router() {
+internal class ActivityHostedRouter(
+    private val lifecycleHandler: LifecycleHandler,
+    container: ViewGroup
+) : Router() {
 
     override val transactionIndexer = TransactionIndexer()
 
-    override val hasHost: Boolean
-        get() = lifecycleHandler != null
-
-    override val activity: Activity?
-        get() = lifecycleHandler?.activity
+    override val activity: Activity
+        get() = lifecycleHandler.requireActivity()
 
     override val siblingRouters: List<Router>
-        get() = lifecycleHandler?.routers ?: emptyList()
+        get() = lifecycleHandler.routers
 
     override val rootRouter: Router
         get() = this
 
-    private var lifecycleHandler: LifecycleHandler? = null
+    init {
+        this.container = container
+    }
 
     override fun saveInstanceState(outState: Bundle) {
         super.saveInstanceState(outState)
@@ -35,13 +37,8 @@ internal class ActivityHostedRouter : Router() {
         transactionIndexer.restoreInstanceState(savedInstanceState)
     }
 
-    override fun onActivityDestroyed(activity: Activity) {
-        super.onActivityDestroyed(activity)
-        lifecycleHandler = null
-    }
-
     override fun startActivity(intent: Intent) {
-        lifecycleHandler?.startActivity(intent)
+        lifecycleHandler.startActivity(intent)
     }
 
     override fun startActivityForResult(
@@ -49,7 +46,7 @@ internal class ActivityHostedRouter : Router() {
         intent: Intent,
         requestCode: Int
     ) {
-        lifecycleHandler?.startActivityForResult(instanceId, intent, requestCode)
+        lifecycleHandler.startActivityForResult(instanceId, intent, requestCode)
     }
 
     override fun startActivityForResult(
@@ -58,14 +55,14 @@ internal class ActivityHostedRouter : Router() {
         requestCode: Int,
         options: Bundle?
     ) {
-        lifecycleHandler?.startActivityForResult(instanceId, intent, requestCode, options)
+        lifecycleHandler.startActivityForResult(instanceId, intent, requestCode, options)
     }
 
     override fun startIntentSenderForResult(
         instanceId: String, intent: IntentSender, requestCode: Int, fillInIntent: Intent?,
         flagsMask: Int, flagsValues: Int, extraFlags: Int, options: Bundle?
     ) {
-        lifecycleHandler?.startIntentSenderForResult(
+        lifecycleHandler.startIntentSenderForResult(
             instanceId,
             intent,
             requestCode,
@@ -78,11 +75,11 @@ internal class ActivityHostedRouter : Router() {
     }
 
     override fun registerForActivityResult(instanceId: String, requestCode: Int) {
-        lifecycleHandler?.registerForActivityResult(instanceId, requestCode)
+        lifecycleHandler.registerForActivityResult(instanceId, requestCode)
     }
 
     override fun unregisterForActivityResults(instanceId: String) {
-        lifecycleHandler?.unregisterForActivityResults(instanceId)
+        lifecycleHandler.unregisterForActivityResults(instanceId)
     }
 
     override fun requestPermissions(
@@ -90,15 +87,6 @@ internal class ActivityHostedRouter : Router() {
         permissions: Array<String>,
         requestCode: Int
     ) {
-        lifecycleHandler?.requestPermissions(instanceId, permissions, requestCode)
-    }
-
-
-    fun setHost(lifecycleHandler: LifecycleHandler, container: ViewGroup) {
-        if (this.lifecycleHandler != lifecycleHandler || this.container != container) {
-            this.lifecycleHandler = lifecycleHandler
-            this.container = container
-            watchContainerAttach()
-        }
+        lifecycleHandler.requestPermissions(instanceId, permissions, requestCode)
     }
 }

@@ -2,7 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.view.View
 import com.ivianuu.director.Router
-import com.ivianuu.director.requireActivity
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import com.ivianuu.director.viewpager.RouterPagerAdapter
@@ -46,11 +46,8 @@ class PagerController : BaseController() {
     }
 
     override fun onUnbindView(view: View) {
-        if (requireActivity().isChangingConfigurations) {
-            view_pager.adapter = null
-        }
+        view_pager.adapter = null
         tab_layout.setupWithViewPager(null)
-
         super.onUnbindView(view)
     }
 

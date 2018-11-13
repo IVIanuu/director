@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ivianuu.director.requireActivity
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
 import kotlinx.android.extensions.LayoutContainer
@@ -27,9 +27,9 @@ class CityDetailController : BaseController() {
         super.onBindView(view)
         recycler_view.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(requireActivity())
+            layoutManager = LinearLayoutManager(activity)
             adapter = CityDetailAdapter(
-                LayoutInflater.from(requireActivity()),
+                LayoutInflater.from(activity),
                 title!!,
                 args.getInt(KEY_IMAGE),
                 LIST_ROWS,

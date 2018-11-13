@@ -29,7 +29,6 @@ import com.ivianuu.director.Router
 import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.requireActivity
 import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 
@@ -96,7 +95,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
 
         dialogView?.let { dialog.setContentView(it) }
 
-        dialog.ownerActivity = requireActivity()
+        dialog.ownerActivity = activity
         dialog.setCancelable(isCancelable)
         dialog.setOnShowListener(this)
         dialog.setOnCancelListener(this)
@@ -107,7 +106,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         return view
     }
 
-    protected open fun onCreateDialog(): Dialog = Dialog(requireActivity(), theme)
+    protected open fun onCreateDialog(): Dialog = Dialog(activity, theme)
 
     protected open fun onCreateDialogView(
         inflater: LayoutInflater,
