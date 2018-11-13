@@ -18,13 +18,13 @@ import java.util.*
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class CityGridSharedElementTransitionChangeHandler(
-    waitForTransitionNames: List<String> = emptyList()
+    names: List<String> = emptyList()
 ) : SharedElementTransitionChangeHandler() {
 
     private val names = mutableListOf<String>()
 
     init {
-        names.addAll(waitForTransitionNames)
+        this.names.addAll(names)
     }
 
     override fun saveToBundle(bundle: Bundle) {
@@ -43,12 +43,10 @@ class CityGridSharedElementTransitionChangeHandler(
         from: View?,
         to: View?,
         isPush: Boolean
-    ): Transition? {
-        return if (isPush) {
-            Explode()
-        } else {
-            Slide(Gravity.BOTTOM)
-        }
+    ): Transition? = if (isPush) {
+        Explode()
+    } else {
+        Slide(Gravity.BOTTOM)
     }
 
     override fun getSharedElementTransition(
@@ -56,24 +54,22 @@ class CityGridSharedElementTransitionChangeHandler(
         from: View?,
         to: View?,
         isPush: Boolean
-    ): Transition? {
-        return TransitionSet()
-            .addTransition(ChangeBounds())
-            .addTransition(ChangeClipBounds())
-            .addTransition(ChangeTransform())
-    }
+    ): Transition? = TransitionSet()
+        .addTransition(ChangeBounds())
+        .addTransition(ChangeClipBounds())
+        .addTransition(ChangeTransform())
 
     override fun getEnterTransition(
         container: ViewGroup,
         from: View?,
         to: View?,
         isPush: Boolean
-    ): Transition? {
-        return if (isPush) {
-            Slide(Gravity.BOTTOM)
-        } else {
-            Explode()
-        }
+    ): Transition? = if (isPush) {
+        Slide(Gravity.BOTTOM)
+    } else {
+        Explode()
+    }.apply {
+        names.forEach { excludeTarget(it, true) }
     }
 
     override fun configureSharedElements(

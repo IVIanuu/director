@@ -7,8 +7,7 @@
     android:clipToPadding="false"
     android:gravity="center_vertical"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="?selectableItemBackground">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/img_city"
