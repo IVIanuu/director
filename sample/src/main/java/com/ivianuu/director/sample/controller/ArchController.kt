@@ -23,6 +23,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_arch.*
 
@@ -65,6 +66,7 @@ class ArchViewModel : ViewModel() {
 
     override fun onCleared() {
         handler.removeCallbacksAndMessages(null)
+        d { "cleared" }
         super.onCleared()
     }
 }

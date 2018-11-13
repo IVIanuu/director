@@ -747,7 +747,7 @@ abstract class Router {
     }
 
     protected open fun setControllerRouter(controller: Controller) {
-        controller.router = this
+        controller.setRouter(this)
         controller.contextAvailable()
     }
 
@@ -819,6 +819,8 @@ abstract class Router {
 
         return true
     }
+
+    internal abstract fun getRetainedObjects(instanceId: String): RetainedObjects
 
     internal abstract fun startActivity(intent: Intent)
     internal abstract fun startActivityForResult(

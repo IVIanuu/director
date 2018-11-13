@@ -37,6 +37,9 @@ internal class ActivityHostedRouter(
         transactionIndexer.restoreInstanceState(savedInstanceState)
     }
 
+    override fun getRetainedObjects(instanceId: String) = lifecycleHandler
+        .getRetainedObjects(instanceId)
+
     override fun startActivity(intent: Intent) {
         lifecycleHandler.startActivity(intent)
     }

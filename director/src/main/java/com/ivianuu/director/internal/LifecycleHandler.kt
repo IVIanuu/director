@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.ControllerFactory
+import com.ivianuu.director.RetainedObjects
 import com.ivianuu.director.Router
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -28,6 +29,8 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         mutableMapOf<Int, MutableSet<String>>()
     private val permissionRequests =
         mutableMapOf<Int, MutableSet<String>>()
+    private val retainedObjects =
+        mutableMapOf<String, RetainedObjects>()
 
     private var destroyed = false
     private var hasPreparedForHostDetach = false
@@ -75,6 +78,10 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         super.onDestroy()
         requireActivity().application.unregisterActivityLifecycleCallbacks(this)
         destroyRouters()
+
+        if (!requireActivity().isChangingConfigurations) {
+            retainedObjects.clear()
+        }
     }
 
     override fun onDetach() {
@@ -105,6 +112,49 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun shouldShowRequestPermissionRationale(permission: String) = routers
         .filter { it.handleRequestedPermission(permission) }
         .any() || super.shouldShowRequestPermissionRationale(permission)
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    }
+
+    override fun onActivityStarted(activity: Activity) {
+        if (this.activity == activity) {
+            hasPreparedForHostDetach = false
+            routers.forEach { it.onActivityStarted(activity) }
+        }
+    }
+
+    override fun onActivityResumed(activity: Activity) {
+        if (this.activity == activity) {
+            routers.forEach { it.onActivityResumed(activity) }
+        }
+    }
+
+    override fun onActivityPaused(activity: Activity) {
+        if (this.activity == activity) {
+            routers.forEach { it.onActivityPaused(activity) }
+        }
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+        if (this.activity == activity) {
+            prepareForHostDetachIfNeeded()
+            routers.forEach { it.onActivityStopped(activity) }
+        }
+    }
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+        if (this.activity == activity) {
+            prepareForHostDetachIfNeeded()
+
+            routers.forEach { router ->
+                val bundle = Bundle().also { router.saveInstanceState(it) }
+                outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
+            }
+        }
+    }
+
+    override fun onActivityDestroyed(activity: Activity) {
+    }
 
     internal fun registerForActivityResult(instanceId: String, requestCode: Int) {
         activityRequests.getOrPut(requestCode) { mutableSetOf() }
@@ -161,51 +211,11 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
             .add(instanceId)
         requestPermissions(permissions, requestCode)
     }
-    
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-    }
 
-    override fun onActivityStarted(activity: Activity) {
-        if (this.activity == activity) {
-            hasPreparedForHostDetach = false
-            routers.forEach { it.onActivityStarted(activity) }
-        }
-    }
+    internal fun getRetainedObjects(instanceId: String) =
+        retainedObjects.getOrPut(instanceId) { RetainedObjects() }
 
-    override fun onActivityResumed(activity: Activity) {
-        if (this.activity == activity) {
-            routers.forEach { it.onActivityResumed(activity) }
-        }
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        if (this.activity == activity) {
-            routers.forEach { it.onActivityPaused(activity) }
-        }
-    }
-
-    override fun onActivityStopped(activity: Activity) {
-        if (this.activity == activity) {
-            prepareForHostDetachIfNeeded()
-            routers.forEach { it.onActivityStopped(activity) }
-        }
-    }
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        if (this.activity == activity) {
-            prepareForHostDetachIfNeeded()
-
-            routers.forEach { router ->
-                val bundle = Bundle().also { router.saveInstanceState(it) }
-                outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
-            }
-        }
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-    }
-
-    internal fun router(
+    internal fun getRouter(
         container: ViewGroup,
         savedInstanceState: Bundle?,
         controllerFactory: ControllerFactory?

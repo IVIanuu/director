@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
@@ -25,8 +26,23 @@ class HomeController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_home
 
+    private var onCreateCount: Int
+        get() = retainedObjects["retained"]!!
+        set(value) {
+            retainedObjects["retained"] = value
+        }
+
     override fun onCreate() {
         super.onCreate()
+
+        if (!retainedObjects.contains("retained")) {
+            retainedObjects["retained"] = 0
+        }
+
+        onCreateCount++
+
+        d { "on create count $onCreateCount" }
+
         title = "Director Sample"
     }
 

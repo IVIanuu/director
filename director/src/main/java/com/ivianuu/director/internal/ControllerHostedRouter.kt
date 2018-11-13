@@ -121,6 +121,9 @@ internal class ControllerHostedRouter : Router {
         super.setControllerRouter(controller)
     }
 
+    override fun getRetainedObjects(instanceId: String) =
+        hostController.router.getRetainedObjects(instanceId)
+
     override fun startActivity(intent: Intent) {
         hostController.router.startActivity(intent)
     }

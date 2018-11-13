@@ -51,7 +51,7 @@ fun attachRouter(
 
     val lifecycleHandler = LifecycleHandler.install(activity)
 
-    val router = lifecycleHandler.router(container, savedInstanceState, controllerFactory)
+    val router = lifecycleHandler.getRouter(container, savedInstanceState, controllerFactory)
     router.rebindIfNeeded()
 
     return router

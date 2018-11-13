@@ -36,23 +36,18 @@ abstract class Controller {
     /**
      * The router of this controller
      */
-    var router: Router
+    val router: Router
         get() = if (routerSet) _router else throw IllegalStateException("router is only available after onCreate")
-        internal set(value) {
-            if (routerSet) return
-            routerSet = true
-            _router = value
-
-            // restore the internal state
-            allState?.let { restoreInstanceState(it) }
-            allState = null
-
-            onRouterSetListeners.forEach { it(value) }
-            onRouterSetListeners.clear()
-        }
 
     private lateinit var _router: Router
     private var routerSet = false
+
+    /**
+     * Objects which will retained across configuration changes
+     */
+    val retainedObjects get() = _retainedObjects
+
+    private lateinit var _retainedObjects: RetainedObjects
 
     /**
      * Returns the host activity of this controller
@@ -179,7 +174,6 @@ abstract class Controller {
 
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
     private val requestedPermissions = mutableListOf<String>()
-    private val onRouterSetListeners = mutableListOf<((Router) -> Unit)>()
 
     private var destroyedView: WeakReference<View>? = null
     private var isPerformingExitTransition = false
@@ -345,21 +339,21 @@ abstract class Controller {
      * Calls startActivity(Intent) from this Controller's host Activity.
      */
     fun startActivity(intent: Intent) {
-        withRouter { it.startActivity(intent) }
+        router.startActivity(intent)
     }
 
     /**
      * Calls startActivityForResult(Intent, int) from this Controller's host Activity.
      */
     fun startActivityForResult(intent: Intent, requestCode: Int) {
-        withRouter { it.startActivityForResult(instanceId, intent, requestCode) }
+        router.startActivityForResult(instanceId, intent, requestCode)
     }
 
     /**
      * Calls startActivityForResult(Intent, int, Bundle) from this Controller's host Activity.
      */
     fun startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
-        withRouter { it.startActivityForResult(instanceId, intent, requestCode, options) }
+        router.startActivityForResult(instanceId, intent, requestCode, options)
     }
 
     /**
@@ -369,18 +363,16 @@ abstract class Controller {
         intent: IntentSender, requestCode: Int, fillInIntent: Intent?, flagsMask: Int,
         flagsValues: Int, extraFlags: Int, options: Bundle?
     ) {
-        withRouter {
-            it.startIntentSenderForResult(
-                instanceId,
-                intent,
-                requestCode,
-                fillInIntent,
-                flagsMask,
-                flagsValues,
-                extraFlags,
-                options
-            )
-        }
+        router.startIntentSenderForResult(
+            instanceId,
+            intent,
+            requestCode,
+            fillInIntent,
+            flagsMask,
+            flagsValues,
+            extraFlags,
+            options
+        )
     }
 
     /**
@@ -388,7 +380,7 @@ abstract class Controller {
      * necessary when calling [.startActivityForResult]
      */
     fun registerForActivityResult(requestCode: Int) {
-        withRouter { it.registerForActivityResult(instanceId, requestCode) }
+        router.registerForActivityResult(instanceId, requestCode)
     }
 
     /**
@@ -405,7 +397,7 @@ abstract class Controller {
     @TargetApi(Build.VERSION_CODES.M)
     fun requestPermissions(permissions: Array<String>, requestCode: Int) {
         requestedPermissions.addAll(Arrays.asList(*permissions))
-        withRouter { it.requestPermissions(instanceId, permissions, requestCode) }
+        router.requestPermissions(instanceId, permissions, requestCode)
     }
 
     /**
@@ -527,6 +519,19 @@ abstract class Controller {
         }
 
         allState = state
+    }
+
+    internal fun setRouter(router: Router) {
+        if (routerSet) return
+        routerSet = true
+        _router = router
+
+        // restore the internal state
+        allState?.let { restoreInstanceState(it) }
+        allState = null
+
+        // get the retained objects back
+        _retainedObjects = router.getRetainedObjects(instanceId)
     }
 
     internal fun prepareForHostDetach() {
@@ -990,15 +995,6 @@ abstract class Controller {
             }
 
             this.destroyedView = null
-        }
-    }
-
-    private fun withRouter(action: (Router) -> Unit) {
-        val router = router
-        if (routerSet) {
-            action.invoke(router)
-        } else {
-            onRouterSetListeners.add(action)
         }
     }
 

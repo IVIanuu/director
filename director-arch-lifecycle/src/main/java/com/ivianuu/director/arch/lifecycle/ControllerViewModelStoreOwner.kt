@@ -26,18 +26,32 @@ import com.ivianuu.director.ControllerLifecycleListener
  */
 class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwner {
 
-    private val viewModelStore = ViewModelStore()
+    private lateinit var viewModelStore: ViewModelStore
 
     init {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
+
+            override fun preCreate(controller: Controller) {
+                super.preCreate(controller)
+                viewModelStore = controller.retainedObjects.getOrPut(KEY_VIEW_MODEL_STORE) {
+                    ViewModelStore()
+                }
+            }
+
             override fun postDestroy(controller: Controller) {
                 super.postDestroy(controller)
-                viewModelStore.clear()
+                if (!controller.activity.isChangingConfigurations) {
+                    viewModelStore.clear()
+                }
             }
         })
     }
 
     override fun getViewModelStore(): ViewModelStore = viewModelStore
+
+    private companion object {
+        private const val KEY_VIEW_MODEL_STORE = "ControllerViewModelStoreOwner.viewModelStore"
+    }
 }
 
 fun Controller.ControllerViewModelStoreOwner() = ControllerViewModelStoreOwner(this)
