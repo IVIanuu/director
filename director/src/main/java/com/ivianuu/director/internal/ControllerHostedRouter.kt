@@ -114,14 +114,12 @@ internal class ControllerHostedRouter : Router {
         removeContainer(true)
     }
 
-    override fun saveInstanceState(outState: Bundle) {
-        super.saveInstanceState(outState)
+    fun saveBasicInstanceState(outState: Bundle) {
         outState.putInt(KEY_HOST_ID, hostId)
         outState.putString(KEY_TAG, tag)
     }
 
-    override fun restoreInstanceState(savedInstanceState: Bundle) {
-        super.restoreInstanceState(savedInstanceState)
+    fun restoreBasicInstanceState(savedInstanceState: Bundle) {
         hostId = savedInstanceState.getInt(KEY_HOST_ID)
         tag = savedInstanceState.getString(KEY_TAG)
     }

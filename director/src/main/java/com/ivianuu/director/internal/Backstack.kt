@@ -2,6 +2,7 @@ package com.ivianuu.director.internal
 
 import android.os.Bundle
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.RouterTransaction
 import java.util.*
 
@@ -48,9 +49,9 @@ internal class Backstack {
         outState.putParcelableArrayList(KEY_ENTRIES, ArrayList(entryBundles))
     }
 
-    fun restoreInstanceState(savedInstanceState: Bundle) {
+    fun restoreInstanceState(savedInstanceState: Bundle, controllerFactory: ControllerFactory) {
         savedInstanceState.getParcelableArrayList<Bundle>(KEY_ENTRIES)
-            ?.forEach { _entries.add(RouterTransaction.fromBundle(it)) }
+            ?.forEach { _entries.add(RouterTransaction.fromBundle(it, controllerFactory)) }
     }
 
     companion object {

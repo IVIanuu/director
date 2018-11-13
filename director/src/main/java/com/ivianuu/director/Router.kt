@@ -12,7 +12,6 @@ import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.requireMainThread
 
 /**
@@ -67,6 +66,8 @@ abstract class Router {
     val containerId: Int
         get() = container?.id ?: 0
     internal val hasContainer get() = container != null
+
+    var controllerFactory: ControllerFactory = object : ControllerFactory {}
 
     internal abstract val hasHost: Boolean
     internal abstract val siblingRouters: List<Router>
@@ -603,7 +604,7 @@ abstract class Router {
     open fun restoreInstanceState(savedInstanceState: Bundle) {
         val backstackBundle = savedInstanceState.getParcelable<Bundle>(KEY_BACKSTACK)!!
 
-        _backstack.restoreInstanceState(backstackBundle)
+        _backstack.restoreInstanceState(backstackBundle, controllerFactory)
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
         backstack.forEach { setControllerRouter(it.controller) }
@@ -723,7 +724,6 @@ abstract class Router {
     }
 
     private fun performPendingControllerChanges() {
-        d { "perform pending controller changes ${pendingControllerChanges.size}" }
         // We're intentionally using dynamic size checking (list.size()) here so we can account for changes
         // that occur during this loop (ex: if a controller is popped from within onAttach)
         pendingControllerChanges.indices
@@ -733,7 +733,6 @@ abstract class Router {
                 // because it could be changed since we enqueued this change
                 it.copy(container = container)
             }
-            .onEach { d { "execute change $it" } }
             .forEach { changeManager.executeChange(it) }
         pendingControllerChanges.clear()
     }

@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
-import com.ivianuu.director.internal.newInstanceOrThrow
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
@@ -44,6 +43,7 @@ abstract class Controller {
 
             // restore the internal state
             allState?.let { restoreInstanceState(it) }
+            allState = null
 
             onRouterSetListeners.forEach { it(value) }
             onRouterSetListeners.clear()
@@ -112,6 +112,7 @@ abstract class Controller {
     private var allState: Bundle? = null
     private var savedState: Bundle? = null
     private var viewState: Bundle? = null
+    private var childRouterStates: Map<ControllerHostedRouter, Bundle>? = null
 
     internal var needsAttach = false
     private var viewIsAttached = false
@@ -177,10 +178,12 @@ abstract class Controller {
      * Will be called once when the router was set for the first time
      */
     protected open fun onCreate() {
-        allState?.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)
-            ?.forEachIndexed { index, bundle ->
-                _childRouters[index].restoreInstanceState(bundle)
-            }
+        // restore the full instance state of child routers
+        childRouterStates
+            ?.filterKeys { _childRouters.contains(it) }
+            ?.forEach { it.key.restoreInstanceState(it.value) }
+
+        childRouterStates = null
 
         superCalled = true
     }
@@ -807,7 +810,12 @@ abstract class Controller {
         overriddenPopHandler?.let { outState.putBundle(KEY_OVERRIDDEN_POP_HANDLER, it.toBundle()) }
 
         val childBundles = _childRouters
-            .map { childRouter -> Bundle().also { childRouter.saveInstanceState(it) } }
+            .map { childRouter ->
+                Bundle().also {
+                    childRouter.saveBasicInstanceState(it)
+                    childRouter.saveInstanceState(it)
+                }
+            }
         outState.putParcelableArrayList(KEY_CHILD_ROUTERS, ArrayList(childBundles))
 
         val savedState = Bundle(javaClass.classLoader)
@@ -843,14 +851,17 @@ abstract class Controller {
 
         retainViewMode = RetainViewMode.values()[savedInstanceState.getInt(KEY_RETAIN_VIEW_MODE, 0)]
 
-        savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)
-            ?.map { bundle ->
+        childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
+            .map { bundle ->
                 ControllerHostedRouter().also {
+                    // we do not restore the full instance yet
+                    // to give the user a chance to set a [ControllerFactory]
+                    it.restoreBasicInstanceState(bundle)
                     it.setHost(this)
-                    // todo it.restoreInstanceState(bundle)
-                }
+                } to bundle
             }
-            ?.forEach { _childRouters.add(it) }
+            .onEach { _childRouters.add(it.first) }
+            .toMap()
     }
 
     private fun saveViewState(view: View) {
@@ -993,9 +1004,10 @@ abstract class Controller {
         private const val KEY_VIEW_STATE_BUNDLE = "Controller.viewState.bundle"
         private const val KEY_RETAIN_VIEW_MODE = "Controller.retainViewMode"
 
-        internal fun fromBundle(bundle: Bundle): Controller {
+        internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
-            return newInstanceOrThrow<Controller>(className).apply {
+            val args = bundle.getBundle(KEY_ARGS)
+            return factory.instantiateController(javaClass.classLoader, className, args).apply {
                 allState = bundle
             }
         }
