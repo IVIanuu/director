@@ -17,11 +17,6 @@ class MultipleChildRouterController : BaseController() {
         title = "Child Router Demo"
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        router.popController(this)
-    }
-
     override fun onBindView(view: View) {
         super.onBindView(view)
 

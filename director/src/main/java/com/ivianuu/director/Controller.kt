@@ -722,18 +722,6 @@ abstract class Controller {
             }
     }
 
-    private fun performDestroy() {
-        if (!isDestroyed) {
-            notifyLifecycleListeners { it.preDestroy(this) }
-            isDestroyed = true
-
-            requireSuperCalled { onDestroy() }
-
-            parentController = null
-            notifyLifecycleListeners { it.postDestroy(this) }
-        }
-    }
-
     internal fun destroy() {
         destroy(false)
     }
@@ -749,6 +737,22 @@ abstract class Controller {
             removeViewReference(true)
         } else if (removeViews) {
             view?.let { detach(it, true, false, true, false) }
+        }
+
+        if (!activity.isChangingConfigurations) {
+            router.removeRetainedObjects(instanceId)
+        }
+    }
+
+    private fun performDestroy() {
+        if (!isDestroyed) {
+            notifyLifecycleListeners { it.preDestroy(this) }
+            isDestroyed = true
+
+            requireSuperCalled { onDestroy() }
+
+            parentController = null
+            notifyLifecycleListeners { it.postDestroy(this) }
         }
     }
 

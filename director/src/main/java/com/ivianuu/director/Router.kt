@@ -832,6 +832,8 @@ abstract class Router {
 
     internal abstract fun getRetainedObjects(instanceId: String): RetainedObjects
 
+    internal abstract fun removeRetainedObjects(instanceId: String)
+
     internal abstract fun startActivity(intent: Intent)
     internal abstract fun startActivityForResult(
         instanceId: String,

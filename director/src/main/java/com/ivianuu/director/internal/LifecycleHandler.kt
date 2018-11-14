@@ -78,10 +78,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         super.onDestroy()
         requireActivity().application.unregisterActivityLifecycleCallbacks(this)
         destroyRouters()
-
-        if (!requireActivity().isChangingConfigurations) {
-            retainedObjects.clear()
-        }
     }
 
     override fun onDetach() {
@@ -214,6 +210,9 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     internal fun getRetainedObjects(instanceId: String) =
         retainedObjects.getOrPut(instanceId) { RetainedObjects() }
+
+    internal fun removeRetainedObjects(instanceId: String) =
+        retainedObjects.remove(instanceId)
 
     internal fun getRouter(
         container: ViewGroup,

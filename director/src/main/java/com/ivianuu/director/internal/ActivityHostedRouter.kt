@@ -40,6 +40,10 @@ internal class ActivityHostedRouter(
     override fun getRetainedObjects(instanceId: String) = lifecycleHandler
         .getRetainedObjects(instanceId)
 
+    override fun removeRetainedObjects(instanceId: String) {
+        lifecycleHandler.removeRetainedObjects(instanceId)
+    }
+
     override fun startActivity(intent: Intent) {
         lifecycleHandler.startActivity(intent)
     }
