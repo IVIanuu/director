@@ -29,7 +29,7 @@ class TransitionDemoController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Transition Demos"
+        actionBarTitle = "Transition Demos"
     }
 
     override fun onBindView(view: View) {

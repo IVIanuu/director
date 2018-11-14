@@ -8,6 +8,7 @@ import android.util.Size
 import android.util.SizeF
 import java.io.Serializable
 
+// todo add androidx core ktx library and remove this
 fun bundleOf(vararg pairs: Pair<String, Any?>) = Bundle(pairs.size).apply {
     for ((key, value) in pairs) {
         when (value) {

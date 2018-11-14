@@ -32,7 +32,7 @@ class NavigationController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Navigation Demos"
+        actionBarTitle = "Navigation Demos"
         retainViewMode = RetainViewMode.RETAIN_DETACH
     }
 

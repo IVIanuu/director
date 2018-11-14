@@ -1,13 +1,11 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
@@ -15,9 +13,11 @@ import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
+import com.ivianuu.director.sample.util.BaseEpoxyModel
+import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
-import kotlinx.android.extensions.LayoutContainer
+import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_home.*
 import kotlinx.android.synthetic.main.row_home.*
 
@@ -27,16 +27,22 @@ class HomeController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Director Sample"
+        actionBarTitle = "Director Sample"
     }
 
     override fun onBindView(view: View) {
         super.onBindView(view)
 
-        recycler_view.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(activity)
-            adapter = HomeAdapter(LayoutInflater.from(context), DemoModel.values())
+        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.buildModels {
+            HomeItem.values().forEachIndexed { index, item ->
+                homeItem {
+                    id(index)
+                    item(item)
+                    position(index)
+                    onClick { onItemClicked(item, index) }
+                }
+            }
         }
     }
 
@@ -49,9 +55,9 @@ class HomeController : BaseController() {
         }
     }
 
-    fun onModelRowClick(model: DemoModel?, position: Int) {
-        when (model) {
-            HomeController.DemoModel.NAVIGATION -> {
+    private fun onItemClicked(item: HomeItem, position: Int) {
+        when (item) {
+            HomeItem.NAVIGATION -> {
                 router.pushController(
                     NavigationController.newInstance(
                         0,
@@ -63,7 +69,7 @@ class HomeController : BaseController() {
                         .tag(NavigationController.TAG_UP_TRANSACTION)
                 )
             }
-            HomeController.DemoModel.TRANSITIONS -> {
+            HomeItem.TRANSITIONS -> {
                 router.pushController(
                     TransitionDemoController.getRouterTransaction(
                         0,
@@ -71,7 +77,7 @@ class HomeController : BaseController() {
                     )
                 )
             }
-            HomeController.DemoModel.TARGET_CONTROLLER -> {
+            HomeItem.TARGET_CONTROLLER -> {
                 router.pushController(
                     TargetDisplayController()
                         .toTransaction()
@@ -79,35 +85,35 @@ class HomeController : BaseController() {
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            HomeController.DemoModel.VIEW_PAGER -> {
+            HomeItem.VIEW_PAGER -> {
                 router.pushController(
                     PagerController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            DemoModel.BOTTOM_NAV -> {
+            HomeItem.BOTTOM_NAV -> {
                 router.pushController(
                     BottomNavController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            HomeController.DemoModel.CHILD_CONTROLLERS -> {
+            HomeItem.CHILD_CONTROLLERS -> {
                 router.pushController(
                     ParentController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            HomeController.DemoModel.SHARED_ELEMENT_TRANSITIONS -> {
+            HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
                     resources.getString(R.string.transition_tag_title_indexed, position)
                 val dotSharedElementName =
                     resources.getString(R.string.transition_tag_dot_indexed, position)
 
                 router.pushController(
-                    CityGridController.newInstance(model.title, model.color, position).toTransaction()
+                    CityGridController.newInstance(item.title, item.color, position).toTransaction()
                         .pushChangeHandler(
                             ArcFadeMoveChangeHandler(
                                 titleSharedElementName,
@@ -122,7 +128,7 @@ class HomeController : BaseController() {
                         )
                 )
             }
-            HomeController.DemoModel.DRAG_DISMISS -> {
+            HomeItem.DRAG_DISMISS -> {
                 router.pushController(
                     DragDismissController().toTransaction()
                         .pushChangeHandler(
@@ -133,7 +139,7 @@ class HomeController : BaseController() {
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            HomeController.DemoModel.MULTIPLE_CHILD_ROUTERS -> {
+            HomeItem.MULTIPLE_CHILD_ROUTERS -> {
                 router.pushController(
                     MultipleChildRouterController()
                         .toTransaction()
@@ -141,17 +147,17 @@ class HomeController : BaseController() {
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            HomeController.DemoModel.MASTER_DETAIL -> {
+            HomeItem.MASTER_DETAIL -> {
                 router.pushController(
                     MasterDetailListController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            DemoModel.DIALOG -> {
+            HomeItem.DIALOG -> {
                 SimpleDialogController().show(router)
             }
-            DemoModel.EXTERNAL_MODULES -> {
+            HomeItem.EXTERNAL_MODULES -> {
                 router.pushController(
                     ExternalModulesController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
@@ -160,64 +166,46 @@ class HomeController : BaseController() {
             }
         }
     }
+}
 
-    private inner class HomeAdapter(
-        private val inflater: LayoutInflater,
-        private val items: Array<DemoModel>
-    ) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
+@EpoxyModelClass(layout = R.layout.row_home)
+abstract class HomeItemModel : BaseEpoxyModel() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(inflater.inflate(R.layout.row_home, parent, false))
+    @EpoxyAttribute lateinit var item: HomeItem
+    @EpoxyAttribute var position: Int = -1
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(position, items[position])
-        }
+    override fun bind(holder: KtEpoxyHolder) {
+        super.bind(holder)
+        with(holder) {
+            home_title.text = item.title
+            home_image.drawable.setColorFilter(
+                ContextCompat.getColor(containerView.context, item.color),
+                Mode.SRC_ATOP
+            )
 
-        override fun getItemCount() = items.size
+            home_title.transitionName =
+                    containerView.resources.getString(
+                        R.string.transition_tag_title_indexed,
+                        position
+                    )
 
-        private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
-            LayoutContainer {
-
-            override val containerView: View?
-                get() = itemView
-
-            private var model: DemoModel? = null
-
-            fun bind(position: Int, item: DemoModel) {
-                model = item
-                tv_title.text = item.title
-                img_dot.drawable.setColorFilter(
-                    ContextCompat.getColor(activity, item.color),
-                    Mode.SRC_ATOP
-                )
-
-                ViewCompat.setTransitionName(
-                    tv_title,
-                    resources.getString(R.string.transition_tag_title_indexed, position)
-                )
-
-                ViewCompat.setTransitionName(
-                    img_dot,
-                    resources.getString(R.string.transition_tag_dot_indexed, position)
-                )
-
-                itemView.setOnClickListener { onModelRowClick(model, position) }
-            }
+            home_image.transitionName =
+                    containerView.resources.getString(R.string.transition_tag_dot_indexed, position)
         }
     }
+}
 
-    enum class DemoModel(var title: String, var color: Int) {
-        NAVIGATION("Navigation Demos", R.color.red_300),
-        TRANSITIONS("Transition Demos", R.color.blue_grey_300),
-        SHARED_ELEMENT_TRANSITIONS("Shared Element Demos", R.color.purple_300),
-        CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
-        VIEW_PAGER("ViewPager", R.color.green_300),
-        BOTTOM_NAV("Bottom Nav", R.color.blue_300),
-        TARGET_CONTROLLER("Target Controller", R.color.pink_300),
-        MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
-        MASTER_DETAIL("Master Detail", R.color.grey_300),
-        DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
-        DIALOG("Dialog", R.color.blue_300),
-        EXTERNAL_MODULES("Bonus Modules", R.color.teal_300);
-    }
+enum class HomeItem(val title: String, val color: Int) {
+    NAVIGATION("Navigation Demos", R.color.red_300),
+    TRANSITIONS("Transition Demos", R.color.blue_grey_300),
+    SHARED_ELEMENT_TRANSITIONS("Shared Element Demos", R.color.purple_300),
+    CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
+    VIEW_PAGER("ViewPager", R.color.green_300),
+    BOTTOM_NAV("Bottom Nav", R.color.blue_300),
+    TARGET_CONTROLLER("Target Controller", R.color.pink_300),
+    MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
+    MASTER_DETAIL("Master Detail", R.color.grey_300),
+    DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
+    DIALOG("Dialog", R.color.blue_300),
+    EXTERNAL_MODULES("Bonus Modules", R.color.teal_300);
 }

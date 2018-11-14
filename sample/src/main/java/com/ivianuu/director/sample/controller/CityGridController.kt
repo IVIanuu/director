@@ -1,25 +1,24 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.TransitionChangeHandlerCompat
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
+import com.ivianuu.director.sample.util.BaseEpoxyModel
+import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.director.toTransaction
-import kotlinx.android.extensions.LayoutContainer
+import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_grid.*
-import kotlinx.android.synthetic.main.row_city_grid.view.*
+import kotlinx.android.synthetic.main.row_city_grid.*
 
 class CityGridController : BaseController() {
 
@@ -30,42 +29,44 @@ class CityGridController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = args.getString(KEY_TITLE)
+        actionBarTitle = args.getString(KEY_TITLE)
     }
 
     override fun onBindView(view: View) {
         super.onBindView(view)
 
-        tv_title.text = title
+        tv_title.text = actionBarTitle
         img_dot.drawable.setColorFilter(
             ContextCompat.getColor(activity, dotColor),
             Mode.SRC_ATOP
         )
 
-        ViewCompat.setTransitionName(
-            tv_title,
-            resources.getString(R.string.transition_tag_title_indexed, fromPosition)
-        )
-        ViewCompat.setTransitionName(
-            img_dot,
-            resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
-        )
+        tv_title.transitionName =
+                resources.getString(R.string.transition_tag_title_indexed, fromPosition)
 
-        recycler_view.apply {
-            setHasFixedSize(true)
-            layoutManager = GridLayoutManager(context, 2)
-            adapter = CityGridAdapter(LayoutInflater.from(context), CITY_MODELS)
+        img_dot.transitionName =
+                resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
+
+        recycler_view.layoutManager = GridLayoutManager(activity, 2)
+        recycler_view.buildModels {
+            CITIES.forEach { city ->
+                city {
+                    id(city.title)
+                    city(city)
+                    onClick { onCityClicked(city) }
+                }
+            }
         }
     }
 
-    private fun onModelRowClick(model: CityModel) {
+    private fun onCityClicked(city: City) {
         val names = listOf(
-            resources.getString(R.string.transition_tag_image_named, model.title),
-            resources.getString(R.string.transition_tag_title_named, model.title)
+            resources.getString(R.string.transition_tag_image_named, city.title),
+            resources.getString(R.string.transition_tag_title_named, city.title)
         )
 
         router.pushController(
-            CityDetailController.newInstance(model.drawableRes, model.title).toTransaction()
+            CityDetailController.newInstance(city.drawableRes, city.title).toTransaction()
                 .pushChangeHandler(
                     TransitionChangeHandlerCompat(
                         CityGridSharedElementTransitionChangeHandler(names),
@@ -81,58 +82,17 @@ class CityGridController : BaseController() {
         )
     }
 
-    private inner class CityGridAdapter(
-        private val inflater: LayoutInflater,
-        private val items: Array<CityModel>
-    ) : RecyclerView.Adapter<CityGridAdapter.ViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(inflater.inflate(R.layout.row_city_grid, parent, false))
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(items[position])
-        }
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-
-        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LayoutContainer {
-
-            override val containerView: View?
-                get() = itemView
-
-            fun bind(item: CityModel) {
-                itemView.img_city.setImageResource(item.drawableRes)
-                itemView.tv_title.text = item.title
-
-                ViewCompat.setTransitionName(
-                    itemView.tv_title,
-                    resources.getString(R.string.transition_tag_title_named, item.title)
-                )
-                ViewCompat.setTransitionName(
-                    itemView.img_city,
-                    resources.getString(R.string.transition_tag_image_named, item.title)
-                )
-
-                itemView.setOnClickListener { onModelRowClick(item) }
-            }
-        }
-    }
-
-    data class CityModel(val drawableRes: Int, val title: String)
-
     companion object {
         private const val KEY_TITLE = "CityGridController.title"
         private const val KEY_DOT_COLOR = "CityGridController.dotColor"
         private const val KEY_FROM_POSITION = "CityGridController.position"
 
-        private val CITY_MODELS = arrayOf(
-            CityModel(R.drawable.chicago, "Chicago"),
-            CityModel(R.drawable.jakarta, "Jakarta"),
-            CityModel(R.drawable.london, "London"),
-            CityModel(R.drawable.sao_paulo, "Sao Paulo"),
-            CityModel(R.drawable.tokyo, "Tokyo")
+        private val CITIES = arrayOf(
+            City("Chicago", R.drawable.chicago),
+            City("Jakarta", R.drawable.jakarta),
+            City("London", R.drawable.london),
+            City("Sao Paulo", R.drawable.sao_paulo),
+            City("Tokyo", R.drawable.tokyo)
         )
 
         fun newInstance(title: String, dotColor: Int, fromPosition: Int) = CityGridController().apply {
@@ -141,6 +101,28 @@ class CityGridController : BaseController() {
                 KEY_DOT_COLOR to dotColor,
                 KEY_FROM_POSITION to fromPosition
             )
+        }
+    }
+}
+
+data class City(val title: String, val drawableRes: Int)
+
+@EpoxyModelClass(layout = R.layout.row_city_grid)
+abstract class CityModel : BaseEpoxyModel() {
+
+    @EpoxyAttribute lateinit var city: City
+
+    override fun bind(holder: KtEpoxyHolder) {
+        super.bind(holder)
+        with(holder) {
+            grid_image.setImageResource(city.drawableRes)
+            grid_title.text = city.title
+
+            grid_image.transitionName = grid_image.resources
+                .getString(R.string.transition_tag_image_named, city.title)
+
+            grid_title.transitionName = grid_image.resources
+                .getString(R.string.transition_tag_title_named, city.title)
         }
     }
 }

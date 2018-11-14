@@ -1,18 +1,19 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.util.BaseEpoxyModel
+import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.toTransaction
-import kotlinx.android.extensions.LayoutContainer
+import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_master_detail_list.*
 import kotlinx.android.synthetic.main.row_detail_item.*
 
@@ -25,21 +26,29 @@ class MasterDetailListController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Master/Detail Flow"
+        actionBarTitle = "Master/Detail Flow"
     }
 
     override fun onBindView(view: View) {
         super.onBindView(view)
-        recycler_view.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-            adapter = DetailItemAdapter(LayoutInflater.from(context), DetailItemModel.values())
+
+        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.buildModels {
+            DetailItem.values().forEachIndexed { index, item ->
+                detailItem {
+                    id(index)
+                    item(item)
+                    index(index)
+                    selectedIndex(selectedIndex)
+                    onClick { onItemClicked(item, index) }
+                }
+            }
         }
 
         twoPaneView = detail_container != null
 
         if (twoPaneView) {
-            onRowSelected(selectedIndex)
+            onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
         }
     }
 
@@ -55,13 +64,13 @@ class MasterDetailListController : BaseController() {
         selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
     }
 
-    fun onRowSelected(index: Int) {
+    private fun onItemClicked(item: DetailItem, index: Int) {
         selectedIndex = index
 
-        val model = DetailItemModel.values()[index]
-        val controller = ChildController.newInstance(model.detail, model.backgroundColor, true)
+        val controller = ChildController.newInstance(item.detail, item.backgroundColor, true)
 
         if (twoPaneView) {
+            @Suppress("PLUGIN_WARNING")
             getChildRouter(detail_container).setRoot(controller.toTransaction())
         } else {
             router.pushController(
@@ -72,69 +81,52 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    private inner class DetailItemAdapter(
-        private val inflater: LayoutInflater,
-        private val items: Array<DetailItemModel>
-    ) : RecyclerView.Adapter<DetailItemAdapter.ViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(inflater.inflate(R.layout.row_detail_item, parent, false))
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(items[position], position)
-        }
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-
-        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), LayoutContainer {
-
-            override val containerView: View?
-                get() = itemView
-
-            fun bind(item: DetailItemModel, position: Int) {
-                tv_title.text = item.title
-                if (twoPaneView && position == selectedIndex) {
-                    row_root.setBackgroundColor(
-                        ContextCompat.getColor(
-                            row_root.context,
-                            R.color.grey_400
-                        )
-                    )
-                } else {
-                    row_root.setBackgroundColor(
-                        ContextCompat.getColor(
-                            row_root.context,
-                            android.R.color.transparent
-                        )
-                    )
-                }
-
-                row_root.setOnClickListener {
-                    onRowSelected(position)
-                    notifyDataSetChanged()
-                }
-            }
-        }
-    }
-
-    enum class DetailItemModel(
-        val title: String,
-        val detail: String,
-        val backgroundColor: Int
-    ) {
-        ONE(
-            "Item 1",
-            "This is a quick demo of master/detail flow using Director. In portrait mode you'll see a standard list. In landscape, you'll see a two-pane layout.",
-            R.color.green_300
-        ),
-        TWO("Item 2", "This is another item.", R.color.cyan_300),
-        THREE("Item 3", "Wow, a 3rd item!", R.color.deep_purple_300)
-    }
-
     companion object {
         private const val KEY_SELECTED_INDEX = "MasterDetailListController.selectedIndex"
+    }
+}
+
+enum class DetailItem(
+    val title: String,
+    val detail: String,
+    val backgroundColor: Int
+) {
+    ONE(
+        "Item 1",
+        "This is a quick demo of master/detail flow using Director. In portrait mode you'll see a standard list. In landscape, you'll see a two-pane layout.",
+        R.color.green_300
+    ),
+    TWO("Item 2", "This is another item.", R.color.cyan_300),
+    THREE("Item 3", "Wow, a 3rd item!", R.color.deep_purple_300)
+}
+
+@EpoxyModelClass(layout = R.layout.row_detail_item)
+abstract class DetailItemModel : BaseEpoxyModel() {
+
+    @EpoxyAttribute lateinit var item: DetailItem
+    @EpoxyAttribute var index: Int = 0
+    @EpoxyAttribute var twoPaneView: Boolean = false
+    @EpoxyAttribute var selectedIndex: Int = 0
+
+    override fun bind(holder: KtEpoxyHolder) {
+        super.bind(holder)
+        with(holder) {
+            item_title.text = item.title
+            if (twoPaneView && index == selectedIndex) {
+                row_root.setBackgroundColor(
+                    ContextCompat.getColor(
+                        row_root.context,
+                        R.color.grey_400
+                    )
+                )
+            } else {
+                row_root.setBackgroundColor(
+                    ContextCompat.getColor(
+                        row_root.context,
+                        android.R.color.transparent
+                    )
+                )
+            }
+        }
     }
 }

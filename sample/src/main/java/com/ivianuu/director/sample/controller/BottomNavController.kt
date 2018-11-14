@@ -5,8 +5,6 @@ import android.os.Parcelable
 import android.view.View
 import com.ivianuu.director.Router
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.parcel.Parcelize
@@ -27,7 +25,7 @@ class BottomNavController : BaseController() {
     override fun onCreate() {
         super.onCreate()
         bottomNavRouter = getChildRouter(R.id.bottom_nav_container)
-        title = "Bottom Nav Demo"
+        actionBarTitle = "Bottom Nav Demo"
     }
 
     override fun onBindView(view: View) {
@@ -119,11 +117,7 @@ class BottomNavController : BaseController() {
             newController.setInitialSavedState(savedState)
         }
 
-        bottomNavRouter.setRoot(
-            newController.toTransaction()
-                .pushChangeHandler(FadeChangeHandler())
-                .popChangeHandler(FadeChangeHandler())
-        )
+        bottomNavRouter.setRoot(newController.toTransaction())
 
         currentIndex = index
     }
@@ -132,7 +126,7 @@ class BottomNavController : BaseController() {
     private data class SavedStateWithIndex(val index: Int, val state: Bundle) : Parcelable
 
     private companion object {
-        private const val KEY_SAVED_STATES = "saved_states"
-        private const val KEY_CURRENT_INDEX = "current_index"
+        private const val KEY_SAVED_STATES = "BottomNavController.savedStates"
+        private const val KEY_CURRENT_INDEX = "BottomNavController.currentIndex"
     }
 }

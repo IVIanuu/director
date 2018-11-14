@@ -17,22 +17,23 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.util.BaseEpoxyModel
+import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.toTransaction
+import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_external_modules.*
-import kotlinx.android.synthetic.main.row_home.view.*
+import kotlinx.android.synthetic.main.row_home.*
 
 class ExternalModulesController : BaseController() {
 
@@ -41,15 +42,22 @@ class ExternalModulesController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "External Module Demo"
+        actionBarTitle = "External Module Demo"
     }
 
     override fun onBindView(view: View) {
         super.onBindView(view)
 
-        recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(activity)
-        recycler_view.adapter = AdditionalModulesAdapter(DemoModel.values())
+        recycler_view.buildModels {
+            AdditionalModuleItem.values().forEach { item ->
+                additionalModuleItem {
+                    id(item.toString())
+                    item(item)
+                    onClick { onItemClicked(item) }
+                }
+            }
+        }
     }
 
     override fun onChangeStarted(
@@ -62,23 +70,23 @@ class ExternalModulesController : BaseController() {
         }
     }
 
-    fun onModelRowClick(model: DemoModel) {
-        when (model) {
-            DemoModel.ARCH -> {
+    private fun onItemClicked(item: AdditionalModuleItem) {
+        when (item) {
+            AdditionalModuleItem.ARCH -> {
                 router.pushController(
                     ArchController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            DemoModel.SCOPES -> {
+            AdditionalModuleItem.SCOPES -> {
                 router.pushController(
                     ScopesController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                 )
             }
-            DemoModel.TRAVELER -> {
+            AdditionalModuleItem.TRAVELER -> {
                 router.pushController(
                     TravelerController().toTransaction()
                         .pushChangeHandler(FadeChangeHandler())
@@ -88,38 +96,27 @@ class ExternalModulesController : BaseController() {
         }
     }
 
-    enum class DemoModel(val title: String, val color: Int) {
-        ARCH("Arch", R.color.red_300),
-        SCOPES("Scopes", R.color.blue_grey_300),
-        TRAVELER("Traveler", R.color.purple_300)
-    }
+}
 
-    inner class AdditionalModulesAdapter(
-        private val items: Array<DemoModel>
-    ) : RecyclerView.Adapter<AdditionalModulesAdapter.ViewHolder>() {
+enum class AdditionalModuleItem(val title: String, val color: Int) {
+    ARCH("Arch", R.color.red_300),
+    SCOPES("Scopes", R.color.blue_grey_300),
+    TRAVELER("Traveler", R.color.purple_300)
+}
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.row_home, parent, false)
+@EpoxyModelClass(layout = R.layout.row_home)
+abstract class AdditionalModuleItemModel : BaseEpoxyModel() {
+
+    @EpoxyAttribute lateinit var item: AdditionalModuleItem
+
+    override fun bind(holder: KtEpoxyHolder) {
+        super.bind(holder)
+        with(holder) {
+            home_title.text = item.title
+            home_image.drawable.setColorFilter(
+                ContextCompat.getColor(containerView.context, item.color),
+                PorterDuff.Mode.SRC_ATOP
             )
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(items[position])
-        }
-
-        override fun getItemCount() = items.size
-
-        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-            fun bind(item: DemoModel) {
-                itemView.tv_title.text = item.title
-                itemView.img_dot.drawable.setColorFilter(
-                    ContextCompat.getColor(itemView.context, item.color),
-                    PorterDuff.Mode.SRC_ATOP
-                )
-                itemView.setOnClickListener { onModelRowClick(item) }
-            }
         }
     }
 }

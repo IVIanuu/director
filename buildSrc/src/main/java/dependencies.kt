@@ -5,6 +5,7 @@ object Build {
     const val buildToolsVersion = "28.0.3"
     const val compileSdk = 28
     const val minSdk = 16
+    const val minSdkSample = 21
     const val targetSdk = 28
 
     const val versionCode = 1
@@ -20,6 +21,9 @@ object Versions {
     const val contributor = "efa69d138b"
 
     const val dagger = "2.19"
+
+    const val epoxy = "2.19.0"
+    const val epoxyKtx = "1a273d9917"
 
     const val kotlin = "1.3.0"
 
@@ -51,6 +55,10 @@ object Deps {
 
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+
+    const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
+    const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
+    const val epoxyKtx = "com.github.IVIanuu:epoxy-ktx:${Versions.epoxyKtx}"
 
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"

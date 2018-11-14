@@ -22,7 +22,7 @@ class ParentController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Parent/Child Demo"
+        actionBarTitle = "Parent/Child Demo"
     }
 
     override fun onChangeEnded(

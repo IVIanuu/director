@@ -13,7 +13,7 @@ class TargetTitleEntryController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Target Controller Demo"
+        actionBarTitle = "Target Controller Demo"
     }
 
     override fun onBindView(view: View) {

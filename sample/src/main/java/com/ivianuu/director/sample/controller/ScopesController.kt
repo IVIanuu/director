@@ -39,7 +39,7 @@ class ScopesController : BaseController() {
     override fun onCreate() {
         super.onCreate()
 
-        title = "Scopes Demo"
+        actionBarTitle = "Scopes Demo"
 
         Observable.interval(1, TimeUnit.SECONDS)
             .doOnDispose { d { "Disposing from onCreate()" } }

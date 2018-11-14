@@ -29,7 +29,7 @@ android {
     defaultConfig {
         applicationId = Build.applicationId
         buildToolsVersion = Build.buildToolsVersion
-        minSdkVersion(Build.minSdk)
+        minSdkVersion(Build.minSdkSample)
         targetSdkVersion(Build.targetSdk)
         versionCode = Build.versionCode
         versionName = Build.versionName
@@ -45,7 +45,6 @@ android {
 
     kapt {
         correctErrorTypes = true
-        generateStubs = true
     }
 }
 
@@ -65,6 +64,10 @@ dependencies {
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
     implementation(project(":director-viewpager"))
+
+    implementation(Deps.epoxy)
+    implementation(Deps.epoxyKtx)
+    kapt(Deps.epoxyProcessor)
 
     implementation(Deps.kotlinStdLib)
     implementation(Deps.leakCanary)

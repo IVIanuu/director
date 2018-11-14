@@ -1,123 +1,63 @@
 package com.ivianuu.director.sample.controller
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-
+import com.airbnb.epoxy.EpoxyAttribute
+import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.util.BaseEpoxyModel
+import com.ivianuu.director.sample.util.arg
+import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.extensions.LayoutContainer
+import com.ivianuu.director.sample.util.d
+import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_detail.*
-import kotlinx.android.synthetic.main.row_city_detail.view.*
+import kotlinx.android.synthetic.main.row_city_detail.*
 import kotlinx.android.synthetic.main.row_city_header.*
 
 class CityDetailController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_city_detail
 
+    private val title by arg<String>(KEY_TITLE)
+    private val image by arg<Int>(KEY_IMAGE)
+
     override fun onCreate() {
         super.onCreate()
-        title = args.getString(KEY_TITLE)
+        actionBarTitle = title
     }
 
     override fun onBindView(view: View) {
         super.onBindView(view)
-        recycler_view.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(activity)
-            adapter = CityDetailAdapter(
-                LayoutInflater.from(activity),
-                title!!,
-                args.getInt(KEY_IMAGE),
-                LIST_ROWS,
-                title!!
-            )
-        }
-    }
 
-    private class CityDetailAdapter(
-        private val inflater: LayoutInflater,
-        private val title: String,
-        private val imageDrawableRes: Int,
-        private val details: Array<String>,
-        transitionNameBase: String
-    ) : RecyclerView.Adapter<CityDetailAdapter.ViewHolder>() {
-        private val imageViewTransitionName = inflater.context.resources.getString(
+        val imageViewTransitionName = resources.getString(
             R.string.transition_tag_image_named,
-            transitionNameBase
+            title
         )
-        private val textViewTransitionName = inflater.context.resources.getString(
+
+        val textViewTransitionName = resources.getString(
             R.string.transition_tag_title_named,
-            transitionNameBase
+            title
         )
 
-        override fun getItemViewType(position: Int): Int {
-            return if (position == 0) {
-                VIEW_TYPE_HEADER
-            } else {
-                VIEW_TYPE_DETAIL
+        recycler_view.layoutManager = LinearLayoutManager(activity)
+
+        recycler_view.buildModels {
+            d { "building models" }
+            cityHeader {
+                id("header")
+                imageDrawableRes(image)
+                title(title)
+                imageTransitionName(imageViewTransitionName)
+                textViewTransitionName(textViewTransitionName)
             }
-        }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return if (viewType == VIEW_TYPE_HEADER) {
-                HeaderViewHolder(inflater.inflate(R.layout.row_city_header, parent, false))
-            } else {
-                DetailViewHolder(inflater.inflate(R.layout.row_city_detail, parent, false))
+            LIST_ROWS.forEach { listRow ->
+                cityDetail {
+                    id("city_detail_$listRow")
+                    text(listRow)
+                }
             }
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            if (getItemViewType(position) == VIEW_TYPE_HEADER) {
-                (holder as HeaderViewHolder).bind(
-                    imageDrawableRes,
-                    title,
-                    imageViewTransitionName,
-                    textViewTransitionName
-                )
-            } else {
-                (holder as DetailViewHolder).bind(details[position - 1])
-            }
-        }
-
-        override fun getItemCount() = 1 + details.size
-
-        open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-        class HeaderViewHolder(itemView: View) : ViewHolder(itemView), LayoutContainer {
-
-            override val containerView: View?
-                get() = itemView
-
-            fun bind(
-                imageDrawableRes: Int, title: String,
-                imageTransitionName: String,
-                textViewTransitionName: String
-            ) {
-                image_view.setImageResource(imageDrawableRes)
-                text_view.text = title
-
-                ViewCompat.setTransitionName(image_view, imageTransitionName)
-                ViewCompat.setTransitionName(text_view, textViewTransitionName)
-            }
-        }
-
-        class DetailViewHolder(itemView: View) : ViewHolder(itemView), LayoutContainer {
-
-            override val containerView: View?
-                get() = itemView
-
-            fun bind(detail: String) {
-                itemView.text_view.text = detail
-            }
-        }
-
-        companion object {
-            private const val VIEW_TYPE_HEADER = 0
-            private const val VIEW_TYPE_DETAIL = 1
         }
     }
 
@@ -141,5 +81,35 @@ class CityDetailController : BaseController() {
                 KEY_TITLE to title
             )
         }
+    }
+}
+
+@EpoxyModelClass(layout = R.layout.row_city_header)
+abstract class CityHeaderModel : BaseEpoxyModel() {
+
+    @EpoxyAttribute var imageDrawableRes: Int = 0
+    @EpoxyAttribute lateinit var title: String
+    @EpoxyAttribute lateinit var imageTransitionName: String
+    @EpoxyAttribute lateinit var textViewTransitionName: String
+
+    override fun bind(holder: KtEpoxyHolder) {
+        super.bind(holder)
+        with(holder) {
+            header_image.setImageResource(imageDrawableRes)
+            header_image.transitionName = imageTransitionName
+            header_title.text = title
+            header_title.transitionName = textViewTransitionName
+        }
+    }
+}
+
+@EpoxyModelClass(layout = R.layout.row_city_detail)
+abstract class CityDetailModel : BaseEpoxyModel() {
+
+    @EpoxyAttribute lateinit var text: String
+
+    override fun bind(holder: KtEpoxyHolder) {
+        super.bind(holder)
+        holder.detail_text.text = text
     }
 }

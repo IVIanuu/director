@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.sample
+package com.ivianuu.director.sample.util
 
 import android.os.Bundle
 import com.ivianuu.director.ControllerFactory
-import com.ivianuu.director.sample.util.d
 
 class LoggingControllerFactory : ControllerFactory {
     override fun instantiateController(

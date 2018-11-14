@@ -14,7 +14,7 @@ class MultipleChildRouterController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Child Router Demo"
+        actionBarTitle = "Child Router Demo"
     }
 
     override fun onBindView(view: View) {

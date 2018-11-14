@@ -8,7 +8,7 @@ import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.arch.lifecycle.LifecycleController
 
 import com.ivianuu.director.sample.ActionBarProvider
-import com.ivianuu.director.sample.LoggingControllerFactory
+import com.ivianuu.director.sample.util.LoggingControllerFactory
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -18,13 +18,16 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         get() = view
 
     protected open val layoutRes = 0
-    protected var title: String? = null
+    var actionBarTitle: String? = null
 
     private val actionBar: ActionBar?
         get() = (activity as ActionBarProvider).providedActionBar
 
     override fun onCreate() {
-        childRouters.forEach { it.controllerFactory = LoggingControllerFactory() }
+        childRouters.forEach {
+            it.controllerFactory =
+                    LoggingControllerFactory()
+        }
         super.onCreate()
     }
 
@@ -53,13 +56,13 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
     protected fun setTitle() {
         var parentController = parentController
         while (parentController != null) {
-            if (parentController is BaseController && parentController.title != null) {
+            if (parentController is BaseController && parentController.actionBarTitle != null) {
                 return
             }
             parentController = parentController.parentController
         }
 
-        val title = title
+        val title = actionBarTitle
         val actionBar = actionBar
         if (title != null && actionBar != null) {
             actionBar.title = title

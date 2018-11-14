@@ -36,7 +36,7 @@ class PagerController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "ViewPager Demo"
+        actionBarTitle = "ViewPager Demo"
     }
 
     override fun onBindView(view: View) {

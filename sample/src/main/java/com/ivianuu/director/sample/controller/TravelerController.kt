@@ -39,7 +39,7 @@ class TravelerController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Traveler Demo"
+        actionBarTitle = "Traveler Demo"
         if (!childRouter.hasRootController) {
             travelerRouter.setRoot(
                 NavigationControllerKey(0, NavigationController.DisplayUpMode.HIDE, false)

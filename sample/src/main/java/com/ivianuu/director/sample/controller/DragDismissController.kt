@@ -22,7 +22,7 @@ class DragDismissController : BaseController() {
 
     override fun onCreate() {
         super.onCreate()
-        title = "Drag to Dismiss"
+        actionBarTitle = "Drag to Dismiss"
     }
 
     override fun onBindView(view: View) {
