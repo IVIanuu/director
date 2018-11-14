@@ -82,24 +82,17 @@ abstract class AnimationChangeHandler(
     override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
         super.onAbortPush(newHandler, newTop)
         canceled = true
-
-        if (fromAnimation != null || toAnimation != null) {
-            fromAnimation?.cancel()
-            toAnimation?.cancel()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        }
+        fromAnimation?.cancel()
+        toAnimation?.cancel()
+        onReadyOrAbortedListener?.onReadyOrAborted()
     }
 
     override fun completeImmediately() {
         super.completeImmediately()
         needsImmediateCompletion = true
-        if (fromAnimation != null || toAnimation != null) {
-            fromAnimation?.cancel()
-            toAnimation?.cancel()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        }
+        fromAnimation?.cancel()
+        toAnimation?.cancel()
+        onReadyOrAbortedListener?.onReadyOrAborted()
     }
 
     /**

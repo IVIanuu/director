@@ -92,24 +92,17 @@ abstract class ViewPropertyChangeHandler(
     override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
         super.onAbortPush(newHandler, newTop)
         canceled = true
-
-        if (fromAnimator != null || toAnimator != null) {
-            fromAnimator?.cancel()
-            toAnimator?.cancel()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        }
+        fromAnimator?.cancel()
+        toAnimator?.cancel()
+        onReadyOrAbortedListener?.onReadyOrAborted()
     }
 
     override fun completeImmediately() {
         super.completeImmediately()
         needsImmediateCompletion = true
-        if (fromAnimator != null || toAnimator != null) {
-            fromAnimator?.cancel()
-            toAnimator?.cancel()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        }
+        fromAnimator?.cancel()
+        toAnimator?.cancel()
+        onReadyOrAbortedListener?.onReadyOrAborted()
     }
 
     /**

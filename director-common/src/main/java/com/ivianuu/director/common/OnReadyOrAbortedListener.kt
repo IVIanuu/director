@@ -23,11 +23,9 @@ class OnReadyOrAbortedListener(
         if (hasRun) return
         hasRun = true
 
-        if (view != null) {
-            val observer = view.viewTreeObserver
-            if (observer.isAlive) {
-                observer.removeOnPreDrawListener(this)
-            }
+        val observer = view.viewTreeObserver
+        if (observer.isAlive) {
+            observer.removeOnPreDrawListener(this)
         }
 
         performAnimation()
