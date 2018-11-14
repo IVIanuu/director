@@ -22,8 +22,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.util.d
 import com.ivianuu.scopes.MutableScope
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable

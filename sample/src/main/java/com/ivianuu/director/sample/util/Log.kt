@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.sample
+package com.ivianuu.director.sample.util
 
-import android.os.Bundle
-import com.ivianuu.director.ControllerFactory
-import com.ivianuu.director.sample.util.d
+import android.util.Log
 
-class LoggingControllerFactory : ControllerFactory {
-    override fun instantiateController(
-        classLoader: ClassLoader,
-        className: String,
-        args: Bundle
-    ) = super.instantiateController(classLoader, className, args)
-        .also { d { "instantiated $it for $className and args $args" } }
+internal inline fun Any.d(m: () -> String) {
+    Log.d(javaClass.simpleName, m())
 }

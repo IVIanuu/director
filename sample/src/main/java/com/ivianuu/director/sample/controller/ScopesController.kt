@@ -18,10 +18,10 @@ package com.ivianuu.director.sample.controller
 
 import android.view.View
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.util.d
 import com.ivianuu.director.scopes.destroy
 import com.ivianuu.director.scopes.detach
 import com.ivianuu.director.scopes.unbindView

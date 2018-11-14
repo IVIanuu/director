@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
+import com.ivianuu.director.internal.d
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
@@ -553,6 +554,7 @@ abstract class Controller {
 
         // todo check this
         if (isAttached && activity.isChangingConfigurations) {
+            d { "is attached and changing configs" }
             needsAttach = true
         }
     }
@@ -834,10 +836,10 @@ abstract class Controller {
 
         childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
             .map { bundle ->
-                ControllerHostedRouter(this).also {
+                ControllerHostedRouter(this).apply {
                     // we do not restore the full instance yet
                     // to give the user a chance to set a [ControllerFactory]
-                    it.restoreBasicInstanceState(bundle)
+                    restoreBasicInstanceState(bundle)
                 } to bundle
             }
             .onEach { _childRouters.add(it.first) }
@@ -875,7 +877,7 @@ abstract class Controller {
     }
 
     private fun performCreate() {
-        if (!isCreated && routerSet) {
+        if (!isCreated) {
             notifyLifecycleListeners { it.preCreate(this) }
 
             superCalled = false

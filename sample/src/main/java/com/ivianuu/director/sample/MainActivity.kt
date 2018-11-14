@@ -33,10 +33,13 @@ class MainActivity : AppCompatActivity(), ActionBarProvider, HasControllerInject
             controller_container,
             savedInstanceState,
             LoggingControllerFactory()
-        ).apply {
-            if (!hasRootController) {
-                setRoot(HomeController().toTransaction())
-            }
+        )
+    }
+
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        if (!router.hasRootController) {
+            router.setRoot(HomeController().toTransaction())
         }
     }
 
