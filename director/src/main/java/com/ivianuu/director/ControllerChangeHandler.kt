@@ -20,6 +20,8 @@ abstract class ControllerChangeHandler {
 
     open var forceRemoveViewOnPush = false
 
+    internal var hasBeenUsed = false
+
     /**
      * Responsible for swapping Views from one Controller to another.
      */

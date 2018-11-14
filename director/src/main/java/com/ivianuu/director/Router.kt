@@ -14,6 +14,7 @@ import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
+import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.requireMainThread
 
 /**
@@ -137,11 +138,14 @@ abstract class Router {
     ): Boolean {
         requireMainThread()
 
+        d { "pop controller $controller" }
+
         val topTransaction = _backstack.peek()
         val poppingTopController =
             topTransaction != null && topTransaction.controller == controller
 
         if (poppingTopController) {
+            d { "popping top controller" }
             trackDestroyingController(_backstack.pop().also { it.controller.destroy() })
 
             if (changeHandler != null) {
@@ -150,6 +154,7 @@ abstract class Router {
                 performControllerChange(_backstack.peek(), topTransaction, false)
             }
         } else {
+            d { "not popping top controller" }
             var removedTransaction: RouterTransaction? = null
             var nextTransaction: RouterTransaction? = null
 
@@ -238,6 +243,7 @@ abstract class Router {
         pushToBackstack(transaction)
 
         handler?.forceRemoveViewOnPush = true
+
         performControllerChange(
             transaction.also { it.pushChangeHandler = handler },
             topTransaction,
@@ -719,7 +725,10 @@ abstract class Router {
             // If we already have changes queued up (awaiting full container attach), queue this one up as well so they don't happen
             // out of order.
             pendingControllerChanges.add(transaction)
-        } else if (container == null || !containerFullyAttached) {
+        } else if (container == null ||
+                (from != null && (changeHandler == null
+                        || changeHandler.removesFromViewOnPush) && !containerFullyAttached)
+        ) {
             pendingControllerChanges.add(transaction)
             container?.post { performPendingControllerChanges() }
         } else {

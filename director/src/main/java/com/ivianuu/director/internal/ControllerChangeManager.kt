@@ -16,9 +16,18 @@ internal class ControllerChangeManager {
         val (to, from, isPush, container, inHandler,
                 listeners) = transaction
 
+        d { "execute change $transaction" }
+
         if (container == null) return
 
-        val handler = inHandler?.copy() ?: SimpleSwapChangeHandler()
+        val handler = when {
+            inHandler == null -> SimpleSwapChangeHandler()
+            inHandler.hasBeenUsed -> inHandler.copy()
+            else -> inHandler
+        }
+        handler.hasBeenUsed = true
+
+        d { "handler $handler" }
 
         if (from != null) {
             if (isPush) {
@@ -62,6 +71,7 @@ internal class ControllerChangeManager {
             toView,
             isPush
         ) {
+            d { "change ended $transaction" }
             from?.changeEnded(handler, fromChangeType)
 
             if (to != null) {
@@ -71,8 +81,16 @@ internal class ControllerChangeManager {
 
             listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handler) }
 
-            if (from != null && handler.removesFromViewOnPush && fromView != null) {
-                (fromView.parent as? ViewGroup)?.removeView(fromView)
+            if (handler.forceRemoveViewOnPush && fromView != null) {
+                val fromParent = fromView.parent
+                if (fromParent != null && fromParent is ViewGroup) {
+                    d { "force remove from view" }
+                    fromParent.removeView(fromView)
+                }
+            }
+
+            if (handler.removesFromViewOnPush && from != null) {
+                d { "set from needs attach to false" }
                 from.needsAttach = false
             }
         }
@@ -81,10 +99,14 @@ internal class ControllerChangeManager {
     fun completeChangeImmediately(controllerInstanceId: String): Boolean {
         val changeHandlerData = inProgressChangeHandlers[controllerInstanceId]
         if (changeHandlerData != null) {
+            d { "complete change immediately $controllerInstanceId" }
             changeHandlerData.changeHandler.completeImmediately()
             inProgressChangeHandlers.remove(controllerInstanceId)
             return true
         }
+
+        d { "couldnt complete change immediately for $controllerInstanceId" }
+
         return false
     }
 
@@ -93,15 +115,21 @@ internal class ControllerChangeManager {
         newController: Controller?,
         newChangeHandler: ControllerChangeHandler
     ) {
+        d { "abort or complete change to abort $toAbort, new controller $newController, new change handler $newChangeHandler" }
         val changeHandlerData = inProgressChangeHandlers[toAbort.instanceId]
+
         if (changeHandlerData != null) {
             if (changeHandlerData.isPush) {
+                d { "on abort push" }
                 changeHandlerData.changeHandler.onAbortPush(newChangeHandler, newController)
             } else {
+                d { "complete immediately" }
                 changeHandlerData.changeHandler.completeImmediately()
             }
 
             inProgressChangeHandlers.remove(toAbort.instanceId)
+        } else {
+            d { "no change handler data found" }
         }
     }
 

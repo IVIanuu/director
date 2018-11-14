@@ -124,7 +124,7 @@ internal class LoggingLifecycleListener : ControllerLifecycleListener {
         changeType: ControllerChangeType
     ) {
         super.onChangeStart(controller, changeHandler, changeType)
-        controller.d { "Lifecycle: on change start" }
+        controller.d { "Lifecycle: on change start $changeType" }
     }
 
     override fun onChangeEnd(
@@ -133,6 +133,6 @@ internal class LoggingLifecycleListener : ControllerLifecycleListener {
         changeType: ControllerChangeType
     ) {
         super.onChangeEnd(controller, changeHandler, changeType)
-        controller.d { "Lifecycle: on change end" }
+        controller.d { "Lifecycle: on change end $changeType" }
     }
 }
