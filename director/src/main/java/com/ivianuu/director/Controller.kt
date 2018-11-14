@@ -248,23 +248,6 @@ abstract class Controller {
     }
 
     /**
-     * Called when this Controller has a Context available to it. This will happen very early on in the lifecycle
-     * (before a view is created). If the host activity is re-created (ex: for orientation change), this will be
-     * called again when the new context is available.
-     */
-    protected open fun onActivitySet(activity: FragmentActivity) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller's Context is no longer available. This can happen when the Controller is
-     * destroyed or when the host Activity is destroyed.
-     */
-    protected open fun onActivityCleared() {
-        superCalled = true
-    }
-
-    /**
      * Called when this Controller is attached to its host ViewGroup
      */
     protected open fun onAttach(view: View) {
