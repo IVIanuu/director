@@ -41,11 +41,7 @@ abstract class Router {
     abstract val activity: FragmentActivity
 
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
-    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>().apply {
-        if (DEBUG) {
-            add(LifecycleListenerEntry(LoggingLifecycleListener(), false))
-        }
-    }
+    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
     private val pendingControllerChanges = mutableListOf<ChangeTransaction>()
     protected val destroyingControllers = mutableListOf<Controller>()
 
