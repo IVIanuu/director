@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.common.OnReadyOrAbortedListener
-import com.ivianuu.director.common.d
 
 /**
  * A base [ControllerChangeHandler] that facilitates using [android.animation.Animator]s to replace Controller Views
@@ -102,15 +101,11 @@ abstract class AnimatorChangeHandler(
     override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
         super.onAbortPush(newHandler, newTop)
 
-        d { "on abort push" }
-
         canceled = true
 
         if (animator != null) {
-            d { "cancel animator" }
             animator?.cancel()
         } else if (onReadyOrAbortedListener != null) {
-            d { "call on ready or abort" }
             onReadyOrAbortedListener?.onReadyOrAborted()
         }
     }
@@ -149,7 +144,6 @@ abstract class AnimatorChangeHandler(
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        d { "perform animation" }
         if (canceled) {
             complete(onChangeComplete, null)
             return
@@ -173,8 +167,6 @@ abstract class AnimatorChangeHandler(
 
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationCancel(animation: Animator) {
-                    this@AnimatorChangeHandler.d { "on animation cancel" }
-
                     if (from != null) {
                         resetFromView(from)
                     }
@@ -187,7 +179,6 @@ abstract class AnimatorChangeHandler(
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
-                    this@AnimatorChangeHandler.d { "on animation end $canceled, animator $animator" }
                     if (!canceled && animator != null) {
                         if (from != null && (!isPush || removesFromViewOnPush)) {
                             container.removeView(from)
@@ -210,15 +201,12 @@ abstract class AnimatorChangeHandler(
         onChangeComplete: () -> Unit,
         animatorListener: Animator.AnimatorListener?
     ) {
-        d { "complete" }
         if (!completed) {
-            d { "was not completed" }
             completed = true
             onChangeComplete()
         }
 
         animator?.let { animator ->
-            d { "clean up animator" }
             animatorListener?.let { animator.removeListener(it) }
             animator.cancel()
         }

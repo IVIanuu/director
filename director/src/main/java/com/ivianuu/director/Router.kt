@@ -9,12 +9,9 @@ import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
-import com.ivianuu.director.internal.DEBUG
 import com.ivianuu.director.internal.DefaultControllerFactory
-import com.ivianuu.director.internal.LoggingLifecycleListener
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.d
 import com.ivianuu.director.internal.requireMainThread
 
 /**
@@ -138,14 +135,11 @@ abstract class Router {
     ): Boolean {
         requireMainThread()
 
-        d { "pop controller $controller" }
-
         val topTransaction = _backstack.peek()
         val poppingTopController =
             topTransaction != null && topTransaction.controller == controller
 
         if (poppingTopController) {
-            d { "popping top controller" }
             trackDestroyingController(_backstack.pop().also { it.controller.destroy() })
 
             if (changeHandler != null) {
@@ -154,7 +148,6 @@ abstract class Router {
                 performControllerChange(_backstack.peek(), topTransaction, false)
             }
         } else {
-            d { "not popping top controller" }
             var removedTransaction: RouterTransaction? = null
             var nextTransaction: RouterTransaction? = null
 
@@ -440,25 +433,24 @@ abstract class Router {
                     }
 
                 // Add any new controllers to the backstack
-                for (i in 1 until newVisibleTransactions.size) {
-                    val transaction = newVisibleTransactions[i]
-                    if (!oldVisibleTransactions.contains(transaction)) {
+                newVisibleTransactions
+                    .drop(1)
+                    .filterNot { oldVisibleTransactions.contains(it) }
+                    .forEach {
                         performControllerChange(
-                            transaction,
-                            newVisibleTransactions[i - 1],
+                            it,
+                            newVisibleTransactions[newVisibleTransactions.indexOf(it) - 1],
                             true,
-                            transaction.pushChangeHandler
+                            it.pushChangeHandler
                         )
                     }
-                }
             }
         } else {
             // Remove all visible controllers that were previously on the backstack
-            for (i in oldVisibleTransactions.indices.reversed()) {
-                val transaction = oldVisibleTransactions[i]
+            oldVisibleTransactions.reversed().forEach {
                 val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
-                changeManager.completeChangeImmediately(transaction.controller.instanceId)
-                performControllerChange(null, transaction, false, localHandler)
+                changeManager.completeChangeImmediately(it.controller.instanceId)
+                performControllerChange(null, it, false, localHandler)
             }
         }
 

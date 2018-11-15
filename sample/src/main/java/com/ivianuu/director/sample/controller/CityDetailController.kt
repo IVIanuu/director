@@ -9,7 +9,6 @@ import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.arg
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.sample.util.d
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_detail.*
 import kotlinx.android.synthetic.main.row_city_detail.*
@@ -43,7 +42,6 @@ class CityDetailController : BaseController() {
         recycler_view.layoutManager = LinearLayoutManager(activity)
 
         recycler_view.buildModels {
-            d { "building models" }
             cityHeader {
                 id("header")
                 imageDrawableRes(image)

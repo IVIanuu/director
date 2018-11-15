@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.ControllerHostedRouter
 import com.ivianuu.director.internal.ViewAttachHandler
-import com.ivianuu.director.internal.d
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
@@ -547,7 +546,6 @@ abstract class Controller {
 
         // todo check this
         if (isAttached && activity.isChangingConfigurations) {
-            d { "is attached and changing configs" }
             needsAttach = true
         }
     }

@@ -32,13 +32,11 @@ object ViewUtils {
             view.setAttached(attached, false)
         }
 
-        val listeners = getAttachStateListeners(view)
-
-        for (listener in listeners) {
+        getAttachStateListeners(view).forEach {
             if (attached) {
-                listener.onViewAttachedToWindow(view)
+                it.onViewAttachedToWindow(view)
             } else {
-                listener.onViewDetachedFromWindow(view)
+                it.onViewDetachedFromWindow(view)
             }
         }
 
