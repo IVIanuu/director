@@ -21,7 +21,7 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
     var actionBarTitle: String? = null
 
     private val actionBar: ActionBar?
-        get() = (activity as ActionBarProvider).providedActionBar
+        get() = (activity as? ActionBarProvider)?.providedActionBar
 
     override fun onCreate() {
         childRouters.forEach {

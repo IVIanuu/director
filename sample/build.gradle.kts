@@ -46,6 +46,9 @@ android {
     kapt {
         correctErrorTypes = true
     }
+
+    testOptions.unitTests.isIncludeAndroidResources = true
+
 }
 
 dependencies {
@@ -76,4 +79,13 @@ dependencies {
     implementation(Deps.rxJava)
 
     implementation(Deps.scopesRx)
+
+    testImplementation(project(":director-testing"))
+    testImplementation(Deps.androidxTestCore)
+    testImplementation(Deps.androidxTestJunit)
+    testImplementation(Deps.androidxTestRules)
+    testImplementation(Deps.androidxTestRunner)
+    testImplementation(Deps.junit)
+    testImplementation(Deps.mockitoKotlin)
+    testImplementation(Deps.roboelectric)
 }

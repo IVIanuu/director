@@ -5,6 +5,7 @@ include(
     ":director-contributor",
     ":director-dialog",
     ":director-scopes",
+    ":director-testing",
     ":director-traveler",
     ":director-viewpager",
     ":sample"

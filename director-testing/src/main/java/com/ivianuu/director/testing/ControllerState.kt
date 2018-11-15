@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.sample.app
+package com.ivianuu.director.testing
 
-import android.app.Application
-import com.squareup.leakcanary.LeakCanary
-
-/**
- * @author Manuel Wrage (IVIanuu)
- */
-class App : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-        if (LeakCanary.isInAnalyzerProcess(this)) return
-        //LeakCanary.install(this)
-    }
-
+enum class ControllerState {
+    INITIALIZED,
+    CREATED,
+    ATTACHED,
+    DESTROYED
 }
