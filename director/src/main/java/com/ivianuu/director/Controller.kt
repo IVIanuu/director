@@ -354,7 +354,7 @@ abstract class Controller {
      */
     @TargetApi(Build.VERSION_CODES.M)
     fun requestPermissions(permissions: Array<String>, requestCode: Int) {
-        requestedPermissions.addAll(Arrays.asList(*permissions))
+        requestedPermissions.addAll(listOf(*permissions))
         router.requestPermissions(instanceId, permissions, requestCode)
     }
 
@@ -460,6 +460,16 @@ abstract class Controller {
         }
     }
 
+    internal fun findController(instanceId: String): Controller? {
+        if (this.instanceId == instanceId) {
+            return this
+        }
+
+        return childRouters
+            .map { it.findControllerByInstanceId(instanceId) }
+            .firstOrNull()
+    }
+
     /**
      * Sets the initial state of this controller which was previously created by
      * [Router.saveControllerInstanceState]
@@ -511,7 +521,7 @@ abstract class Controller {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        requestedPermissions.removeAll(Arrays.asList(*permissions))
+        requestedPermissions.removeAll(listOf(*permissions))
         onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
@@ -741,6 +751,7 @@ abstract class Controller {
 
         if (!activity.isChangingConfigurations) {
             router.removeRetainedObjects(instanceId)
+            _retainedObjects.clear()
         }
     }
 

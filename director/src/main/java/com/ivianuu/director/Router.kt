@@ -291,8 +291,8 @@ abstract class Router {
      * Controller exists in this Router.
      */
     fun findControllerByInstanceId(instanceId: String) = backstack
-        .firstOrNull { it.controller.instanceId == instanceId }
-        ?.controller
+        .mapNotNull { it.controller.findController(instanceId) }
+        .firstOrNull()
 
     /**
      * Returns the hosted Controller that was pushed with the given tag or `null` if no
@@ -363,10 +363,6 @@ abstract class Router {
 
         removeAllExceptVisibleAndUnowned()
 
-        if (newBackstack.size != newBackstack.distinctBy { it.controller }.size) {
-            throw IllegalStateException("Trying to push the same controller to the backstack more than once.")
-        }
-
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
@@ -376,6 +372,10 @@ abstract class Router {
 
         newBackstack.forEachIndexed { i, transaction ->
             transaction.transactionIndex = indices[i]
+        }
+
+        if (newBackstack.size != newBackstack.distinctBy { it.controller }.size) {
+            throw IllegalStateException("Trying to push the same controller to the backstack more than once.")
         }
 
         _backstack.setEntries(newBackstack)
@@ -422,6 +422,7 @@ abstract class Router {
                     )
                 }
 
+                // Remove all visible controllers that were previously on the backstack
                 oldVisibleTransactions
                     .drop(1)
                     .reversed()
@@ -438,30 +439,26 @@ abstract class Router {
                         )
                     }
 
-
-                var lastVisibleTransaction: RouterTransaction? = null
-
                 // Add any new controllers to the backstack
-                newVisibleTransactions
-                    .drop(1)
-                    .filterNot { oldVisibleTransactions.contains(it) }
-                    .forEach {
+                for (i in 1 until newVisibleTransactions.size) {
+                    val transaction = newVisibleTransactions[i]
+                    if (!oldVisibleTransactions.contains(transaction)) {
                         performControllerChange(
-                            it,
-                            lastVisibleTransaction,
+                            transaction,
+                            newVisibleTransactions[i - 1],
                             true,
-                            it.pushChangeHandler
+                            transaction.pushChangeHandler
                         )
-
-                        lastVisibleTransaction = it
                     }
+                }
             }
         } else {
             // Remove all visible controllers that were previously on the backstack
-            oldVisibleTransactions.reversed().forEach {
+            for (i in oldVisibleTransactions.indices.reversed()) {
+                val transaction = oldVisibleTransactions[i]
                 val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
-                changeManager.completeChangeImmediately(it.controller.instanceId)
-                performControllerChange(null, it, false, localHandler)
+                changeManager.completeChangeImmediately(transaction.controller.instanceId)
+                performControllerChange(null, transaction, false, localHandler)
             }
         }
 
@@ -814,7 +811,7 @@ abstract class Router {
             }
         }
 
-        return visible
+        return visible.reversed()
     }
 
     private fun backstacksAreEqual(

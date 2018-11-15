@@ -41,11 +41,21 @@ android {
             isExperimental = true
         })
     }
+
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
     api(Deps.androidxFragment)
     api(Deps.kotlinStdLib)
+
+    testImplementation(Deps.androidxTestCore)
+    testImplementation(Deps.androidxTestJunit)
+    testImplementation(Deps.androidxTestRules)
+    testImplementation(Deps.androidxTestRunner)
+    testImplementation(Deps.junit)
+    testImplementation(Deps.mockitoKotlin)
+    testImplementation(Deps.roboelectric)
 }
 
 val sourcesJar = task("sourcesJar", Jar::class) {

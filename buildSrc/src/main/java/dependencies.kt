@@ -17,6 +17,8 @@ object Versions {
 
     const val androidx = "1.0.0"
     const val androidxArch = "2.0.0-rc01"
+    const val androidxTestRules = "1.1.0"
+    const val androidxTestRunner = "1.1.0"
 
     const val contributor = "efa69d138b"
 
@@ -25,12 +27,18 @@ object Versions {
     const val epoxy = "2.19.0"
     const val epoxyKtx = "1a273d9917"
 
-    const val kotlin = "1.3.0"
+    const val junit = "4.12"
+
+    const val kotlin = "1.3.10"
 
     const val leakCanary = "1.6.1"
 
     const val mavenGradlePlugin = "2.1"
     const val materialComponents = "1.0.0"
+
+    const val mockitoKotlin = "2.0.0"
+
+    const val roboelectric = "4.0.2"
 
     const val rxJava = "2.2.2"
 
@@ -46,6 +54,11 @@ object Deps {
     const val androidxFragment = "androidx.fragment:fragment:${Versions.androidx}"
     const val androidxViewPager = "androidx.viewpager:viewpager:${Versions.androidx}"
 
+    const val androidxTestCore = "androidx.test:core:${Versions.androidx}"
+    const val androidxTestJunit = "androidx.test.ext:junit:${Versions.androidx}"
+    const val androidxTestRules = "androidx.test:rules:${Versions.androidxTestRules}"
+    const val androidxTestRunner = "androidx.test:runner:${Versions.androidxTestRunner}"
+
     const val archLifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.androidxArch}"
 
@@ -60,6 +73,8 @@ object Deps {
     const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
     const val epoxyKtx = "com.github.IVIanuu:epoxy-ktx:${Versions.epoxyKtx}"
 
+    const val junit = "junit:junit:${Versions.junit}"
+
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
 
@@ -69,6 +84,10 @@ object Deps {
 
     const val materialComponents =
         "com.google.android.material:material:${Versions.materialComponents}"
+
+    const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
+
+    const val roboelectric = "org.robolectric:robolectric:${Versions.roboelectric}"
 
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
 
