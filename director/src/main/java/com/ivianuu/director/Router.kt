@@ -216,10 +216,9 @@ abstract class Router {
         val handler = transaction.pushChangeHandler
         if (topTransaction != null) {
             val oldHandlerRemovedViews =
-                topTransaction.pushChangeHandler == null
-                        || topTransaction.pushChangeHandler!!.removesFromViewOnPush
+                topTransaction.pushChangeHandler?.removesFromViewOnPush == true
 
-            val newHandlerRemovesViews = handler == null || handler.removesFromViewOnPush
+            val newHandlerRemovesViews = handler?.removesFromViewOnPush == true
 
             if (!oldHandlerRemovedViews && newHandlerRemovesViews) {
                 backstack
