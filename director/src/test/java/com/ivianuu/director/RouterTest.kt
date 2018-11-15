@@ -19,6 +19,8 @@ package com.ivianuu.director
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
+import com.ivianuu.director.util.EmptyChangeListener
+import com.ivianuu.director.util.EmptyLifecycleListener
 import com.ivianuu.director.util.MockChangeHandler
 import com.ivianuu.director.util.TestController
 import org.junit.Assert.assertEquals
@@ -529,5 +531,81 @@ class RouterTest {
         router.popToRoot()
         assertFalse(controller1.isBeingDestroyed)
         assertTrue(controller3.isBeingDestroyed)
+    }
+
+    @Test
+    fun testRecursivelySettingChangeListener() {
+        val routerRecursiveListener = EmptyChangeListener()
+        val routerNonRecursiveListener = EmptyChangeListener()
+
+        val controller1 = TestController()
+        router.addChangeListener(routerRecursiveListener, true)
+        router.addChangeListener(routerNonRecursiveListener)
+        router.setRoot(controller1.toTransaction())
+
+        val childRouterRecursiveListener = EmptyChangeListener()
+        val childRouterNonRecursiveListener = EmptyChangeListener()
+
+        val childRouter =
+            controller1.getChildRouter(controller1.childContainer1!!)
+        assertTrue(childRouter.getAllChangeListeners(false).contains(routerRecursiveListener))
+        assertFalse(childRouter.getAllChangeListeners(false).contains(routerNonRecursiveListener))
+
+        val controller2 = TestController()
+        childRouter.addChangeListener(childRouterRecursiveListener, true)
+        childRouter.addChangeListener(childRouterNonRecursiveListener)
+        childRouter.setRoot(controller2.toTransaction())
+
+        val childRouter2 =
+            controller2.getChildRouter(controller2.childContainer2!!)
+        val controller3 = TestController()
+        childRouter2.pushController(controller3.toTransaction())
+        assertTrue(childRouter2.getAllChangeListeners(false).contains(routerRecursiveListener))
+        assertTrue(childRouter2.getAllChangeListeners(false).contains(childRouterRecursiveListener))
+        assertFalse(
+            childRouter2.getAllChangeListeners(false).contains(
+                childRouterNonRecursiveListener
+            )
+        )
+    }
+
+    @Test
+    fun testRecursivelySettingLifecycleListener() {
+        val routerRecursiveListener = EmptyLifecycleListener()
+        val routerNonRecursiveListener = EmptyLifecycleListener()
+
+        val controller1 = TestController()
+        router.addLifecycleListener(routerRecursiveListener, true)
+        router.addLifecycleListener(routerNonRecursiveListener)
+        router.setRoot(controller1.toTransaction())
+
+        val childRouterRecursiveListener = EmptyLifecycleListener()
+        val childRouterNonRecursiveListener = EmptyLifecycleListener()
+
+        val childRouter =
+            controller1.getChildRouter(controller1.childContainer1!!)
+        assertTrue(childRouter.getAllLifecycleListeners(false).contains(routerRecursiveListener))
+        assertFalse(childRouter.getAllLifecycleListeners(false).contains(routerNonRecursiveListener))
+
+        val controller2 = TestController()
+        childRouter.addLifecycleListener(childRouterRecursiveListener, true)
+        childRouter.addLifecycleListener(childRouterNonRecursiveListener)
+        childRouter.setRoot(controller2.toTransaction())
+
+        val childRouter2 =
+            controller2.getChildRouter(controller2.childContainer2!!)
+        val controller3 = TestController()
+        childRouter2.pushController(controller3.toTransaction())
+        assertTrue(childRouter2.getAllLifecycleListeners(false).contains(routerRecursiveListener))
+        assertTrue(
+            childRouter2.getAllLifecycleListeners(false).contains(
+                childRouterRecursiveListener
+            )
+        )
+        assertFalse(
+            childRouter2.getAllLifecycleListeners(false).contains(
+                childRouterNonRecursiveListener
+            )
+        )
     }
 }
