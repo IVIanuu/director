@@ -42,9 +42,9 @@ object Versions {
 
     const val rxJava = "2.2.2"
 
-    const val scopes = "1a360d16ad"
+    const val scopes = "c9c4e3d5ea"
 
-    const val traveler = "21c2bf5f07"
+    const val traveler = "e1cb60c864"
 }
 
 object Deps {

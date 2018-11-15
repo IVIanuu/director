@@ -42,7 +42,7 @@ class TravelerController : BaseController() {
         actionBarTitle = "Traveler Demo"
         if (!childRouter.hasRootController) {
             travelerRouter.setRoot(
-                NavigationControllerKey(0, NavigationController.DisplayUpMode.HIDE, false)
+                NavigationControllerKey(0, NavigationController.DisplayUpMode.HIDE, true)
             )
         }
     }

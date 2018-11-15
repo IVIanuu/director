@@ -49,7 +49,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val tag = getControllerTag(command.key)
 
-        val transaction = controller.toTransaction().tag(tag)
+        val transaction = controller.toTransaction()
 
         setupTransaction(
             command,
@@ -57,6 +57,8 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
             controller,
             transaction
         )
+
+        transaction.tag(tag)
 
         router.pushController(transaction)
         return true
@@ -68,7 +70,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val tag = getControllerTag(command.key)
 
-        val transaction = controller.toTransaction().tag(tag)
+        val transaction = controller.toTransaction()
 
         setupTransaction(
             command,
@@ -76,6 +78,8 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
             controller,
             transaction
         )
+
+        transaction.tag(tag)
 
         router.replaceTopController(transaction)
         return true
