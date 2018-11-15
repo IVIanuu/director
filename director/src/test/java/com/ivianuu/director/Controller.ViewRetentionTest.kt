@@ -114,4 +114,31 @@ class ControllerViewRetentionTest {
         assertNotEquals(child2View, child2.view)
         assertEquals(child3View, child3.view)
     }
+
+    @Test
+    fun testChildViewRetentionOnDetach() {
+        val parent = TestController()
+        parent.retainViewMode = Controller.RetainViewMode.RELEASE_DETACH
+
+        val child1 = TestController()
+        child1.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
+
+        router.setRoot(parent.toTransaction())
+
+        parent.getChildRouter(parent.childContainer1!!)
+            .setRoot(child1.toTransaction())
+
+        val parentView = parent.view
+        val child1View = child1.view
+
+        activityProxy.stop(true)
+
+        assertNull(parent.view)
+        assertNotNull(child1.view)
+
+        activityProxy.resume()
+
+        assertNotEquals(parentView, parent.view)
+        assertEquals(child1View, child1.view)
+    }
 }

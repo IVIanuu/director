@@ -26,6 +26,7 @@ class TargetTitleEntryController : BaseController() {
     }
 
     override fun onDetach(view: View) {
+        super.onDetach(view)
         val imm =
             edit_text.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(edit_text!!.windowToken, 0)
