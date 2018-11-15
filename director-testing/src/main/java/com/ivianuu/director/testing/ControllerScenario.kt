@@ -138,6 +138,28 @@ class ControllerFactoryHolderViewModel : ViewModel() {
     }
 }
 
+@PublishedApi
+internal class SingleControllerFactory<C : Controller>(
+    private val instantiate: (ClassLoader, String, Bundle) -> Controller
+) : ControllerFactory {
+    override fun instantiateController(
+        classLoader: ClassLoader,
+        className: String,
+        args: Bundle
+    ) = instantiate(classLoader, className, args)
+}
+
+inline fun <reified C : Controller> launch(
+    args: Bundle? = null,
+    noinline instantiate: (ClassLoader, String, Bundle) -> C
+) = launch(C::class, args, instantiate)
+
+fun <C : Controller> launch(
+    controllerClass: KClass<C>,
+    args: Bundle? = null,
+    instantiate: (ClassLoader, String, Bundle) -> C
+) = launch(controllerClass, args, SingleControllerFactory<C>(instantiate))
+
 inline fun <reified C : Controller> launch(
     args: Bundle? = null,
     factory: ControllerFactory? = null
