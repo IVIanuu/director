@@ -24,7 +24,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
 
 /**
- * A [LifecycleOwner] for [Controller]'s
+ * A [LifecycleOwner] for [Controller]s
  */
 class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 

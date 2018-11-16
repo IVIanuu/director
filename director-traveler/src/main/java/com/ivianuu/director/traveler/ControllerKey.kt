@@ -21,7 +21,7 @@ import com.ivianuu.director.RouterTransaction
 import com.ivianuu.traveler.Command
 
 /**
- * A key for [Controller]'s
+ * A key for [Controller]s
  */
 interface ControllerKey {
 

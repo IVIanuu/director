@@ -33,7 +33,7 @@ import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 
 /**
- * A controller counterpart for [DialogFragments]'s
+ * A controller counterpart for [DialogFragments]s
  */
 abstract class DialogController : Controller(), DialogInterface.OnShowListener, DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
 

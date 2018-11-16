@@ -23,7 +23,7 @@ import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.retainedLazy
 
 /**
- * A [ViewModelStoreOwner] for [Controller]'s
+ * A [ViewModelStoreOwner] for [Controller]s
  */
 class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwner {
 

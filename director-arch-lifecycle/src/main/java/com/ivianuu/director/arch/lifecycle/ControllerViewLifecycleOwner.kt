@@ -8,7 +8,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
 
 /**
- * A [LifecycleOwner] for [Controller]'s views
+ * A [LifecycleOwner] for [Controller]s views
  */
 class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 

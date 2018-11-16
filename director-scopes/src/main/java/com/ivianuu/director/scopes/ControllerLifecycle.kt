@@ -22,7 +22,7 @@ import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.scopes.lifecycle.BaseLifecycle
 
 /**
- * A [com.ivianuu.scopes.lifecycle.Lifecycle] for [Controller]'s
+ * A [com.ivianuu.scopes.lifecycle.Lifecycle] for [Controller]s
  */
 class ControllerLifecycle(
     controller: Controller

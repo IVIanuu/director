@@ -20,7 +20,7 @@ import android.os.Bundle
 import com.ivianuu.director.internal.newInstanceOrThrow
 
 /**
- * A factory for [Controller]'s and [ControllerChangeHandler]'s
+ * A factory for [Controller]s and [ControllerChangeHandler]s
  */
 interface ControllerFactory {
 

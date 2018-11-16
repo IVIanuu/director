@@ -17,7 +17,7 @@
 package com.ivianuu.director.scopes
 
 /**
- * Lifecycle events for [com.ivianuu.director.Controller]'s
+ * Lifecycle events for [com.ivianuu.director.Controller]s
  */
 enum class ControllerEvent {
     CREATE,
