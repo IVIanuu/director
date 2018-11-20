@@ -16,16 +16,9 @@
 
 package com.ivianuu.director.traveler
 
-import com.ivianuu.director.Controller
+import com.ivianuu.director.*
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterTransaction
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
-import com.ivianuu.traveler.Back
-import com.ivianuu.traveler.BackTo
-import com.ivianuu.traveler.Command
-import com.ivianuu.traveler.Forward
-import com.ivianuu.traveler.Replace
+import com.ivianuu.traveler.*
 import com.ivianuu.traveler.common.ResultNavigator
 
 /**
@@ -86,8 +79,12 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     }
 
     protected open fun back(command: Back): Boolean {
-        router.handleBack()
-        return true
+        return if (router.backstack.size > 1) {
+            router.popCurrentController()
+            true
+        } else {
+            exit()
+        }
     }
 
     protected open fun backTo(command: BackTo): Boolean {
