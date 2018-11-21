@@ -115,19 +115,19 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun onActivityStarted(activity: Activity) {
         if (this.activity == activity) {
             hasPreparedForHostDetach = false
-            routers.forEach { it.onActivityStarted(requireActivity()) }
+            routers.forEach { it.onActivityStarted(activity as FragmentActivity) }
         }
     }
 
     override fun onActivityResumed(activity: Activity) {
         if (this.activity == activity) {
-            routers.forEach { it.onActivityResumed(requireActivity()) }
+            routers.forEach { it.onActivityResumed(activity as FragmentActivity) }
         }
     }
 
     override fun onActivityPaused(activity: Activity) {
         if (this.activity == activity) {
-            routers.forEach { it.onActivityPaused(requireActivity()) }
+            routers.forEach { it.onActivityPaused(activity as FragmentActivity) }
         }
     }
 
@@ -145,7 +145,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun onActivityStopped(activity: Activity) {
         if (this.activity == activity) {
             prepareForHostDetachIfNeeded()
-            routers.forEach { it.onActivityStopped(requireActivity()) }
+            routers.forEach { it.onActivityStopped(activity as FragmentActivity) }
         }
     }
 

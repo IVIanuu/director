@@ -15,7 +15,6 @@ internal class ActivityHostedRouter(
     override val transactionIndexer = TransactionIndexer()
 
     override val activity: FragmentActivity
-        get() = lifecycleHandler.requireActivity()
 
     override val siblingRouters: List<Router>
         get() = lifecycleHandler.routers
@@ -25,6 +24,7 @@ internal class ActivityHostedRouter(
 
     init {
         this.container = container
+        this.activity = lifecycleHandler.requireActivity()
     }
 
     override fun saveInstanceState(outState: Bundle) {
