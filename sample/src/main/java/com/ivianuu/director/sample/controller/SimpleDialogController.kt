@@ -17,6 +17,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.app.Dialog
+import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.ivianuu.director.dialog.DialogController
@@ -27,7 +28,7 @@ import com.ivianuu.director.dialog.DialogController
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(): Dialog = AlertDialog.Builder(activity)
+    override fun onCreateDialog(savedViewState: Bundle?): Dialog = AlertDialog.Builder(activity)
         .setTitle("Hello")
         .setMessage("This is a simple dialog controller.")
         .setCancelable(isCancelable)

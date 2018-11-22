@@ -73,7 +73,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
     ): View {
         val view = View(inflater.context)
 
-        val dialog = onCreateDialog().also { this.dialog = it }
+        val dialog = onCreateDialog(savedViewState).also { this.dialog = it }
 
         isDismissed = false
 
@@ -106,7 +106,7 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         return view
     }
 
-    protected open fun onCreateDialog(): Dialog = Dialog(activity, theme)
+    protected open fun onCreateDialog(savedViewState: Bundle?): Dialog = Dialog(activity, theme)
 
     protected open fun onCreateDialogView(
         inflater: LayoutInflater,
