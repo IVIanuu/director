@@ -1,5 +1,6 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
@@ -10,9 +11,10 @@ import com.ivianuu.director.sample.util.arg
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_city_detail.*
-import kotlinx.android.synthetic.main.row_city_detail.*
-import kotlinx.android.synthetic.main.row_city_header.*
+import kotlinx.android.synthetic.main.controller_city_detail.recycler_view
+import kotlinx.android.synthetic.main.row_city_detail.detail_text
+import kotlinx.android.synthetic.main.row_city_header.header_image
+import kotlinx.android.synthetic.main.row_city_header.header_title
 
 class CityDetailController : BaseController() {
 
@@ -21,8 +23,8 @@ class CityDetailController : BaseController() {
     private val title by arg<String>(KEY_TITLE)
     private val image by arg<Int>(KEY_IMAGE)
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = title
     }
 

@@ -23,12 +23,12 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
     private val actionBar: ActionBar?
         get() = (activity as? ActionBarProvider)?.providedActionBar
 
-    override fun onCreate() {
+    override fun onCreate(savedInstanceState: Bundle?) {
         childRouters.forEach {
             it.controllerFactory =
                     LoggingControllerFactory()
         }
-        super.onCreate()
+        super.onCreate(savedInstanceState)
     }
 
     override fun onInflateView(

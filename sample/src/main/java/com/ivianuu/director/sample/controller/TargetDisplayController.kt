@@ -11,7 +11,10 @@ import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_target_display.*
+import kotlinx.android.synthetic.main.controller_target_display.btn_pick_image
+import kotlinx.android.synthetic.main.controller_target_display.btn_pick_title
+import kotlinx.android.synthetic.main.controller_target_display.image_view
+import kotlinx.android.synthetic.main.controller_target_display.tv_selection
 
 class TargetDisplayController : BaseController(),
     TargetTitleEntryController.TargetTitleEntryControllerListener {
@@ -21,8 +24,8 @@ class TargetDisplayController : BaseController(),
     private var selectedText: String? = null
     private var imageUri: Uri? = null
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Target Controller Demo"
     }
 

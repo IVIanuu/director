@@ -1,12 +1,13 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Router
-
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import com.ivianuu.director.viewpager.RouterPagerAdapter
-import kotlinx.android.synthetic.main.controller_pager.*
+import kotlinx.android.synthetic.main.controller_pager.tab_layout
+import kotlinx.android.synthetic.main.controller_pager.view_pager
 import java.util.*
 
 class PagerController : BaseController() {
@@ -34,8 +35,8 @@ class PagerController : BaseController() {
         override fun getCount() = PAGE_COLORS.size
     }
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "ViewPager Demo"
     }
 

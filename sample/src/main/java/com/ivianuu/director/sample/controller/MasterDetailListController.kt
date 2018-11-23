@@ -14,8 +14,10 @@ import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_master_detail_list.*
-import kotlinx.android.synthetic.main.row_detail_item.*
+import kotlinx.android.synthetic.main.controller_master_detail_list.detail_container
+import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
+import kotlinx.android.synthetic.main.row_detail_item.item_title
+import kotlinx.android.synthetic.main.row_detail_item.row_root
 
 class MasterDetailListController : BaseController() {
 
@@ -24,8 +26,8 @@ class MasterDetailListController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_master_detail_list
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Master/Detail Flow"
     }
 

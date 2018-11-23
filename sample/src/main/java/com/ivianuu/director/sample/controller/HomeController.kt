@@ -1,6 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
+import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,15 +19,16 @@ import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_home.*
-import kotlinx.android.synthetic.main.row_home.*
+import kotlinx.android.synthetic.main.controller_home.recycler_view
+import kotlinx.android.synthetic.main.row_home.home_image
+import kotlinx.android.synthetic.main.row_home.home_title
 
 class HomeController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_home
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Director Sample"
     }
 

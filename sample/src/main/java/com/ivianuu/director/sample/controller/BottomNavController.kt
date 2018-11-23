@@ -8,7 +8,7 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.controller_bottom_nav.*
+import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -22,8 +22,8 @@ class BottomNavController : BaseController() {
 
     private lateinit var bottomNavRouter: Router
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         bottomNavRouter = getChildRouter(R.id.bottom_nav_container)
         actionBarTitle = "Bottom Nav Demo"
     }

@@ -24,16 +24,16 @@ import android.view.View
  */
 interface ControllerLifecycleListener {
 
-    fun preCreate(controller: Controller) {
+    fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
     }
 
-    fun postCreate(controller: Controller) {
+    fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
     }
 
-    fun preInflateView(controller: Controller) {
+    fun preInflateView(controller: Controller, savedViewState: Bundle?) {
     }
 
-    fun postInflateView(controller: Controller, view: View) {
+    fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
     }
 
     fun preBindView(controller: Controller, view: View) {

@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.popChangeHandler
@@ -28,7 +29,8 @@ import com.ivianuu.director.scopes.unbindView
 import com.ivianuu.director.toTransaction
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_scopes.*
+import kotlinx.android.synthetic.main.controller_scopes.btn_next_release_view
+import kotlinx.android.synthetic.main.controller_scopes.btn_next_retain_view
 import java.util.concurrent.TimeUnit
 
 class ScopesController : BaseController() {
@@ -36,8 +38,8 @@ class ScopesController : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_scopes
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         actionBarTitle = "Scopes Demo"
 

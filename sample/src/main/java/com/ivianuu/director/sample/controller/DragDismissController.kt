@@ -2,6 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.annotation.TargetApi
 import android.os.Build.VERSION_CODES
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ScaleFadeChangeHandler
@@ -20,8 +21,8 @@ class DragDismissController : BaseController() {
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Drag to Dismiss"
     }
 

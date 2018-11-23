@@ -1,6 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
+import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,8 +18,11 @@ import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_city_grid.*
-import kotlinx.android.synthetic.main.row_city_grid.*
+import kotlinx.android.synthetic.main.controller_city_grid.img_dot
+import kotlinx.android.synthetic.main.controller_city_grid.recycler_view
+import kotlinx.android.synthetic.main.controller_city_grid.tv_title
+import kotlinx.android.synthetic.main.row_city_grid.grid_image
+import kotlinx.android.synthetic.main.row_city_grid.grid_title
 
 class CityGridController : BaseController() {
 
@@ -27,8 +31,8 @@ class CityGridController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_city_grid
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = args.getString(KEY_TITLE)
     }
 

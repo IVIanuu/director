@@ -1,18 +1,20 @@
 package com.ivianuu.director.sample.controller
 
 import android.content.Context
+import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.ivianuu.director.Controller
 import com.ivianuu.director.sample.R
-import kotlinx.android.synthetic.main.controller_target_title_entry.*
+import kotlinx.android.synthetic.main.controller_target_title_entry.btn_use_title
+import kotlinx.android.synthetic.main.controller_target_title_entry.edit_text
 
 class TargetTitleEntryController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_target_title_entry
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Target Controller Demo"
     }
 

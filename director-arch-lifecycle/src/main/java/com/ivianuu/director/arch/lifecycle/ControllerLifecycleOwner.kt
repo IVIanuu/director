@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.arch.lifecycle
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -32,8 +33,8 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private val lifecycleListener = object : ControllerLifecycleListener {
 
-        override fun postCreate(controller: Controller) {
-            super.postCreate(controller)
+        override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
+            super.postCreate(controller, savedInstanceState)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }
 

@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.scopes
 
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
@@ -30,8 +31,8 @@ class ControllerLifecycle(
 
     init {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
-            override fun preCreate(controller: Controller) {
-                super.preCreate(controller)
+            override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
+                super.preCreate(controller, savedInstanceState)
                 onEvent(ControllerEvent.CREATE)
             }
 

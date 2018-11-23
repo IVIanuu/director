@@ -33,8 +33,8 @@ class TestController : Controller() {
     val childContainer1 get() = view?.findViewById<ViewGroup>(CHILD_VIEW_ID_1)
     val childContainer2 get() = view?.findViewById<ViewGroup>(CHILD_VIEW_ID_2)
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         currentCallState.createCalls++
     }
 

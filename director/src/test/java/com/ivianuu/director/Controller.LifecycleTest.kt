@@ -193,7 +193,7 @@ class ControllerLifecycleCallbacksTest {
 
         testController.addLifecycleListener(object : ControllerLifecycleListener {
 
-            override fun preCreate(controller: Controller) {
+            override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
                 callState.createCalls++
                 assertEquals(1, callState.createCalls)
                 assertEquals(0, testController.currentCallState.createCalls)
@@ -217,7 +217,7 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun postCreate(controller: Controller) {
+            override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
                 callState.createCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -241,7 +241,7 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun preInflateView(controller: Controller) {
+            override fun preInflateView(controller: Controller, savedViewState: Bundle?) {
                 callState.inflateViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -265,7 +265,11 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun postInflateView(controller: Controller, view: View) {
+            override fun postInflateView(
+                controller: Controller,
+                view: View,
+                savedViewState: Bundle?
+            ) {
                 callState.inflateViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -731,11 +735,15 @@ class ControllerLifecycleCallbacksTest {
                 currentCallState.changeEndCalls++
             }
 
-            override fun postCreate(controller: Controller) {
+            override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
                 currentCallState.createCalls++
             }
 
-            override fun postInflateView(controller: Controller, view: View) {
+            override fun postInflateView(
+                controller: Controller,
+                view: View,
+                savedViewState: Bundle?
+            ) {
                 currentCallState.inflateViewCalls++
             }
 

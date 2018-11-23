@@ -1,5 +1,6 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
@@ -20,8 +21,8 @@ class ParentController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_parent
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Parent/Child Demo"
     }
 

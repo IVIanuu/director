@@ -1,6 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.content.res.ColorStateList
+import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.ivianuu.director.Controller
@@ -12,13 +13,15 @@ import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
-
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_transition_demo.*
+import kotlinx.android.synthetic.main.controller_transition_demo.bg_view
+import kotlinx.android.synthetic.main.controller_transition_demo.btn_next
+import kotlinx.android.synthetic.main.controller_transition_demo.transition_root
+import kotlinx.android.synthetic.main.controller_transition_demo.tv_title
 
 class TransitionDemoController : BaseController() {
 
@@ -27,8 +30,8 @@ class TransitionDemoController : BaseController() {
 
     private val transitionDemo by lazy { TransitionDemo.fromIndex(args.getInt(KEY_INDEX)) }
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Transition Demos"
     }
 

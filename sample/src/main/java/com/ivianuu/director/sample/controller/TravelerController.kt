@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
 import com.ivianuu.traveler.Traveler
@@ -37,8 +38,8 @@ class TravelerController : BaseController() {
 
     val travelerRouter get() = traveler.router
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Traveler Demo"
         if (!childRouter.hasRootController) {
             travelerRouter.setRoot(

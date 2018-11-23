@@ -1,16 +1,19 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_multiple_child_routers.*
+import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_0
+import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_1
+import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_2
 
 class MultipleChildRouterController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_multiple_child_routers
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         actionBarTitle = "Child Router Demo"
     }
 

@@ -182,7 +182,7 @@ abstract class Controller {
     /**
      * Will be called once when the router was set for the first time
      */
-    protected open fun onCreate() {
+    protected open fun onCreate(savedInstanceState: Bundle?) {
         // restore the full instance state of child routers
         childRouterStates
             ?.filterKeys { _childRouters.contains(it) }
@@ -564,7 +564,7 @@ abstract class Controller {
         }
 
         if (view == null) {
-            notifyLifecycleListeners { it.preInflateView(this) }
+            notifyLifecycleListeners { it.preInflateView(this, viewState) }
 
             view = onInflateView(
                 LayoutInflater.from(parent.context),
@@ -574,7 +574,7 @@ abstract class Controller {
 
             restoreChildControllerContainers()
 
-            notifyLifecycleListeners { it.postInflateView(this, view) }
+            notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
 
             notifyLifecycleListeners { it.preBindView(this, view) }
 
@@ -874,18 +874,18 @@ abstract class Controller {
 
     private fun performCreate() {
         if (!isCreated) {
-            notifyLifecycleListeners { it.preCreate(this) }
+            notifyLifecycleListeners { it.preCreate(this, savedState) }
 
             superCalled = false
 
-            onCreate()
+            onCreate(savedState)
 
             if (!superCalled) {
                 throw IllegalStateException("${javaClass.name} did not call super.onCreate()")
             }
 
             isCreated = true
-            notifyLifecycleListeners { it.postCreate(this) }
+            notifyLifecycleListeners { it.postCreate(this, savedState) }
         }
     }
 
