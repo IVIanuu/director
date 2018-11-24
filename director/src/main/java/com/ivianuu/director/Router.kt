@@ -720,6 +720,10 @@ abstract class Router {
     }
 
     private fun performPendingControllerChanges() {
+        if (container == null) {
+            return
+        }
+
         // We're intentionally using dynamic size checking (list.size()) here so we can account for changes
         // that occur during this loop (ex: if a controller is popped from within onAttach)
         pendingControllerChanges.indices
