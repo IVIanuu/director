@@ -20,8 +20,6 @@ object Versions {
     const val androidxTestRules = "1.1.0"
     const val androidxTestRunner = "1.1.0"
 
-    const val contributor = "efa69d138b"
-
     const val dagger = "2.19"
 
     const val epoxy = "2.19.0"
@@ -61,10 +59,6 @@ object Deps {
 
     const val archLifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.androidxArch}"
-
-    const val contributor = "com.github.IVIanuu.contributor:contributor:${Versions.contributor}"
-    const val contributorCompiler =
-        "com.github.IVIanuu.contributor:contributor-compiler:${Versions.contributor}"
 
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
