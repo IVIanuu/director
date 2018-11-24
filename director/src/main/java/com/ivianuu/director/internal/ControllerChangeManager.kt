@@ -85,15 +85,9 @@ internal class ControllerChangeManager {
         }
     }
 
-    fun completeChangeImmediately(controllerInstanceId: String): Boolean {
-        val changeHandlerData = inProgressChangeHandlers[controllerInstanceId]
-        if (changeHandlerData != null) {
-            changeHandlerData.changeHandler.completeImmediately()
-            inProgressChangeHandlers.remove(controllerInstanceId)
-            return true
-        }
-
-        return false
+    fun completeChangeImmediately(controllerInstanceId: String) {
+        inProgressChangeHandlers.remove(controllerInstanceId)
+            ?.changeHandler?.completeImmediately()
     }
 
     private fun abortOrCompleteChange(
