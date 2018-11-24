@@ -610,7 +610,6 @@ abstract class Router {
         val backstackBundle = savedInstanceState.getParcelable<Bundle>(KEY_BACKSTACK)!!
         _backstack.restoreInstanceState(backstackBundle, _controllerFactory)
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
-
         backstack.forEach { setControllerRouter(it.controller) }
     }
 

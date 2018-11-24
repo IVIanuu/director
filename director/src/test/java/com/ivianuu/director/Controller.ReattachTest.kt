@@ -39,7 +39,7 @@ class ReattachTest {
     }
 
     @Test
-    fun testNeedsAttachingOnPause() {
+    fun testNeedsAttachOnPause() {
         val controllerA = TestController()
         val controllerB = TestController()
 
