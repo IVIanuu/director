@@ -45,7 +45,8 @@ class MockChangeHandler private constructor(
 
     init {
         if (listener == null) {
-            this.listener = object : Listener {}
+            this.listener = object : Listener {
+            }
         } else {
             this.listener = listener
         }

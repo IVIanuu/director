@@ -161,7 +161,8 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
     override fun onShow(dialogInterface: DialogInterface) {
     }
 
-    override fun onCancel(dialog: DialogInterface) {}
+    override fun onCancel(dialog: DialogInterface) {
+    }
 
     override fun onDismiss(dialog: DialogInterface) {
         dismiss()

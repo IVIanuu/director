@@ -73,7 +73,8 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
         /**
          * Called when dragging is released and has exceeded the threshold dismiss distance.
          */
-        open fun onDragDismissed() {}
+        open fun onDragDismissed() {
+        }
     }
 
     init {
@@ -143,7 +144,8 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
         return 0
     }
 
-    override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {}
+    override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)

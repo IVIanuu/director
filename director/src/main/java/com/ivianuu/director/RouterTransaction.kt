@@ -84,11 +84,6 @@ class RouterTransaction {
         putBoolean(KEY_ATTACHED_TO_ROUTER, attachedToRouter)
     }
 
-    // todo remove
-    override fun toString(): String {
-        return controller.toString()
-    }
-
     private fun checkModify() {
         if (attachedToRouter) {
             throw IllegalStateException("transactions cannot be modified after being added to a Router.")

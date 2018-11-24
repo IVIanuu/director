@@ -45,7 +45,6 @@ abstract class Controller {
      * Objects which will retained across configuration changes
      */
     val retainedObjects get() = _retainedObjects
-
     private lateinit var _retainedObjects: RetainedObjects
 
     /**
@@ -88,7 +87,12 @@ abstract class Controller {
      */
     var targetController: Controller?
         get() = targetInstanceId?.let { _router.rootRouter.findControllerByInstanceId(it) }
-        set(value) { targetInstanceId = value?.instanceId }
+        set(value) {
+            if (targetInstanceId != null) {
+                throw IllegalStateException("the target controller can only be set once")
+            }
+            targetInstanceId = value?.instanceId
+        }
 
     private var targetInstanceId: String? = null
 
@@ -332,8 +336,8 @@ abstract class Controller {
     }
 
     /**
-     * Registers this Controller to handle onActivityResult responses. Calling this method is NOT
-     * necessary when calling [.startActivityForResult]
+     * Registers this Controller to handle [onActivityResult] responses. Calling this method is NOT
+     * necessary when calling [startActivityForResult]
      */
     fun registerForActivityResult(requestCode: Int) {
         router.registerForActivityResult(instanceId, requestCode)
@@ -343,7 +347,8 @@ abstract class Controller {
      * Should be overridden if this Controller has called startActivityForResult and needs to handle
      * the result.
      */
-    open fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {}
+    open fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    }
 
     /**
      * Calls requestPermission(String[], int) from this Controller's host Activity. Results for this request,
@@ -459,9 +464,7 @@ abstract class Controller {
     }
 
     internal fun findController(instanceId: String): Controller? {
-        if (this.instanceId == instanceId) {
-            return this
-        }
+        if (this.instanceId == instanceId) return this
 
         return childRouters
             .map { it.findControllerByInstanceId(instanceId) }
@@ -617,9 +620,7 @@ abstract class Controller {
         attachedToUnownedParent = view.parent != router.container
 
         // this can happen while transitions just ignore it
-        if (attachedToUnownedParent) {
-            return
-        }
+        if (attachedToUnownedParent) return
 
         val parentController = parentController
 
@@ -677,7 +678,7 @@ abstract class Controller {
             // this happens if we are a child controller, have RETAIN_DETACH
             // and the parent does not RETAIN_DETACH
             // we remove the view from the container to make sure that
-            // we dont reinflate the view in Controller.inflate
+            // we don't re-inflate the view in Controller.inflate
             // because we would be attached to the old container otherwise
             (view.parent as? ViewGroup)?.removeView(view)
         }
@@ -718,12 +719,9 @@ abstract class Controller {
         _childRouters
             .filterNot { it.hasContainer }
             .forEach {
-                val containerView = view?.findViewById(it.hostId) as? ViewGroup
-
-                if (containerView != null) {
-                    it.container = containerView
-                    it.rebindIfNeeded()
-                }
+                val containerView = (view?.findViewById(it.hostId) as? ViewGroup) ?: return@forEach
+                it.container = containerView
+                it.rebindIfNeeded()
             }
     }
 
@@ -751,15 +749,15 @@ abstract class Controller {
     }
 
     private fun performDestroy() {
-        if (!isDestroyed) {
-            notifyLifecycleListeners { it.preDestroy(this) }
-            isDestroyed = true
+        if (isDestroyed) return
 
-            requireSuperCalled { onDestroy() }
+        notifyLifecycleListeners { it.preDestroy(this) }
+        isDestroyed = true
 
-            parentController = null
-            notifyLifecycleListeners { it.postDestroy(this) }
-        }
+        requireSuperCalled { onDestroy() }
+
+        parentController = null
+        notifyLifecycleListeners { it.postDestroy(this) }
     }
 
     internal fun saveInstanceState(): Bundle {
@@ -853,43 +851,34 @@ abstract class Controller {
     }
 
     private fun restoreViewState(view: View) {
-        val viewState = viewState
-        if (viewState != null) {
-            view.restoreHierarchyState(viewState.getSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY))
-            val savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE)!!
-            savedViewState.classLoader = javaClass.classLoader
-            onRestoreViewState(view, savedViewState)
+        val viewState = viewState ?: return
 
-            restoreChildControllerContainers()
+        view.restoreHierarchyState(viewState.getSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY))
+        val savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE)!!
+        savedViewState.classLoader = javaClass.classLoader
+        onRestoreViewState(view, savedViewState)
 
-            notifyLifecycleListeners { it.onRestoreViewState(this, viewState) }
-        }
+        restoreChildControllerContainers()
+
+        notifyLifecycleListeners { it.onRestoreViewState(this, viewState) }
     }
 
     private fun performCreate() {
-        if (!isCreated) {
-            notifyLifecycleListeners { it.preCreate(this, savedState) }
+        if (isCreated) return
+        notifyLifecycleListeners { it.preCreate(this, savedState) }
 
-            superCalled = false
+        isCreated = true
 
-            onCreate(savedState)
+        requireSuperCalled { onCreate(savedState) }
 
-            if (!superCalled) {
-                throw IllegalStateException("${javaClass.name} did not call super.onCreate()")
-            }
-
-            isCreated = true
-            notifyLifecycleListeners { it.postCreate(this, savedState) }
-        }
+        notifyLifecycleListeners { it.postCreate(this, savedState) }
     }
 
     private fun performRestoreInstanceState() {
-        val savedInstanceState = savedState
-        if (savedInstanceState != null) {
-            onRestoreInstanceState(savedInstanceState)
-            notifyLifecycleListeners { it.onRestoreInstanceState(this, savedInstanceState) }
-            savedState = null
-        }
+        val savedInstanceState = savedState ?: return
+        onRestoreInstanceState(savedInstanceState)
+        notifyLifecycleListeners { it.onRestoreInstanceState(this, savedInstanceState) }
+        savedState = null
     }
 
     internal fun changeStarted(
@@ -934,9 +923,7 @@ abstract class Controller {
     }
 
     private inline fun notifyLifecycleListeners(block: (ControllerLifecycleListener) -> Unit) {
-        val listeners = mutableListOf<ControllerLifecycleListener>()
-        listeners.addAll(lifecycleListeners)
-        listeners.addAll(router.getAllLifecycleListeners())
+        val listeners = lifecycleListeners + router.getAllLifecycleListeners()
         listeners.forEach(block)
     }
 
