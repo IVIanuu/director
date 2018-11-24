@@ -500,7 +500,7 @@ abstract class Router {
             .map { it.listener }
 
     /**
-     * Saves the instance state of [controller] this can later be used in
+     * Saves the instance state of [controller] which can later be used in
      * [Controller.setInitialSavedState]
      */
     fun saveControllerInstanceState(controller: Controller): Bundle {
@@ -543,49 +543,26 @@ abstract class Router {
 
     internal fun onActivityStarted(activity: FragmentActivity) {
         isActivityStopped = false
-
-        reversedBackstack.forEach { transaction ->
-            transaction.controller.activityStarted(activity)
-            transaction.controller.childRouters.forEach { it.onActivityStarted(activity) }
-        }
+        reversedBackstack.forEach { it.controller.activityStarted(activity) }
     }
 
     internal fun onActivityResumed(activity: FragmentActivity) {
-        reversedBackstack.forEach { transaction ->
-            transaction.controller.activityResumed(activity)
-            transaction.controller.childRouters.forEach { it.onActivityResumed(activity) }
-        }
+        reversedBackstack.forEach { it.controller.activityResumed(activity) }
     }
 
     internal fun onActivityPaused(activity: FragmentActivity) {
-        reversedBackstack.forEach { transaction ->
-            transaction.controller.activityPaused(activity)
-            transaction.controller.childRouters.forEach { it.onActivityPaused(activity) }
-        }
+        reversedBackstack.forEach { it.controller.activityPaused(activity) }
     }
 
     internal fun onActivityStopped(activity: FragmentActivity) {
-        reversedBackstack.forEach { transaction ->
-            transaction.controller.activityStopped(activity)
-            transaction.controller.childRouters.forEach { it.onActivityStopped(activity) }
-        }
-
+        reversedBackstack.forEach { it.controller.activityStopped(activity) }
         isActivityStopped = true
     }
 
     internal open fun onActivityDestroyed(activity: FragmentActivity) {
         prepareForContainerRemoval()
-
-        reversedBackstack.forEach { transaction ->
-            transaction.controller.activityDestroyed(activity)
-            transaction.controller.childRouters.forEach { it.onActivityDestroyed(activity) }
-        }
-
-        destroyingControllers.reversed().forEach { controller ->
-            controller.activityDestroyed(activity)
-            controller.childRouters.forEach { it.onActivityDestroyed(activity) }
-        }
-
+        reversedBackstack.forEach { it.controller.activityDestroyed(activity) }
+        destroyingControllers.reversed().forEach { it.activityDestroyed(activity) }
         container = null
     }
 

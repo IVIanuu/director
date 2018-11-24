@@ -526,6 +526,7 @@ abstract class Controller {
 
     internal fun activityStarted(activity: FragmentActivity) {
         viewAttachHandler?.onActivityStarted()
+        _childRouters.forEach { it.onActivityStarted(activity) }
     }
 
     internal fun activityResumed(activity: FragmentActivity) {
@@ -536,9 +537,12 @@ abstract class Controller {
             needsAttach = false
             hasSavedViewState = false
         }
+
+        _childRouters.forEach { it.onActivityResumed(activity) }
     }
 
     internal fun activityPaused(activity: FragmentActivity) {
+        _childRouters.forEach { it.onActivityPaused(activity) }
     }
 
     internal fun activityStopped(activity: FragmentActivity) {
@@ -548,10 +552,13 @@ abstract class Controller {
         if (isAttached && activity.isChangingConfigurations) {
             needsAttach = true
         }
+
+        _childRouters.forEach { it.onActivityStopped(activity) }
     }
 
     internal fun activityDestroyed(activity: FragmentActivity) {
         destroy(true)
+        _childRouters.forEach { it.onActivityDestroyed(activity) }
     }
 
     internal fun inflate(parent: ViewGroup): View {
