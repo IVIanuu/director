@@ -89,8 +89,8 @@ internal class ControllerHostedRouter : Router {
         super.setBackstack(newBackstack, changeHandler)
     }
 
-    override fun onActivityDestroyed(activity: FragmentActivity) {
-        super.onActivityDestroyed(activity)
+    override fun onActivityDestroyed() {
+        super.onActivityDestroyed()
         removeContainer(true)
     }
 

@@ -524,12 +524,12 @@ abstract class Controller {
         onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    internal fun activityStarted(activity: FragmentActivity) {
+    internal fun activityStarted() {
         viewAttachHandler?.onActivityStarted()
-        _childRouters.forEach { it.onActivityStarted(activity) }
+        _childRouters.forEach { it.onActivityStarted() }
     }
 
-    internal fun activityResumed(activity: FragmentActivity) {
+    internal fun activityResumed() {
         val view = view
         if (!isAttached && view != null && viewIsAttached) {
             attach(view)
@@ -538,14 +538,14 @@ abstract class Controller {
             hasSavedViewState = false
         }
 
-        _childRouters.forEach { it.onActivityResumed(activity) }
+        _childRouters.forEach { it.onActivityResumed() }
     }
 
-    internal fun activityPaused(activity: FragmentActivity) {
-        _childRouters.forEach { it.onActivityPaused(activity) }
+    internal fun activityPaused() {
+        _childRouters.forEach { it.onActivityPaused() }
     }
 
-    internal fun activityStopped(activity: FragmentActivity) {
+    internal fun activityStopped() {
         viewAttachHandler?.onActivityStopped()
 
         // todo check this
@@ -553,12 +553,12 @@ abstract class Controller {
             needsAttach = true
         }
 
-        _childRouters.forEach { it.onActivityStopped(activity) }
+        _childRouters.forEach { it.onActivityStopped() }
     }
 
-    internal fun activityDestroyed(activity: FragmentActivity) {
+    internal fun activityDestroyed() {
         destroy(true)
-        _childRouters.forEach { it.onActivityDestroyed(activity) }
+        _childRouters.forEach { it.onActivityDestroyed() }
     }
 
     internal fun inflate(parent: ViewGroup): View {

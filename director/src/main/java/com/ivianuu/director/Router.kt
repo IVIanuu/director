@@ -541,28 +541,28 @@ abstract class Router {
             }
     }
 
-    internal fun onActivityStarted(activity: FragmentActivity) {
+    internal fun onActivityStarted() {
         isActivityStopped = false
-        reversedBackstack.forEach { it.controller.activityStarted(activity) }
+        reversedBackstack.forEach { it.controller.activityStarted() }
     }
 
-    internal fun onActivityResumed(activity: FragmentActivity) {
-        reversedBackstack.forEach { it.controller.activityResumed(activity) }
+    internal fun onActivityResumed() {
+        reversedBackstack.forEach { it.controller.activityResumed() }
     }
 
-    internal fun onActivityPaused(activity: FragmentActivity) {
-        reversedBackstack.forEach { it.controller.activityPaused(activity) }
+    internal fun onActivityPaused() {
+        reversedBackstack.forEach { it.controller.activityPaused() }
     }
 
-    internal fun onActivityStopped(activity: FragmentActivity) {
-        reversedBackstack.forEach { it.controller.activityStopped(activity) }
+    internal fun onActivityStopped() {
+        reversedBackstack.forEach { it.controller.activityStopped() }
         isActivityStopped = true
     }
 
-    internal open fun onActivityDestroyed(activity: FragmentActivity) {
+    internal open fun onActivityDestroyed() {
         prepareForContainerRemoval()
-        reversedBackstack.forEach { it.controller.activityDestroyed(activity) }
-        destroyingControllers.reversed().forEach { it.activityDestroyed(activity) }
+        reversedBackstack.forEach { it.controller.activityDestroyed() }
+        destroyingControllers.reversed().forEach { it.activityDestroyed() }
         container = null
     }
 
