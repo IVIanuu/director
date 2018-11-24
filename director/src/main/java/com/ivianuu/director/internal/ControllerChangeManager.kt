@@ -82,10 +82,6 @@ internal class ControllerChangeManager {
                     fromParent.removeView(fromView)
                 }
             }
-
-            if (handler.removesFromViewOnPush && from != null) {
-                from.needsAttach = false
-            }
         }
     }
 

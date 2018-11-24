@@ -121,7 +121,6 @@ abstract class Controller {
     private var viewState: Bundle? = null
     private var childRouterStates: Map<ControllerHostedRouter, Bundle>? = null
 
-    internal var needsAttach = false
     private var viewIsAttached = false
     private var viewWasDetached = false
     private var attachedToUnownedParent = false
@@ -508,7 +507,6 @@ abstract class Controller {
     }
 
     internal fun prepareForHostDetach() {
-        needsAttach = needsAttach || isAttached
         _childRouters.forEach { it.prepareForHostDetach() }
     }
 
@@ -534,7 +532,6 @@ abstract class Controller {
         if (!isAttached && view != null && viewIsAttached) {
             attach(view)
         } else if (isAttached) {
-            needsAttach = false
             hasSavedViewState = false
         }
 
@@ -547,12 +544,6 @@ abstract class Controller {
 
     internal fun activityStopped() {
         viewAttachHandler?.onActivityStopped()
-
-        // todo check this
-        if (isAttached && activity.isChangingConfigurations) {
-            needsAttach = true
-        }
-
         _childRouters.forEach { it.onActivityStopped() }
     }
 
@@ -644,7 +635,6 @@ abstract class Controller {
         notifyLifecycleListeners { it.preAttach(this, view) }
 
         isAttached = true
-        needsAttach = router.isActivityStopped == true
 
         requireSuperCalled { onAttach(view) }
 
@@ -784,7 +774,6 @@ abstract class Controller {
         outState.putBundle(KEY_ARGS, args)
         outState.putString(KEY_INSTANCE_ID, instanceId)
         outState.putString(KEY_TARGET_INSTANCE_ID, instanceId)
-        outState.putBoolean(KEY_NEEDS_ATTACH, needsAttach || isAttached)
         outState.putInt(KEY_RETAIN_VIEW_MODE, retainViewMode.ordinal)
 
         overriddenPushHandler?.let {
@@ -832,8 +821,6 @@ abstract class Controller {
             ?.let { ControllerChangeHandler.fromBundle(it) }
         overriddenPopHandler = savedInstanceState.getBundle(KEY_OVERRIDDEN_POP_HANDLER)
             ?.let { ControllerChangeHandler.fromBundle(it) }
-
-        needsAttach = savedInstanceState.getBoolean(KEY_NEEDS_ATTACH)
 
         retainViewMode = RetainViewMode.values()[savedInstanceState.getInt(KEY_RETAIN_VIEW_MODE, 0)]
 
@@ -977,7 +964,6 @@ abstract class Controller {
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"
         private const val KEY_ARGS = "Controller.args"
-        private const val KEY_NEEDS_ATTACH = "Controller.needsAttach"
         private const val KEY_OVERRIDDEN_PUSH_HANDLER = "Controller.overriddenPushHandler"
         private const val KEY_OVERRIDDEN_POP_HANDLER = "Controller.overriddenPopHandler"
         private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"

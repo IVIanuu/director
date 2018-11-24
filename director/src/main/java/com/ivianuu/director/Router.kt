@@ -535,7 +535,6 @@ abstract class Router {
         requireMainThread()
 
         backstack
-            .filter { it.controller.needsAttach }
             .forEach {
                 performControllerChange(it, null, true, SimpleSwapChangeHandler(false))
             }
@@ -568,9 +567,7 @@ abstract class Router {
 
     fun prepareForHostDetach() {
         reversedBackstack.forEach {
-            if (changeManager.completeChangeImmediately(it.controller.instanceId)) {
-                it.controller.needsAttach = true
-            }
+            changeManager.completeChangeImmediately(it.controller.instanceId)
             it.controller.prepareForHostDetach()
         }
     }
