@@ -5,7 +5,7 @@ import android.view.ViewTreeObserver
 
 class OnReadyOrAbortedListener(
     val view: View,
-    val performAnimation: () -> Unit
+    val action: () -> Unit
 ) : ViewTreeObserver.OnPreDrawListener {
 
     private var hasRun = false
@@ -28,6 +28,6 @@ class OnReadyOrAbortedListener(
             observer.removeOnPreDrawListener(this)
         }
 
-        performAnimation()
+        action()
     }
 }
