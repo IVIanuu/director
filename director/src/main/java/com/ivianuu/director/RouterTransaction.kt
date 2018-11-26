@@ -18,21 +18,30 @@ class RouterTransaction {
      * The tag of this transaction
      */
     var tag: String? = null
-        private set
+        set(value) {
+            checkModify()
+            field = value
+        }
 
     /**
      * The push change handler of this transaction
      */
     var pushChangeHandler: ControllerChangeHandler? = null
         get() = controller.overriddenPushHandler ?: field
-        private set
+        set(value) {
+            checkModify()
+            field = value
+        }
 
     /**
      * The pop change handler of this transaction
      */
     var popChangeHandler: ControllerChangeHandler? = null
         get() = controller.overriddenPopHandler ?: field
-        private set
+        set(value) {
+            checkModify()
+            field = value
+        }
 
     internal var transactionIndex = INVALID_INDEX
     internal var attachedToRouter = false
@@ -55,30 +64,6 @@ class RouterTransaction {
         this.tag = tag
         this.transactionIndex = transactionIndex
         this.attachedToRouter = attachedToRouter
-    }
-
-    /**
-     * Sets the push change handler
-     */
-    fun pushChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
-        checkModify()
-        pushChangeHandler = changeHandler
-    }
-
-    /**
-     * Sets the pop change handler
-     */
-    fun popChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
-        checkModify()
-        popChangeHandler = changeHandler
-    }
-
-    /**
-     * Sets the tag
-     */
-    fun tag(tag: String?) = apply {
-        checkModify()
-        this.tag = tag
     }
 
     internal fun ensureValidIndex(indexer: TransactionIndexer) {
@@ -131,3 +116,24 @@ class RouterTransaction {
  * Returns a new [RouterTransaction] with the [controller]
  */
 fun RouterTransaction(controller: Controller) = RouterTransaction(controller, Unit)
+
+/**
+ * Fluent version of push change handler
+ */
+fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
+    pushChangeHandler = changeHandler
+}
+
+/**
+ * Fluent version of pop change handler
+ */
+fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
+    popChangeHandler = changeHandler
+}
+
+/**
+ * Fluent version of tag
+ */
+fun RouterTransaction.tag(tag: String?) = apply {
+    this.tag = tag
+}

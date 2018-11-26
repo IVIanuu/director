@@ -567,13 +567,13 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, child)
 
         val childRouter =
-            parent.getChildRouter(parent.childContainer1!!)
-        childRouter
-            .setRoot(
-                child.toTransaction()
+            parent.getChildRouter(parent.childContainer1!!) {
+                setRoot(
+                    child.toTransaction()
                     .pushChangeHandler(getPushHandler(expectedCallState, child))
-                    .popChangeHandler(getPopHandler(expectedCallState, child))
-            )
+                        .popChangeHandler(getPopHandler(expectedCallState, child))
+                )
+            }
 
         assertCalls(expectedCallState, child)
 

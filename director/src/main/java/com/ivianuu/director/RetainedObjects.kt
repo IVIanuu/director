@@ -22,7 +22,8 @@ import kotlin.reflect.KProperty
 private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
 
 /**
- * @author Manuel Wrage (IVIanuu)
+ * Objects which are retained trough config changes
+ * So every [Controller] will get the same instance back
  */
 class RetainedObjects {
 

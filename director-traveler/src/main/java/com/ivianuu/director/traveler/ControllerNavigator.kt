@@ -24,6 +24,7 @@ import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
 import com.ivianuu.director.pushController
 import com.ivianuu.director.replaceTopController
+import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 import com.ivianuu.traveler.Back
 import com.ivianuu.traveler.BackTo

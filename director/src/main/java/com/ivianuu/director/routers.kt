@@ -35,6 +35,11 @@ val Router.containerId: Int
     get() = container?.id ?: 0
 
 /**
+ * Fluent version of pops last view
+ */
+fun Router.popsLastView(popsLastView: Boolean) = apply { this.popsLastView = popsLastView }
+
+/**
  * Saves the instance state of [controller] which can later be used in
  * [Controller.setInitialSavedState]
  */

@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             controller_container,
             savedInstanceState,
             LoggingControllerFactory()
-        ).apply {
+        ) {
             addLifecycleListener(LoggingLifecycleListener())
 
             if (!hasRootController) {

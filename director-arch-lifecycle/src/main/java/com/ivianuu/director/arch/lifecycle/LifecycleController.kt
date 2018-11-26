@@ -17,4 +17,5 @@ abstract class LifecycleController : Controller(), LifecycleOwner, ViewModelStor
     override fun getLifecycle() = lifecycleOwner.lifecycle
 
     override fun getViewModelStore() = viewModelStoreOwner.viewModelStore
+
 }

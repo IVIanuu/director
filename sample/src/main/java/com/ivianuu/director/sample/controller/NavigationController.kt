@@ -7,8 +7,10 @@ import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.RouterTransaction
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
+import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.pushController
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R

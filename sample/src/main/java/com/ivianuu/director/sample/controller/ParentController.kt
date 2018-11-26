@@ -9,7 +9,10 @@ import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRootController
+import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.popController
+import com.ivianuu.director.popsLastView
+import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.resources
 
 import com.ivianuu.director.sample.R
