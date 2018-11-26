@@ -82,7 +82,7 @@ fun Controller.startIntentSenderForResult(
 }
 
 /**
- * Registers this Controller to handle [onActivityResult] responses. Calling this method is NOT
+ * Registers this Controller to handle [Controller.onActivityResult] responses. Calling this method is NOT
  * necessary when calling [startActivityForResult]
  */
 fun Controller.registerForActivityResult(requestCode: Int) {

@@ -108,7 +108,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     override fun shouldShowRequestPermissionRationale(permission: String) = routers
         .filter {
-            it.handleRequestedPermission(
+            it.shouldShowRequestPermissionRationale(
                 permission,
                 permissionRequests.flatMap { it.value }.toSet()
             )

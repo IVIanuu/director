@@ -13,11 +13,7 @@ internal class Backstack {
 
     val reversedEntries get() = _entries.reversed()
 
-    val isEmpty: Boolean get() = _entries.isEmpty()
-
     val size get() = _entries.size
-
-    val root get() = _entries.firstOrNull()
 
     fun pop() = _entries.removeAt(_entries.lastIndex)
 

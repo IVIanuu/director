@@ -29,7 +29,6 @@ abstract class Router {
      */
     val backstack get() = _backstack.entries
     private val _backstack = Backstack()
-
     private val reversedBackstack get() = _backstack.reversedEntries
 
     /**
@@ -38,17 +37,10 @@ abstract class Router {
      */
     abstract val activity: FragmentActivity
 
-    private val changeListeners = mutableListOf<ChangeListenerEntry>()
-    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
-    protected val destroyingControllers = mutableListOf<Controller>()
-
     /**
      * Whether or not the last view should be popped
      */
     var popsLastView = false
-        private set
-
-    internal var isActivityStopped = false
         private set
 
     internal var container: ViewGroup? = null
@@ -80,6 +72,10 @@ abstract class Router {
 
     private val changeManager = ControllerChangeManager()
 
+    private val changeListeners = mutableListOf<ChangeListenerEntry>()
+    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
+    protected val destroyingControllers = mutableListOf<Controller>()
+
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
@@ -93,7 +89,7 @@ abstract class Router {
         val oldTransactions = backstack
         val oldVisibleTransactions = oldTransactions.filterVisible()
 
-        removeAllExceptVisibleAndUnowned()
+        container?.removeAllExceptVisibleAndUnowned()
 
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
@@ -282,7 +278,6 @@ abstract class Router {
     }
 
     open fun onActivityStarted() {
-        isActivityStopped = false
         reversedBackstack.forEach { it.controller.activityStarted() }
     }
 
@@ -296,7 +291,6 @@ abstract class Router {
 
     open fun onActivityStopped() {
         reversedBackstack.forEach { it.controller.activityStopped() }
-        isActivityStopped = true
     }
 
     open fun onActivityDestroyed() {
@@ -362,7 +356,8 @@ abstract class Router {
         backstack.forEach { setControllerRouter(it.controller) }
     }
 
-    fun handleRequestedPermission(permission: String, instanceIds: Set<String>) = instanceIds
+    fun shouldShowRequestPermissionRationale(permission: String, instanceIds: Set<String>) =
+        instanceIds
         .mapNotNull { findControllerByInstanceId(it) }
         .filter { it.shouldShowRequestPermissionRationale(permission) }
         .any()
@@ -432,9 +427,7 @@ abstract class Router {
         }
     }
 
-    private fun removeAllExceptVisibleAndUnowned() {
-        val container = container ?: return
-
+    private fun ViewGroup.removeAllExceptVisibleAndUnowned() {
         val views = mutableListOf<View>()
 
         backstack
@@ -446,10 +439,10 @@ abstract class Router {
             .filter { it.container == container }
             .forEach { addRouterViewsToList(it, views) }
 
-        (container.childCount - 1 downTo 0)
-            .map { container.getChildAt(it) }
+        (childCount - 1 downTo 0)
+            .map { getChildAt(it) }
             .filterNot { views.contains(it) }
-            .forEach { container.removeView(it) }
+            .forEach { removeView(it) }
     }
 
     internal abstract fun getRetainedObjects(instanceId: String): RetainedObjects
