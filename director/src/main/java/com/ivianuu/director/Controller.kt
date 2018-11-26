@@ -1,6 +1,5 @@
 package com.ivianuu.director
 
-import android.annotation.TargetApi
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -161,7 +160,6 @@ abstract class Controller {
     private val _childRouters = mutableListOf<ControllerHostedRouter>()
 
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
-    private val requestedPermissions = mutableListOf<String>()
 
     private var destroyedView: WeakReference<View>? = null
     private var isPerformingExitTransition = false
@@ -289,14 +287,13 @@ abstract class Controller {
     }
 
     /**
-     * Calls requestPermission(String[], int) from this Controller's host Activity. Results for this request,
-     * including [.shouldShowRequestPermissionRationale] and
-     * [.onRequestPermissionsResult] will be forwarded back to this Controller by the system.
+     * Should be overridden if this Controller has requested runtime permissions and needs to handle the user's response.
      */
-    @TargetApi(Build.VERSION_CODES.M)
-    fun requestPermissions(permissions: Array<String>, requestCode: Int) {
-        requestedPermissions.addAll(listOf(*permissions))
-        router.requestPermissions(instanceId, permissions, requestCode)
+    open fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
     }
 
     /**
@@ -306,16 +303,6 @@ abstract class Controller {
     open fun shouldShowRequestPermissionRationale(permission: String) =
         Build.VERSION.SDK_INT >= 23
                 && activity.shouldShowRequestPermissionRationale(permission)
-
-    /**
-     * Should be overridden if this Controller has requested runtime permissions and needs to handle the user's response.
-     */
-    open fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-    }
 
     /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
@@ -437,18 +424,6 @@ abstract class Controller {
 
     internal fun prepareForHostDetach() {
         _childRouters.forEach { it.prepareForHostDetach() }
-    }
-
-    internal fun didRequestPermission(permission: String) =
-        requestedPermissions.contains(permission)
-
-    internal fun requestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        requestedPermissions.removeAll(listOf(*permissions))
-        onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     internal fun activityStarted() {

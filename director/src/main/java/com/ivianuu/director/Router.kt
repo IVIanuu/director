@@ -362,9 +362,8 @@ abstract class Router {
         backstack.forEach { setControllerRouter(it.controller) }
     }
 
-    fun handleRequestedPermission(permission: String) = backstack
-        .map { it.controller }
-        .filter { it.didRequestPermission(permission) }
+    fun handleRequestedPermission(permission: String, instanceIds: Set<String>) = instanceIds
+        .mapNotNull { findControllerByInstanceId(it) }
         .filter { it.shouldShowRequestPermissionRationale(permission) }
         .any()
 

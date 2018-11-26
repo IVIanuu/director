@@ -16,10 +16,12 @@
 
 package com.ivianuu.director
 
+import android.annotation.TargetApi
 import android.app.Application
 import android.content.Intent
 import android.content.IntentSender
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
 
@@ -85,6 +87,16 @@ fun Controller.startIntentSenderForResult(
  */
 fun Controller.registerForActivityResult(requestCode: Int) {
     router.registerForActivityResult(instanceId, requestCode)
+}
+
+/**
+ * Calls requestPermission(String[], int) from this Controller's host Activity. Results for this request,
+ * including [.shouldShowRequestPermissionRationale] and
+ * [.onRequestPermissionsResult] will be forwarded back to this Controller by the system.
+ */
+@TargetApi(Build.VERSION_CODES.M)
+fun Controller.requestPermissions(permissions: Array<String>, requestCode: Int) {
+    router.requestPermissions(instanceId, permissions, requestCode)
 }
 
 /**
