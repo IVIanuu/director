@@ -24,6 +24,8 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
+import com.ivianuu.director.getChildRouter
+import com.ivianuu.director.hasRootController
 import java.util.*
 
 /**

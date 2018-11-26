@@ -200,7 +200,7 @@ abstract class Router {
     /**
      * Attaches this Router's existing backstack to its container if one exists.
      */
-    fun rebindIfNeeded() {
+    open fun rebindIfNeeded() {
         requireMainThread()
 
         backstack
@@ -255,7 +255,7 @@ abstract class Router {
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener }
 
-    fun onActivityResult(
+    open fun onActivityResult(
         instanceIds: Set<String>,
         requestCode: Int,
         resultCode: Int,
@@ -266,7 +266,7 @@ abstract class Router {
             .forEach { it.onActivityResult(requestCode, resultCode, data) }
     }
 
-    fun onRequestPermissionsResult(
+    open fun onRequestPermissionsResult(
         instanceIds: Set<String>,
         requestCode: Int,
         permissions: Array<String>,
@@ -277,20 +277,20 @@ abstract class Router {
             .forEach { it.onRequestPermissionsResult(requestCode, permissions, grantResults) }
     }
 
-    fun onActivityStarted() {
+    open fun onActivityStarted() {
         isActivityStopped = false
         reversedBackstack.forEach { it.controller.activityStarted() }
     }
 
-    fun onActivityResumed() {
+    open fun onActivityResumed() {
         reversedBackstack.forEach { it.controller.activityResumed() }
     }
 
-    fun onActivityPaused() {
+    open fun onActivityPaused() {
         reversedBackstack.forEach { it.controller.activityPaused() }
     }
 
-    fun onActivityStopped() {
+    open fun onActivityStopped() {
         reversedBackstack.forEach { it.controller.activityStopped() }
         isActivityStopped = true
     }
@@ -301,7 +301,7 @@ abstract class Router {
         container = null
     }
 
-    fun prepareForHostDetach() {
+    open fun prepareForHostDetach() {
         reversedBackstack.forEach {
             changeManager.completeChangeImmediately(it.controller.instanceId)
             it.controller.prepareForHostDetach()

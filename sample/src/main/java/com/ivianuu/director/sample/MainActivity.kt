@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.ivianuu.director.Router
 import com.ivianuu.director.attachRouter
 import com.ivianuu.director.handleBack
+import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
@@ -58,9 +59,6 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())
             }
-
-//            val nextController = TextController.newInstance("hallo")
-//            pushController(nextController.toTransaction())
         }
     }
 
