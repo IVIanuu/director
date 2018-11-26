@@ -4,16 +4,10 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterTransaction
 import com.ivianuu.director.attachRouter
 import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
-import com.ivianuu.director.popController
-import com.ivianuu.director.pushController
-import com.ivianuu.director.sample.controller.ArchController
 import com.ivianuu.director.sample.controller.HomeController
-import com.ivianuu.director.sample.controller.ScopesController
-import com.ivianuu.director.sample.controller.TravelerController
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import com.ivianuu.director.setRoot
@@ -44,10 +38,6 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())
-                pushController(RouterTransaction(TravelerController()))
-                popController(backstack.last().controller)
-                setRoot(RouterTransaction(ArchController()))
-                setRoot(RouterTransaction(ScopesController()))
             }
         }
     }
