@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import android.os.Bundle
-import com.ivianuu.director.internal.requireMainThread
 
 /**
  * The current size of the backstack
@@ -67,8 +66,6 @@ fun Router.findControllerByTag(tag: String) =
  * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
  */
 fun Router.handleBack(): Boolean {
-    requireMainThread()
-
     val currentTransaction = backstack.lastOrNull()
     if (currentTransaction != null) {
         if (currentTransaction.controller.handleBack()) {

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.LifecycleHandler
-import com.ivianuu.director.internal.requireMainThread
 
 /**
  * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
@@ -31,8 +30,6 @@ fun attachRouter(
     savedInstanceState: Bundle? = null,
     controllerFactory: ControllerFactory? = null
 ): Router {
-    requireMainThread()
-
     val lifecycleHandler = LifecycleHandler.install(activity)
 
     val router = lifecycleHandler.getRouter(container, savedInstanceState, controllerFactory)

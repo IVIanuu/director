@@ -15,7 +15,6 @@ import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.director.internal.addRouterViewsToList
 import com.ivianuu.director.internal.backstacksAreEqual
 import com.ivianuu.director.internal.filterVisible
-import com.ivianuu.director.internal.requireMainThread
 
 /**
  * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
@@ -84,8 +83,6 @@ abstract class Router {
         newBackstack: List<RouterTransaction>,
         changeHandler: ControllerChangeHandler? = null
     ) {
-        requireMainThread()
-
         val oldTransactions = backstack
         val oldVisibleTransactions = oldTransactions.filterVisible()
 
@@ -199,8 +196,6 @@ abstract class Router {
      * Attaches this Router's existing backstack to its container if one exists.
      */
     open fun rebindIfNeeded() {
-        requireMainThread()
-
         backstack
             .filterVisible()
             .forEach {

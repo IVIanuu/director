@@ -1,6 +1,5 @@
 package com.ivianuu.director.internal
 
-import android.os.Looper
 import android.view.View
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
@@ -15,12 +14,6 @@ fun <T> classForNameOrThrow(className: String) = try {
     Class.forName(className) as Class<out T>
 } catch (e: Exception) {
     throw RuntimeException("couldn't find class $className")
-}
-
-internal fun requireMainThread() {
-    if (Looper.getMainLooper() != Looper.myLooper()) {
-        throw IllegalStateException("must be called from the main thread")
-    }
 }
 
 internal fun addRouterViewsToList(router: Router, list: MutableList<View>) {

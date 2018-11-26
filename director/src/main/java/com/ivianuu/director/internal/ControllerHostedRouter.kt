@@ -6,8 +6,6 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.ControllerChangeListener
-import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
 
@@ -17,7 +15,7 @@ internal class ControllerHostedRouter : Router {
         get() = hostController.activity
 
     override val siblingRouters: List<Router>
-        get() = hostController.let { it.childRouters + it.router.siblingRouters }
+        get() = hostController.childRouters + hostController.router.siblingRouters
 
     override val rootRouter: Router
         get() = hostController.router.rootRouter
@@ -49,23 +47,13 @@ internal class ControllerHostedRouter : Router {
         this.tag = tag
     }
 
-    override fun getAllChangeListeners(recursiveOnly: Boolean): List<ControllerChangeListener> {
-        val listeners =
-            super.getAllChangeListeners(recursiveOnly).toMutableList()
+    override fun getAllChangeListeners(recursiveOnly: Boolean) =
+        super.getAllChangeListeners(recursiveOnly) +
+                hostController.router.getAllChangeListeners(true)
 
-        hostController.router.let { listeners.addAll(it.getAllChangeListeners(true)) }
-
-        return listeners
-    }
-
-    override fun getAllLifecycleListeners(recursiveOnly: Boolean): List<ControllerLifecycleListener> {
-        val listeners =
-            super.getAllLifecycleListeners(recursiveOnly).toMutableList()
-
-        hostController.router.let { listeners.addAll(it.getAllLifecycleListeners(true)) }
-
-        return listeners
-    }
+    override fun getAllLifecycleListeners(recursiveOnly: Boolean) =
+        super.getAllLifecycleListeners(recursiveOnly) +
+                hostController.router.getAllLifecycleListeners(true)
 
     override fun destroy(popViews: Boolean) {
         isDetachFrozen = false
@@ -98,6 +86,8 @@ internal class ControllerHostedRouter : Router {
     }
 
     override fun setControllerRouter(controller: Controller) {
+        // make sure to set the parent controller before the
+        // router is set
         controller.parentController = hostController
         super.setControllerRouter(controller)
     }
