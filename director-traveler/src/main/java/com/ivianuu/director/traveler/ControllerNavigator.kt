@@ -16,9 +16,21 @@
 
 package com.ivianuu.director.traveler
 
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.traveler.*
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.popCurrentController
+import com.ivianuu.director.popToRoot
+import com.ivianuu.director.popToTag
+import com.ivianuu.director.pushController
+import com.ivianuu.director.replaceTopController
+import com.ivianuu.director.toTransaction
+import com.ivianuu.traveler.Back
+import com.ivianuu.traveler.BackTo
+import com.ivianuu.traveler.Command
+import com.ivianuu.traveler.Forward
+import com.ivianuu.traveler.Navigator
+import com.ivianuu.traveler.Replace
 import com.ivianuu.traveler.common.ResultNavigator
 
 /**
@@ -26,14 +38,12 @@ import com.ivianuu.traveler.common.ResultNavigator
  */
 open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
-    override fun applyCommandWithResult(command: Command): Boolean {
-        return when (command) {
-            is Forward -> forward(command)
-            is Replace -> replace(command)
-            is Back -> back(command)
-            is BackTo -> backTo(command)
-            else -> unsupportedCommand(command)
-        }
+    override fun applyCommandWithResult(command: Command) = when (command) {
+        is Forward -> forward(command)
+        is Replace -> replace(command)
+        is Back -> back(command)
+        is BackTo -> backTo(command)
+        else -> unsupportedCommand(command)
     }
 
     protected open fun forward(command: Forward): Boolean {
@@ -78,13 +88,11 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         return true
     }
 
-    protected open fun back(command: Back): Boolean {
-        return if (router.backstack.size > 1) {
-            router.popCurrentController()
-            true
-        } else {
-            exit()
-        }
+    protected open fun back(command: Back) = if (router.backstack.size > 1) {
+        router.popCurrentController()
+        true
+    } else {
+        exit()
     }
 
     protected open fun backTo(command: BackTo): Boolean {
@@ -120,11 +128,9 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     /**
      * Creates the corresponding [Controller] for [key]
      */
-    protected open fun createController(key: Any, data: Any?): Controller? {
-        return when (key) {
-            is ControllerKey -> key.createController(data)
-            else -> null
-        }
+    protected open fun createController(key: Any, data: Any?) = when (key) {
+        is ControllerKey -> key.createController(data)
+        else -> null
     }
 
     /**
