@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.internal.Backstack
 import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
@@ -26,9 +25,9 @@ abstract class Router {
     /**
      * The current backstack, ordered from root to most recently pushed.
      */
-    val backstack get() = _backstack.entries
-    private val _backstack = Backstack()
-    private val reversedBackstack get() = _backstack.reversedEntries
+    val backstack get() = _backstack.toList()
+    private val _backstack = mutableListOf<RouterTransaction>()
+    private val reversedBackstack get() = _backstack.reversed()
 
     /**
      * Returns this Router's host Activity or `null` if it has either not yet been attached to
@@ -103,7 +102,8 @@ abstract class Router {
             throw IllegalStateException("Trying to push the same controller to the backstack more than once.")
         }
 
-        _backstack.setEntries(newBackstack)
+        _backstack.clear()
+        _backstack.addAll(newBackstack)
 
         val transactionsToBeRemoved = oldTransactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
@@ -304,9 +304,13 @@ abstract class Router {
     internal open fun destroy(popViews: Boolean) {
         popsLastView = true
 
-        val poppedControllers = _backstack.popAll()
+        val poppedControllers = _backstack.reversed()
+        _backstack.clear()
+
+        poppedControllers
             .onEach { it.controller.destroy() }
             .onEach { trackDestroyingController(it) }
+
 
         if (popViews && poppedControllers.isNotEmpty()) {
             val topTransaction = poppedControllers.first()
@@ -337,17 +341,21 @@ abstract class Router {
     }
 
     open fun saveInstanceState(outState: Bundle) {
-        val backstackState = Bundle()
-        _backstack.saveInstanceState(backstackState)
+        val backstackEntries = _backstack
+            .map { it.saveInstanceState() }
 
-        outState.putParcelable(KEY_BACKSTACK, backstackState)
+        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstackEntries))
         outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
     }
 
     open fun restoreInstanceState(savedInstanceState: Bundle) {
-        val backstackBundle = savedInstanceState.getParcelable<Bundle>(KEY_BACKSTACK)!!
-        _backstack.restoreInstanceState(backstackBundle, _controllerFactory)
+        _backstack.clear()
+        _backstack.addAll(
+            savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
+                .map { RouterTransaction.fromBundle(it, _controllerFactory) }
+        )
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
+
         backstack.forEach { setControllerRouter(it.controller) }
     }
 

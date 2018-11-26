@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         setSupportActionBar(toolbar)
 
         router = attachRouter(
