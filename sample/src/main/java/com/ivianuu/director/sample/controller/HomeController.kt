@@ -10,14 +10,12 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.pushController
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
-import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_home.recycler_view

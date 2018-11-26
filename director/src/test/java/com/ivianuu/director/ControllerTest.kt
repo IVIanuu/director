@@ -191,7 +191,8 @@ class ControllerTest {
 
         var childRouter =
             parent.getChildRouter(parent.childContainer1!!)
-        childRouter.popsLastView = true
+                .popsLastView(true)
+
         childRouter.setRoot(child1.toTransaction())
 
         assertEquals(1, parent.childRouters.size)
@@ -292,7 +293,8 @@ class ControllerTest {
 
         var childRouter =
             parent.getChildRouter(parent.childContainer1!!)
-        childRouter.popsLastView = true
+                .popsLastView(true)
+
         childRouter.setRoot(childTransaction1)
         childRouter.pushController(childTransaction2)
 

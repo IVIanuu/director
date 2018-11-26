@@ -7,9 +7,10 @@ import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
+import com.ivianuu.director.getChildRouter
+import com.ivianuu.director.hasRootController
 import com.ivianuu.director.popController
-import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.resources
 
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
@@ -49,7 +50,7 @@ class ParentController : BaseController() {
         val container = view!!.findViewById<ViewGroup>(frameId)
 
         getChildRouter(container).let { childRouter ->
-            childRouter.popsLastView = true
+            childRouter.popsLastView(true)
 
             if (!childRouter.hasRootController) {
                 val childController = ChildController.newInstance(

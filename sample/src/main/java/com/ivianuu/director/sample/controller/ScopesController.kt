@@ -19,8 +19,6 @@ package com.ivianuu.director.sample.controller
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d

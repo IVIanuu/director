@@ -17,6 +17,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
 import com.ivianuu.traveler.Traveler

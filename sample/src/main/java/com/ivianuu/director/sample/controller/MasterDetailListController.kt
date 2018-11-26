@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel

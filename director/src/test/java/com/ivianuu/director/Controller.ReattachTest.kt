@@ -132,7 +132,8 @@ class ReattachTest {
 
         val childRouter =
             controllerB.getChildRouter(controllerB.childContainer1!!)
-        childRouter.popsLastView = true
+                .popsLastView(true)
+
         childRouter.pushController(
             childController.toTransaction()
                 .pushChangeHandler(MockChangeHandler.defaultHandler())
@@ -169,7 +170,8 @@ class ReattachTest {
 
         val childRouter =
             controllerB.getChildRouter(controllerB.childContainer1!!)
-        childRouter.popsLastView = true
+                .popsLastView(true)
+
         childRouter.pushController(
             childController.toTransaction()
                 .pushChangeHandler(MockChangeHandler.defaultHandler())

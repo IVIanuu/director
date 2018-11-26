@@ -18,30 +18,21 @@ class RouterTransaction {
      * The tag of this transaction
      */
     var tag: String? = null
-        set(value) {
-            checkModify()
-            field = value
-        }
+        private set
 
     /**
      * The push change handler of this transaction
      */
     var pushChangeHandler: ControllerChangeHandler? = null
         get() = controller.overriddenPushHandler ?: field
-        set(value) {
-            checkModify()
-            field = value
-        }
+        private set
 
     /**
      * The pop change handler of this transaction
      */
     var popChangeHandler: ControllerChangeHandler? = null
         get() = controller.overriddenPopHandler ?: field
-        set(value) {
-            checkModify()
-            field = value
-        }
+        private set
 
     internal var transactionIndex = INVALID_INDEX
     internal var attachedToRouter = false
@@ -64,6 +55,30 @@ class RouterTransaction {
         this.tag = tag
         this.transactionIndex = transactionIndex
         this.attachedToRouter = attachedToRouter
+    }
+
+    /**
+     * Sets the push change handler
+     */
+    fun pushChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
+        checkModify()
+        pushChangeHandler = changeHandler
+    }
+
+    /**
+     * Sets the pop change handler
+     */
+    fun popChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
+        checkModify()
+        popChangeHandler = changeHandler
+    }
+
+    /**
+     * Sets the tag
+     */
+    fun tag(tag: String?) = apply {
+        checkModify()
+        this.tag = tag
     }
 
     internal fun ensureValidIndex(indexer: TransactionIndexer) {

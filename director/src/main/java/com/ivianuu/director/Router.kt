@@ -46,8 +46,10 @@ abstract class Router {
      * Whether or not the last view should be popped
      */
     var popsLastView = false
+        private set
 
     internal var isActivityStopped = false
+        private set
 
     internal var container: ViewGroup? = null
         set(value) {
@@ -209,6 +211,8 @@ abstract class Router {
                 performControllerChange(it, null, true, SimpleSwapChangeHandler(false))
             }
     }
+
+    fun popsLastView(popsLastView: Boolean) = apply { this.popsLastView = popsLastView }
 
     /**
      * Adds a listener for all of this Router's [Controller] change events
