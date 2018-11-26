@@ -132,7 +132,7 @@ abstract class Router {
                 val oldRootTransaction = oldVisibleTransactions.firstOrNull()
                 val newRootTransaction = newVisibleTransactions.first()
 
-                // Replace the old root with the new one
+                // Replace the old visible root with the new one
                 if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
                     // Ensure the existing root controller is fully pushed to the view hierarchy
                     if (oldRootTransaction != null) {
@@ -341,10 +341,8 @@ abstract class Router {
     }
 
     open fun saveInstanceState(outState: Bundle) {
-        val backstackEntries = _backstack
-            .map { it.saveInstanceState() }
-
-        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstackEntries))
+        val backstack = backstack.map { it.saveInstanceState() }
+        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
         outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
     }
 
