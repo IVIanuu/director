@@ -727,8 +727,9 @@ abstract class Controller {
             .map { bundle ->
                 ControllerHostedRouter(this).apply {
                     // we do not restore the full instance yet
-                    // to give the user a chance to set a [ControllerFactory]
-                    restoreBasicInstanceState(bundle)
+                    // only the identity
+                    // to give the user a chance to set a [ControllerFactory] in [onCreate]
+                    restoreIdentity(bundle)
                 } to bundle
             }
             .onEach { _childRouters.add(it.first) }

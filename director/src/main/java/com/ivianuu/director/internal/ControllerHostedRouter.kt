@@ -80,7 +80,7 @@ internal class ControllerHostedRouter : Router {
         outState.putString(KEY_TAG, tag)
     }
 
-    fun restoreBasicInstanceState(savedInstanceState: Bundle) {
+    fun restoreIdentity(savedInstanceState: Bundle) {
         hostId = savedInstanceState.getInt(KEY_HOST_ID)
         tag = savedInstanceState.getString(KEY_TAG)
     }
