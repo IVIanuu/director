@@ -3,6 +3,8 @@ package com.ivianuu.director.sample.util
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerLifecycleListener
 
 /**
@@ -82,5 +84,43 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
     override fun postDestroy(controller: Controller) {
         super.postDestroy(controller)
         controller.d { "post destroy" }
+    }
+
+    override fun onChangeStart(
+        controller: Controller,
+        changeHandler: ControllerChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeStart(controller, changeHandler, changeType)
+        controller.d { "on change start -> $changeType" }
+    }
+
+    override fun onChangeEnd(
+        controller: Controller,
+        changeHandler: ControllerChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeEnd(controller, changeHandler, changeType)
+        controller.d { "on change end -> $changeType" }
+    }
+
+    override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(controller, savedInstanceState)
+        controller.d { "on restore instance state" }
+    }
+
+    override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
+        super.onSaveInstanceState(controller, outState)
+        controller.d { "on save instance state" }
+    }
+
+    override fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
+        super.onRestoreViewState(controller, savedViewState)
+        controller.d { "on restore view state" }
+    }
+
+    override fun onSaveViewState(controller: Controller, outState: Bundle) {
+        super.onSaveViewState(controller, outState)
+        controller.d { "on save view state" }
     }
 }

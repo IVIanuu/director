@@ -37,7 +37,7 @@ class RouterTransaction {
     internal var transactionIndex = INVALID_INDEX
     internal var attachedToRouter = false
 
-    constructor(controller: Controller) {
+    internal constructor(controller: Controller, unit: Unit /*dummy*/) {
         this.controller = controller
     }
 
@@ -126,3 +126,8 @@ class RouterTransaction {
         )
     }
 }
+
+/**
+ * Returns a new [RouterTransaction] with the [controller]
+ */
+fun RouterTransaction(controller: Controller) = RouterTransaction(controller, Unit)
