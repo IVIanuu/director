@@ -11,6 +11,7 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.TransitionChangeHandlerCompat
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel

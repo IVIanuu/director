@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.ivianuu.director.Controller
+import com.ivianuu.director.popController
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_target_title_entry.btn_use_title
 import kotlinx.android.synthetic.main.controller_target_title_entry.edit_text

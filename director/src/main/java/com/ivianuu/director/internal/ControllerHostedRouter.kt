@@ -72,13 +72,6 @@ internal class ControllerHostedRouter : Router {
         super.destroy(popViews)
     }
 
-    override fun pushToBackstack(entry: RouterTransaction) {
-        if (isDetachFrozen) {
-            entry.controller.isDetachFrozen = true
-        }
-        super.pushToBackstack(entry)
-    }
-
     override fun setBackstack(
         newBackstack: List<RouterTransaction>,
         changeHandler: ControllerChangeHandler?
@@ -187,7 +180,6 @@ internal class ControllerHostedRouter : Router {
                 )
             }
 
-        prepareForContainerRemoval()
         container = null
     }
 

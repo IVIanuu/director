@@ -3,6 +3,7 @@ package com.ivianuu.director.sample.controller
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_0
 import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_1

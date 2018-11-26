@@ -20,6 +20,7 @@ import android.view.View
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 
 /**

@@ -28,6 +28,7 @@ import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels

@@ -1,10 +1,7 @@
 package com.ivianuu.director
 
 import android.annotation.TargetApi
-import android.app.Application
 import android.content.Intent
-import android.content.IntentSender
-import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -52,17 +49,6 @@ abstract class Controller {
      */
     val activity: FragmentActivity
         get() = router.activity
-
-    /**
-     * The application of the [activity]
-     */
-    val application: Application
-        get() = activity.application
-
-    /**
-     * The [activity]s resources
-     */
-    val resources: Resources get() = activity.resources
 
     /**
      * The view of this controller or null
@@ -296,54 +282,6 @@ abstract class Controller {
     }
 
     /**
-     * Calls startActivity(Intent) from this Controller's host Activity.
-     */
-    fun startActivity(intent: Intent) {
-        router.startActivity(intent)
-    }
-
-    /**
-     * Calls startActivityForResult(Intent, int) from this Controller's host Activity.
-     */
-    fun startActivityForResult(intent: Intent, requestCode: Int) {
-        router.startActivityForResult(instanceId, intent, requestCode)
-    }
-
-    /**
-     * Calls startActivityForResult(Intent, int, Bundle) from this Controller's host Activity.
-     */
-    fun startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
-        router.startActivityForResult(instanceId, intent, requestCode, options)
-    }
-
-    /**
-     * Calls startIntentSenderForResult(IntentSender, int, Intent, int, int, int, Bundle) from this Controller's host Activity.
-     */
-    fun startIntentSenderForResult(
-        intent: IntentSender, requestCode: Int, fillInIntent: Intent?, flagsMask: Int,
-        flagsValues: Int, extraFlags: Int, options: Bundle?
-    ) {
-        router.startIntentSenderForResult(
-            instanceId,
-            intent,
-            requestCode,
-            fillInIntent,
-            flagsMask,
-            flagsValues,
-            extraFlags,
-            options
-        )
-    }
-
-    /**
-     * Registers this Controller to handle [onActivityResult] responses. Calling this method is NOT
-     * necessary when calling [startActivityForResult]
-     */
-    fun registerForActivityResult(requestCode: Int) {
-        router.registerForActivityResult(instanceId, requestCode)
-    }
-
-    /**
      * Should be overridden if this Controller has called startActivityForResult and needs to handle
      * the result.
      */
@@ -401,18 +339,6 @@ abstract class Controller {
     fun removeLifecycleListener(listener: ControllerLifecycleListener) {
         lifecycleListeners.remove(listener)
     }
-
-    /**
-     * Returns the child router for [container] and [tag] or creates a new instance
-     */
-    fun getChildRouter(container: ViewGroup, tag: String? = null) =
-        getChildRouter(container.id, tag)
-
-    /**
-     * Returns the child router for [container] and [tag] if already created
-     */
-    fun getChildRouterOrNull(container: ViewGroup, tag: String? = null) =
-        getChildRouter(container.id, tag)
 
     /**
      * Returns the child router for [containerId] and [tag] or creates a new instance

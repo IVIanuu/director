@@ -9,9 +9,11 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_master_detail_list.detail_container

@@ -611,6 +611,9 @@ class ControllerLifecycleCallbacksTest {
 
         router.popCurrentController()
 
+        // todo check if its ok that saveViewState is called
+        expectedCallState.saveViewStateCalls++
+
         expectedCallState.detachCalls++
         expectedCallState.unbindViewCalls++
         expectedCallState.destroyCalls++

@@ -3,7 +3,7 @@ package com.ivianuu.director.sample.controller
 import android.view.View
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.synthetic.main.controller_text.*
+import kotlinx.android.synthetic.main.controller_text.text_view
 
 class TextController : BaseController() {
 

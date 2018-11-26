@@ -12,7 +12,9 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.popChangeHandler
+import com.ivianuu.director.popToRoot
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler

@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.View
+import com.ivianuu.director.popController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ScaleFadeChangeHandler
 import com.ivianuu.director.sample.widget.ElasticDragDismissFrameLayout
@@ -16,6 +17,7 @@ class DragDismissController : BaseController() {
 
     private val dragDismissListener = object : ElasticDragDismissCallback() {
         override fun onDragDismissed() {
+            (view as ElasticDragDismissFrameLayout).removeListener(this)
             overriddenPopHandler = ScaleFadeChangeHandler()
             router.popController(this@DragDismissController)
         }

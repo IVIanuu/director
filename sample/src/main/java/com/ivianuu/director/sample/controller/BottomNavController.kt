@@ -5,7 +5,10 @@ import android.os.Parcelable
 import android.view.View
 import com.ivianuu.director.Router
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.saveControllerInstanceState
+import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view

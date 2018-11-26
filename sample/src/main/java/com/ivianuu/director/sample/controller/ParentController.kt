@@ -8,10 +8,12 @@ import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
+import com.ivianuu.director.popController
 import com.ivianuu.director.pushChangeHandler
 
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
+import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 
 class ParentController : BaseController() {

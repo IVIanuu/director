@@ -10,6 +10,10 @@ import com.ivianuu.director.ControllerLifecycleListener
  */
 class LoggingLifecycleListener : ControllerLifecycleListener {
 
+    private fun Controller.d(m: () -> String) {
+        (this as Any).d { "Lifecycle: ${m.invoke()}" }
+    }
+
     override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
         super.preCreate(controller, savedInstanceState)
         controller.d { "pre create" }

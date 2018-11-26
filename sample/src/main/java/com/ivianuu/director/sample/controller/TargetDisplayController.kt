@@ -9,6 +9,7 @@ import android.view.View
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_target_display.btn_pick_image
