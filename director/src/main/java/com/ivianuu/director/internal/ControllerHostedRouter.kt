@@ -5,9 +5,7 @@ import android.content.IntentSender
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterTransaction
 
 internal class ControllerHostedRouter : Router {
 
@@ -31,12 +29,6 @@ internal class ControllerHostedRouter : Router {
     var tag: String? = null
         private set
 
-    var isDetachFrozen = false
-        set(value) {
-            field = value
-            backstack.forEach { it.controller.isDetachFrozen = value }
-        }
-
     constructor(hostController: Controller) {
         this.hostController = hostController
     }
@@ -54,21 +46,6 @@ internal class ControllerHostedRouter : Router {
     override fun getAllLifecycleListeners(recursiveOnly: Boolean) =
         super.getAllLifecycleListeners(recursiveOnly) +
                 hostController.router.getAllLifecycleListeners(true)
-
-    override fun destroy(popViews: Boolean) {
-        isDetachFrozen = false
-        super.destroy(popViews)
-    }
-
-    override fun setBackstack(
-        newBackstack: List<RouterTransaction>,
-        changeHandler: ControllerChangeHandler?
-    ) {
-        if (isDetachFrozen) {
-            newBackstack.forEach { it.controller.isDetachFrozen = true }
-        }
-        super.setBackstack(newBackstack, changeHandler)
-    }
 
     override fun onActivityDestroyed() {
         super.onActivityDestroyed()

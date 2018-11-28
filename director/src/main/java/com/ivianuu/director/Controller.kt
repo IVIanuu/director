@@ -116,19 +116,6 @@ abstract class Controller {
     private var awaitingParentAttach = false
     private var hasSavedViewState = false
 
-    internal var isDetachFrozen = false
-        set(value) {
-            if (field != value) {
-                field = value
-                _childRouters.forEach { it.isDetachFrozen = value }
-
-                val view = view
-                if (!value && view != null && viewWasDetached) {
-                    detach(view, false, false, false, false)
-                }
-            }
-        }
-
     /**
      * Overrides the push handler which will be used when this controller gets pushed
      */
@@ -162,7 +149,6 @@ abstract class Controller {
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
 
     private var destroyedView: WeakReference<View>? = null
-    private var isPerformingExitTransition = false
 
     private var superCalled = false
 
@@ -356,10 +342,6 @@ abstract class Controller {
                 )
 
                 _childRouters.add(childRouter)
-
-                if (isPerformingExitTransition) {
-                    childRouter.isDetachFrozen = true
-                }
             }
         }
 
@@ -496,16 +478,11 @@ abstract class Controller {
                 override fun onDetached(fromActivityStop: Boolean) {
                     viewIsAttached = false
                     viewWasDetached = true
-
-                    if (!isDetachFrozen) {
-                        detach(view, false, fromActivityStop, false, false)
-                    }
+                    detach(view, false, fromActivityStop, false, false)
                 }
 
                 override fun onViewDetachAfterStop() {
-                    if (!isDetachFrozen) {
-                        detach(view, false, false, false, false)
-                    }
+                    detach(view, false, false, false, false)
                 }
             }).also { it.listenForAttach(view) }
         } else if (retainViewMode == RetainViewMode.RETAIN_DETACH) {
@@ -787,11 +764,6 @@ abstract class Controller {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
-        if (!changeType.isEnter) {
-            isPerformingExitTransition = true
-            _childRouters.forEach { it.isDetachFrozen = true }
-        }
-
         onChangeStarted(changeHandler, changeType)
 
         notifyLifecycleListeners { it.onChangeStart(this, changeHandler, changeType) }
@@ -801,11 +773,6 @@ abstract class Controller {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
-        if (!changeType.isEnter) {
-            isPerformingExitTransition = false
-            _childRouters.forEach { it.isDetachFrozen = false }
-        }
-
         onChangeEnded(changeHandler, changeType)
 
         notifyLifecycleListeners { it.onChangeEnd(this, changeHandler, changeType) }
