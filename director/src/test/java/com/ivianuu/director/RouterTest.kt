@@ -426,6 +426,7 @@ class RouterTest {
 
     @Test
     fun testRearrangeTransactionBackstack() {
+        router.popsLastView = true
         val transaction1 = TestController().toTransaction()
         val transaction2 = TestController().toTransaction()
 
@@ -457,6 +458,8 @@ class RouterTest {
 
         val childRouter =
             parent.getChildRouter(parent.childContainer1!!)
+
+        childRouter.popsLastView = true
 
         val transaction1 = TestController().toTransaction()
         val transaction2 = TestController().toTransaction()
