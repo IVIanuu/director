@@ -376,6 +376,7 @@ abstract class Router {
 
         var forceDetachDestroy = false
 
+        // todo remove this block
         if (toController == null && _backstack.size == 0 && !popsLastView) {
             // We're emptying out the backstack. Views get weird if you transition them out, so just no-op it. The host
             // Activity or controller should be handling this by finishing or at least hiding this view.

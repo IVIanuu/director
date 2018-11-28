@@ -72,24 +72,28 @@ fun Router.findControllerByTag(tag: String) =
  */
 fun Router.handleBack(): Boolean {
     val currentTransaction = backstack.lastOrNull()
-    if (currentTransaction != null) {
-        if (currentTransaction.controller.handleBack()) {
-            return true
-        } else if (popCurrentController()) {
-            return true
-        }
-    }
 
-    return false
+    return if (currentTransaction != null) {
+        if (currentTransaction.controller.handleBack()) {
+            true
+        } else if (backstackSize > 0 && (popsLastView || backstackSize > 1)) {
+            popCurrentController()
+            true
+        } else {
+            false
+        }
+    } else {
+        false
+    }
 }
 
 /**
  * Pops the top [Controller] from the backstack
  */
-fun Router.popCurrentController(changeHandler: ControllerChangeHandler? = null): Boolean {
+fun Router.popCurrentController(changeHandler: ControllerChangeHandler? = null) {
     val transaction = backstack.lastOrNull()
         ?: throw IllegalStateException("Trying to pop the current controller when there are none on the backstack.")
-    return popController(transaction.controller, changeHandler)
+    popController(transaction.controller, changeHandler)
 }
 
 /**
@@ -98,7 +102,7 @@ fun Router.popCurrentController(changeHandler: ControllerChangeHandler? = null):
 fun Router.popController(
     controller: Controller,
     changeHandler: ControllerChangeHandler? = null
-): Boolean {
+) {
     val oldBackstack = backstack
     val newBackstack = oldBackstack.toMutableList()
     newBackstack.removeAll { it.controller == controller }
@@ -113,12 +117,6 @@ fun Router.popController(
     }
 
     setBackstack(newBackstack, changeHandler)
-
-    return if (popsLastView) {
-        oldBackstack.isNotEmpty()
-    } else {
-        newBackstack.isNotEmpty()
-    }
 }
 
 /**
@@ -147,23 +145,17 @@ fun Router.replaceTopController(transaction: RouterTransaction) {
 /**
  * Pops all [Controller] until only the root is left
  */
-fun Router.popToRoot(changeHandler: ControllerChangeHandler? = null): Boolean {
-    val rootTransaction = backstack.firstOrNull()
-    return if (rootTransaction != null) {
-        popToTransaction(rootTransaction, changeHandler)
-        true
-    } else {
-        false
-    }
+fun Router.popToRoot(changeHandler: ControllerChangeHandler? = null) {
+    backstack.firstOrNull()
+        ?.let { popToTransaction(it, changeHandler) }
 }
 
 /**
  * Pops all [Controller]s until the [Controller] with the passed tag is at the top
  */
-fun Router.popToTag(tag: String, changeHandler: ControllerChangeHandler? = null): Boolean {
-    val transaction = backstack.firstOrNull { it.tag == tag } ?: return false
-    popToTransaction(transaction, changeHandler)
-    return true
+fun Router.popToTag(tag: String, changeHandler: ControllerChangeHandler? = null) {
+    backstack.firstOrNull { it.tag == tag }
+        ?.let { popToTransaction(it, changeHandler) }
 }
 
 /**
@@ -172,11 +164,9 @@ fun Router.popToTag(tag: String, changeHandler: ControllerChangeHandler? = null)
 fun Router.popToController(
     controller: Controller,
     changeHandler: ControllerChangeHandler? = null
-): Boolean {
-    val transaction =
-        backstack.firstOrNull { it.controller == controller } ?: return false
-    popToTransaction(transaction, changeHandler)
-    return true
+) {
+    backstack.firstOrNull { it.controller == controller }
+        ?.let { popToTransaction(it, changeHandler) }
 }
 
 /***

@@ -19,9 +19,10 @@ package com.ivianuu.director.traveler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.findControllerByTag
+import com.ivianuu.director.popController
 import com.ivianuu.director.popCurrentController
 import com.ivianuu.director.popToRoot
-import com.ivianuu.director.popToTag
 import com.ivianuu.director.pushController
 import com.ivianuu.director.replaceTopController
 import com.ivianuu.director.tag
@@ -100,7 +101,9 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         val key = command.key
 
         return if (key != null) {
-            if (router.popToTag(getControllerTag(key))) {
+            val controller = router.findControllerByTag(getControllerTag(key))
+            if (controller != null) {
+                router.popController(controller)
                 true
             } else {
                 backToUnexisting(key)
