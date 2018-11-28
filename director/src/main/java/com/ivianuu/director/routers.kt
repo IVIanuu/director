@@ -18,6 +18,8 @@ package com.ivianuu.director
 
 import android.os.Bundle
 
+internal val Router.hasContainer get() = container != null
+
 /**
  * The current size of the backstack
  */

@@ -12,16 +12,18 @@ internal class ControllerChangeManager {
 
     private val inProgressChangeHandlers = mutableMapOf<String, ChangeHandlerData>()
 
-    fun executeChange(transaction: ChangeTransaction) {
-        val (to, from, isPush, container, inHandler,
-                listeners) = transaction
-
-        if (container == null) return
-
+    fun executeChange(
+        to: Controller?,
+        from: Controller?,
+        isPush: Boolean,
+        container: ViewGroup,
+        handler: ControllerChangeHandler?,
+        listeners: List<ControllerChangeListener>
+    ) {
         val handler = when {
-            inHandler == null -> SimpleSwapChangeHandler()
-            inHandler.hasBeenUsed -> inHandler.copy()
-            else -> inHandler
+            handler == null -> SimpleSwapChangeHandler()
+            handler.hasBeenUsed -> handler.copy()
+            else -> handler
         }
         handler.hasBeenUsed = true
 
@@ -109,15 +111,6 @@ internal class ControllerChangeManager {
     }
 
 }
-
-internal data class ChangeTransaction(
-    val to: Controller?,
-    val from: Controller?,
-    val isPush: Boolean,
-    val container: ViewGroup?,
-    val changeHandler: ControllerChangeHandler?,
-    val listeners: List<ControllerChangeListener>
-)
 
 private data class ChangeHandlerData(
     val changeHandler: ControllerChangeHandler,

@@ -5,10 +5,8 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.internal.ChangeTransaction
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
-import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.director.internal.backstacksAreEqual
 import com.ivianuu.director.internal.filterVisible
@@ -48,8 +46,6 @@ abstract class Router {
             field = value
         }
 
-    internal val hasContainer get() = container != null
-
     /**
      * Will be used to instantiate controllers after process death
      */
@@ -65,11 +61,11 @@ abstract class Router {
     internal abstract val rootRouter: Router
     internal abstract val transactionIndexer: TransactionIndexer
 
-    private val changeManager = ControllerChangeManager()
-
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
     private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
     protected val destroyingControllers = mutableListOf<Controller>()
+
+    private val changeManager = ControllerChangeManager()
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -361,34 +357,23 @@ abstract class Router {
         isPush: Boolean,
         changeHandler: ControllerChangeHandler? = null
     ) {
+        if (isPush && to != null && to.controller.isDestroyed) {
+            throw IllegalStateException("Trying to push a controller that has already been destroyed ${to.javaClass.simpleName}")
+        }
+
         if (isPush && to != null) {
             to.attachedToRouter = true
         }
 
-        var changeHandler = changeHandler ?: when {
+        val container = container ?: return
+
+        val changeHandler = changeHandler ?: when {
             isPush -> to?.pushChangeHandler
             from != null -> from.popChangeHandler
             else -> null
         }
 
-        val toController = to?.controller
-        val fromController = from?.controller
-
-        var forceDetachDestroy = false
-
-        // todo remove this block
-        if (toController == null && _backstack.size == 0 && !popsLastView) {
-            // We're emptying out the backstack. Views get weird if you transition them out, so just no-op it. The host
-            // Activity or controller should be handling this by finishing or at least hiding this view.
-            changeHandler = NoOpControllerChangeHandler()
-            forceDetachDestroy = true
-        }
-
-        if (isPush && to != null && to.controller.isDestroyed) {
-            throw IllegalStateException("Trying to push a controller that has already been destroyed ${to.javaClass.simpleName}")
-        }
-
-        val transaction = ChangeTransaction(
+        changeManager.executeChange(
             to?.controller,
             from?.controller,
             isPush,
@@ -396,13 +381,6 @@ abstract class Router {
             changeHandler,
             getAllChangeListeners(false)
         )
-
-        changeManager.executeChange(transaction)
-
-        val fromView = fromController?.view
-        if (forceDetachDestroy && fromView != null) {
-            fromController.detach(fromView, true, false, true, false)
-        }
     }
 
     protected open fun setControllerRouter(controller: Controller) {
