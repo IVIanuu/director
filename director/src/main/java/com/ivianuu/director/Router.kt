@@ -304,7 +304,6 @@ abstract class Router {
             .onEach { it.controller.destroy() }
             .onEach { trackDestroyingController(it) }
 
-
         if (popViews && poppedControllers.isNotEmpty()) {
             val topTransaction = poppedControllers.first()
             topTransaction.controller.addLifecycleListener(object : ControllerLifecycleListener {
