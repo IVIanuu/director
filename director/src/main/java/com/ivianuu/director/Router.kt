@@ -40,6 +40,7 @@ abstract class Router {
         set(value) {
             if (value == field) return
 
+            // in case the user uses a ChangeHandlerFrameLayout
             (field as? ControllerChangeListener)?.let { removeChangeListener(it) }
             (value as? ControllerChangeListener)?.let { addChangeListener(it) }
 

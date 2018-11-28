@@ -1,7 +1,5 @@
 package com.ivianuu.director.internal
 
-import android.view.View
-import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
 
 fun <T : Any> newInstanceOrThrow(className: String) = try {
@@ -14,15 +12,6 @@ fun <T> classForNameOrThrow(className: String) = try {
     Class.forName(className) as Class<out T>
 } catch (e: Exception) {
     throw RuntimeException("couldn't find class $className")
-}
-
-internal fun addRouterViewsToList(router: Router, list: MutableList<View>) {
-    router.backstack
-        .map { it.controller }
-        .forEach { controller ->
-            controller.view?.let { list.add(it) }
-            controller.childRouters.forEach { addRouterViewsToList(it, list) }
-        }
 }
 
 internal fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> {
