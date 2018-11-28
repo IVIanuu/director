@@ -17,7 +17,7 @@ fun <T> classForNameOrThrow(className: String) = try {
 internal fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> {
     val visible = mutableListOf<RouterTransaction>()
 
-    for (transaction in this.reversed()) {
+    for (transaction in reversed()) {
         visible.add(transaction)
         if (transaction.pushChangeHandler == null
             || transaction.pushChangeHandler!!.removesFromViewOnPush

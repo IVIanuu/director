@@ -9,8 +9,11 @@ internal class ViewAttachHandler(private val listener: Listener) :
 
     private var rootAttached = false
     private var childrenAttached = false
+
     private var activityStopped = false
+
     private var reportedState = ReportedState.VIEW_DETACHED
+
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
 
     override fun onViewAttachedToWindow(v: View) {

@@ -24,7 +24,8 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     internal val routers: List<Router>
         get() = routerMap.values.toList()
 
-    private val routerMap = mutableMapOf<Int, ActivityHostedRouter>()
+    private val routerMap =
+        mutableMapOf<Int, ActivityHostedRouter>()
 
     private val activityRequests =
         mutableMapOf<Int, MutableSet<String>>()

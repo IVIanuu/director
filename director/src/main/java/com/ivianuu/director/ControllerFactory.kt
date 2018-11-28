@@ -32,4 +32,5 @@ interface ControllerFactory {
         className: String,
         args: Bundle
     ): Controller = newInstanceOrThrow(className)
+
 }
