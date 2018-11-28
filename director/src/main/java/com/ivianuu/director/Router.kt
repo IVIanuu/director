@@ -3,7 +3,6 @@ package com.ivianuu.director
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.ChangeTransaction
@@ -11,7 +10,6 @@ import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.NoOpControllerChangeHandler
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.addRouterViewsToList
 import com.ivianuu.director.internal.backstacksAreEqual
 import com.ivianuu.director.internal.filterVisible
 
@@ -83,8 +81,6 @@ abstract class Router {
     ) {
         val oldTransactions = backstack
         val oldVisibleTransactions = oldTransactions.filterVisible()
-
-        container?.removeAllExceptVisibleAndUnowned()
 
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
@@ -423,24 +419,6 @@ abstract class Router {
                 }
             })
         }
-    }
-
-    private fun ViewGroup.removeAllExceptVisibleAndUnowned() {
-        val views = mutableListOf<View>()
-
-        backstack
-            .filterVisible()
-            .mapNotNull { it.controller.view }
-            .forEach { views.add(it) }
-
-        siblingRouters
-            .filter { it.container == container }
-            .forEach { addRouterViewsToList(it, views) }
-
-        (childCount - 1 downTo 0)
-            .map { getChildAt(it) }
-            .filterNot { views.contains(it) }
-            .forEach { removeView(it) }
     }
 
     internal abstract fun getRetainedObjects(instanceId: String): RetainedObjects
