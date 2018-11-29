@@ -65,6 +65,12 @@ class BottomNavController : BaseController() {
     }
 
     override fun handleBack(): Boolean {
+        val currentController = bottomNavRouter.backstack.last().controller
+
+        if (currentController.handleBack()) {
+            return true
+        }
+
         return if (currentIndex != 0) {
             val router = (bottomNavRouter.backstack
                 .first()
@@ -78,10 +84,10 @@ class BottomNavController : BaseController() {
                         bottom_nav_view.menu.getItem(currentIndex).itemId
                 true
             } else {
-                super.handleBack()
+                false
             }
         } else {
-            super.handleBack()
+            false
         }
     }
 
