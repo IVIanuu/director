@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 
 /**
@@ -35,6 +36,8 @@ abstract class ViewPropertyChangeHandler(
     private var toEnded = false
     private var animatorCanceled = false
 
+    private var changeData: ChangeData? = null
+
     init {
         this.duration = duration
     }
@@ -46,6 +49,8 @@ abstract class ViewPropertyChangeHandler(
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
+        changeData = ChangeData(container, from, to, isPush, onChangeComplete)
+
         var readyToAnimate = true
         val addingToView = to != null && to.parent == null
 
@@ -92,17 +97,45 @@ abstract class ViewPropertyChangeHandler(
     override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
         super.onAbortPush(newHandler, newTop)
         canceled = true
-        fromAnimator?.cancel()
-        toAnimator?.cancel()
-        onReadyOrAbortedListener?.onReadyOrAborted()
+        if (fromAnimator != null || toAnimator != null) {
+            fromAnimator?.cancel()
+            toAnimator?.cancel()
+        } else if (onReadyOrAbortedListener != null) {
+            onReadyOrAbortedListener?.onReadyOrAborted()
+        } else if (changeData != null) {
+            val (container, from, _, isPush, onChangeComplete) = changeData!!
+            if (from != null && (!isPush || removesFromViewOnPush)) {
+                container.removeView(from)
+            }
+
+            complete(onChangeComplete)
+
+            if (isPush && from != null) {
+                resetFromView(from)
+            }
+        }
     }
 
     override fun completeImmediately() {
         super.completeImmediately()
         needsImmediateCompletion = true
-        fromAnimator?.cancel()
-        toAnimator?.cancel()
-        onReadyOrAbortedListener?.onReadyOrAborted()
+        if (fromAnimator != null || toAnimator != null) {
+            fromAnimator?.cancel()
+            toAnimator?.cancel()
+        } else if (onReadyOrAbortedListener != null) {
+            onReadyOrAbortedListener?.onReadyOrAborted()
+        } else if (changeData != null) {
+            val (container, from, _, isPush, onChangeComplete) = changeData!!
+            if (from != null && (!isPush || removesFromViewOnPush)) {
+                container.removeView(from)
+            }
+
+            complete(onChangeComplete)
+
+            if (isPush && from != null) {
+                resetFromView(from)
+            }
+        }
     }
 
     /**
@@ -285,6 +318,7 @@ abstract class ViewPropertyChangeHandler(
         }
 
         onReadyOrAbortedListener = null
+        changeData = null
     }
 
     companion object {

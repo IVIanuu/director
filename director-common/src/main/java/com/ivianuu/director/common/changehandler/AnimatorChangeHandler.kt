@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 
 /**
@@ -44,6 +45,8 @@ abstract class AnimatorChangeHandler(
     private var needsImmediateCompletion = false
     private var completed = false
 
+    private var changeData: ChangeData? = null
+
     init {
         this.duration = duration
     }
@@ -55,6 +58,8 @@ abstract class AnimatorChangeHandler(
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
+        changeData = ChangeData(container, from, to, isPush, onChangeComplete)
+
         var readyToAnimate = true
         val addingToView = to != null && to.parent == null
 
@@ -65,7 +70,7 @@ abstract class AnimatorChangeHandler(
                 container.addView(to, container.indexOfChild(from))
             }
 
-            if (to!!.width <= 0 && to.height <= 0) {
+            if (!canceled && !needsImmediateCompletion && !completed && to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
                 onReadyOrAbortedListener =
                         OnReadyOrAbortedListener(to) {
@@ -107,6 +112,15 @@ abstract class AnimatorChangeHandler(
             animator?.cancel()
         } else if (onReadyOrAbortedListener != null) {
             onReadyOrAbortedListener?.onReadyOrAborted()
+        } else if (changeData != null) {
+            val (container, from, _, isPush, onChangeComplete) = changeData!!
+            if (from != null && (!isPush || removesFromViewOnPush)) {
+                container.removeView(from)
+            }
+            complete(onChangeComplete, null)
+            if (isPush && from != null) {
+                resetFromView(from)
+            }
         }
     }
 
@@ -117,6 +131,15 @@ abstract class AnimatorChangeHandler(
             animator?.end()
         } else if (onReadyOrAbortedListener != null) {
             onReadyOrAbortedListener?.onReadyOrAborted()
+        } else if (changeData != null) {
+            val (container, from, _, isPush, onChangeComplete) = changeData!!
+            if (from != null && (!isPush || removesFromViewOnPush)) {
+                container.removeView(from)
+            }
+            complete(onChangeComplete, null)
+            if (isPush && from != null) {
+                resetFromView(from)
+            }
         }
     }
 
@@ -214,6 +237,7 @@ abstract class AnimatorChangeHandler(
 
         animator = null
         onReadyOrAbortedListener = null
+        changeData = null
     }
 
     companion object {
