@@ -189,9 +189,9 @@ abstract class ViewPropertyChangeHandler(
                     )
                 }
             })
-
-            start()
         }
+
+        fromAnimator?.start()
 
         toAnimator = getToAnimator(container, from, to, isPush, toAddedToContainer)?.apply {
             if (this@ViewPropertyChangeHandler.duration > 0) {
@@ -226,9 +226,9 @@ abstract class ViewPropertyChangeHandler(
                     )
                 }
             })
-
-            start()
         }
+
+        toAnimator?.start()
     }
 
     private fun onAnimationEnd(

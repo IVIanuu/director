@@ -172,9 +172,9 @@ abstract class AnimationChangeHandler(
                     }
                 }
             })
-
-            from?.startAnimation(this)
         }
+
+        fromAnimation?.let { from?.startAnimation(it) }
 
         toAnimation = getToAnimation(container, from, to, isPush, toAddedToContainer)?.apply {
             if (this@AnimationChangeHandler.duration > 0) {
@@ -202,9 +202,9 @@ abstract class AnimationChangeHandler(
                     }
                 }
             })
-
-            to?.startAnimation(this)
         }
+
+        toAnimation?.let { to?.startAnimation(it) }
     }
 
     private fun onAnimationEnd(

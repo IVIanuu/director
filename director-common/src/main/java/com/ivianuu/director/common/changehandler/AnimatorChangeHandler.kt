@@ -166,6 +166,9 @@ abstract class AnimatorChangeHandler(
             }
 
             addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator?) {
+                    super.onAnimationStart(animation)
+                }
                 override fun onAnimationCancel(animation: Animator) {
                     if (from != null) {
                         resetFromView(from)
@@ -192,9 +195,9 @@ abstract class AnimatorChangeHandler(
                     }
                 }
             })
-
-            start()
         }
+
+        animator?.start()
     }
 
     private fun complete(
