@@ -74,12 +74,7 @@ private class RetainedProperty<T : Any>(
             this.key
         }
 
-        return if (thisRef.retainedObjects.contains(key)) {
-            thisRef.retainedObjects[key]!!
-        } else {
-            thisRef.retainedObjects.put(key, initialValue)
-            initialValue
-        }
+        return thisRef.retainedObjects.getOrPut(key) { initialValue }
     }
 
     override fun setValue(thisRef: Controller, property: KProperty<*>, value: T) {
