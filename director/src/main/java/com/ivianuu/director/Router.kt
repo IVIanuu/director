@@ -3,7 +3,6 @@ package com.ivianuu.director
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.ControllerChangeManager
@@ -69,10 +68,6 @@ abstract class Router {
 
     private val changeManager = ControllerChangeManager()
 
-    private fun d(m: () -> String) {
-        Log.d(javaClass.simpleName, m())
-    }
-
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
@@ -130,12 +125,9 @@ abstract class Router {
                 && backstacksAreEqual(newBackstack.dropLast(1), oldTransactions.dropLast(1))
                 && newBackstack.lastOrNull() != oldTransactions.lastOrNull()
 
-        d { "is single push $isSinglePush\nis single pop $isSinglePop\n is replace top $isReplaceTop" }
-
         when {
             // just push the new top controller
             isSinglePush -> {
-                d { "do single push change from ${oldTransactions.lastOrNull()} -> ${newBackstack.last()}" }
                 performControllerChange(
                     newBackstack.last(),
                     oldTransactions.lastOrNull(),
@@ -145,7 +137,6 @@ abstract class Router {
             }
             // just pop the top controller
             isSinglePop -> {
-                d { "do single pop change from ${oldTransactions.last()} -> ${newBackstack.lastOrNull()}" }
                 performControllerChange(
                     newBackstack.lastOrNull(),
                     oldTransactions.last(),
@@ -164,11 +155,6 @@ abstract class Router {
                 val localHandler = changeHandler ?: newTopTransaction.pushChangeHandler
 
                 val newHandlerRemovesViews = localHandler?.removesFromViewOnPush == true
-
-                d { "replace top $newTopTransaction, $oldTopTransaction" }
-                d { "old removed views $oldHandlerRemovedViews new removes views $newHandlerRemovesViews" }
-
-                d { "new backstack $newBackstack, old backstack $oldTransactions, new visible $newVisibleTransactions, old visible $oldVisibleTransactions" }
 
                 if (oldHandlerRemovedViews && !newHandlerRemovesViews) {
                     // re attach old views which will be visible now except the top one
@@ -228,8 +214,6 @@ abstract class Router {
                             changeManager.completeChangeImmediately(oldRootTransaction.controller.instanceId)
                         }
 
-                        d { "replace old root $oldRootTransaction with new root $newRootTransaction is push ? $newRootRequiresPush" }
-
                         performControllerChange(
                             newRootTransaction,
                             oldRootTransaction,
@@ -244,8 +228,6 @@ abstract class Router {
                         .reversed()
                         .filterNot { newVisibleTransactions.contains(it) }
                         .forEach {
-                            d { "remove old visible transactions $it" }
-
                             val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
                             localHandler.forceRemoveViewOnPush = true
                             changeManager.completeChangeImmediately(it.controller.instanceId)
@@ -262,8 +244,6 @@ abstract class Router {
                         .drop(1)
                         .filterNot { oldVisibleTransactions.contains(it) }
                         .forEach {
-                            d { "add new visible transactions $it" }
-
                             performControllerChange(
                                 it,
                                 newVisibleTransactions[newVisibleTransactions.indexOf(it) - 1],
