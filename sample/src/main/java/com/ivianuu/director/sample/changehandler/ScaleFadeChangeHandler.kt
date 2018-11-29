@@ -20,11 +20,11 @@ class ScaleFadeChangeHandler : AnimatorChangeHandler() {
         val animator = AnimatorSet()
         if (to != null) {
             val start = if (toAddedToContainer) 0f else to.alpha
-            animator.play(ObjectAnimator.ofFloat<View>(to, View.ALPHA, start, 1f))
+            animator.play(ObjectAnimator.ofFloat(to, View.ALPHA, start, 1f))
         }
 
         if (from != null) {
-            animator.play(ObjectAnimator.ofFloat<View>(from, View.ALPHA, 0f))
+            animator.play(ObjectAnimator.ofFloat(from, View.ALPHA, 0f))
             animator.play(ObjectAnimator.ofFloat(from, View.SCALE_X, 0.8f))
             animator.play(ObjectAnimator.ofFloat(from, View.SCALE_Y, 0.8f))
         }

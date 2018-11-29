@@ -38,7 +38,7 @@ class FlipChangeHandler(
         if (to != null) {
             to.alpha = 0f
 
-            val rotation = ObjectAnimator.ofFloat<View>(
+            val rotation = ObjectAnimator.ofFloat(
                 to,
                 flipDirection.property,
                 flipDirection.inStartRotation,
@@ -48,13 +48,13 @@ class FlipChangeHandler(
             animatorSet.play(rotation)
 
             val alpha =
-                ObjectAnimator.ofFloat<View>(to, View.ALPHA, 1f).setDuration(animationDuration / 2)
+                ObjectAnimator.ofFloat(to, View.ALPHA, 1f).setDuration(animationDuration / 2)
             alpha.startDelay = animationDuration / 3
             animatorSet.play(alpha)
         }
 
         if (from != null) {
-            val rotation = ObjectAnimator.ofFloat<View>(
+            val rotation = ObjectAnimator.ofFloat(
                 from,
                 flipDirection.property,
                 0f,
@@ -64,7 +64,7 @@ class FlipChangeHandler(
             animatorSet.play(rotation)
 
             val alpha =
-                ObjectAnimator.ofFloat<View>(from, View.ALPHA, 0f).setDuration(animationDuration / 2)
+                ObjectAnimator.ofFloat(from, View.ALPHA, 0f).setDuration(animationDuration / 2)
             alpha.startDelay = animationDuration / 3
             animatorSet.play(alpha)
         }

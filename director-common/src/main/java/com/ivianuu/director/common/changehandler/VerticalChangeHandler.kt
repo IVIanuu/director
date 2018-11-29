@@ -43,7 +43,7 @@ open class VerticalChangeHandler(
 
         if (isPush && to != null) {
             viewAnimators.add(
-                ObjectAnimator.ofFloat<View>(
+                ObjectAnimator.ofFloat(
                     to,
                     View.TRANSLATION_Y,
                     to.height.toFloat(),
@@ -52,7 +52,7 @@ open class VerticalChangeHandler(
             )
         } else if (!isPush && from != null) {
             viewAnimators.add(
-                ObjectAnimator.ofFloat<View>(
+                ObjectAnimator.ofFloat(
                     from,
                     View.TRANSLATION_Y,
                     from.height.toFloat()

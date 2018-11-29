@@ -42,7 +42,7 @@ open class HorizontalChangeHandler(
         if (isPush) {
             if (from != null) {
                 animatorSet.play(
-                    ObjectAnimator.ofFloat<View>(
+                    ObjectAnimator.ofFloat(
                         from,
                         View.TRANSLATION_X,
                         -from.width.toFloat()
@@ -51,7 +51,7 @@ open class HorizontalChangeHandler(
             }
             if (to != null) {
                 animatorSet.play(
-                    ObjectAnimator.ofFloat<View>(
+                    ObjectAnimator.ofFloat(
                         to,
                         View.TRANSLATION_X,
                         to.width.toFloat(),
@@ -62,7 +62,7 @@ open class HorizontalChangeHandler(
         } else {
             if (from != null) {
                 animatorSet.play(
-                    ObjectAnimator.ofFloat<View>(
+                    ObjectAnimator.ofFloat(
                         from,
                         View.TRANSLATION_X,
                         from.width.toFloat()
@@ -73,7 +73,7 @@ open class HorizontalChangeHandler(
                 // Allow this to have a nice transition when coming off an aborted push animation
                 val fromLeft = from?.translationX ?: 0f
                 animatorSet.play(
-                    ObjectAnimator.ofFloat<View>(
+                    ObjectAnimator.ofFloat(
                         to,
                         View.TRANSLATION_X,
                         fromLeft - to.width.toFloat(),
