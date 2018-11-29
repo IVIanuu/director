@@ -76,7 +76,7 @@ abstract class Router {
         newBackstack: List<RouterTransaction>,
         changeHandler: ControllerChangeHandler? = null
     ) {
-        val oldTransactions = backstack
+        val oldTransactions = _backstack.toList()
         val oldVisibleTransactions = oldTransactions.filterVisible()
 
         // Swap around transaction indices to ensure they don't get thrown out of order by the
@@ -188,7 +188,7 @@ abstract class Router {
      * Attaches this Router's existing backstack to its container if one exists.
      */
     open fun rebindIfNeeded() {
-        backstack
+        _backstack
             .filterVisible()
             .forEach {
                 performControllerChange(it, null, true, SimpleSwapChangeHandler(false))
@@ -262,6 +262,12 @@ abstract class Router {
             .forEach { it.onRequestPermissionsResult(requestCode, permissions, grantResults) }
     }
 
+    fun shouldShowRequestPermissionRationale(permission: String, instanceIds: Set<String>) =
+        instanceIds
+            .mapNotNull { findControllerByInstanceId(it) }
+            .filter { it.shouldShowRequestPermissionRationale(permission) }
+            .any()
+
     open fun onActivityStarted() {
         reversedBackstack.forEach { it.controller.activityStarted() }
     }
@@ -330,7 +336,7 @@ abstract class Router {
     }
 
     open fun saveInstanceState(outState: Bundle) {
-        val backstack = backstack.map { it.saveInstanceState() }
+        val backstack = _backstack.map { it.saveInstanceState() }
         outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
         outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
     }
@@ -343,14 +349,8 @@ abstract class Router {
         )
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
-        backstack.forEach { setControllerRouter(it.controller) }
+        _backstack.forEach { setControllerRouter(it.controller) }
     }
-
-    fun shouldShowRequestPermissionRationale(permission: String, instanceIds: Set<String>) =
-        instanceIds
-        .mapNotNull { findControllerByInstanceId(it) }
-        .filter { it.shouldShowRequestPermissionRationale(permission) }
-        .any()
 
     private fun performControllerChange(
         to: RouterTransaction?,
