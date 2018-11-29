@@ -407,11 +407,10 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
         }
     }
 
-    private fun getToEpicenterView(toSharedElements: MutableMap<String, View>): View? {
-        return if (enterTransition != null && sharedElementNames.isNotEmpty()) {
+    private fun getToEpicenterView(toSharedElements: MutableMap<String, View>) =
+        if (enterTransition != null && sharedElementNames.isNotEmpty()) {
             toSharedElements[sharedElementNames.values.first()]
         } else null
-    }
 
     private fun setFromEpicenter(fromSharedElements: MutableMap<String, View>) {
         if (sharedElementNames.isNotEmpty()) {

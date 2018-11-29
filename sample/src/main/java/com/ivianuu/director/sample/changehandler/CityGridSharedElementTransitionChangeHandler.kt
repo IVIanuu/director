@@ -68,8 +68,6 @@ class CityGridSharedElementTransitionChangeHandler(
         Slide(Gravity.BOTTOM)
     } else {
         Explode()
-    }.apply {
-        names.forEach { excludeTarget(it, true) }
     }
 
     override fun configureSharedElements(
