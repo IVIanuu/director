@@ -1,5 +1,6 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
@@ -9,8 +10,8 @@ class TextController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_text
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         text_view.text = args.getString(KEY_TEXT)
     }
 

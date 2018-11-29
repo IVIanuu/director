@@ -36,13 +36,13 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         controller.d { "post inflate view" }
     }
 
-    override fun preBindView(controller: Controller, view: View) {
-        super.preBindView(controller, view)
+    override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+        super.preBindView(controller, view, savedViewState)
         controller.d { "pre bind view" }
     }
 
-    override fun postBindView(controller: Controller, view: View) {
-        super.postBindView(controller, view)
+    override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+        super.postBindView(controller, view, savedViewState)
         controller.d { "post bind view" }
     }
 

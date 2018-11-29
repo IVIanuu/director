@@ -38,8 +38,8 @@ class CityGridController : BaseController() {
         actionBarTitle = args.getString(KEY_TITLE)
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         tv_title.text = actionBarTitle
         img_dot.drawable.setColorFilter(

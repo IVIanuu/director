@@ -1,5 +1,6 @@
 package com.ivianuu.director.arch.lifecycle
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -16,13 +17,13 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private val lifecycleListener = object : ControllerLifecycleListener {
 
-        override fun preBindView(controller: Controller, view: View) {
-            super.preBindView(controller, view)
+        override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.preBindView(controller, view, savedViewState)
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
         }
 
-        override fun postBindView(controller: Controller, view: View) {
-            super.postBindView(controller, view)
+        override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.postBindView(controller, view, savedViewState)
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
             lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_START)
         }

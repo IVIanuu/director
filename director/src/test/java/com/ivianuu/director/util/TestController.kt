@@ -58,8 +58,8 @@ class TestController : Controller() {
         return view
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         currentCallState.bindViewCalls++
     }
 

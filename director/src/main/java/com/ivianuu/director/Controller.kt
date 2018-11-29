@@ -187,7 +187,7 @@ abstract class Controller {
     /**
      * Called when this controllers view was created
      */
-    protected open fun onBindView(view: View) {
+    protected open fun onBindView(view: View, savedViewState: Bundle?) {
         superCalled = true
     }
 
@@ -460,11 +460,11 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
 
-            notifyLifecycleListeners { it.preBindView(this, view) }
+            notifyLifecycleListeners { it.preBindView(this, view, viewState) }
 
-            requireSuperCalled { onBindView(view) }
+            requireSuperCalled { onBindView(view, viewState) }
 
-            notifyLifecycleListeners { it.postBindView(this, view) }
+            notifyLifecycleListeners { it.postBindView(this, view, viewState) }
 
             restoreViewState(view)
 

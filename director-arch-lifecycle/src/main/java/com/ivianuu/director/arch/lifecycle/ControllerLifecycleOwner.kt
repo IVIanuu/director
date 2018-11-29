@@ -38,8 +38,8 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         }
 
-        override fun postBindView(controller: Controller, view: View) {
-            super.postBindView(controller, view)
+        override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.postBindView(controller, view, savedViewState)
             lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         }
 

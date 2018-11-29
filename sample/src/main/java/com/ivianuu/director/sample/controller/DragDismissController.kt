@@ -28,8 +28,8 @@ class DragDismissController : BaseController() {
         actionBarTitle = "Drag to Dismiss"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         (view as ElasticDragDismissFrameLayout).addListener(dragDismissListener)
     }
 

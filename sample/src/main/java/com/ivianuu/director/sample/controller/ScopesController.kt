@@ -52,8 +52,8 @@ class ScopesController : BaseController() {
             .disposeBy(destroy)
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         d { "onBindView() called" }
 
         btn_next_release_view.setOnClickListener {

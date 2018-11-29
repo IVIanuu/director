@@ -19,8 +19,8 @@ class TargetTitleEntryController : BaseController() {
         actionBarTitle = "Target Controller Demo"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         btn_use_title.setOnClickListener {
             (targetController as? TargetTitleEntryControllerListener)
                 ?.onTitlePicked(edit_text.text.toString())

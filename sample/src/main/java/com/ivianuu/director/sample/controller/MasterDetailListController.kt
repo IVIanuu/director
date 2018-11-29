@@ -34,8 +34,8 @@ class MasterDetailListController : BaseController() {
         actionBarTitle = "Master/Detail Flow"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         recycler_view.layoutManager = LinearLayoutManager(activity)
         recycler_view.buildModels {

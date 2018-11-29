@@ -31,8 +31,8 @@ class BottomNavController : BaseController() {
         actionBarTitle = "Bottom Nav Demo"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         bottom_nav_view.setOnNavigationItemSelectedListener { item ->
             val i = (0 until bottom_nav_view.menu.size())

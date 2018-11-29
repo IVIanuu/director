@@ -29,8 +29,8 @@ class CityDetailController : BaseController() {
         actionBarTitle = title
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         val imageViewTransitionName = resources.getString(
             R.string.transition_tag_image_named,

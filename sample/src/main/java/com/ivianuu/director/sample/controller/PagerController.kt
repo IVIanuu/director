@@ -42,8 +42,8 @@ class PagerController : BaseController() {
         actionBarTitle = "ViewPager Demo"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         view_pager.adapter = pagerAdapter
         tab_layout.setupWithViewPager(view_pager)
     }

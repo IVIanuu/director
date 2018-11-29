@@ -20,8 +20,8 @@ class MultipleChildRouterController : BaseController() {
         actionBarTitle = "Child Router Demo"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         listOf(container_0, container_1, container_2)
             .map { getChildRouter(it) }

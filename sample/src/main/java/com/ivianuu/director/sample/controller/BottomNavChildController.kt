@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.hasRootController
@@ -34,8 +35,8 @@ class BottomNavChildController : BaseController() {
 
     private val childRouter by lazy { getChildRouter(R.id.bottom_nav_child_container) }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         if (!childRouter.hasRootController) {
             childRouter.setRoot(

@@ -31,8 +31,8 @@ class TargetDisplayController : BaseController(),
         actionBarTitle = "Target Controller Demo"
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
         btn_pick_title.setOnClickListener {
             router.pushController(
                 TargetTitleEntryController.newInstance(this)

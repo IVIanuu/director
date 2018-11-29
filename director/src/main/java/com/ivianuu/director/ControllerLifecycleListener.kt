@@ -36,10 +36,10 @@ interface ControllerLifecycleListener {
     fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
     }
 
-    fun preBindView(controller: Controller, view: View) {
+    fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
     }
 
-    fun postBindView(controller: Controller, view: View) {
+    fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
     }
 
     fun preAttach(controller: Controller, view: View) {

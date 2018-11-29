@@ -1,18 +1,18 @@
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.synthetic.main.controller_child.*
+import kotlinx.android.synthetic.main.controller_child.tv_title
 
 class ChildController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_child
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindView(view: View, savedViewState: Bundle?) {
+        super.onBindView(view, savedViewState)
 
         tv_title.text = args.getString(KEY_TITLE)
 

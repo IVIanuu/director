@@ -36,8 +36,8 @@ class ControllerLifecycle(
                 onEvent(ControllerEvent.CREATE)
             }
 
-            override fun preBindView(controller: Controller, view: View) {
-                super.preBindView(controller, view)
+            override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+                super.preBindView(controller, view, savedViewState)
                 onEvent(ControllerEvent.BIND_VIEW)
             }
 

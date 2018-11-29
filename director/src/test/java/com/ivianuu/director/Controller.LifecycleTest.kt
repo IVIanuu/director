@@ -293,7 +293,7 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun preBindView(controller: Controller, view: View) {
+            override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
                 callState.bindViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -317,7 +317,7 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun postBindView(controller: Controller, view: View) {
+            override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
                 callState.bindViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -750,7 +750,7 @@ class ControllerLifecycleCallbacksTest {
                 currentCallState.inflateViewCalls++
             }
 
-            override fun postBindView(controller: Controller, view: View) {
+            override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
                 currentCallState.bindViewCalls++
             }
 
