@@ -18,9 +18,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.hasRootController
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -43,7 +41,6 @@ class BottomNavChildController : BaseController() {
                 NavigationController
                     .newInstance(1, NavigationController.DisplayUpMode.HIDE, false)
                     .toTransaction()
-                    .pushChangeHandler(FadeChangeHandler())
             )
         }
     }

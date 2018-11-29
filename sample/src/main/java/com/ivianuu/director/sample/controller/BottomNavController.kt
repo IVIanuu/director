@@ -1,17 +1,17 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
 import com.ivianuu.director.Router
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.popToRoot
+import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.saveControllerInstanceState
-import com.ivianuu.director.setRoot
+import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
-import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
+import java.util.*
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -20,7 +20,6 @@ class BottomNavController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_bottom_nav
 
-    private val savedStates = mutableMapOf<Int, Bundle>()
     private var currentIndex = -1
 
     private lateinit var bottomNavRouter: Router
@@ -88,48 +87,38 @@ class BottomNavController : BaseController() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        savedInstanceState.getParcelableArrayList<SavedStateWithIndex>(KEY_SAVED_STATES)!!
-            .forEach { savedStates[it.index] = it.state }
         currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(
-            KEY_SAVED_STATES, ArrayList(
-                savedStates.entries
-                    .map { SavedStateWithIndex(it.key, it.value) }
-            ))
-
         outState.putInt(KEY_CURRENT_INDEX, currentIndex)
     }
 
     private fun swapTo(index: Int) {
-        val currentController = bottomNavRouter.backstack.firstOrNull()?.controller
+        val backstack = bottomNavRouter.backstack
+        val newBackstack = backstack.toMutableList()
 
-        if (currentController != null) {
-            val savedState = bottomNavRouter.saveControllerInstanceState(currentController)
-            savedStates[currentIndex] = savedState
+        val backstackIndex = backstack.indexOfFirst { it.tag == index.toString() }
+
+        if (backstackIndex != -1) {
+            Collections.swap(newBackstack, backstackIndex, newBackstack.lastIndex)
+        } else {
+            newBackstack.add(
+                BottomNavChildController()
+                    .toTransaction()
+                    .pushChangeHandler(FadeChangeHandler())
+                    .popChangeHandler(FadeChangeHandler())
+                    .tag(index.toString())
+            )
         }
 
-        val newController = BottomNavChildController()
-
-        val savedState = savedStates[index]
-
-        if (savedState != null) {
-            newController.setInitialSavedState(savedState)
-        }
-
-        bottomNavRouter.setRoot(newController.toTransaction())
+        bottomNavRouter.setBackstack(newBackstack)
 
         currentIndex = index
     }
 
-    @Parcelize
-    private data class SavedStateWithIndex(val index: Int, val state: Bundle) : Parcelable
-
     private companion object {
-        private const val KEY_SAVED_STATES = "BottomNavController.savedStates"
         private const val KEY_CURRENT_INDEX = "BottomNavController.currentIndex"
     }
 }
