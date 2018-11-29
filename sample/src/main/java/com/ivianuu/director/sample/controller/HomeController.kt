@@ -9,7 +9,6 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popChangeHandler
 import com.ivianuu.director.pushChangeHandler
@@ -17,9 +16,9 @@ import com.ivianuu.director.pushController
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
-import com.ivianuu.director.sample.test.DialogController
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.tag
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_home.recycler_view
@@ -64,11 +63,6 @@ class HomeController : BaseController() {
         when (item) {
             HomeItem.NAVIGATION -> {
                 router.pushController(
-                    DialogController().toTransaction()
-                        .pushChangeHandler(SimpleSwapChangeHandler(false))
-                        .popChangeHandler(SimpleSwapChangeHandler())
-                )
-                /*router.pushController(
                     NavigationController.newInstance(
                         0,
                         NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
@@ -77,7 +71,7 @@ class HomeController : BaseController() {
                         .pushChangeHandler(FadeChangeHandler())
                         .popChangeHandler(FadeChangeHandler())
                         .tag(NavigationController.TAG_UP_TRANSACTION)
-                )*/
+                )
             }
             HomeItem.TRANSITIONS -> {
                 router.pushController(
