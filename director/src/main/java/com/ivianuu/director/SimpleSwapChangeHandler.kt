@@ -74,6 +74,9 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
+        this.onChangeComplete = onChangeComplete
+        this.container = container
+
         if (!canceled) {
             if (from != null && (!isPush || removesFromViewOnPush)) {
                 container.removeView(from)
@@ -86,9 +89,9 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
 
         if (container.windowToken != null) {
             onChangeComplete()
+            this.container = null
+            this.onChangeComplete = null
         } else {
-            this.onChangeComplete = onChangeComplete
-            this.container = container
             container.addOnAttachStateChangeListener(attachStateChangeListener)
         }
     }

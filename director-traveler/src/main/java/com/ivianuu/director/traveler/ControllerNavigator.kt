@@ -19,6 +19,7 @@ package com.ivianuu.director.traveler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.backstackSize
 import com.ivianuu.director.findControllerByTag
 import com.ivianuu.director.popController
 import com.ivianuu.director.popCurrentController
@@ -90,7 +91,9 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         return true
     }
 
-    protected open fun back(command: Back) = if (router.backstack.size > 1) {
+    protected open fun back(command: Back) = if (router.backstackSize > 0
+        && (router.popsLastView || router.backstackSize > 1)
+    ) {
         router.popCurrentController()
         true
     } else {

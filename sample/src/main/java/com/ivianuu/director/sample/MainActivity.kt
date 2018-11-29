@@ -1,10 +1,13 @@
 package com.ivianuu.director.sample
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.attachRouter
+import com.ivianuu.director.d
 import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
@@ -27,6 +30,17 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
+
+        controller_container.setOnHierarchyChangeListener(object :
+            ViewGroup.OnHierarchyChangeListener {
+            override fun onChildViewAdded(parent: View, child: View) {
+                this@MainActivity.d { "on child view added ${child.javaClass.simpleName}, ${controller_container.childCount}" }
+            }
+
+            override fun onChildViewRemoved(parent: View, child: View) {
+                this@MainActivity.d { "on child view removed ${child.javaClass.simpleName}, ${controller_container.childCount}" }
+            }
+        })
 
         router = attachRouter(
             controller_container,

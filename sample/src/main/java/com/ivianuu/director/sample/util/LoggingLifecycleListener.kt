@@ -92,7 +92,7 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         changeType: ControllerChangeType
     ) {
         super.onChangeStart(controller, changeHandler, changeType)
-        controller.d { "on change start -> $changeType" }
+        controller.d { "on change start -> $changeType, $changeHandler" }
     }
 
     override fun onChangeEnd(
@@ -101,7 +101,7 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         changeType: ControllerChangeType
     ) {
         super.onChangeEnd(controller, changeHandler, changeType)
-        controller.d { "on change end -> $changeType" }
+        controller.d { "on change end -> $changeType, $changeHandler" }
     }
 
     override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
