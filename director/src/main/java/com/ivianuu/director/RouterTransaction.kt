@@ -45,6 +45,7 @@ class RouterTransaction {
 
     internal var transactionIndex = INVALID_INDEX
     internal var attachedToRouter = false
+    internal var allowModification = false
 
     internal constructor(controller: Controller, unit: Unit /*dummy*/) {
         this.controller = controller
@@ -85,7 +86,7 @@ class RouterTransaction {
     }
 
     private fun checkModify() {
-        if (attachedToRouter) {
+        if (!allowModification && attachedToRouter) {
             throw IllegalStateException("transactions cannot be modified after being added to a Router.")
         }
     }
