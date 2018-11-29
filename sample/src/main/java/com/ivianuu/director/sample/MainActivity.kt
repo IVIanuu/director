@@ -9,7 +9,6 @@ import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerFactory
-import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.activity_main.controller_container
@@ -33,7 +32,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             savedInstanceState,
             LoggingControllerFactory()
         ) {
-            addLifecycleListener(LoggingLifecycleListener())
+            //addLifecycleListener(LoggingLifecycleListener())
 
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())
