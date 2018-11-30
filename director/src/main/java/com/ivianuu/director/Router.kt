@@ -196,18 +196,17 @@ abstract class Router {
             }
             // it's not a simple change so loop trough everything
             newBackstack.isNotEmpty() -> {
-                val oldRootTransaction = oldVisibleTransactions.firstOrNull()
-                val newRootTransaction = newVisibleTransactions.first()
-
                 val newRootRequiresPush =
-                    !oldTransactions.contains(newRootTransaction)
-                            || oldTransactions.indexOf(newRootTransaction) <
-                            newBackstack.indexOf(newRootTransaction)
+                    newVisibleTransactions.isEmpty() ||
+                            !oldTransactions.contains(newVisibleTransactions.first())
 
                 val visibleTransactionsChanged =
                     !backstacksAreEqual(newVisibleTransactions, oldVisibleTransactions)
 
                 if (visibleTransactionsChanged) {
+                    val oldRootTransaction = oldVisibleTransactions.firstOrNull()
+                    val newRootTransaction = newVisibleTransactions.first()
+
                     // Replace the old visible root with the new one
                     if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
                         // Ensure the existing root controller is fully pushed to the view hierarchy
