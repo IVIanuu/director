@@ -196,17 +196,18 @@ abstract class Router {
             }
             // it's not a simple change so loop trough everything
             newBackstack.isNotEmpty() -> {
+                val oldRootTransaction = oldVisibleTransactions.firstOrNull()
+                val newRootTransaction = newVisibleTransactions.first()
+
                 val newRootRequiresPush =
-                    newVisibleTransactions.isEmpty() ||
-                            !oldTransactions.contains(newVisibleTransactions.first())
+                    !oldTransactions.contains(newRootTransaction)
+                            || oldTransactions.indexOf(newRootTransaction) <
+                            newBackstack.indexOf(newRootTransaction)
 
                 val visibleTransactionsChanged =
                     !backstacksAreEqual(newVisibleTransactions, oldVisibleTransactions)
 
                 if (visibleTransactionsChanged) {
-                    val oldRootTransaction = oldVisibleTransactions.firstOrNull()
-                    val newRootTransaction = newVisibleTransactions.first()
-
                     // Replace the old visible root with the new one
                     if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
                         // Ensure the existing root controller is fully pushed to the view hierarchy
@@ -482,7 +483,6 @@ abstract class Router {
     }
 
     internal abstract fun getRetainedObjects(instanceId: String): RetainedObjects
-
     internal abstract fun removeRetainedObjects(instanceId: String)
 
     internal abstract fun startActivity(intent: Intent)
