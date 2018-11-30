@@ -52,7 +52,7 @@ internal class ControllerHostedRouter : Router {
         removeContainer(true)
     }
 
-    fun saveBasicInstanceState(outState: Bundle) {
+    fun saveIdentity(outState: Bundle) {
         outState.putInt(KEY_HOST_ID, hostId)
         outState.putString(KEY_TAG, tag)
     }
@@ -133,7 +133,15 @@ internal class ControllerHostedRouter : Router {
     fun removeContainer(forceViewRemoval: Boolean) {
         destroyingControllers.toList()
             .filter { it.view != null }
-            .forEach { it.detach(it.view!!, true, false, true, true) }
+            .forEach {
+                it.detach(
+                    it.view!!,
+                    true,
+                    false,
+                    true,
+                    true
+                )
+            }
 
         backstack
             .filter { it.controller.view != null }

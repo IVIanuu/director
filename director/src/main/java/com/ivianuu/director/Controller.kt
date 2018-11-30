@@ -106,12 +106,11 @@ abstract class Controller {
         internal set
 
     private var allState: Bundle? = null
-    private var savedState: Bundle? = null
+    private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
     private var childRouterStates: Map<ControllerHostedRouter, Bundle>? = null
 
     private var viewIsAttached = false
-    private var viewWasDetached = false
     private var attachedToUnownedParent = false
     private var awaitingParentAttach = false
     private var hasSavedViewState = false
@@ -476,13 +475,11 @@ abstract class Controller {
             viewAttachHandler = ViewAttachHandler(object : ViewAttachHandler.Listener {
                 override fun onAttached() {
                     viewIsAttached = true
-                    viewWasDetached = false
                     attach(view)
                 }
 
                 override fun onDetached(fromActivityStop: Boolean) {
                     viewIsAttached = false
-                    viewWasDetached = true
                     detach(view, false, fromActivityStop, false, false)
                 }
 
@@ -497,7 +494,7 @@ abstract class Controller {
         return view
     }
 
-    internal fun attach(view: View) {
+    private fun attach(view: View) {
         val router = router
 
         attachedToUnownedParent = view.parent != router.container
@@ -622,7 +619,15 @@ abstract class Controller {
         if (!isAttached) {
             removeViewReference(true)
         } else if (removeViews) {
-            view?.let { detach(it, true, false, true, false) }
+            view?.let {
+                detach(
+                    it,
+                    true,
+                    false,
+                    true,
+                    false
+                )
+            }
         }
 
         if (!activity.isChangingConfigurations) {
@@ -668,7 +673,7 @@ abstract class Controller {
         val childBundles = _childRouters
             .map { childRouter ->
                 Bundle().also {
-                    childRouter.saveBasicInstanceState(it)
+                    childRouter.saveIdentity(it)
                     childRouter.saveInstanceState(it)
                 }
             }
@@ -689,7 +694,7 @@ abstract class Controller {
             args = bundle.apply { classLoader = this@Controller.javaClass.classLoader }
         }
 
-        savedState = savedInstanceState.getBundle(KEY_SAVED_STATE)
+        instanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)
             ?.also { it.classLoader = javaClass.classLoader }
 
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
@@ -749,20 +754,20 @@ abstract class Controller {
 
     private fun performCreate() {
         if (isCreated) return
-        notifyLifecycleListeners { it.preCreate(this, savedState) }
+        notifyLifecycleListeners { it.preCreate(this, instanceState) }
 
         isCreated = true
 
-        requireSuperCalled { onCreate(savedState) }
+        requireSuperCalled { onCreate(instanceState) }
 
-        notifyLifecycleListeners { it.postCreate(this, savedState) }
+        notifyLifecycleListeners { it.postCreate(this, instanceState) }
     }
 
     private fun performRestoreInstanceState() {
-        val savedInstanceState = savedState ?: return
-        onRestoreInstanceState(savedInstanceState)
-        notifyLifecycleListeners { it.onRestoreInstanceState(this, savedInstanceState) }
-        savedState = null
+        val state = instanceState ?: return
+        onRestoreInstanceState(state)
+        notifyLifecycleListeners { it.onRestoreInstanceState(this, state) }
+        instanceState = null
     }
 
     internal fun changeStarted(
@@ -821,7 +826,7 @@ abstract class Controller {
         private const val KEY_CLASS_NAME = "Controller.className"
         private const val KEY_VIEW_STATE = "Controller.viewState"
         private const val KEY_CHILD_ROUTERS = "Controller.childRouters"
-        private const val KEY_SAVED_STATE = "Controller.savedState"
+        private const val KEY_SAVED_STATE = "Controller.instanceState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"
         private const val KEY_ARGS = "Controller.args"

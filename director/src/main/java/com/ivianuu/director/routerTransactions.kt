@@ -1,11 +1,6 @@
 package com.ivianuu.director
 
 /**
- * Returns a new [RouterTransaction] with the [controller]
- */
-fun RouterTransaction(controller: Controller) = RouterTransaction(controller, Unit)
-
-/**
  * Fluent version of push change handler
  */
 fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?) = apply {

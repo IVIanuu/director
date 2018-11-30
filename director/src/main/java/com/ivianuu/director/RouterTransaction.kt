@@ -47,7 +47,7 @@ class RouterTransaction {
     internal var attachedToRouter = false
     internal var allowModification = false
 
-    internal constructor(controller: Controller, unit: Unit /*dummy*/) {
+    constructor(controller: Controller) {
         this.controller = controller
     }
 
