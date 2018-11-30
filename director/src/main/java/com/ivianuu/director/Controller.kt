@@ -430,6 +430,11 @@ abstract class Controller {
 
     internal fun activityStopped() {
         viewAttachHandler?.onActivityStopped()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            view?.cancelPendingInputEvents()
+        }
+
         _childRouters.forEach { it.onActivityStopped() }
     }
 
