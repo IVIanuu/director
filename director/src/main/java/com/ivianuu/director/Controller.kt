@@ -622,6 +622,7 @@ abstract class Controller {
 
         if (!activity.isChangingConfigurations) {
             router.removeRetainedObjects(instanceId)
+            _retainedObjects.clear()
         }
     }
 
