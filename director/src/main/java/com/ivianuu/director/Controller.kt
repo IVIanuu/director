@@ -612,9 +612,9 @@ abstract class Controller {
     private fun destroy(removeViews: Boolean) {
         isBeingDestroyed = true
 
-        router.unregisterForActivityResults(instanceId)
-
         _childRouters.forEach { it.destroy(false) }
+
+        router.unregisterForActivityResults(instanceId)
 
         if (!isAttached) {
             removeViewReference(true)
