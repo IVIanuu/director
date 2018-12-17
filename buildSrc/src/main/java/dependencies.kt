@@ -16,7 +16,7 @@ object Versions {
     const val androidGradlePlugin = "3.2.1"
 
     const val androidx = "1.0.0"
-    const val androidxArch = "2.0.0-rc01"
+    const val androidxLifecycle = "2.0.0"
     const val androidxTestRules = "1.1.0"
     const val androidxTestRunner = "1.1.0"
 
@@ -50,15 +50,14 @@ object Deps {
 
     const val androidxAppCompat = "androidx.appcompat:appcompat:${Versions.androidx}"
     const val androidxFragment = "androidx.fragment:fragment:${Versions.androidx}"
+    const val androidxLifecycleExtensions =
+        "androidx.lifecycle:lifecycle-extensions:${Versions.androidxLifecycle}"
     const val androidxViewPager = "androidx.viewpager:viewpager:${Versions.androidx}"
 
     const val androidxTestCore = "androidx.test:core:${Versions.androidx}"
     const val androidxTestJunit = "androidx.test.ext:junit:${Versions.androidx}"
     const val androidxTestRules = "androidx.test:rules:${Versions.androidxTestRules}"
     const val androidxTestRunner = "androidx.test:runner:${Versions.androidxTestRunner}"
-
-    const val archLifecycleExtensions =
-        "androidx.lifecycle:lifecycle-extensions:${Versions.androidxArch}"
 
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
