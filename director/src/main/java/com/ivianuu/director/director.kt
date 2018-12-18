@@ -15,38 +15,8 @@ import com.ivianuu.director.internal.LifecycleHandler
 fun FragmentActivity.attachRouter(
     container: ViewGroup,
     savedInstanceState: Bundle?,
-    controllerFactory: ControllerFactory? = null,
-    init: Router.() -> Unit
-) = attachRouter(container, savedInstanceState, controllerFactory).apply(init)
-
-/**
- * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
- * If an existing [Router] is already associated with this Activity/ViewGroup pair, either in memory
- * or in the savedInstanceState, that router will be used and rebound instead of creating a new one with
- * an empty backstack.
- */
-@JvmName("attachRouterWithReceiver")
-fun FragmentActivity.attachRouter(
-    container: ViewGroup,
-    savedInstanceState: Bundle?,
     controllerFactory: ControllerFactory? = null
-) = attachRouter(this, container, savedInstanceState, controllerFactory)
-
-/**
- * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
- * If an existing [Router] is already associated with this Activity/ViewGroup pair, either in memory
- * or in the savedInstanceState, that router will be used and rebound instead of creating a new one with
- * an empty backstack.
- */
-fun attachRouter(
-    activity: FragmentActivity,
-    container: ViewGroup,
-    savedInstanceState: Bundle? = null,
-    controllerFactory: ControllerFactory? = null,
-    init: Router.() -> Unit
-) = attachRouter(
-    activity, container, savedInstanceState, controllerFactory
-).apply(init)
+): Router = attachRouter(container, savedInstanceState, controllerFactory)
 
 /**
  * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
@@ -67,3 +37,34 @@ fun attachRouter(
 
     return router
 }
+
+/**
+ * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
+ * If an existing [Router] is already associated with this Activity/ViewGroup pair, either in memory
+ * or in the savedInstanceState, that router will be used and rebound instead of creating a new one with
+ * an empty backstack.
+ */
+@JvmName("attachRouterWithReceiver")
+fun FragmentActivity.attachRouter(
+    containerId: Int,
+    savedInstanceState: Bundle?,
+    controllerFactory: ControllerFactory? = null
+) = attachRouter(findViewById<ViewGroup>(containerId), savedInstanceState, controllerFactory)
+
+/**
+ * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
+ * If an existing [Router] is already associated with this Activity/ViewGroup pair, either in memory
+ * or in the savedInstanceState, that router will be used and rebound instead of creating a new one with
+ * an empty backstack.
+ */
+fun attachRouter(
+    activity: FragmentActivity,
+    containerId: Int,
+    savedInstanceState: Bundle? = null,
+    controllerFactory: ControllerFactory? = null
+) = attachRouter(
+    activity,
+    activity.findViewById<ViewGroup>(containerId),
+    savedInstanceState,
+    controllerFactory
+)

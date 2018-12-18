@@ -20,16 +20,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.Controller.RetainViewMode
-import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.CallState
-import com.ivianuu.director.util.MockChangeHandler
-import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.ViewUtils
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import com.ivianuu.director.util.*
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -567,7 +559,7 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, child)
 
         val childRouter =
-            parent.getChildRouter(parent.childContainer1!!) {
+            parent.getChildRouter(parent.childContainer1!!).apply {
                 setRoot(
                     child.toTransaction()
                     .pushChangeHandler(getPushHandler(expectedCallState, child))

@@ -100,22 +100,10 @@ fun Controller.requestPermissions(permissions: Array<String>, requestCode: Int) 
 }
 
 /**
- * Returns the child router for [containerId] and [tag] or creates a new instance
- */
-fun Controller.getChildRouter(containerId: Int, tag: String?, init: Router.() -> Unit) =
-    getChildRouter(containerId, tag).apply(init)
-
-/**
  * Returns the child router for [container] and [tag] or creates a new instance
  */
 fun Controller.getChildRouter(container: ViewGroup, tag: String? = null) =
     getChildRouter(container.id, tag)
-
-/**
- * Returns the child router for [container] and [tag] or creates a new instance
- */
-fun Controller.getChildRouter(container: ViewGroup, tag: String? = null, init: Router.() -> Unit) =
-    getChildRouter(container.id, tag).apply(init)
 
 /**
  * Returns the child router for [container] and [tag] if already created
