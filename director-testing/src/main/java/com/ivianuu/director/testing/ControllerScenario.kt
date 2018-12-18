@@ -22,15 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerFactory
-import com.ivianuu.director.Router
-import com.ivianuu.director.attachRouter
-import com.ivianuu.director.findControllerByTag
-import com.ivianuu.director.popController
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.*
 import kotlin.reflect.KClass
 
 class ControllerScenario<C : Controller> internal constructor(
@@ -127,7 +119,7 @@ class EmptyControllerActivity : FragmentActivity() {
             .get(ControllerFactoryHolderViewModel::class.java)
             .controllerFactory
 
-        _router = attachRouter(findViewById(android.R.id.content), savedInstanceState, factory)
+        _router = attachRouter(android.R.id.content, savedInstanceState, factory)
     }
 }
 
