@@ -2,11 +2,7 @@ package com.ivianuu.director.internal
 
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.ControllerChangeListener
-import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.SimpleSwapChangeHandler
+import com.ivianuu.director.*
 
 internal class ControllerChangeManager {
 

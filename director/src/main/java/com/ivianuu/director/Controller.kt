@@ -500,7 +500,7 @@ abstract class Controller {
         attachedToUnownedParent = view.parent != router.container
 
         // this can happen while transitions just ignore it
-        if (attachedToUnownedParent) return
+        if (attachedToUnownedParent || isBeingDestroyed) return
 
         val parentController = parentController
 

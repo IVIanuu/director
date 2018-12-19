@@ -5,11 +5,7 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.internal.ControllerChangeManager
-import com.ivianuu.director.internal.DefaultControllerFactory
-import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.backstacksAreEqual
-import com.ivianuu.director.internal.filterVisible
+import com.ivianuu.director.internal.*
 
 /**
  * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
