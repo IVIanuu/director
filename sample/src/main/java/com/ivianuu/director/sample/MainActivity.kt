@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         setSupportActionBar(toolbar)
 
         router = attachRouter(
-            controller_container,
+            R.id.controller_container,
             savedInstanceState,
             LoggingControllerFactory()
         ).apply {

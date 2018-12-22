@@ -16,7 +16,7 @@ fun FragmentActivity.attachRouter(
     container: ViewGroup,
     savedInstanceState: Bundle?,
     controllerFactory: ControllerFactory? = null
-): Router = attachRouter(container, savedInstanceState, controllerFactory)
+): Router = attachRouter(this, container, savedInstanceState, controllerFactory)
 
 /**
  * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
