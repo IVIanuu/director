@@ -42,7 +42,7 @@ object Versions {
 
     const val scopes = "6c630efcd6"
 
-    const val traveler = "e1cb60c864"
+    const val traveler = "ab66233b33"
 }
 
 object Deps {

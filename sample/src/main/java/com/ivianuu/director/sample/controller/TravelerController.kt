@@ -20,7 +20,7 @@ import android.os.Bundle
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
-import com.ivianuu.traveler.Traveler
+import com.ivianuu.traveler.Router
 import com.ivianuu.traveler.setRoot
 
 /**
@@ -33,11 +33,9 @@ class TravelerController : BaseController() {
 
     private val childRouter = getChildRouter(R.id.traveler_container)
 
-    private val traveler = Traveler().apply {
-        navigatorHolder.setNavigator(ControllerNavigator(childRouter))
+    val travelerRouter = Router().apply {
+        setNavigator(ControllerNavigator(childRouter))
     }
-
-    val travelerRouter get() = traveler.router
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
