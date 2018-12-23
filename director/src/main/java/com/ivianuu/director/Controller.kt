@@ -40,14 +40,14 @@ abstract class Controller {
     /**
      * Objects which will retained across configuration changes
      */
-    val retainedObjects get() = _retainedObjects
+    val retainedObjects get() = if (routerSet) _retainedObjects else throw IllegalStateException("retainedObjects is only available after onCreate")
     private lateinit var _retainedObjects: RetainedObjects
 
     /**
      * Returns the host activity of this controller
      */
     val activity: FragmentActivity
-        get() = router.activity
+        get() = if (routerSet) router.activity else throw IllegalStateException("activity is only available after onCreate")
 
     /**
      * The view of this controller or null
@@ -88,7 +88,7 @@ abstract class Controller {
         private set
 
     /**
-     * Whether or not this Controller is currently attached to a host View.
+     * Whether or not this Controller is currently attached to its container.
      */
     var isAttached = false
         private set
@@ -173,9 +173,7 @@ abstract class Controller {
     }
 
     /**
-     * Called when the controller is ready to display its view. A valid view must be returned. The standard body
-     * for this method will be `return inflater.inflate(R.layout.my_layout, container, false);`, plus
-     * any binding code.
+     * Returns the view for this controller
      */
     protected abstract fun onInflateView(
         inflater: LayoutInflater,
@@ -184,15 +182,14 @@ abstract class Controller {
     ): View
 
     /**
-     * Called when this controllers view was created
+     * Called after the of this controller was created
      */
     protected open fun onBindView(view: View, savedViewState: Bundle?) {
         superCalled = true
     }
 
     /**
-     * Called when this Controller's View is being destroyed. This should overridden to unbind the View
-     * from any local variables.
+     * Called when the view of this controller gets destroyed
      */
     protected open fun onUnbindView(view: View) {
         superCalled = true
@@ -219,46 +216,42 @@ abstract class Controller {
     }
 
     /**
-     * Called when this Controller is attached to its host ViewGroup
+     * Called when this Controller is attached to its container
      */
     protected open fun onAttach(view: View) {
         superCalled = true
     }
 
     /**
-     * Called when this Controller is detached from its host ViewGroup
+     * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
         superCalled = true
     }
 
     /**
-     * Called to save this Controller's View state. As Views can be detached and destroyed as part of the
-     * Controller lifecycle (ex: when another Controller has been pushed on top of it), care should be taken
-     * to save anything needed to reconstruct the View.
+     * Called to save the view state of this controller
      */
     protected open fun onSaveViewState(view: View, outState: Bundle) {
         superCalled = true
     }
 
     /**
-     * Restores data that was saved in the [.onSaveViewState] method. This should be overridden
-     * to restore the View's state to where it was before it was destroyed.
+     * Restores the view state which was saved in [onSaveViewState]
      */
     protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
         superCalled = true
     }
 
     /**
-     * Called to save this Controller's state in the event that its host Activity is destroyed.
+     * Called to save the instance state of this controller
      */
     protected open fun onSaveInstanceState(outState: Bundle) {
         superCalled = true
     }
 
     /**
-     * Restores data that was saved in the [.onSaveInstanceState] method. This should be overridden
-     * to restore this Controller's state to where it was before it was destroyed.
+     * Restores the instance state which was saved in [onSaveInstanceState]
      */
     protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
         superCalled = true
@@ -283,7 +276,6 @@ abstract class Controller {
 
     /**
      * Gets whether you should show UI with rationale for requesting a permission.
-     * {@see android.app.Activity#shouldShowRequestPermissionRationale(String)}
      */
     open fun shouldShowRequestPermissionRationale(permission: String) =
         Build.VERSION.SDK_INT >= 23
@@ -430,6 +422,7 @@ abstract class Controller {
     internal fun activityStopped() {
         viewAttachHandler?.onActivityStopped()
 
+        // cancel any pending input event
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             view?.cancelPendingInputEvents()
         }
@@ -500,7 +493,10 @@ abstract class Controller {
         attachedToUnownedParent = view.parent != router.container
 
         // this can happen while transitions just ignore it
-        if (attachedToUnownedParent || isBeingDestroyed) return
+        if (attachedToUnownedParent) return
+
+        // do not attach while destroyed
+        if (isBeingDestroyed) return
 
         val parentController = parentController
 
@@ -545,9 +541,7 @@ abstract class Controller {
             notifyLifecycleListeners { it.preDetach(this, view) }
             isAttached = false
 
-            if (!awaitingParentAttach) {
-                requireSuperCalled { onDetach(view) }
-            }
+            requireSuperCalled { onDetach(view) }
 
             notifyLifecycleListeners { it.postDetach(this, view) }
         }
@@ -601,7 +595,7 @@ abstract class Controller {
             .forEach {
                 val containerView = (view?.findViewById(it.hostId) as? ViewGroup) ?: return@forEach
                 it.container = containerView
-                it.rebindIfNeeded()
+                it.rebind()
             }
     }
 
@@ -713,8 +707,7 @@ abstract class Controller {
         childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
             .map { bundle ->
                 ControllerHostedRouter(this).apply {
-                    // we do not restore the full instance yet
-                    // only the identity
+                    // we only restore the identity for now
                     // to give the user a chance to set a [ControllerFactory] in [onCreate]
                     restoreIdentity(bundle)
                 } to bundle
@@ -839,7 +832,9 @@ abstract class Controller {
         internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
             val args = bundle.getBundle(KEY_ARGS)
-            return factory.instantiateController(javaClass.classLoader, className, args!!).apply {
+            return factory.instantiateController(
+                Controller::class.java.classLoader!!, className, args!!
+            ).apply {
                 allState = bundle
             }
         }

@@ -268,11 +268,19 @@ abstract class Router {
     /**
      * Attaches this Router's existing backstack to its container if one exists.
      */
-    open fun rebindIfNeeded() {
+    open fun rebind() {
+        val container = container ?: return
+        // remove all views
+        container.removeAllViews()
+
+        // attach any visible controller
         _backstack
             .filterVisible()
             .forEach {
-                performControllerChange(it, null, true, SimpleSwapChangeHandler(false))
+                performControllerChange(
+                    it, null, true,
+                    SimpleSwapChangeHandler(false)
+                )
             }
     }
 

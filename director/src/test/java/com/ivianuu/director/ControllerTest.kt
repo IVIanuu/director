@@ -24,9 +24,7 @@ import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.CallState
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.ViewUtils
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -307,7 +305,7 @@ class ControllerTest {
         assertEquals(0, childRouter.backstack.size)
 
         childRouter.restoreInstanceState(savedState)
-        childRouter.rebindIfNeeded()
+        childRouter.rebind()
 
         assertEquals(2, childRouter.backstack.size)
 

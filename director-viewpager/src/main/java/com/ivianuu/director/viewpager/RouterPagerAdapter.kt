@@ -67,7 +67,7 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
             }
         }
 
-        router.rebindIfNeeded()
+        router.rebind()
         configureRouter(router, position)
 
         visibleRouters.put(position, router)

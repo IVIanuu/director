@@ -237,7 +237,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     private fun destroyRouters() {
         if (!destroyed) {
-            activity?.let { act -> routers.forEach { it.onActivityDestroyed() } }
+            routers.forEach { it.onActivityDestroyed() }
             routerMap.clear()
             destroyed = true
         }
@@ -264,16 +264,18 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         private const val KEY_PERMISSION_REQUEST_CODES = "LifecycleHandler.permissionRequests"
         private const val KEY_ROUTER_STATE_PREFIX = "LifecycleHandler.routerState"
 
-        internal fun install(activity: FragmentActivity) =
-            (findInActivity(activity) ?: LifecycleHandler().also {
+        internal fun install(activity: FragmentActivity): LifecycleHandler {
+            return (findInActivity(activity) ?: LifecycleHandler().also {
                 activity.supportFragmentManager.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()
             }).also { it.registerCallbacksIfNeeded(activity) }
+        }
 
-        private fun findInActivity(activity: Activity) =
-            (activity as? FragmentActivity)?.supportFragmentManager
+        private fun findInActivity(activity: Activity): LifecycleHandler? {
+            return (activity as? FragmentActivity)?.supportFragmentManager
                 ?.findFragmentByTag(FRAGMENT_TAG) as? LifecycleHandler
+        }
     }
 
     @Parcelize
