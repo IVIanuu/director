@@ -124,23 +124,38 @@ fun Router.popController(
 /**
  * Pushes a new [Controller] to the backstack
  */
-fun Router.pushController(transaction: RouterTransaction) {
+fun Router.pushController(
+    transaction: RouterTransaction,
+    changeHandler: ControllerChangeHandler? = null
+) {
     val newBackstack = backstack.toMutableList()
     newBackstack.add(transaction)
-    setBackstack(newBackstack)
+    if (changeHandler != null) {
+        setBackstack(newBackstack, changeHandler)
+    } else {
+        setBackstack(newBackstack)
+    }
 }
 
 /**
  * Replaces this Router's top [Controller] with the [Controller] of the [transaction]
  */
-fun Router.replaceTopController(transaction: RouterTransaction) {
+fun Router.replaceTopController(
+    transaction: RouterTransaction,
+    changeHandler: ControllerChangeHandler? = null
+) {
     val newBackstack = backstack.toMutableList()
     val from = newBackstack.lastOrNull()
     if (from != null) {
         newBackstack.removeAt(newBackstack.lastIndex)
     }
     newBackstack.add(transaction)
-    setBackstack(newBackstack, transaction.pushChangeHandler)
+
+    if (changeHandler != null) {
+        setBackstack(newBackstack, changeHandler)
+    } else {
+        setBackstack(newBackstack)
+    }
 }
 
 
