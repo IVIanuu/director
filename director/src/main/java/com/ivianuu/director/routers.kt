@@ -188,6 +188,6 @@ fun Router.popToTransaction(
 /**
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
  */
-fun Router.setRoot(transaction: RouterTransaction) {
-    setBackstack(listOf(transaction), transaction.pushChangeHandler)
+fun Router.setRoot(transaction: RouterTransaction, changeHandler: ControllerChangeHandler? = null) {
+    setBackstack(listOf(transaction), changeHandler ?: transaction.pushChangeHandler)
 }
