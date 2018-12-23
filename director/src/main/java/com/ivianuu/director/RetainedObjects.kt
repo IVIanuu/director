@@ -56,12 +56,12 @@ fun <T : Any> Controller.retainedLazy(
 ) = lazy(LazyThreadSafetyMode.NONE) { retainedObjects.getOrPut(key, initializer) }
 
 fun <T : Any> retained(
-    initialValue: T,
-    key: String = USE_PROPERTY_NAME
+    key: String = USE_PROPERTY_NAME,
+    initialValue: () -> T
 ): ReadWriteProperty<Controller, T> = RetainedProperty(initialValue, key)
 
 private class RetainedProperty<T : Any>(
-    private val initialValue: T,
+    private val initialValue: () -> T,
     private val key: String
 ) : ReadWriteProperty<Controller, T> {
 
@@ -74,7 +74,7 @@ private class RetainedProperty<T : Any>(
             this.key
         }
 
-        return thisRef.retainedObjects.getOrPut(key) { initialValue }
+        return thisRef.retainedObjects.getOrPut(key, initialValue)
     }
 
     override fun setValue(thisRef: Controller, property: KProperty<*>, value: T) {
