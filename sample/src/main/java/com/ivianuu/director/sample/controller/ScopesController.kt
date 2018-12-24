@@ -57,7 +57,7 @@ class ScopesController : BaseController() {
         d { "onBindView() called" }
 
         btn_next_release_view.setOnClickListener {
-            retainViewMode = RetainViewMode.RELEASE_DETACH
+            retainView = false
 
             router.pushController(
                 TextController.newInstance(
@@ -70,7 +70,7 @@ class ScopesController : BaseController() {
         }
 
         btn_next_retain_view.setOnClickListener {
-            retainViewMode = RetainViewMode.RETAIN_DETACH
+            retainView = true
 
             router.pushController(
                 TextController.newInstance(

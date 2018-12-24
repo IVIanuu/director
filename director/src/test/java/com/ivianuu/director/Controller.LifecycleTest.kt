@@ -19,7 +19,6 @@ package com.ivianuu.director
 import android.os.Bundle
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.Controller.RetainViewMode
 import com.ivianuu.director.util.*
 import org.junit.Assert.*
 import org.junit.Before
@@ -616,7 +615,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testChildLifecycleOrderingAfterUnexpectedAttach() {
         val parent = TestController()
-        parent.retainViewMode = RetainViewMode.RETAIN_DETACH
+        parent.retainView = true
         router.pushController(
             parent.toTransaction()
                 .pushChangeHandler(MockChangeHandler.defaultHandler())
@@ -624,7 +623,7 @@ class ControllerLifecycleCallbacksTest {
         )
 
         val child = TestController()
-        child.retainViewMode = RetainViewMode.RETAIN_DETACH
+        child.retainView = true
         val childRouter =
             parent.getChildRouter(parent.childContainer1!!)
         childRouter

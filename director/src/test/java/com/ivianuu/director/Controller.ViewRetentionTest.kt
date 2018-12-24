@@ -45,7 +45,7 @@ class ControllerViewRetentionTest {
         controller.setRouter(router)
 
         // Test View getting released w/ RELEASE_DETACH
-        controller.retainViewMode = Controller.RetainViewMode.RELEASE_DETACH
+        controller.retainView = false
         assertNull(controller.view)
         var view = controller.inflate(router.container!!)
         assertNotNull(controller.view)
@@ -55,7 +55,7 @@ class ControllerViewRetentionTest {
         assertNull(controller.view)
 
         // Test View getting retained w/ RETAIN_DETACH
-        controller.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
+        controller.retainView = true
         view = controller.inflate(router.container!!)
         assertNotNull(controller.view)
         ViewUtils.reportAttached(view, true)
@@ -64,23 +64,23 @@ class ControllerViewRetentionTest {
         assertNotNull(controller.view)
 
         // Ensure re-setting RELEASE_DETACH releases
-        controller.retainViewMode = Controller.RetainViewMode.RELEASE_DETACH
+        controller.retainView = false
         assertNull(controller.view)
     }
 
     @Test
     fun testChildViewRetention() {
         val parent = TestController()
-        parent.retainViewMode = Controller.RetainViewMode.RELEASE_DETACH
+        parent.retainView = false
 
         val child1 = TestController()
-        child1.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
+        child1.retainView = true
 
         val child2 = TestController()
-        child2.retainViewMode = Controller.RetainViewMode.RELEASE_DETACH
+        child2.retainView = false
 
         val child3 = TestController()
-        child3.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
+        child3.retainView = true
 
         router.setRoot(parent.toTransaction())
 
@@ -118,10 +118,10 @@ class ControllerViewRetentionTest {
     @Test
     fun testChildViewRetentionOnDetach() {
         val parent = TestController()
-        parent.retainViewMode = Controller.RetainViewMode.RELEASE_DETACH
+        parent.retainView = false
 
         val child1 = TestController()
-        child1.retainViewMode = Controller.RetainViewMode.RETAIN_DETACH
+        child1.retainView = true
 
         router.setRoot(parent.toTransaction())
 

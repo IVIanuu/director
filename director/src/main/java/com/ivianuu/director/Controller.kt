@@ -126,12 +126,12 @@ abstract class Controller {
     var overriddenPopHandler: ControllerChangeHandler? = null
 
     /**
-     * Whether or not the view should be retained
+     * Whether or not the view should be retained while being detached
      */
-    var retainViewMode = RetainViewMode.RELEASE_DETACH
+    var retainView = false
         set(value) {
             field = value
-            if (value == RetainViewMode.RELEASE_DETACH && !isAttached) {
+            if (!value && !isAttached) {
                 removeViewReference(false)
             }
         }
@@ -480,7 +480,7 @@ abstract class Controller {
                     detach(view, false, false, false, false)
                 }
             }).also { it.listenForAttach(view) }
-        } else if (retainViewMode == RetainViewMode.RETAIN_DETACH) {
+        } else if (retainView) {
             restoreChildControllerContainers()
         }
 
@@ -535,7 +535,7 @@ abstract class Controller {
         }
 
         val removeViewRef =
-            !blockViewRemoval && (forceViewRemoval || retainViewMode == RetainViewMode.RELEASE_DETACH || isBeingDestroyed)
+            !blockViewRemoval && (forceViewRemoval || !retainView || isBeingDestroyed)
 
         if (isAttached) {
             notifyLifecycleListeners { it.preDetach(this, view) }
@@ -548,7 +548,7 @@ abstract class Controller {
 
         if (removeViewRef) {
             removeViewReference(forceChildViewRemoval)
-        } else if (retainViewMode == RetainViewMode.RETAIN_DETACH && fromHostRemoval) {
+        } else if (retainView && fromHostRemoval) {
             // this happens if we are a child controller, have RETAIN_DETACH
             // and the parent does not RETAIN_DETACH
             // we remove the view from the container to make sure that
@@ -654,7 +654,7 @@ abstract class Controller {
         outState.putBundle(KEY_ARGS, args)
         outState.putString(KEY_INSTANCE_ID, instanceId)
         outState.putString(KEY_TARGET_INSTANCE_ID, instanceId)
-        outState.putInt(KEY_RETAIN_VIEW_MODE, retainViewMode.ordinal)
+        outState.putBoolean(KEY_RETAIN_VIEW, retainView)
 
         overriddenPushHandler?.let {
             outState.putBundle(
@@ -702,7 +702,7 @@ abstract class Controller {
         overriddenPopHandler = savedInstanceState.getBundle(KEY_OVERRIDDEN_POP_HANDLER)
             ?.let { ControllerChangeHandler.fromBundle(it) }
 
-        retainViewMode = RetainViewMode.values()[savedInstanceState.getInt(KEY_RETAIN_VIEW_MODE, 0)]
+        retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
         childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
             .map { bundle ->
@@ -799,20 +799,12 @@ abstract class Controller {
         listeners.forEach(block)
     }
 
-    private inline fun requireSuperCalled(action: () -> Unit) {
+    private inline fun requireSuperCalled(block: () -> Unit) {
         superCalled = false
-        action()
+        block()
         if (!superCalled) {
             throw IllegalStateException("super not called ${javaClass.name}")
         }
-    }
-
-    /** Modes that will influence when the Controller will allow its view to be destroyed  */
-    enum class RetainViewMode {
-        /** The Controller will release its reference to its view as soon as it is detached.  */
-        RELEASE_DETACH,
-        /** The Controller will retain its reference to its view when detached, but will still release the reference when a config change occurs.  */
-        RETAIN_DETACH
     }
 
     companion object {
@@ -827,7 +819,7 @@ abstract class Controller {
         private const val KEY_OVERRIDDEN_POP_HANDLER = "Controller.overriddenPopHandler"
         private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"
         private const val KEY_VIEW_STATE_BUNDLE = "Controller.viewState.bundle"
-        private const val KEY_RETAIN_VIEW_MODE = "Controller.retainViewMode"
+        private const val KEY_RETAIN_VIEW = "Controller.retainViewMode"
 
         internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
