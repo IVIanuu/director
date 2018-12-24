@@ -288,7 +288,8 @@ abstract class Controller {
         .flatMap { it.backstack }
         .asSequence()
         .sortedByDescending { it.transactionIndex }
-        .any { it.controller.isAttached && it.controller.router.handleBack() }
+        .map { it.controller }
+        .any { it.isAttached && it.router.handleBack() }
 
     /**
      * Adds a listener for all of this Controller's lifecycle events
@@ -324,16 +325,14 @@ abstract class Controller {
         var childRouter = _childRouters
             .firstOrNull { it.hostId == containerId && it.tag == tag }
 
-        if (childRouter == null) {
-            if (createIfNeeded) {
-                childRouter = ControllerHostedRouter(
-                    this,
-                    containerId,
-                    tag
-                )
+        if (childRouter == null && createIfNeeded) {
+            childRouter = ControllerHostedRouter(
+                this,
+                containerId,
+                tag
+            )
 
-                _childRouters.add(childRouter)
-            }
+            _childRouters.add(childRouter)
         }
 
         return childRouter.also { restoreChildControllerContainers() }
@@ -344,7 +343,7 @@ abstract class Controller {
      * the [childRouter] will be destroyed.
      */
     fun removeChildRouter(childRouter: Router) {
-        if (childRouter is ControllerHostedRouter && _childRouters.remove(childRouter)) {
+        if (_childRouters.remove(childRouter)) {
             childRouter.destroy(true)
         }
     }
