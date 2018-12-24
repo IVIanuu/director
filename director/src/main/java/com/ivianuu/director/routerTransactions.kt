@@ -15,6 +15,12 @@ fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?) 
 }
 
 /**
+ * Sets the [changeHandler] as both the [pushChangeHandler] and the [popChangeHandler]
+ */
+fun RouterTransaction.changeHandler(changeHandler: ControllerChangeHandler?) =
+    pushChangeHandler(changeHandler).popChangeHandler(changeHandler)
+
+/**
  * Fluent version of tag
  */
 fun RouterTransaction.tag(tag: String?) = apply {

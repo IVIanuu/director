@@ -191,8 +191,7 @@ class ReattachTest {
         childController = TestController()
         childRouter.pushController(
             childController.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertFalse(controllerA.isAttached)

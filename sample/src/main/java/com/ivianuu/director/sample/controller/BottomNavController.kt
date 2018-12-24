@@ -2,15 +2,10 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.Router
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.popToRoot
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
+import kotlinx.android.synthetic.main.controller_bottom_nav.*
 import java.util.*
 
 /**
@@ -113,8 +108,7 @@ class BottomNavController : BaseController() {
             newBackstack.add(
                 BottomNavChildController()
                     .toTransaction()
-                    .pushChangeHandler(FadeChangeHandler())
-                    .popChangeHandler(FadeChangeHandler())
+                    .changeHandler(FadeChangeHandler())
                     .tag(index.toString())
             )
         }

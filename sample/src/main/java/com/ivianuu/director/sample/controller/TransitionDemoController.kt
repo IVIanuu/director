@@ -4,27 +4,16 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.popToRoot
-import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.pushController
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_transition_demo.bg_view
-import kotlinx.android.synthetic.main.controller_transition_demo.btn_next
-import kotlinx.android.synthetic.main.controller_transition_demo.transition_root
-import kotlinx.android.synthetic.main.controller_transition_demo.tv_title
+import kotlinx.android.synthetic.main.controller_transition_demo.*
 
 class TransitionDemoController : BaseController() {
 
@@ -143,8 +132,7 @@ class TransitionDemoController : BaseController() {
             val toController = newInstance(index)
 
             return toController.toTransaction()
-                .pushChangeHandler(toController.getChangeHandler(fromController))
-                .popChangeHandler(toController.getChangeHandler(fromController))
+                .changeHandler(toController.getChangeHandler(fromController))
         }
     }
 }

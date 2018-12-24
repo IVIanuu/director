@@ -23,20 +23,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_external_modules.recycler_view
-import kotlinx.android.synthetic.main.row_home.home_image
-import kotlinx.android.synthetic.main.row_home.home_title
+import kotlinx.android.synthetic.main.controller_external_modules.*
+import kotlinx.android.synthetic.main.row_home.*
 
 class ExternalModulesController : BaseController() {
 
@@ -78,22 +72,19 @@ class ExternalModulesController : BaseController() {
             AdditionalModuleItem.ARCH -> {
                 router.pushController(
                     ArchController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             AdditionalModuleItem.SCOPES -> {
                 router.pushController(
                     ScopesController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             AdditionalModuleItem.TRAVELER -> {
                 router.pushController(
                     TravelerController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
         }

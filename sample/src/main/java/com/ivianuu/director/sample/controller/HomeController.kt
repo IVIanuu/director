@@ -7,23 +7,15 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
-import com.ivianuu.director.pushController
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_home.recycler_view
-import kotlinx.android.synthetic.main.row_home.home_image
-import kotlinx.android.synthetic.main.row_home.home_title
+import kotlinx.android.synthetic.main.controller_home.*
+import kotlinx.android.synthetic.main.row_home.*
 
 class HomeController : BaseController() {
 
@@ -68,8 +60,7 @@ class HomeController : BaseController() {
                         NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
                     )
                         .toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                         .tag(NavigationController.TAG_UP_TRANSACTION)
                 )
             }
@@ -85,29 +76,25 @@ class HomeController : BaseController() {
                 router.pushController(
                     TargetDisplayController()
                         .toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             HomeItem.VIEW_PAGER -> {
                 router.pushController(
                     PagerController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             HomeItem.BOTTOM_NAV -> {
                 router.pushController(
                     BottomNavController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             HomeItem.CHILD_CONTROLLERS -> {
                 router.pushController(
                     ParentController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
@@ -118,13 +105,7 @@ class HomeController : BaseController() {
 
                 router.pushController(
                     CityGridController.newInstance(item.title, item.color, position).toTransaction()
-                        .pushChangeHandler(
-                            ArcFadeMoveChangeHandler(
-                                titleSharedElementName,
-                                dotSharedElementName
-                            )
-                        )
-                        .popChangeHandler(
+                        .changeHandler(
                             ArcFadeMoveChangeHandler(
                                 titleSharedElementName,
                                 dotSharedElementName
@@ -147,15 +128,13 @@ class HomeController : BaseController() {
                 router.pushController(
                     MultipleChildRouterController()
                         .toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             HomeItem.MASTER_DETAIL -> {
                 router.pushController(
                     MasterDetailListController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
             HomeItem.DIALOG -> {
@@ -164,8 +143,7 @@ class HomeController : BaseController() {
             HomeItem.EXTERNAL_MODULES -> {
                 router.pushController(
                     ExternalModulesController().toTransaction()
-                        .pushChangeHandler(FadeChangeHandler())
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler())
                 )
             }
         }

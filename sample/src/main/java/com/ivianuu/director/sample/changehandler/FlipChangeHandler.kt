@@ -16,9 +16,9 @@ class FlipChangeHandler(
 ) : AnimatorChangeHandler() {
 
     enum class FlipDirection(
-        internal val inStartRotation: Float,
-        internal val outEndRotation: Float,
-        internal val property: Property<View, Float>
+        val inStartRotation: Float,
+        val outEndRotation: Float,
+        val property: Property<View, Float>
     ) {
         LEFT(-180f, 180f, View.ROTATION_Y),
         RIGHT(180f, -180f, View.ROTATION_Y),

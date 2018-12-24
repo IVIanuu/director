@@ -7,10 +7,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.TransitionChangeHandlerCompat
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.pushController
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -20,11 +19,8 @@ import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_city_grid.img_dot
-import kotlinx.android.synthetic.main.controller_city_grid.recycler_view
-import kotlinx.android.synthetic.main.controller_city_grid.tv_title
-import kotlinx.android.synthetic.main.row_city_grid.grid_image
-import kotlinx.android.synthetic.main.row_city_grid.grid_title
+import kotlinx.android.synthetic.main.controller_city_grid.*
+import kotlinx.android.synthetic.main.row_city_grid.*
 
 class CityGridController : BaseController() {
 
@@ -73,13 +69,7 @@ class CityGridController : BaseController() {
 
         router.pushController(
             CityDetailController.newInstance(city.drawableRes, city.title).toTransaction()
-                .pushChangeHandler(
-                    TransitionChangeHandlerCompat(
-                        CityGridSharedElementTransitionChangeHandler(names),
-                        FadeChangeHandler()
-                    )
-                )
-                .popChangeHandler(
+                .changeHandler(
                     TransitionChangeHandlerCompat(
                         CityGridSharedElementTransitionChangeHandler(names),
                         FadeChangeHandler()

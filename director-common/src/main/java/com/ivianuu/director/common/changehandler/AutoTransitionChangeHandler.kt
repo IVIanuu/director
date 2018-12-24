@@ -19,4 +19,5 @@ open class AutoTransitionChangeHandler : TransitionChangeHandler() {
         to: View?,
         isPush: Boolean
     ): Transition = AutoTransition()
+
 }
