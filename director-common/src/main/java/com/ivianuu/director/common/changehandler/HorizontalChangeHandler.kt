@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * An [AnimatorChangeHandler] that will slide the views left or right, depending on if it's a push or pop.
+ * A [AnimatorChangeHandler] that will slide the views left or right, depending on if it's a push or pop.
  */
 open class HorizontalChangeHandler(
     duration: Long = DEFAULT_ANIMATION_DURATION,

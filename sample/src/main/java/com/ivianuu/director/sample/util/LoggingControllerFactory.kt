@@ -20,10 +20,10 @@ import android.os.Bundle
 import com.ivianuu.director.ControllerFactory
 
 class LoggingControllerFactory : ControllerFactory {
-    override fun instantiateController(
+    override fun createController(
         classLoader: ClassLoader,
         className: String,
         args: Bundle
-    ) = super.instantiateController(classLoader, className, args)
+    ) = super.createController(classLoader, className, args)
         .also { d { "instantiated $it for $className and args $args" } }
 }

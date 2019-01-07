@@ -22,7 +22,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerFactory
+import com.ivianuu.director.Router
+import com.ivianuu.director.attachRouter
+import com.ivianuu.director.findControllerByTag
+import com.ivianuu.director.popController
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 import kotlin.reflect.KClass
 
 class ControllerScenario<C : Controller> internal constructor(
@@ -46,7 +54,7 @@ class ControllerScenario<C : Controller> internal constructor(
                 .controllerFactory = controllerFactory
             activity.router.controllerFactory = controllerFactory
 
-            val controller = controllerFactory.instantiateController(
+            val controller = controllerFactory.createController(
                 controllerClass.java.classLoader!!,
                 controllerClass.java.name,
                 args
@@ -137,7 +145,7 @@ class ControllerFactoryHolderViewModel : ViewModel() {
 internal class SingleControllerFactory<C : Controller>(
     private val instantiate: (ClassLoader, String, Bundle) -> Controller
 ) : ControllerFactory {
-    override fun instantiateController(
+    override fun createController(
         classLoader: ClassLoader,
         className: String,
         args: Bundle

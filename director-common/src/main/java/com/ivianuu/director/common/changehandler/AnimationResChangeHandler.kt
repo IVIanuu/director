@@ -8,7 +8,7 @@ import android.view.animation.AnimationUtils
 import com.ivianuu.director.ControllerChangeHandler
 
 /**
- * A base [ControllerChangeHandler] that facilitates using [android.view.animation.Animation]
+ * A base [ControllerChangeHandler] that uses [android.view.animation.Animation]
  * from xml files s to replace Controller Views
  */
 open class AnimationResChangeHandler :

@@ -9,7 +9,7 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 
 /**
- * An [AnimatorChangeHandler] that will perform a circular reveal
+ * A [AnimatorChangeHandler] that will perform a circular reveal
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 open class CircularRevealChangeHandler :

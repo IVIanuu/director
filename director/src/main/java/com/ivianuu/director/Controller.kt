@@ -825,7 +825,7 @@ abstract class Controller {
         internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
             val args = bundle.getBundle(KEY_ARGS)
-            return factory.instantiateController(
+            return factory.createController(
                 Controller::class.java.classLoader!!, className, args!!
             ).apply {
                 allState = bundle

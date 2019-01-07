@@ -27,7 +27,7 @@ import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 
 /**
- * A base [ControllerChangeHandler] that facilitates using [android.animation.Animator]s to replace Controller Views
+ * A base [ControllerChangeHandler] that uses [android.animation.Animator]s to replace Controller Views
  */
 abstract class AnimatorChangeHandler(
     duration: Long = DEFAULT_ANIMATION_DURATION,

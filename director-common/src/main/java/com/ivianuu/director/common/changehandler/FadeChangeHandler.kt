@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * An [AnimatorChangeHandler] that will cross fade two views
+ * A [AnimatorChangeHandler] that will cross fade two views
  */
 open class FadeChangeHandler(
     duration: Long = DEFAULT_ANIMATION_DURATION,

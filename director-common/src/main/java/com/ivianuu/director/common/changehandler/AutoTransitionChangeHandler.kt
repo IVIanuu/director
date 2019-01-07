@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * A change handler that will use an AutoTransition.
+ * A [TransitionChangeHandler] that will use an AutoTransition.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 open class AutoTransitionChangeHandler : TransitionChangeHandler() {
