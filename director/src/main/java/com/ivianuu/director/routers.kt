@@ -18,17 +18,17 @@ package com.ivianuu.director
 
 import android.os.Bundle
 
-internal val Router.hasContainer get() = container != null
+internal val Router.hasContainer: Boolean get() = container != null
 
 /**
  * The current size of the backstack
  */
-val Router.backstackSize get() = backstack.size
+val Router.backstackSize: Int get() = backstack.size
 
 /**
  * Whether or not this router has root [Controller]
  */
-val Router.hasRootController get() = backstackSize > 0
+val Router.hasRootController: Boolean get() = backstackSize > 0
 
 /**
  * The container id which will be used by this router
@@ -39,7 +39,7 @@ val Router.containerId: Int
 /**
  * Fluent version of pops last view
  */
-fun Router.popsLastView(popsLastView: Boolean) = apply { this.popsLastView = popsLastView }
+fun Router.popsLastView(popsLastView: Boolean): Router = apply { this.popsLastView = popsLastView }
 
 /**
  * Saves the instance state of [controller] which can later be used in
@@ -57,15 +57,17 @@ fun Router.saveControllerInstanceState(controller: Controller): Bundle {
  * Returns the hosted Controller with the given instance id or `null` if no such
  * Controller exists in this Router.
  */
-fun Router.findControllerByInstanceId(instanceId: String) = backstack
-    .mapNotNull { it.controller.findController(instanceId) }
-    .firstOrNull()
+fun Router.findControllerByInstanceId(instanceId: String): Controller? {
+    return backstack
+        .mapNotNull { it.controller.findController(instanceId) }
+        .firstOrNull()
+}
 
 /**
  * Returns the hosted Controller that was pushed with the given tag or `null` if no
  * such Controller exists in this Router.
  */
-fun Router.findControllerByTag(tag: String) =
+fun Router.findControllerByTag(tag: String): Controller? =
     backstack.firstOrNull { it.tag == tag }?.controller
 
 /**

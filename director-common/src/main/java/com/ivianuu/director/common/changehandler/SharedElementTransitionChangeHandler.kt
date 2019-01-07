@@ -479,10 +479,12 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
         return toSharedElements
     }
 
-    private fun findKeyForValue(map: MutableMap<String, String>, value: String) = map
-        .filterValues { it == value }
-        .keys
-        .firstOrNull()
+    private fun findKeyForValue(map: MutableMap<String, String>, value: String): String? {
+        return map
+            .filterValues { it == value }
+            .keys
+            .firstOrNull()
+    }
 
     private fun captureFromSharedElements(from: View): MutableMap<String, View> {
         if (sharedElementNames.isEmpty() || sharedElementTransition == null) {

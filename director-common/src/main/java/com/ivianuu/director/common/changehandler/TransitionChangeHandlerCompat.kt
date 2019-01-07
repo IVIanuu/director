@@ -82,7 +82,7 @@ open class TransitionChangeHandlerCompat : ControllerChangeHandler {
         changeHandler.restoreFromBundle(bundle.getBundle(KEY_HANDLER_STATE)!!)
     }
 
-    override fun copy() = TransitionChangeHandlerCompat()
+    override fun copy(): TransitionChangeHandlerCompat = TransitionChangeHandlerCompat()
         .also { it.changeHandler = changeHandler.copy() }
 
     override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {

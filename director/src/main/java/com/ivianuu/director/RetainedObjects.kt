@@ -27,33 +27,35 @@ private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
  */
 class RetainedObjects {
 
-    val entries get() = _entries.toMap()
+    val entries: Map<String, *> get() = _entries.toMap()
     private val _entries = mutableMapOf<String, Any>()
 
-    operator fun <T : Any> get(key: String) = _entries[key] as? T
+    operator fun <T : Any> get(key: String): T? = _entries[key] as? T
 
     fun <T : Any> getOrPut(key: String, defaultValue: () -> T): T =
         _entries.getOrPut(key, defaultValue) as T
 
-    fun <T : Any> put(key: String, value: T) = set(key, value)
+    fun <T : Any> put(key: String, value: T) {
+        set(key, value)
+    }
 
     operator fun <T : Any> set(key: String, value: T) {
         _entries[key] = value
     }
 
-    fun <T : Any> remove(key: String) = _entries.remove(key) as? T
+    fun <T : Any> remove(key: String): T? = _entries.remove(key) as? T
 
     fun clear() {
         _entries.clear()
     }
 
-    fun contains(key: String) = _entries.contains(key)
+    fun contains(key: String): Boolean = _entries.contains(key)
 }
 
 fun <T : Any> Controller.retainedLazy(
     key: String = USE_PROPERTY_NAME,
     initializer: () -> T
-) = lazy(LazyThreadSafetyMode.NONE) { retainedObjects.getOrPut(key, initializer) }
+): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) { retainedObjects.getOrPut(key, initializer) }
 
 fun <T : Any> retained(
     key: String = USE_PROPERTY_NAME,

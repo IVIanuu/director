@@ -23,6 +23,7 @@ import com.ivianuu.director.scopes.ControllerEvent.CREATE
 import com.ivianuu.director.scopes.ControllerEvent.DESTROY
 import com.ivianuu.director.scopes.ControllerEvent.DETACH
 import com.ivianuu.director.scopes.ControllerEvent.UNBIND_VIEW
+import com.ivianuu.scopes.Scope
 import com.ivianuu.scopes.cache.LifecycleScopesStore
 import com.ivianuu.scopes.lifecycle.LifecycleScopes
 
@@ -33,17 +34,17 @@ private val lifecycleScopesStore = LifecycleScopesStore<Controller, ControllerEv
 val Controller.lifecycleScopes: LifecycleScopes<ControllerEvent>
     get() = lifecycleScopesStore.get(this)
 
-fun Controller.scopeFor(event: ControllerEvent) =
+fun Controller.scopeFor(event: ControllerEvent): Scope =
     lifecycleScopes.scopeFor(event)
 
-val Controller.create get() = scopeFor(CREATE)
+val Controller.create: Scope get() = scopeFor(CREATE)
 
-val Controller.bindView get() = scopeFor(BIND_VIEW)
+val Controller.bindView: Scope get() = scopeFor(BIND_VIEW)
 
-val Controller.attach get() = scopeFor(ATTACH)
+val Controller.attach: Scope get() = scopeFor(ATTACH)
 
-val Controller.detach get() = scopeFor(DETACH)
+val Controller.detach: Scope get() = scopeFor(DETACH)
 
-val Controller.unbindView get() = scopeFor(UNBIND_VIEW)
+val Controller.unbindView: Scope get() = scopeFor(UNBIND_VIEW)
 
-val Controller.destroy get() = scopeFor(DESTROY)
+val Controller.destroy: Scope get() = scopeFor(DESTROY)

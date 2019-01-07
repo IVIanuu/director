@@ -26,7 +26,7 @@ class TestActivity : FragmentActivity() {
     var changingConfigurations = false
     var isDestroying = false
 
-    override fun isChangingConfigurations() = changingConfigurations
+    override fun isChangingConfigurations(): Boolean = changingConfigurations
 
-    override fun isDestroyed() = isDestroying || super.isDestroyed()
+    override fun isDestroyed(): Boolean = isDestroying || super.isDestroyed()
 }

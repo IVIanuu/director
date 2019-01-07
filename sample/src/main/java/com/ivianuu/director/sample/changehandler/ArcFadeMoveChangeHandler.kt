@@ -106,7 +106,7 @@ class ArcFadeMoveChangeHandler :
         sharedElementNames.forEach { addSharedElement(it) }
     }
 
-    override fun allowTransitionOverlap(isPush: Boolean) = false
+    override fun allowTransitionOverlap(isPush: Boolean): Boolean = false
 
     companion object {
         private const val KEY_SHARED_ELEMENT_NAMES = "ArcFadeMoveChangeHandler.sharedElementNames"

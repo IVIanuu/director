@@ -96,7 +96,7 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
         }
     }
 
-    override fun copy() = SimpleSwapChangeHandler(removesFromViewOnPush)
+    override fun copy(): SimpleSwapChangeHandler = SimpleSwapChangeHandler(removesFromViewOnPush)
 
     companion object {
         private const val KEY_REMOVES_FROM_ON_PUSH = "SimpleSwapChangeHandler.removesFromViewOnPush"

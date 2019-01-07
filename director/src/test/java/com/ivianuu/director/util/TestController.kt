@@ -30,8 +30,8 @@ class TestController : Controller() {
     var currentCallState = CallState()
     var changeHandlerHistory = ChangeHandlerHistory()
 
-    val childContainer1 get() = view?.findViewById<ViewGroup>(CHILD_VIEW_ID_1)
-    val childContainer2 get() = view?.findViewById<ViewGroup>(CHILD_VIEW_ID_2)
+    val childContainer1: ViewGroup? get() = view?.findViewById<ViewGroup>(CHILD_VIEW_ID_1)
+    val childContainer2: ViewGroup? get() = view?.findViewById<ViewGroup>(CHILD_VIEW_ID_2)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -107,14 +107,16 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         }
     }
 
-    override fun shouldShowRequestPermissionRationale(permission: String) = routers
-        .filter { router ->
-            router.shouldShowRequestPermissionRationale(
-                permission,
-                permissionRequests.flatMap { it.value }.toSet()
-            )
-        }
-        .any() || super.shouldShowRequestPermissionRationale(permission)
+    override fun shouldShowRequestPermissionRationale(permission: String): Boolean {
+        return routers
+            .filter { router ->
+                router.shouldShowRequestPermissionRationale(
+                    permission,
+                    permissionRequests.flatMap { it.value }.toSet()
+                )
+            }
+            .any() || super.shouldShowRequestPermissionRationale(permission)
+    }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     }

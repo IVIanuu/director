@@ -1,6 +1,8 @@
 package com.ivianuu.director.arch.lifecycle
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
 
@@ -14,8 +16,8 @@ abstract class LifecycleController : Controller(), LifecycleOwner, ViewModelStor
 
     val viewLifecycleOwner: LifecycleOwner = ControllerViewLifecycleOwner()
 
-    override fun getLifecycle() = lifecycleOwner.lifecycle
+    override fun getLifecycle(): Lifecycle = lifecycleOwner.lifecycle
 
-    override fun getViewModelStore() = viewModelStoreOwner.viewModelStore
+    override fun getViewModelStore(): ViewModelStore = viewModelStoreOwner.viewModelStore
 
 }

@@ -89,7 +89,7 @@ class ControllerScenario<C : Controller> internal constructor(
         return this
     }
 
-    private fun ControllerState.toLifecycleState() = when (this) {
+    private fun ControllerState.toLifecycleState(): Lifecycle.State = when (this) {
         ControllerState.INITIALIZED -> Lifecycle.State.INITIALIZED
         ControllerState.CREATED -> Lifecycle.State.CREATED
         ControllerState.ATTACHED -> Lifecycle.State.RESUMED
@@ -105,7 +105,7 @@ class ControllerScenario<C : Controller> internal constructor(
 
 class EmptyControllerActivity : FragmentActivity() {
 
-    val router get() = _router
+    val router: Router get() = _router
     private lateinit var _router: Router
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,30 +141,30 @@ internal class SingleControllerFactory<C : Controller>(
         classLoader: ClassLoader,
         className: String,
         args: Bundle
-    ) = instantiate(classLoader, className, args)
+    ): Controller = instantiate(classLoader, className, args)
 }
 
 inline fun <reified C : Controller> launch(
     args: Bundle? = null,
     noinline instantiate: (ClassLoader, String, Bundle) -> C
-) = launch(C::class, args, instantiate)
+): ControllerScenario<C> = launch(C::class, args, instantiate)
 
 fun <C : Controller> launch(
     controllerClass: KClass<C>,
     args: Bundle? = null,
     instantiate: (ClassLoader, String, Bundle) -> C
-) = launch(controllerClass, args, SingleControllerFactory<C>(instantiate))
+): ControllerScenario<C> = launch(controllerClass, args, SingleControllerFactory<C>(instantiate))
 
 inline fun <reified C : Controller> launch(
     args: Bundle? = null,
     factory: ControllerFactory? = null
-) = launch(C::class, args, factory)
+): ControllerScenario<C> = launch(C::class, args, factory)
 
 fun <C : Controller> launch(
     controllerClass: KClass<C>,
     args: Bundle? = null,
     factory: ControllerFactory? = null
-) = ControllerScenario(
+): ControllerScenario<C> = ControllerScenario(
     controllerClass,
     args ?: Bundle(),
     factory

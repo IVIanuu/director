@@ -27,23 +27,23 @@ class ChangeHandlerHistory {
         entries.add(Entry(from, to, isPush, handler))
     }
 
-    fun size() = entries.size
+    fun size(): Int = entries.size
 
-    fun fromViewAt(index: Int) = entries[index].from
+    fun fromViewAt(index: Int): View? = entries[index].from
 
-    fun toViewAt(index: Int) = entries[index].to
+    fun toViewAt(index: Int): View? = entries[index].to
 
-    fun isPushAt(index: Int) = entries[index].isPush
+    fun isPushAt(index: Int): Boolean = entries[index].isPush
 
-    fun changeHandlerAt(index: Int) = entries[index].changeHandler
+    fun changeHandlerAt(index: Int): MockChangeHandler = entries[index].changeHandler
 
-    fun latestFromView() = fromViewAt(size() - 1)
+    fun latestFromView(): View? = fromViewAt(size() - 1)
 
-    fun latestToView() = toViewAt(size() - 1)
+    fun latestToView(): View? = toViewAt(size() - 1)
 
-    fun latestIsPush() = isPushAt(size() - 1)
+    fun latestIsPush(): Boolean = isPushAt(size() - 1)
 
-    fun latestChangeHandler() = changeHandlerAt(size() - 1)
+    fun latestChangeHandler(): MockChangeHandler = changeHandlerAt(size() - 1)
 
     private class Entry(
         val from: View?,

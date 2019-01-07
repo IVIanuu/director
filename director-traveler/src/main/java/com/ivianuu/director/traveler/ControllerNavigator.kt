@@ -41,7 +41,7 @@ import com.ivianuu.traveler.common.ResultNavigator
  */
 open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
-    override fun applyCommandWithResult(command: Command) = when (command) {
+    override fun applyCommandWithResult(command: Command): Boolean = when (command) {
         is Forward -> forward(command)
         is Replace -> replace(command)
         is Back -> back(command)
@@ -91,7 +91,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         return true
     }
 
-    protected open fun back(command: Back) = if (router.backstackSize > 0
+    protected open fun back(command: Back): Boolean = if (router.backstackSize > 0
         && (router.popsLastView || router.backstackSize > 1)
     ) {
         router.popCurrentController()
@@ -130,12 +130,12 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
      * Will be called when the backstack is empty and the hosting activity should be closed
      * This is a no op by default
      */
-    protected open fun exit() = true
+    protected open fun exit(): Boolean = true
 
     /**
      * Creates the corresponding [Controller] for [key]
      */
-    protected open fun createController(key: Any, data: Any?) = when (key) {
+    protected open fun createController(key: Any, data: Any?): Controller? = when (key) {
         is ControllerKey -> key.createController(data)
         else -> null
     }
@@ -143,7 +143,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     /**
      * Returns the corresponding controller tag for [key]
      */
-    protected open fun getControllerTag(key: Any) = when (key) {
+    protected open fun getControllerTag(key: Any): String = when (key) {
         is ControllerKey -> key.getControllerTag()
         else -> key.toString()
     }
@@ -169,10 +169,10 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     /**
      * Will be called when a unknown screen was requested
      */
-    protected open fun unknownScreen(key: Any) = false
+    protected open fun unknownScreen(key: Any): Boolean = false
 
     /**
      * Will be called when a unsupported command was send
      */
-    protected open fun unsupportedCommand(command: Command) = false
+    protected open fun unsupportedCommand(command: Command): Boolean = false
 }

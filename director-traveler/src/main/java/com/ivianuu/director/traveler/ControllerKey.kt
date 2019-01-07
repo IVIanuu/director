@@ -33,7 +33,7 @@ interface ControllerKey {
     /**
      * Returns the controller tag of this key
      */
-    fun getControllerTag() = toString()
+    fun getControllerTag(): String = toString()
 
     /**
      * Sets up the transaction and adds change handlers

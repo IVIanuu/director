@@ -30,28 +30,28 @@ class ActivityProxy {
     val activity: TestActivity
         get() = activityController.get()
 
-    fun create(savedInstanceState: Bundle?) = apply {
+    fun create(savedInstanceState: Bundle?): ActivityProxy = apply {
         activityController.create(savedInstanceState)
     }
 
-    fun start() = apply {
+    fun start(): ActivityProxy = apply {
         activityController.start()
         view.setAttached(true)
     }
 
-    fun resume() = apply {
+    fun resume(): ActivityProxy = apply {
         activityController.resume()
     }
 
-    fun pause() = apply {
+    fun pause(): ActivityProxy = apply {
         activityController.pause()
     }
 
-    fun saveInstanceState(outState: Bundle) = apply {
+    fun saveInstanceState(outState: Bundle): ActivityProxy = apply {
         activityController.saveInstanceState(outState)
     }
 
-    fun stop(detachView: Boolean) = apply {
+    fun stop(detachView: Boolean): ActivityProxy = apply {
         activityController.stop()
 
         if (detachView) {
@@ -59,12 +59,12 @@ class ActivityProxy {
         }
     }
 
-    fun destroy() = apply {
+    fun destroy(): ActivityProxy = apply {
         activityController.destroy()
         view.setAttached(false)
     }
 
-    fun rotate() = apply {
+    fun rotate(): ActivityProxy = apply {
         activity.changingConfigurations = true
         activity.recreate()
     }

@@ -44,7 +44,7 @@ data class CallState(
     var onRequestPermissionsResultCalls: Int = 0
 ) : Parcelable {
 
-    fun setupForAddedControllers() = apply {
+    fun setupForAddedControllers(): CallState = apply {
         createCalls++
         changeStartCalls++
         changeEndCalls++

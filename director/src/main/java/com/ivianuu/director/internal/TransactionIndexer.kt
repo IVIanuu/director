@@ -6,7 +6,7 @@ internal class TransactionIndexer {
 
     private var currentIndex = 0
 
-    fun nextIndex() = ++currentIndex
+    fun nextIndex(): Int = ++currentIndex
 
     fun saveInstanceState(outState: Bundle) {
         outState.putInt(KEY_INDEX, currentIndex)

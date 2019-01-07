@@ -40,11 +40,11 @@ class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwne
         })
     }
 
-    override fun getViewModelStore() = _viewModelStore
+    override fun getViewModelStore(): ViewModelStore = _viewModelStore
 
     private companion object {
         private const val KEY_VIEW_MODEL_STORE = "ControllerViewModelStoreOwner.viewModelStore"
     }
 }
 
-fun Controller.ControllerViewModelStoreOwner() = ControllerViewModelStoreOwner(this)
+fun Controller.ControllerViewModelStoreOwner(): ControllerViewModelStoreOwner = ControllerViewModelStoreOwner(this)

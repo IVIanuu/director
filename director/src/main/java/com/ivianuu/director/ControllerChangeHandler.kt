@@ -16,7 +16,7 @@ abstract class ControllerChangeHandler {
     /**
      * Whether or not this handler removes the from view on push
      */
-    open val removesFromViewOnPush get() = forceRemoveViewOnPush
+    open val removesFromViewOnPush: Boolean get() = forceRemoveViewOnPush
 
     open var forceRemoveViewOnPush = false
 
@@ -64,9 +64,9 @@ abstract class ControllerChangeHandler {
      * ensure it will return an exact copy of your handler if overriding. If not overriding, the handler
      * will be saved and restored from the Bundle format.
      */
-    open fun copy() = fromBundle(toBundle())
+    open fun copy(): ControllerChangeHandler = fromBundle(toBundle())
 
-    internal fun toBundle() = Bundle().apply {
+    internal fun toBundle(): Bundle = Bundle().apply {
         putString(KEY_CLASS_NAME, this@ControllerChangeHandler.javaClass.name)
         putBundle(KEY_SAVED_STATE, Bundle().also { saveToBundle(it) })
     }

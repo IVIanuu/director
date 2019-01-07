@@ -284,12 +284,14 @@ abstract class Controller {
     /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
-    open fun handleBack() = _childRouters
-        .flatMap { it.backstack }
-        .asSequence()
-        .sortedByDescending { it.transactionIndex }
-        .map { it.controller }
-        .any { it.isAttached && it.router.handleBack() }
+    open fun handleBack(): Boolean {
+        return _childRouters
+            .flatMap { it.backstack }
+            .asSequence()
+            .sortedByDescending { it.transactionIndex }
+            .map { it.controller }
+            .any { it.isAttached && it.router.handleBack() }
+    }
 
     /**
      * Adds a listener for all of this Controller's lifecycle events

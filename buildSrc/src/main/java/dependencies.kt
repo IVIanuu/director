@@ -27,7 +27,7 @@ object Versions {
 
     const val junit = "4.12"
 
-    const val kotlin = "1.3.10"
+    const val kotlin = "1.3.11"
 
     const val leakCanary = "1.6.1"
 

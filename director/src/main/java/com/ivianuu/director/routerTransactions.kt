@@ -3,14 +3,14 @@ package com.ivianuu.director
 /**
  * Fluent version of push change handler
  */
-fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
+fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction = apply {
     pushChangeHandler = changeHandler
 }
 
 /**
  * Fluent version of pop change handler
  */
-fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?) = apply {
+fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction = apply {
     popChangeHandler = changeHandler
 }
 
@@ -23,6 +23,6 @@ fun RouterTransaction.changeHandler(changeHandler: ControllerChangeHandler?) =
 /**
  * Fluent version of tag
  */
-fun RouterTransaction.tag(tag: String?) = apply {
+fun RouterTransaction.tag(tag: String?): RouterTransaction = apply {
     this.tag = tag
 }

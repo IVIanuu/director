@@ -75,4 +75,4 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 /**
  * Returns a new [ControllerLifecycleOwner] for [this]
  */
-fun Controller.ControllerLifecycleOwner() = ControllerLifecycleOwner(this)
+fun Controller.ControllerLifecycleOwner(): ControllerLifecycleOwner = ControllerLifecycleOwner(this)

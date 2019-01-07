@@ -162,13 +162,15 @@ object TransitionUtils {
             .map { views[it] }
             .any { it == view }
 
-    private fun hasSimpleTarget(transition: Transition) = (!isNullOrEmpty(
-        transition.targetIds
-    )
-            || !isNullOrEmpty(transition.targetNames)
-            || !isNullOrEmpty(transition.targetTypes))
+    private fun hasSimpleTarget(transition: Transition): Boolean {
+        return (!isNullOrEmpty(
+            transition.targetIds
+        )
+                || !isNullOrEmpty(transition.targetNames)
+                || !isNullOrEmpty(transition.targetTypes))
+    }
 
-    private fun isNullOrEmpty(list: List<*>?) = list == null || list.isEmpty()
+    private fun isNullOrEmpty(list: List<*>?): Boolean = list == null || list.isEmpty()
 
     fun mergeTransitions(ordering: Int, vararg transitions: Transition?) =
         TransitionSet().apply {

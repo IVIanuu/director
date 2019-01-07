@@ -105,17 +105,17 @@ class MockChangeHandler private constructor(
         private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "MockChangeHandler.removesFromViewOnPush"
         private const val KEY_TAG = "MockChangeHandler.tag"
 
-        fun defaultHandler() = MockChangeHandler(true, null, null)
+        fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null, null)
 
-        fun noRemoveViewOnPushHandler() = MockChangeHandler(false, null, null)
+        fun noRemoveViewOnPushHandler(): MockChangeHandler = MockChangeHandler(false, null, null)
 
-        fun noRemoveViewOnPushHandler(tag: String) =
+        fun noRemoveViewOnPushHandler(tag: String): MockChangeHandler =
             MockChangeHandler(false, tag, null)
 
-        fun listeningChangeHandler(listener: Listener) =
+        fun listeningChangeHandler(listener: Listener): MockChangeHandler =
             MockChangeHandler(true, null, listener)
 
-        fun taggedHandler(tag: String, removeViewOnPush: Boolean) =
+        fun taggedHandler(tag: String, removeViewOnPush: Boolean): MockChangeHandler =
             MockChangeHandler(removeViewOnPush, tag, null)
     }
 }

@@ -34,7 +34,7 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
     private var canceled = false
     private var needsImmediateCompletion = false
 
-    override val removesFromViewOnPush get() = true
+    override val removesFromViewOnPush: Boolean get() = true
 
     override fun performChange(
         container: ViewGroup,

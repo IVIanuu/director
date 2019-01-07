@@ -39,7 +39,7 @@ val Controller.resources: Resources get() = activity.resources
 /**
  * Returns a new router transaction
  */
-fun Controller.toTransaction() = RouterTransaction(this)
+fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
 
 /**
  * Calls startActivity(Intent) from this Controller's host Activity.
