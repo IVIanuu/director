@@ -5,7 +5,11 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.internal.*
+import com.ivianuu.director.internal.ControllerChangeManager
+import com.ivianuu.director.internal.DefaultControllerFactory
+import com.ivianuu.director.internal.TransactionIndexer
+import com.ivianuu.director.internal.backstacksAreEqual
+import com.ivianuu.director.internal.filterVisible
 
 /**
  * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
@@ -269,11 +273,6 @@ abstract class Router {
      * Attaches this Router's existing backstack to its container if one exists.
      */
     open fun rebind() {
-        val container = container ?: return
-        // remove all views
-        container.removeAllViews()
-
-        // attach any visible controller
         _backstack
             .filterVisible()
             .forEach {
