@@ -27,23 +27,41 @@ private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
  */
 class RetainedObjects {
 
-    val entries: Map<String, *> get() = _entries.toMap()
+    val entries: Map<String, Any> get() = _entries.toMap()
     private val _entries = mutableMapOf<String, Any>()
 
-    operator fun <T : Any> get(key: String): T? = _entries[key] as? T
+    operator fun <T> get(key: String): T? = _entries[key] as? T
 
-    fun <T : Any> getOrPut(key: String, defaultValue: () -> T): T =
-        _entries.getOrPut(key, defaultValue) as T
+    fun <T> getOrPut(key: String, defaultValue: () -> T): T {
+        var value = _entries[key] as? T
 
-    fun <T : Any> put(key: String, value: T) {
+        if (value == null) {
+            value = defaultValue()
+            _entries[key] = value as Any
+        }
+
+        return value
+    }
+
+    fun <T> getOrDefault(key: String, defaultValue: () -> T): T {
+        var value = _entries[key] as? T
+
+        if (value == null) {
+            value = defaultValue()
+        }
+
+        return value as T
+    }
+
+    fun <T> put(key: String, value: T) {
         set(key, value)
     }
 
-    operator fun <T : Any> set(key: String, value: T) {
-        _entries[key] = value
+    operator fun <T> set(key: String, value: T) {
+        _entries[key] = value as Any
     }
 
-    fun <T : Any> remove(key: String): T? = _entries.remove(key) as? T
+    fun <T> remove(key: String): T? = _entries.remove(key) as? T
 
     fun clear() {
         _entries.clear()
@@ -52,17 +70,17 @@ class RetainedObjects {
     fun contains(key: String): Boolean = _entries.contains(key)
 }
 
-fun <T : Any> Controller.retainedLazy(
+fun <T> Controller.retainedLazy(
     key: String = USE_PROPERTY_NAME,
     initializer: () -> T
 ): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) { retainedObjects.getOrPut(key, initializer) }
 
-fun <T : Any> retained(
+fun <T> retained(
     key: String = USE_PROPERTY_NAME,
     initialValue: () -> T
 ): ReadWriteProperty<Controller, T> = RetainedProperty(initialValue, key)
 
-private class RetainedProperty<T : Any>(
+private class RetainedProperty<T>(
     private val initialValue: () -> T,
     private val key: String
 ) : ReadWriteProperty<Controller, T> {

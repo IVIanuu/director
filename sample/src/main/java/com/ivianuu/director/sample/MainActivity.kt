@@ -3,10 +3,16 @@ package com.ivianuu.director.sample
 import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import com.ivianuu.director.*
+import com.ivianuu.director.Router
+import com.ivianuu.director.attachRouter
+import com.ivianuu.director.handleBack
+import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerFactory
-import kotlinx.android.synthetic.main.activity_main.*
+import com.ivianuu.director.sample.util.LoggingLifecycleListener
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
+import kotlinx.android.synthetic.main.activity_main.toolbar
 
 class MainActivity : AppCompatActivity(), ActionBarProvider {
 
@@ -26,7 +32,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             savedInstanceState,
             LoggingControllerFactory()
         ).apply {
-            //addLifecycleListener(LoggingLifecycleListener())
+            addLifecycleListener(LoggingLifecycleListener())
 
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())

@@ -13,7 +13,7 @@ object Build {
 }
 
 object Versions {
-    const val androidGradlePlugin = "3.2.1"
+    const val androidGradlePlugin = "3.3.0"
 
     const val androidx = "1.0.0"
     const val androidxLifecycle = "2.0.0"
@@ -27,7 +27,7 @@ object Versions {
 
     const val junit = "4.12"
 
-    const val kotlin = "1.3.11"
+    const val kotlin = "1.3.20"
 
     const val leakCanary = "1.6.1"
 
@@ -38,7 +38,7 @@ object Versions {
 
     const val roboelectric = "4.0.2"
 
-    const val rxJava = "2.2.2"
+    const val rxJava = "2.2.6"
 
     const val scopes = "6c630efcd6"
 
