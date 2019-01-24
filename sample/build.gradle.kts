@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
     implementation(project(":director-fragmenthost"))
+    implementation(project(":director-permission"))
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
     implementation(project(":director-viewpager"))

@@ -30,12 +30,7 @@ class TargetDisplayController : BaseController(),
         super.onCreate(savedInstanceState)
         actionBarTitle = "Target Controller Demo"
 
-        registerActivityResultListener(REQUEST_SELECT_IMAGE) { requestCode, resultCode, data ->
-            if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
-                imageUri = data?.data
-                setImageView()
-            }
-        }
+        registerActivityResultListener(REQUEST_SELECT_IMAGE, this)
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
@@ -83,6 +78,13 @@ class TargetDisplayController : BaseController(),
         val uriString = savedInstanceState.getString(KEY_SELECTED_IMAGE, "")
         if (uriString.isNotEmpty()) {
             imageUri = Uri.parse(uriString)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
+            imageUri = data?.data
+            setImageView()
         }
     }
 

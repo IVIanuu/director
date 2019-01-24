@@ -5,6 +5,7 @@ include(
     ":director-common",
     ":director-dialog",
     ":director-fragmenthost",
+    ":director-permission",
     ":director-retained",
     ":director-scopes",
     ":director-testing",

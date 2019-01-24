@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/director-common" />
             <option value="$PROJECT_DIR$/director-dialog" />
             <option value="$PROJECT_DIR$/director-fragmenthost" />
+            <option value="$PROJECT_DIR$/director-permission" />
             <option value="$PROJECT_DIR$/director-retained" />
             <option value="$PROJECT_DIR$/director-scopes" />
             <option value="$PROJECT_DIR$/director-testing" />
