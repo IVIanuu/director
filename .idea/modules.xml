@@ -13,6 +13,7 @@
       <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-fragmenthost/director-fragmenthost.iml" filepath="$PROJECT_DIR$/director-fragmenthost/director-fragmenthost.iml" />
+      <module fileurl="file://$PROJECT_DIR$/director-retained/director-retained.iml" filepath="$PROJECT_DIR$/director-retained/director-retained.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-scopes/director-scopes.iml" filepath="$PROJECT_DIR$/director-scopes/director-scopes.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-scopes/director-scopes.iml" filepath="$PROJECT_DIR$/director-scopes/director-scopes.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-testing/director-testing.iml" filepath="$PROJECT_DIR$/director-testing/director-testing.iml" />

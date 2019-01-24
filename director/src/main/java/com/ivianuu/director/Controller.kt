@@ -284,8 +284,8 @@ abstract class Controller {
      */
     fun getChildRouter(
         containerId: Int,
-        tag: String?,
-        controllerFactory: ControllerFactory?
+        tag: String? = null,
+        controllerFactory: ControllerFactory? = null
     ): Router {
         var childRouter = _childRouters
             .firstOrNull { it.hostId == containerId && it.tag == tag }

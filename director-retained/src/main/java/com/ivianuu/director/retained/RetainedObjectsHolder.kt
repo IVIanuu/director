@@ -1,6 +1,21 @@
-package com.ivianuu.director.common.retained
+/*
+ * Copyright 2018 Manuel Wrage
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import android.app.Activity
+package com.ivianuu.director.retained
+
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
@@ -32,21 +47,22 @@ class RetainedObjectsHolder : Fragment(), ControllerLifecycleListener {
 
     companion object {
         private const val FRAGMENT_TAG =
-            "com.ivianuu.director.common.retained.RetainedObjectsHolder"
+            "com.ivianuu.director.retained.RetainedObjectsHolder"
 
         internal fun get(controller: Controller): RetainedObjects {
             val activity = (controller.activity as? FragmentActivity)
                 ?: error("controller is not attached to a FragmentActivity")
-            return (findInActivity(controller.activity) ?: RetainedObjectsHolder().also {
+            return ((activity as? FragmentActivity)?.supportFragmentManager
+                ?.findFragmentByTag(FRAGMENT_TAG) as? RetainedObjectsHolder
+                ?: RetainedObjectsHolder().also {
                 activity.supportFragmentManager.beginTransaction()
-                    .add(it, FRAGMENT_TAG)
+                    .add(
+                        it,
+                        FRAGMENT_TAG
+                    )
                     .commitNow()
             }).getRetainedObjects(controller)
         }
 
-        private fun findInActivity(activity: Activity): RetainedObjectsHolder? {
-            return (activity as? FragmentActivity)?.supportFragmentManager
-                ?.findFragmentByTag(FRAGMENT_TAG) as? RetainedObjectsHolder
-        }
     }
 }

@@ -72,15 +72,14 @@ class RouterHostFragment : Fragment() {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
 
         internal fun install(fm: FragmentManager): RouterHostFragment {
-            return (findInFragmentManager(fm) ?: RouterHostFragment().also {
+            return (fm.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment)
+                ?: RouterHostFragment().also {
                 fm.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()
-            })
+                }
         }
 
-        private fun findInFragmentManager(fm: FragmentManager): RouterHostFragment? =
-            fm.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment
     }
 
 }

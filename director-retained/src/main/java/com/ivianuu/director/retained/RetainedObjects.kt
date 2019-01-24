@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.common.retained
+package com.ivianuu.director.retained
 
 import com.ivianuu.director.Controller
 import kotlin.properties.ReadWriteProperty
@@ -38,33 +38,6 @@ class RetainedObjects {
      * Returns the value for [key] or null
      */
     operator fun <T> get(key: String): T? = _entries[key] as? T
-
-    /**
-     * Returns the value for [key] or puts the result of [defaultValue]
-     */
-    fun <T> getOrPut(key: String, defaultValue: () -> T): T {
-        var value = _entries[key] as? T
-
-        if (value == null) {
-            value = defaultValue()
-            _entries[key] = value as Any
-        }
-
-        return value
-    }
-
-    /**
-     * Returns the value for [key] or the result of [defaultValue]
-     */
-    fun <T> getOrDefault(key: String, defaultValue: () -> T): T {
-        var value = _entries[key] as? T
-
-        if (value == null) {
-            value = defaultValue()
-        }
-
-        return value as T
-    }
 
     /**
      * Sets the value for [key] to [value]
@@ -99,12 +72,40 @@ class RetainedObjects {
 }
 
 /**
+ * Returns the value for [key] or puts the result of [defaultValue]
+ */
+fun <T> RetainedObjects.getOrPut(key: String, defaultValue: () -> T): T {
+    var value = get<T>(key)
+
+    if (value == null) {
+        value = defaultValue()
+        put(key, value)
+    }
+
+    return value as T
+}
+
+/**
+ * Returns the value for [key] or the result of [defaultValue]
+ */
+fun <T> RetainedObjects.getOrDefault(key: String, defaultValue: () -> T): T {
+    var value = get<T>(key)
+
+    if (value == null) {
+        value = defaultValue()
+    }
+
+    return value as T
+}
+
+/**
  * Returns the retained objects of this controller
  */
-val Controller.retainedObjects: RetainedObjects get() = RetainedObjectsHolder.get(this)
+val Controller.retainedObjects: RetainedObjects
+    get() = RetainedObjectsHolder.get(this)
 
 fun <T> Controller.retainedLazy(
-    key: String = USE_PROPERTY_NAME,
+    key: String = com.ivianuu.director.retained.USE_PROPERTY_NAME,
     initializer: () -> T
 ): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) { retainedObjects.getOrPut(key, initializer) }
 

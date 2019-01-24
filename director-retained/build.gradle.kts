@@ -1,4 +1,6 @@
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
+import java.io.File
 
 /*
  * Copyright 2018 Manuel Wrage
@@ -19,6 +21,7 @@ import org.gradle.jvm.tasks.Jar
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("kotlin-android-extensions")
     id("com.github.dcendents.android-maven")
 }
 
@@ -32,12 +35,18 @@ android {
         minSdkVersion(Build.minSdk)
         targetSdkVersion(Build.targetSdk)
     }
+
+    androidExtensions {
+        // isExperimental = true
+        configure(delegateClosureOf<AndroidExtensionsExtension> {
+            isExperimental = true
+        })
+    }
 }
 
 dependencies {
-    api(Deps.androidxLifecycleExtensions)
+    api(Deps.androidxFragment)
     api(project(":director"))
-    api(project(":director-retained"))
 }
 
 val sourcesJar = task("sourcesJar", Jar::class) {

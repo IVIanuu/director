@@ -4,6 +4,7 @@ include(
     ":director-common",
     ":director-dialog",
     ":director-fragmenthost",
+    ":director-retained",
     ":director-scopes",
     ":director-testing",
     ":director-traveler",
