@@ -17,9 +17,6 @@ internal class ActivityHostedRouter(
 
     override val activity: FragmentActivity
 
-    override val siblingRouters: List<Router>
-        get() = lifecycleHandler.routers
-
     override val rootRouter: Router
         get() = this
 

@@ -12,9 +12,6 @@ internal class ControllerHostedRouter : Router {
     override val activity: FragmentActivity
         get() = hostController.activity
 
-    override val siblingRouters: List<Router>
-        get() = hostController.childRouters + hostController.router.siblingRouters
-
     override val rootRouter: Router
         get() = hostController.router.rootRouter
 

@@ -23,7 +23,6 @@ abstract class Router {
      */
     val backstack: List<RouterTransaction> get() = _backstack.toList()
     private val _backstack = mutableListOf<RouterTransaction>()
-    private val reversedBackstack get() = _backstack.reversed()
 
     /**
      * Returns this Router's host Activity or `null` if it has either not yet been attached to
@@ -58,7 +57,6 @@ abstract class Router {
 
     private var _controllerFactory: ControllerFactory = DefaultControllerFactory()
 
-    internal abstract val siblingRouters: List<Router>
     internal abstract val rootRouter: Router
     internal abstract val transactionIndexer: TransactionIndexer
 
@@ -357,29 +355,29 @@ abstract class Router {
             .any()
 
     open fun onActivityStarted() {
-        reversedBackstack.forEach { it.controller.activityStarted() }
+        _backstack.reversed().forEach { it.controller.activityStarted() }
     }
 
     open fun onActivityResumed() {
-        reversedBackstack.forEach { it.controller.activityResumed() }
+        _backstack.reversed().forEach { it.controller.activityResumed() }
     }
 
     open fun onActivityPaused() {
-        reversedBackstack.forEach { it.controller.activityPaused() }
+        _backstack.reversed().forEach { it.controller.activityPaused() }
     }
 
     open fun onActivityStopped() {
-        reversedBackstack.forEach { it.controller.activityStopped() }
+        _backstack.reversed().forEach { it.controller.activityStopped() }
     }
 
     open fun onActivityDestroyed() {
-        reversedBackstack.forEach { it.controller.activityDestroyed() }
+        _backstack.reversed().forEach { it.controller.activityDestroyed() }
         destroyingControllers.reversed().forEach { it.activityDestroyed() }
         container = null
     }
 
     open fun prepareForHostDetach() {
-        reversedBackstack.forEach {
+        _backstack.reversed().forEach {
             changeManager.completeChangeImmediately(it.controller.instanceId)
             it.controller.prepareForHostDetach()
         }
