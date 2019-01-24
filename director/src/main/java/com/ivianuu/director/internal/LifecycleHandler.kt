@@ -14,15 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.RetainedObjects
-import com.ivianuu.director.Router
 import com.ivianuu.director.containerId
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
-
-    internal val routers: List<Router>
-        get() = routerMap.values.toList()
 
     private val routerMap =
         mutableMapOf<Int, ActivityHostedRouter>()
@@ -91,7 +87,14 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         super.onActivityResult(requestCode, resultCode, data)
 
         activityRequests[requestCode]?.let { instanceIds ->
-            routers.forEach { it.onActivityResult(instanceIds, requestCode, resultCode, data) }
+            routerMap.values.forEach {
+                it.onActivityResult(
+                    instanceIds,
+                    requestCode,
+                    resultCode,
+                    data
+                )
+            }
         }
     }
 
@@ -103,12 +106,19 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         permissionRequests[requestCode]?.let { instanceIds ->
-            routers.forEach { it.onRequestPermissionsResult(instanceIds, requestCode, permissions, grantResults) }
+            routerMap.values.forEach {
+                it.onRequestPermissionsResult(
+                    instanceIds,
+                    requestCode,
+                    permissions,
+                    grantResults
+                )
+            }
         }
     }
 
     override fun shouldShowRequestPermissionRationale(permission: String): Boolean {
-        return routers
+        return routerMap.values
             .filter { router ->
                 router.shouldShowRequestPermissionRationale(
                     permission,
@@ -124,19 +134,19 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun onActivityStarted(activity: Activity) {
         if (this.activity == activity) {
             hasPreparedForHostDetach = false
-            routers.forEach { it.onActivityStarted() }
+            routerMap.values.forEach { it.onActivityStarted() }
         }
     }
 
     override fun onActivityResumed(activity: Activity) {
         if (this.activity == activity) {
-            routers.forEach { it.onActivityResumed() }
+            routerMap.values.forEach { it.onActivityResumed() }
         }
     }
 
     override fun onActivityPaused(activity: Activity) {
         if (this.activity == activity) {
-            routers.forEach { it.onActivityPaused() }
+            routerMap.values.forEach { it.onActivityPaused() }
         }
     }
 
@@ -144,7 +154,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         if (this.activity == activity) {
             prepareForHostDetachIfNeeded()
 
-            routers.forEach { router ->
+            routerMap.values.forEach { router ->
                 val bundle = Bundle().also { router.saveInstanceState(it) }
                 outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
             }
@@ -154,7 +164,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun onActivityStopped(activity: Activity) {
         if (this.activity == activity) {
             prepareForHostDetachIfNeeded()
-            routers.forEach { it.onActivityStopped() }
+            routerMap.values.forEach { it.onActivityStopped() }
         }
     }
 
@@ -239,7 +249,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
 
     private fun destroyRouters() {
         if (!destroyed) {
-            routers.forEach { it.onActivityDestroyed() }
+            routerMap.values.forEach { it.onActivityDestroyed() }
             routerMap.clear()
             destroyed = true
         }
@@ -248,7 +258,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     private fun prepareForHostDetachIfNeeded() {
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
-            routers.forEach { it.prepareForHostDetach() }
+            routerMap.values.forEach { it.prepareForHostDetach() }
         }
     }
 
@@ -260,7 +270,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     }
 
     companion object {
-        private const val FRAGMENT_TAG = "LifecycleHandler"
+        private val FRAGMENT_TAG = LifecycleHandler::class.java.name
 
         private const val KEY_ACTIVITY_REQUEST_CODES = "LifecycleHandler.activityRequests"
         private const val KEY_PERMISSION_REQUEST_CODES = "LifecycleHandler.permissionRequests"
