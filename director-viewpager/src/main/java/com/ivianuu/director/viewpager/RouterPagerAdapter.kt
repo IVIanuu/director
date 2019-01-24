@@ -35,8 +35,8 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
 
     var maxPagesToStateSave = Integer.MAX_VALUE
         set(value) {
-            if (value < 0) {
-                throw IllegalArgumentException("Only positive integers may be passed for maxPagesToStateSave.")
+            require(value >= 1) {
+                "Only positive integers may be passed for maxPagesToStateSave."
             }
 
             field = value

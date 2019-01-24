@@ -34,7 +34,7 @@ abstract class Controller {
      * The router of this controller
      */
     val router: Router
-        get() = if (routerSet) _router else throw IllegalStateException("router is only available after onCreate")
+        get() = if (routerSet) _router else error("router is only available after onCreate")
 
     private lateinit var _router: Router
     private var routerSet = false
@@ -43,7 +43,7 @@ abstract class Controller {
      * Returns the host activity of this controller
      */
     val activity: Activity
-        get() = if (routerSet) router.activity else throw IllegalStateException("activity is only available after onCreate")
+        get() = if (routerSet) router.activity else error("activity is only available after onCreate")
 
     /**
      * The view of this controller or null
@@ -70,7 +70,7 @@ abstract class Controller {
         get() = targetInstanceId?.let { _router.rootRouter.findControllerByInstanceId(it) }
         set(value) {
             if (targetInstanceId != null) {
-                throw IllegalStateException("the target controller can only be set once")
+                error("the target controller can only be set once")
             }
             targetInstanceId = value?.instanceId
         }
@@ -329,13 +329,13 @@ abstract class Controller {
      */
     fun setInitialSavedState(state: Bundle?) {
         if (routerSet) {
-            throw IllegalStateException("controller already added")
+            error("controller already added")
         }
 
         if (state != null) {
             val className = state.getString(KEY_CLASS_NAME)
-            if (javaClass.name != className) {
-                throw IllegalArgumentException("state of $className cannot be used for ${javaClass.name}")
+            require(javaClass.name == className) {
+                "state of $className cannot be used for ${javaClass.name}"
             }
         }
 
@@ -759,7 +759,7 @@ abstract class Controller {
         superCalled = false
         block()
         if (!superCalled) {
-            throw IllegalStateException("super not called ${javaClass.name}")
+            error("super not called ${javaClass.name}")
         }
     }
 

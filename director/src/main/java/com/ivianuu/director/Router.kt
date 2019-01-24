@@ -89,7 +89,7 @@ abstract class Router {
         }
 
         if (newBackstack.size != newBackstack.distinctBy { it.controller }.size) {
-            throw IllegalStateException("Trying to push the same controller to the backstack more than once.")
+            error("Trying to push the same controller to the backstack more than once.")
         }
 
         _backstack.clear()
@@ -417,7 +417,7 @@ abstract class Router {
         changeHandler: ControllerChangeHandler? = null
     ) {
         if (isPush && to != null && to.controller.isDestroyed) {
-            throw IllegalStateException("Trying to push a controller that has already been destroyed ${to.javaClass.simpleName}")
+            error("Trying to push a controller that has already been destroyed ${to.javaClass.simpleName}")
         }
 
         val container = container ?: return
@@ -511,8 +511,8 @@ fun Router.popsLastView(popsLastView: Boolean): Router = apply { this.popsLastVi
  * [Controller.setInitialSavedState]
  */
 fun Router.saveControllerInstanceState(controller: Controller): Bundle {
-    if (backstack.none { it.controller == controller }) {
-        throw IllegalArgumentException("controller is not attached to the router")
+    require(backstack.any { it.controller == controller }) {
+        "controller is not attached to the router"
     }
 
     return controller.saveInstanceState()
@@ -561,7 +561,7 @@ fun Router.handleBack(): Boolean {
  */
 fun Router.popCurrentController(changeHandler: ControllerChangeHandler? = null) {
     val transaction = backstack.lastOrNull()
-        ?: throw IllegalStateException("Trying to pop the current controller when there are none on the backstack.")
+        ?: error("Trying to pop the current controller when there are none on the backstack.")
     popController(transaction.controller, changeHandler)
 }
 

@@ -55,7 +55,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
-        ?: throw IllegalStateException("only accessible between onBindView and onUnbindView")
+        ?: error("only accessible between onBindView and onUnbindView")
 }
 
 /**

@@ -87,7 +87,7 @@ class RouterTransaction {
 
     private fun checkModify() {
         if (!allowModification && attachedToRouter) {
-            throw IllegalStateException("transactions cannot be modified after being added to a Router.")
+            error("transactions cannot be modified after being added to a Router.")
         }
     }
 

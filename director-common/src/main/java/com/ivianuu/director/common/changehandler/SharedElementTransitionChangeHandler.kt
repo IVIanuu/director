@@ -62,7 +62,7 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
         enterTransitionCallback = getEnterTransitionCallback(container, from, to, isPush)
 
         if (enterTransition == null && sharedElementTransition == null && exitTransition == null) {
-            throw IllegalStateException("SharedElementTransitionChangeHandler must have at least one transaction.")
+            error("SharedElementTransitionChangeHandler must have at least one transaction.")
         }
 
         return mergeTransitions(isPush)
@@ -729,8 +729,9 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
      * "from" view to the name used in the "to" view if they are not the same.
      */
     protected fun addSharedElement(sharedElement: View, toName: String) {
-        val transitionName = sharedElement.transitionName
-            ?: throw IllegalArgumentException("Unique transitionNames are required for all sharedElements")
+        val transitionName = requireNotNull(sharedElement.transitionName) {
+            "Unique transitionNames are required for all sharedElements"
+        }
         sharedElementNames[transitionName] = toName
     }
 
@@ -741,7 +742,7 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
      */
     protected fun waitOnSharedElementNamed(name: String) {
         if (!sharedElementNames.values.contains(name)) {
-            throw IllegalStateException("Can't wait on a shared element that hasn't been registered using addSharedElement")
+            error("Can't wait on a shared element that hasn't been registered using addSharedElement")
         }
         waitForTransitionNames.add(name)
     }

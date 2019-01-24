@@ -76,7 +76,7 @@ class ControllerScenario<C : Controller> internal constructor(
             activityScenario.onActivity { activity ->
                 activityScenario.moveToState(newState.toLifecycleState())
                 activity.router.findControllerByTag(CONTROLLER_TAG)
-                    ?: throw IllegalStateException("The controller already has been popped from the router.")
+                    ?: error("The controller already has been popped from the router.")
 
             }
         }
@@ -91,7 +91,7 @@ class ControllerScenario<C : Controller> internal constructor(
     fun onController(block: (C) -> Unit): ControllerScenario<C> {
         activityScenario.onActivity { activity ->
             val controller = activity.router.findControllerByTag(CONTROLLER_TAG)
-                ?: throw IllegalStateException("The controller already has been popped from the router.")
+                ?: error("The controller already has been popped from the router.")
             block(controller as C)
         }
         return this

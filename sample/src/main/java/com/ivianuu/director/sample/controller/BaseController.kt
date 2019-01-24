@@ -39,7 +39,7 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         return if (layoutRes != 0) {
             inflater.inflate(layoutRes, container, false)
         } else {
-            throw IllegalStateException("no layout res provided")
+            error("no layout res provided")
         }
     }
 
