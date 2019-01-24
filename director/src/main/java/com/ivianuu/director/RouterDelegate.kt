@@ -28,8 +28,7 @@ class RouterDelegate(
     private var savedInstanceState: Bundle? = null
 ) {
 
-    private val routers =
-        mutableMapOf<Int, Router>()
+    private val routers = mutableMapOf<Int, Router>()
 
     private var hasPreparedForHostDetach = false
 
