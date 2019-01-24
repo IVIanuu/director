@@ -17,7 +17,6 @@
 package com.ivianuu.director.sample.app
 
 import android.app.Application
-import com.squareup.leakcanary.LeakCanary
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -26,7 +25,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (LeakCanary.isInAnalyzerProcess(this)) return
+        //if (LeakCanary.isInAnalyzerProcess(this)) return
         //LeakCanary.install(this)
     }
 
