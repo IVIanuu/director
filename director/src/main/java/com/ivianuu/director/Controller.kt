@@ -2,6 +2,7 @@ package com.ivianuu.director
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -795,6 +796,13 @@ val Controller.application: Application
  * The resources of the attached activity
  */
 val Controller.resources: Resources get() = activity.resources
+
+/**
+ * Starts the [intent]
+ */
+fun Controller.startActivity(intent: Intent) {
+    activity.startActivity(intent)
+}
 
 /**
  * Returns a new router transaction

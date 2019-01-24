@@ -1,10 +1,13 @@
 package com.ivianuu.director.sample.controller
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import com.ivianuu.director.activityresult.registerActivityResultListener
+import com.ivianuu.director.activityresult.startActivityForResult
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.pushController
@@ -26,6 +29,13 @@ class TargetDisplayController : BaseController(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBarTitle = "Target Controller Demo"
+
+        registerActivityResultListener(REQUEST_SELECT_IMAGE) { requestCode, resultCode, data ->
+            if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
+                imageUri = data?.data
+                setImageView()
+            }
+        }
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
@@ -42,7 +52,10 @@ class TargetDisplayController : BaseController(),
             val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             intent.type = "image/*"
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            // todo      startActivityForResult(Intent.createChooser(intent, "Select Image"), REQUEST_SELECT_IMAGE)
+            startActivityForResult(
+                Intent.createChooser(intent, "Select Image"),
+                REQUEST_SELECT_IMAGE
+            )
         }
 
         setTextView()
@@ -53,14 +66,6 @@ class TargetDisplayController : BaseController(),
         selectedText = option
         setTextView()
     }
-
-    // todo
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
-            imageUri = data?.data
-            setImageView()
-        }
-    }*/
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

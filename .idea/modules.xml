@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/director/director.iml" filepath="$PROJECT_DIR$/director/director.iml" />
       <module fileurl="file://$PROJECT_DIR$/director/director.iml" filepath="$PROJECT_DIR$/director/director.iml" />
+      <module fileurl="file://$PROJECT_DIR$/director-activityresult/director-activityresult.iml" filepath="$PROJECT_DIR$/director-activityresult/director-activityresult.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-arch-lifecycle/director-arch-lifecycle.iml" filepath="$PROJECT_DIR$/director-arch-lifecycle/director-arch-lifecycle.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-arch-lifecycle/director-arch-lifecycle.iml" filepath="$PROJECT_DIR$/director-arch-lifecycle/director-arch-lifecycle.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-common/director-common.iml" filepath="$PROJECT_DIR$/director-common/director-common.iml" />

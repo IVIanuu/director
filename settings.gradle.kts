@@ -1,5 +1,6 @@
 include(
     ":director",
+    ":director-activityresult",
     ":director-arch-lifecycle",
     ":director-common",
     ":director-dialog",

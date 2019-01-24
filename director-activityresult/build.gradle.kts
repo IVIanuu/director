@@ -45,6 +45,7 @@ android {
 }
 
 dependencies {
+    api(Deps.androidxFragment)
     api(project(":director"))
 }
 

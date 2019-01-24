@@ -81,14 +81,13 @@ class HomeController : BaseController() {
                     )
                 )
             }
-            // todo
-            /*HomeItem.TARGET_CONTROLLER -> {
+            HomeItem.TARGET_CONTROLLER -> {
                 router.pushController(
                     TargetDisplayController()
                         .toTransaction()
                         .changeHandler(FadeChangeHandler())
                 )
-            }*/
+            }
             HomeItem.VIEW_PAGER -> {
                 router.pushController(
                     PagerController().toTransaction()
@@ -194,7 +193,7 @@ enum class HomeItem(val title: String, val color: Int) {
     CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
     VIEW_PAGER("ViewPager", R.color.green_300),
     BOTTOM_NAV("Bottom Nav", R.color.blue_300),
-    // todo TARGET_CONTROLLER("Target Controller", R.color.pink_300),
+    TARGET_CONTROLLER("Target Controller", R.color.pink_300),
     MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
     MASTER_DETAIL("Master Detail", R.color.grey_300),
     DRAG_DISMISS("Drag Dismiss", R.color.lime_300),

@@ -58,6 +58,7 @@ dependencies {
     kapt(Deps.daggerCompiler)
 
     implementation(project(":director"))
+    implementation(project(":director-activityresult"))
     implementation(project(":director-arch-lifecycle"))
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
