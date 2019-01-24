@@ -69,8 +69,8 @@ abstract class Controller {
     var targetController: Controller?
         get() = targetInstanceId?.let { _router.rootRouter.findControllerByInstanceId(it) }
         set(value) {
-            if (targetInstanceId != null) {
-                error("the target controller can only be set once")
+            check(targetInstanceId == null) {
+                "the target controller can only be set once"
             }
             targetInstanceId = value?.instanceId
         }
@@ -328,9 +328,7 @@ abstract class Controller {
      * [Router.saveControllerInstanceState]
      */
     fun setInitialSavedState(state: Bundle?) {
-        if (routerSet) {
-            error("controller already added")
-        }
+        check(!routerSet) { "controller already added" }
 
         if (state != null) {
             val className = state.getString(KEY_CLASS_NAME)
@@ -758,9 +756,7 @@ abstract class Controller {
     private inline fun requireSuperCalled(block: () -> Unit) {
         superCalled = false
         block()
-        if (!superCalled) {
-            error("super not called ${javaClass.name}")
-        }
+        check(!superCalled) { "super not called ${javaClass.name}" }
     }
 
     companion object {

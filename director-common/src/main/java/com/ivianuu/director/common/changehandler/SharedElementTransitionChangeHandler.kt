@@ -61,8 +61,8 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
         exitTransitionCallback = getExitTransitionCallback(container, from, to, isPush)
         enterTransitionCallback = getEnterTransitionCallback(container, from, to, isPush)
 
-        if (enterTransition == null && sharedElementTransition == null && exitTransition == null) {
-            error("SharedElementTransitionChangeHandler must have at least one transaction.")
+        check(enterTransition != null || sharedElementTransition != null || exitTransition != null) {
+            "SharedElementTransitionChangeHandler must have at least one transaction."
         }
 
         return mergeTransitions(isPush)
@@ -741,8 +741,8 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
      * potentially lock up your app indefinitely if the view never loads!
      */
     protected fun waitOnSharedElementNamed(name: String) {
-        if (!sharedElementNames.values.contains(name)) {
-            error("Can't wait on a shared element that hasn't been registered using addSharedElement")
+        check(!sharedElementNames.values.contains(name)) {
+            "Can't wait on a shared element that hasn't been registered using addSharedElement"
         }
         waitForTransitionNames.add(name)
     }

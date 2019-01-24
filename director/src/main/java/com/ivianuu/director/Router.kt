@@ -88,8 +88,8 @@ abstract class Router {
             transaction.transactionIndex = indices[i]
         }
 
-        if (newBackstack.size != newBackstack.distinctBy { it.controller }.size) {
-            error("Trying to push the same controller to the backstack more than once.")
+        check(newBackstack.size == newBackstack.distinctBy { it.controller }.size) {
+            "Trying to push the same controller to the backstack more than once."
         }
 
         _backstack.clear()
@@ -416,8 +416,8 @@ abstract class Router {
         isPush: Boolean,
         changeHandler: ControllerChangeHandler? = null
     ) {
-        if (isPush && to != null && to.controller.isDestroyed) {
-            error("Trying to push a controller that has already been destroyed ${to.javaClass.simpleName}")
+        check(!isPush || (to != null && !to.controller.isDestroyed)) {
+            "Trying to push a controller that has already been destroyed ${to!!.javaClass.simpleName}"
         }
 
         val container = container ?: return

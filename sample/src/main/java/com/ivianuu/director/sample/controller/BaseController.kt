@@ -36,11 +36,8 @@ abstract class BaseController : LifecycleController(), LayoutContainer {
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        return if (layoutRes != 0) {
-            inflater.inflate(layoutRes, container, false)
-        } else {
-            error("no layout res provided")
-        }
+        check(layoutRes != 0) { "no layout res provided" }
+        return inflater.inflate(layoutRes, container, false)
     }
 
     override fun onAttach(view: View) {
