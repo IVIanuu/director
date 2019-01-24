@@ -16,19 +16,19 @@
 
 package com.ivianuu.director.common.changehandler
 
+import android.annotation.TargetApi
 import android.os.Build
 import android.transition.Transition
 import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 
 /**
  * A base [ControllerChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
  */
-@RequiresApi(Build.VERSION_CODES.KITKAT)
+@TargetApi(Build.VERSION_CODES.KITKAT)
 abstract class TransitionChangeHandler : ControllerChangeHandler() {
 
     private var canceled = false
