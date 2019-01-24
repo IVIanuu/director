@@ -23,7 +23,7 @@ object Versions {
     const val dagger = "2.19"
 
     const val epoxy = "2.19.0"
-    const val epoxyKtx = "1a273d9917"
+    const val epoxyKtx = "9e8f7d3b81"
 
     const val junit = "4.12"
 
@@ -40,9 +40,9 @@ object Versions {
 
     const val rxJava = "2.2.6"
 
-    const val scopes = "6c630efcd6"
+    const val scopes = "dcbe44f5d0"
 
-    const val traveler = "ab66233b33"
+    const val traveler = "d7876b6baf"
 }
 
 object Deps {
