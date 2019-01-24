@@ -1,5 +1,4 @@
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
 
 /*
  * Copyright 2018 Manuel Wrage
@@ -38,6 +37,7 @@ android {
 dependencies {
     api(Deps.androidxLifecycleExtensions)
     api(project(":director"))
+    api(project(":director-common"))
 }
 
 val sourcesJar = task("sourcesJar", Jar::class) {

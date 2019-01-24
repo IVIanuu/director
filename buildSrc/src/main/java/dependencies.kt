@@ -22,7 +22,7 @@ object Versions {
 
     const val dagger = "2.19"
 
-    const val epoxy = "2.19.0"
+    const val epoxy = "3.0.0"
     const val epoxyKtx = "9e8f7d3b81"
 
     const val junit = "4.12"

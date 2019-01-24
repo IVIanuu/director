@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
-import com.ivianuu.director.retainedLazy
+import com.ivianuu.director.common.retained.retainedLazy
 
 /**
  * A [ViewModelStoreOwner] for [Controller]s

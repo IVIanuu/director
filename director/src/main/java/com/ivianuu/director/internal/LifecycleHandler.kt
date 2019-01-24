@@ -3,7 +3,6 @@ package com.ivianuu.director.internal
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Build
@@ -13,7 +12,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.ControllerFactory
-import com.ivianuu.director.RetainedObjects
 import com.ivianuu.director.containerId
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -27,24 +25,13 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         mutableMapOf<Int, MutableSet<String>>()
     private val permissionRequests =
         mutableMapOf<Int, MutableSet<String>>()
-    private val retainedObjects =
-        mutableMapOf<String, RetainedObjects>()
 
-    private var destroyed = false
     private var hasPreparedForHostDetach = false
-    private var hasRegisteredCallbacks = false
-
-    init {
-        retainInstance = true
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        destroyed = false
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requireActivity().application.registerActivityLifecycleCallbacks(this)
 
         if (savedInstanceState != null) {
             savedInstanceState.getParcelableArrayList<RequestInstanceIdsPair>(KEY_ACTIVITY_REQUEST_CODES)
@@ -75,12 +62,9 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
     override fun onDestroy() {
         super.onDestroy()
         requireActivity().application.unregisterActivityLifecycleCallbacks(this)
-        destroyRouters()
-    }
 
-    override fun onDetach() {
-        super.onDetach()
-        destroyRouters()
+        routerMap.values.forEach { it.onActivityDestroyed() }
+        routerMap.clear()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -227,12 +211,6 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
         requestPermissions(permissions, requestCode)
     }
 
-    internal fun getRetainedObjects(instanceId: String) =
-        retainedObjects.getOrPut(instanceId) { RetainedObjects() }
-
-    internal fun removeRetainedObjects(instanceId: String) =
-        retainedObjects.remove(instanceId)
-
     internal fun getRouter(
         container: ViewGroup,
         savedInstanceState: Bundle?,
@@ -247,25 +225,10 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
             }
         }
 
-    private fun destroyRouters() {
-        if (!destroyed) {
-            routerMap.values.forEach { it.onActivityDestroyed() }
-            routerMap.clear()
-            destroyed = true
-        }
-    }
-
     private fun prepareForHostDetachIfNeeded() {
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
             routerMap.values.forEach { it.prepareForHostDetach() }
-        }
-    }
-
-    private fun registerCallbacksIfNeeded(activity: FragmentActivity) {
-        if (!hasRegisteredCallbacks) {
-            activity.application.registerActivityLifecycleCallbacks(this)
-            hasRegisteredCallbacks = true
         }
     }
 
@@ -281,7 +244,7 @@ class LifecycleHandler : Fragment(), ActivityLifecycleCallbacks {
                 activity.supportFragmentManager.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()
-            }).also { it.registerCallbacksIfNeeded(activity) }
+            })
         }
 
         private fun findInActivity(activity: Activity): LifecycleHandler? {

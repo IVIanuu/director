@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config
 class ViewLeakTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = attachRouter(activityProxy.activity, activityProxy.view).apply {
+    private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
         if (!hasRootController) {
             setRoot(TestController().toTransaction())
         }

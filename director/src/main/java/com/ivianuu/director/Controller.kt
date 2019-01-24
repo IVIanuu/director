@@ -42,12 +42,6 @@ abstract class Controller {
     private var routerSet = false
 
     /**
-     * Objects which will retained across configuration changes
-     */
-    val retainedObjects get() = if (routerSet) _retainedObjects else throw IllegalStateException("retainedObjects is only available after onCreate")
-    private lateinit var _retainedObjects: RetainedObjects
-
-    /**
      * Returns the host activity of this controller
      */
     val activity: FragmentActivity
@@ -390,9 +384,6 @@ abstract class Controller {
         allState?.let { restoreInstanceState(it) }
         allState = null
 
-        // get the retained objects back
-        _retainedObjects = router.getRetainedObjects(instanceId)
-
         // create
         performCreate()
 
@@ -627,11 +618,6 @@ abstract class Controller {
                     false
                 )
             }
-        }
-
-        if (!activity.isChangingConfigurations) {
-            router.removeRetainedObjects(instanceId)
-            _retainedObjects.clear()
         }
     }
 

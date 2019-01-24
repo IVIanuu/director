@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director
+package com.ivianuu.director.common.retained
 
+import com.ivianuu.director.Controller
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -27,11 +28,20 @@ private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
  */
 class RetainedObjects {
 
+    /**
+     * All entries
+     */
     val entries: Map<String, Any> get() = _entries.toMap()
     private val _entries = mutableMapOf<String, Any>()
 
+    /**
+     * Returns the value for [key] or null
+     */
     operator fun <T> get(key: String): T? = _entries[key] as? T
 
+    /**
+     * Returns the value for [key] or puts the result of [defaultValue]
+     */
     fun <T> getOrPut(key: String, defaultValue: () -> T): T {
         var value = _entries[key] as? T
 
@@ -43,6 +53,9 @@ class RetainedObjects {
         return value
     }
 
+    /**
+     * Returns the value for [key] or the result of [defaultValue]
+     */
     fun <T> getOrDefault(key: String, defaultValue: () -> T): T {
         var value = _entries[key] as? T
 
@@ -53,22 +66,42 @@ class RetainedObjects {
         return value as T
     }
 
+    /**
+     * Sets the value for [key] to [value]
+     */
     fun <T> put(key: String, value: T) {
         set(key, value)
     }
 
+    /**
+     * Sets the value for [key] to [value]
+     */
     operator fun <T> set(key: String, value: T) {
         _entries[key] = value as Any
     }
 
+    /**
+     * Removes the value for [key]
+     */
     fun <T> remove(key: String): T? = _entries.remove(key) as? T
 
+    /**
+     * Clears all values
+     */
     fun clear() {
         _entries.clear()
     }
 
+    /**
+     * Whether or not contains a value for [key]
+     */
     fun contains(key: String): Boolean = _entries.contains(key)
 }
+
+/**
+ * Returns the retained objects of this controller
+ */
+val Controller.retainedObjects: RetainedObjects get() = RetainedObjectsHolder.get(this)
 
 fun <T> Controller.retainedLazy(
     key: String = USE_PROPERTY_NAME,
@@ -78,7 +111,8 @@ fun <T> Controller.retainedLazy(
 fun <T> retained(
     key: String = USE_PROPERTY_NAME,
     initialValue: () -> T
-): ReadWriteProperty<Controller, T> = RetainedProperty(initialValue, key)
+): ReadWriteProperty<Controller, T> =
+    RetainedProperty(initialValue, key)
 
 private class RetainedProperty<T>(
     private val initialValue: () -> T,

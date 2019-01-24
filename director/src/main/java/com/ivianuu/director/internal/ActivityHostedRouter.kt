@@ -5,7 +5,6 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.RetainedObjects
 import com.ivianuu.director.Router
 
 internal class ActivityHostedRouter(
@@ -33,13 +32,6 @@ internal class ActivityHostedRouter(
     override fun restoreInstanceState(savedInstanceState: Bundle) {
         super.restoreInstanceState(savedInstanceState)
         transactionIndexer.restoreInstanceState(savedInstanceState)
-    }
-
-    override fun getRetainedObjects(instanceId: String): RetainedObjects = lifecycleHandler
-        .getRetainedObjects(instanceId)
-
-    override fun removeRetainedObjects(instanceId: String) {
-        lifecycleHandler.removeRetainedObjects(instanceId)
     }
 
     override fun startActivity(intent: Intent) {
