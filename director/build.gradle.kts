@@ -47,7 +47,6 @@ android {
 }
 
 dependencies {
-    api(Deps.androidxFragment)
     api(Deps.kotlinStdLib)
 
     testImplementation(Deps.androidxTestCore)

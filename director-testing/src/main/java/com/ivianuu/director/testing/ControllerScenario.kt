@@ -25,8 +25,8 @@ import androidx.test.core.app.ActivityScenario
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
-import com.ivianuu.director.attachRouter
 import com.ivianuu.director.findControllerByTag
+import com.ivianuu.director.fragmenthost.attachRouter
 import com.ivianuu.director.popController
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.tag

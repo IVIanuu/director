@@ -16,7 +16,6 @@
 
 package com.ivianuu.director.util
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -130,20 +129,6 @@ class TestController : Controller() {
         super.onRestoreInstanceState(savedInstanceState)
         currentCallState = savedInstanceState.getParcelable(KEY_CALL_STATE)!!
         currentCallState.restoreInstanceStateCalls++
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        currentCallState.onActivityResultCalls++
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        currentCallState.onRequestPermissionsResultCalls++
     }
 
     companion object {

@@ -31,11 +31,14 @@ class RetainedObjectsHolder : Fragment(), ControllerLifecycleListener {
     }
 
     companion object {
-        private val FRAGMENT_TAG = RetainedObjectsHolder::class.java.name
+        private const val FRAGMENT_TAG =
+            "com.ivianuu.director.common.retained.RetainedObjectsHolder"
 
         internal fun get(controller: Controller): RetainedObjects {
+            val activity = (controller.activity as? FragmentActivity)
+                ?: error("controller is not attached to a FragmentActivity")
             return (findInActivity(controller.activity) ?: RetainedObjectsHolder().also {
-                controller.activity.supportFragmentManager.beginTransaction()
+                activity.supportFragmentManager.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()
             }).getRetainedObjects(controller)

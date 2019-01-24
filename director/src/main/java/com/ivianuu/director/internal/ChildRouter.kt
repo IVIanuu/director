@@ -1,15 +1,14 @@
 package com.ivianuu.director.internal
 
-import android.content.Intent
-import android.content.IntentSender
+import android.app.Activity
 import android.os.Bundle
-import androidx.fragment.app.FragmentActivity
+
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 
-internal class ControllerHostedRouter : Router {
+internal class ChildRouter : Router {
 
-    override val activity: FragmentActivity
+    override val activity: Activity
         get() = hostController.activity
 
     override val rootRouter: Router
@@ -66,61 +65,6 @@ internal class ControllerHostedRouter : Router {
         super.setControllerRouter(controller)
     }
 
-    override fun startActivity(intent: Intent) {
-        hostController.router.startActivity(intent)
-    }
-
-    override fun startActivityForResult(
-        instanceId: String,
-        intent: Intent,
-        requestCode: Int
-    ) {
-        hostController.router.startActivityForResult(instanceId, intent, requestCode)
-    }
-
-    override fun startActivityForResult(
-        instanceId: String,
-        intent: Intent,
-        requestCode: Int,
-        options: Bundle?
-    ) {
-        hostController.router.startActivityForResult(
-            instanceId, intent, requestCode, options
-        )
-    }
-
-    override fun startIntentSenderForResult(
-        instanceId: String,
-        intent: IntentSender,
-        requestCode: Int,
-        fillInIntent: Intent?,
-        flagsMask: Int,
-        flagsValues: Int,
-        extraFlags: Int,
-        options: Bundle?
-    ) {
-        hostController.router.startIntentSenderForResult(
-            instanceId, intent, requestCode,
-            fillInIntent, flagsMask, flagsValues, extraFlags, options
-        )
-    }
-
-    override fun registerForActivityResult(instanceId: String, requestCode: Int) {
-        hostController.router.registerForActivityResult(instanceId, requestCode)
-    }
-
-    override fun unregisterForActivityResults(instanceId: String) {
-        hostController.router.unregisterForActivityResults(instanceId)
-    }
-
-    override fun requestPermissions(
-        instanceId: String,
-        permissions: Array<String>,
-        requestCode: Int
-    ) {
-        hostController.router.requestPermissions(instanceId, permissions, requestCode)
-    }
-
     fun removeContainer(forceViewRemoval: Boolean) {
         destroyingControllers.toList()
             .filter { it.view != null }
@@ -150,7 +94,7 @@ internal class ControllerHostedRouter : Router {
     }
 
     private companion object {
-        private const val KEY_HOST_ID = "ControllerHostedRouter.hostId"
-        private const val KEY_TAG = "ControllerHostedRouter.tag"
+        private const val KEY_HOST_ID = "ChildRouter.hostId"
+        private const val KEY_TAG = "ChildRouter.tag"
     }
 }

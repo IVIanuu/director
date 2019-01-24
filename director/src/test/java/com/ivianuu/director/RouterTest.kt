@@ -147,13 +147,13 @@ class RouterTest {
             router.pushController(TestController().toTransaction().tag("3"))
 
             val tag: String
-            if (step == 1) {
-                tag = "1"
-            } else if (step == 2) {
-                tag = "2"
-            } else {
-                tag = "3"
-                step = 0
+            when (step) {
+                1 -> tag = "1"
+                2 -> tag = "2"
+                else -> {
+                    tag = "3"
+                    step = 0
+                }
             }
             val controller = router.findControllerByTag(tag)
             if (controller != null) {

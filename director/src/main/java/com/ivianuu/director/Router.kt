@@ -1,12 +1,12 @@
 package com.ivianuu.director
 
-import android.content.Intent
-import android.content.IntentSender
+import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
+
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
+import com.ivianuu.director.internal.RootRouter
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.director.internal.backstacksAreEqual
 import com.ivianuu.director.internal.filterVisible
@@ -28,7 +28,7 @@ abstract class Router {
      * Returns this Router's host Activity or `null` if it has either not yet been attached to
      * an Activity or if the Activity has been destroyed.
      */
-    abstract val activity: FragmentActivity
+    abstract val activity: Activity
 
     /**
      * Whether or not the last view should be popped
@@ -326,34 +326,6 @@ abstract class Router {
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener }
 
-    open fun onActivityResult(
-        instanceIds: Set<String>,
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-        instanceIds
-            .mapNotNull { findControllerByInstanceId(it) }
-            .forEach { it.onActivityResult(requestCode, resultCode, data) }
-    }
-
-    open fun onRequestPermissionsResult(
-        instanceIds: Set<String>,
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        instanceIds
-            .mapNotNull { findControllerByInstanceId(it) }
-            .forEach { it.onRequestPermissionsResult(requestCode, permissions, grantResults) }
-    }
-
-    fun shouldShowRequestPermissionRationale(permission: String, instanceIds: Set<String>) =
-        instanceIds
-            .mapNotNull { findControllerByInstanceId(it) }
-            .filter { it.shouldShowRequestPermissionRationale(permission) }
-            .any()
-
     open fun onActivityStarted() {
         _backstack.reversed().forEach { it.controller.activityStarted() }
     }
@@ -482,39 +454,6 @@ abstract class Router {
         }
     }
 
-    internal abstract fun startActivity(intent: Intent)
-    internal abstract fun startActivityForResult(
-        instanceId: String,
-        intent: Intent,
-        requestCode: Int
-    )
-
-    internal abstract fun startActivityForResult(
-        instanceId: String,
-        intent: Intent,
-        requestCode: Int,
-        options: Bundle?
-    )
-
-    internal abstract fun startIntentSenderForResult(
-        instanceId: String,
-        intent: IntentSender,
-        requestCode: Int,
-        fillInIntent: Intent?,
-        flagsMask: Int,
-        flagsValues: Int,
-        extraFlags: Int,
-        options: Bundle?
-    )
-
-    internal abstract fun registerForActivityResult(instanceId: String, requestCode: Int)
-    internal abstract fun unregisterForActivityResults(instanceId: String)
-    internal abstract fun requestPermissions(
-        instanceId: String,
-        permissions: Array<String>,
-        requestCode: Int
-    )
-
     private data class ChangeListenerEntry(
         val listener: ControllerChangeListener,
         val recursive: Boolean
@@ -529,6 +468,19 @@ abstract class Router {
         private const val KEY_BACKSTACK = "Router.backstack"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
     }
+}
+
+/**
+ * Returns a new [Router] instance
+ */
+fun Router(
+    activity: Activity,
+    container: ViewGroup,
+    savedInstanceState: Bundle?,
+    controllerFactory: ControllerFactory?
+): Router = RootRouter(activity, container).apply {
+    controllerFactory?.let { this.controllerFactory = it }
+    savedInstanceState?.let { restoreInstanceState(it) }
 }
 
 internal val Router.hasContainer: Boolean get() = container != null

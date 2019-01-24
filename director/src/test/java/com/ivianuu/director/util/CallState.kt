@@ -38,18 +38,5 @@ data class CallState(
     var restoreInstanceStateCalls: Int = 0,
 
     var saveViewStateCalls: Int = 0,
-    var restoreViewStateCalls: Int = 0,
-
-    var onActivityResultCalls: Int = 0,
-    var onRequestPermissionsResultCalls: Int = 0
-) : Parcelable {
-
-    fun setupForAddedControllers(): CallState = apply {
-        createCalls++
-        changeStartCalls++
-        changeEndCalls++
-        inflateViewCalls++
-        bindViewCalls++
-        attachCalls++
-    }
-}
+    var restoreViewStateCalls: Int = 0
+) : Parcelable

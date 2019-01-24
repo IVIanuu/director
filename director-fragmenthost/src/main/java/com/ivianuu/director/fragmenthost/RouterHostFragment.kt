@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.util
+package com.ivianuu.director.fragmenthost
 
 import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterDelegate
 
-/**
- * @author Manuel Wrage (IVIanuu)
- */
-class TestActivity : Activity() {
+class RouterHostFragment : Fragment() {
 
-    var changingConfigurations = false
-    var isDestroying = false
-
-    private val delegate by lazy(LazyThreadSafetyMode.NONE) { RouterDelegate(this) }
+    private val delegate by lazy(LazyThreadSafetyMode.NONE) { RouterDelegate(requireActivity()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,14 +64,26 @@ class TestActivity : Activity() {
         delegate.onDestroy()
     }
 
-    fun attachRouter(
+    internal fun getRouter(
         container: ViewGroup,
-        savedInstanceState: Bundle? = null,
-        controllerFactory: ControllerFactory? = null
-    ): Router = delegate.getRouter(container, savedInstanceState, controllerFactory)
+        controllerFactory: ControllerFactory?
+    ): Router = delegate.getRouter(container, controllerFactory)
 
-    override fun isChangingConfigurations(): Boolean = changingConfigurations
+    companion object {
+        private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
 
-    override fun isDestroyed(): Boolean = isDestroying || super.isDestroyed()
+        internal fun install(activity: FragmentActivity): RouterHostFragment {
+            return (findInActivity(activity) ?: RouterHostFragment().also {
+                activity.supportFragmentManager.beginTransaction()
+                    .add(it, FRAGMENT_TAG)
+                    .commitNow()
+            })
+        }
+
+        private fun findInActivity(activity: Activity): RouterHostFragment? {
+            return (activity as? FragmentActivity)?.supportFragmentManager
+                ?.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment
+        }
+    }
 
 }

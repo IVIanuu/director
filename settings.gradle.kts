@@ -3,6 +3,7 @@ include(
     ":director-arch-lifecycle",
     ":director-common",
     ":director-dialog",
+    ":director-fragmenthost",
     ":director-scopes",
     ":director-testing",
     ":director-traveler",

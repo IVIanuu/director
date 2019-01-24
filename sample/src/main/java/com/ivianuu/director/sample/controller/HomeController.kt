@@ -7,15 +7,24 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.popChangeHandler
+import com.ivianuu.director.pushChangeHandler
+import com.ivianuu.director.pushController
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_home.*
-import kotlinx.android.synthetic.main.row_home.*
+import kotlinx.android.synthetic.main.controller_home.recycler_view
+import kotlinx.android.synthetic.main.row_home.home_image
+import kotlinx.android.synthetic.main.row_home.home_title
 
 class HomeController : BaseController() {
 
@@ -72,13 +81,14 @@ class HomeController : BaseController() {
                     )
                 )
             }
-            HomeItem.TARGET_CONTROLLER -> {
+            // todo
+            /*HomeItem.TARGET_CONTROLLER -> {
                 router.pushController(
                     TargetDisplayController()
                         .toTransaction()
                         .changeHandler(FadeChangeHandler())
                 )
-            }
+            }*/
             HomeItem.VIEW_PAGER -> {
                 router.pushController(
                     PagerController().toTransaction()
@@ -184,7 +194,7 @@ enum class HomeItem(val title: String, val color: Int) {
     CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
     VIEW_PAGER("ViewPager", R.color.green_300),
     BOTTOM_NAV("Bottom Nav", R.color.blue_300),
-    TARGET_CONTROLLER("Target Controller", R.color.pink_300),
+    // todo TARGET_CONTROLLER("Target Controller", R.color.pink_300),
     MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
     MASTER_DETAIL("Master Detail", R.color.grey_300),
     DRAG_DISMISS("Drag Dismiss", R.color.lime_300),

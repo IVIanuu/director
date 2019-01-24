@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
-import com.ivianuu.director.attachRouter
+import com.ivianuu.director.fragmenthost.attachRouter
 import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         router = attachRouter(
             R.id.controller_container,
-            savedInstanceState,
             LoggingControllerFactory()
         ).apply {
             addLifecycleListener(LoggingLifecycleListener())

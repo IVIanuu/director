@@ -45,8 +45,8 @@ android {
 }
 
 dependencies {
+    api(Deps.androidxFragment)
     api(project(":director"))
-    api(project(":director-fragmenthost"))
 }
 
 val sourcesJar = task("sourcesJar", Jar::class) {

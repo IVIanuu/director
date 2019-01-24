@@ -19,8 +19,16 @@ package com.ivianuu.director
 import android.os.Bundle
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.util.*
-import org.junit.Assert.*
+import com.ivianuu.director.util.ActivityProxy
+import com.ivianuu.director.util.CallState
+import com.ivianuu.director.util.MockChangeHandler
+import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.ViewUtils
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,8 +58,7 @@ class ControllerLifecycleCallbacksTest {
             activityProxy.start().resume()
         }
 
-        router = attachRouter(
-            activityProxy.activity,
+        router = activityProxy.activity.attachRouter(
             activityProxy.view,
             savedInstanceState
         )

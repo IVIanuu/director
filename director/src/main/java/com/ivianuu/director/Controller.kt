@@ -1,9 +1,7 @@
 package com.ivianuu.director
 
-import android.annotation.TargetApi
+import android.app.Activity
 import android.app.Application
-import android.content.Intent
-import android.content.IntentSender
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -12,8 +10,8 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.internal.ControllerHostedRouter
+
+import com.ivianuu.director.internal.ChildRouter
 import com.ivianuu.director.internal.ViewAttachHandler
 import java.lang.ref.WeakReference
 import java.util.*
@@ -44,7 +42,7 @@ abstract class Controller {
     /**
      * Returns the host activity of this controller
      */
-    val activity: FragmentActivity
+    val activity: Activity
         get() = if (routerSet) router.activity else throw IllegalStateException("activity is only available after onCreate")
 
     /**
@@ -106,7 +104,7 @@ abstract class Controller {
     private var allState: Bundle? = null
     private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
-    private var childRouterStates: Map<ControllerHostedRouter, Bundle>? = null
+    private var childRouterStates: Map<ChildRouter, Bundle>? = null
 
     private var viewIsAttached = false
     private var attachedToUnownedParent = false
@@ -141,7 +139,7 @@ abstract class Controller {
      */
     val childRouters: List<Router>
         get() = _childRouters.toList()
-    private val _childRouters = mutableListOf<ControllerHostedRouter>()
+    private val _childRouters = mutableListOf<ChildRouter>()
 
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
 
@@ -256,30 +254,6 @@ abstract class Controller {
     }
 
     /**
-     * Should be overridden if this Controller has called startActivityForResult and needs to handle
-     * the result.
-     */
-    open fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    }
-
-    /**
-     * Should be overridden if this Controller has requested runtime permissions and needs to handle the user's response.
-     */
-    open fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-    }
-
-    /**
-     * Gets whether you should show UI with rationale for requesting a permission.
-     */
-    open fun shouldShowRequestPermissionRationale(permission: String) =
-        Build.VERSION.SDK_INT >= 23
-                && activity.shouldShowRequestPermissionRationale(permission)
-
-    /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
     open fun handleBack(): Boolean {
@@ -321,12 +295,12 @@ abstract class Controller {
         containerId: Int,
         tag: String?,
         createIfNeeded: Boolean
-    ): ControllerHostedRouter? {
+    ): ChildRouter? {
         var childRouter = _childRouters
             .firstOrNull { it.hostId == containerId && it.tag == tag }
 
         if (childRouter == null && createIfNeeded) {
-            childRouter = ControllerHostedRouter(
+            childRouter = ChildRouter(
                 this,
                 containerId,
                 tag
@@ -604,8 +578,6 @@ abstract class Controller {
 
         _childRouters.forEach { it.destroy(false) }
 
-        router.unregisterForActivityResults(instanceId)
-
         if (!isAttached) {
             removeViewReference(true)
         } else if (removeViews) {
@@ -697,7 +669,7 @@ abstract class Controller {
 
         childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
             .map { bundle ->
-                ControllerHostedRouter(this).apply {
+                ChildRouter(this).apply {
                     // we only restore the identity for now
                     // to give the user a chance to set a [ControllerFactory] in [onCreate]
                     restoreIdentity(bundle)
@@ -839,64 +811,6 @@ val Controller.resources: Resources get() = activity.resources
  * Returns a new router transaction
  */
 fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
-
-/**
- * Calls startActivity(Intent) from this Controller's host Activity.
- */
-fun Controller.startActivity(intent: Intent) {
-    router.startActivity(intent)
-}
-
-/**
- * Calls startActivityForResult(Intent, int) from this Controller's host Activity.
- */
-fun Controller.startActivityForResult(intent: Intent, requestCode: Int) {
-    router.startActivityForResult(instanceId, intent, requestCode)
-}
-
-/**
- * Calls startActivityForResult(Intent, int, Bundle) from this Controller's host Activity.
- */
-fun Controller.startActivityForResult(intent: Intent, requestCode: Int, options: Bundle?) {
-    router.startActivityForResult(instanceId, intent, requestCode, options)
-}
-
-/**
- * Calls startIntentSenderForResult(IntentSender, int, Intent, int, int, int, Bundle) from this Controller's host Activity.
- */
-fun Controller.startIntentSenderForResult(
-    intent: IntentSender, requestCode: Int, fillInIntent: Intent?, flagsMask: Int,
-    flagsValues: Int, extraFlags: Int, options: Bundle?
-) {
-    router.startIntentSenderForResult(
-        instanceId,
-        intent,
-        requestCode,
-        fillInIntent,
-        flagsMask,
-        flagsValues,
-        extraFlags,
-        options
-    )
-}
-
-/**
- * Registers this Controller to handle [Controller.onActivityResult] responses. Calling this method is NOT
- * necessary when calling [startActivityForResult]
- */
-fun Controller.registerForActivityResult(requestCode: Int) {
-    router.registerForActivityResult(instanceId, requestCode)
-}
-
-/**
- * Calls requestPermission(String[], int) from this Controller's host Activity. Results for this request,
- * including [.shouldShowRequestPermissionRationale] and
- * [.onRequestPermissionsResult] will be forwarded back to this Controller by the system.
- */
-@TargetApi(Build.VERSION_CODES.M)
-fun Controller.requestPermissions(permissions: Array<String>, requestCode: Int) {
-    router.requestPermissions(instanceId, permissions, requestCode)
-}
 
 /**
  * Returns the child router for [container] and [tag] or creates a new instance
