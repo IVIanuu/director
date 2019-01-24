@@ -280,31 +280,24 @@ abstract class Controller {
     }
 
     /**
-     * Returns the child router for [containerId] and [tag] or creates a new instance
+     * Returns the child router for [containerId] and [tag]
      */
-    fun getChildRouter(containerId: Int, tag: String? = null): Router =
-        getChildRouter(containerId, tag, true)!!
-
-    /**
-     * Returns the child router for [containerId] and [tag] if already created
-     */
-    fun getChildRouterOrNull(containerId: Int, tag: String? = null): Router? =
-        getChildRouter(containerId, tag, false)
-
-    private fun getChildRouter(
+    fun getChildRouter(
         containerId: Int,
         tag: String?,
-        createIfNeeded: Boolean
-    ): ChildRouter? {
+        controllerFactory: ControllerFactory?
+    ): Router {
         var childRouter = _childRouters
             .firstOrNull { it.hostId == containerId && it.tag == tag }
 
-        if (childRouter == null && createIfNeeded) {
+        if (childRouter == null) {
             childRouter = ChildRouter(
                 this,
                 containerId,
                 tag
             )
+
+            childRouter.controllerFactory = controllerFactory
 
             _childRouters.add(childRouter)
         }
@@ -815,11 +808,8 @@ fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
 /**
  * Returns the child router for [container] and [tag] or creates a new instance
  */
-fun Controller.getChildRouter(container: ViewGroup, tag: String? = null) =
-    getChildRouter(container.id, tag)
-
-/**
- * Returns the child router for [container] and [tag] if already created
- */
-fun Controller.getChildRouterOrNull(container: ViewGroup, tag: String? = null) =
-    getChildRouter(container.id, tag)
+fun Controller.getChildRouter(
+    container: ViewGroup,
+    tag: String? = null,
+    controllerFactory: ControllerFactory? = null
+): Router = getChildRouter(container.id, tag, controllerFactory)

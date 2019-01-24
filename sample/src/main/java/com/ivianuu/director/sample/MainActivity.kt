@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
-import com.ivianuu.director.fragmenthost.attachRouter
+import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         setSupportActionBar(toolbar)
 
-        router = attachRouter(
+        router = getRouter(
             R.id.controller_container,
             LoggingControllerFactory()
         ).apply {

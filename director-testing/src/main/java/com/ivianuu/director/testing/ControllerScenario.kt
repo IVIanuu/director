@@ -26,7 +26,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import com.ivianuu.director.findControllerByTag
-import com.ivianuu.director.fragmenthost.attachRouter
+import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.popController
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.tag
@@ -127,7 +127,7 @@ class EmptyControllerActivity : FragmentActivity() {
             .get(ControllerFactoryHolderViewModel::class.java)
             .controllerFactory
 
-        _router = attachRouter(android.R.id.content, savedInstanceState, factory)
+        _router = getRouter(android.R.id.content, factory)
     }
 }
 

@@ -16,11 +16,10 @@
 
 package com.ivianuu.director.fragmenthost
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterDelegate
@@ -72,18 +71,16 @@ class RouterHostFragment : Fragment() {
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
 
-        internal fun install(activity: FragmentActivity): RouterHostFragment {
-            return (findInActivity(activity) ?: RouterHostFragment().also {
-                activity.supportFragmentManager.beginTransaction()
+        internal fun install(fm: FragmentManager): RouterHostFragment {
+            return (findInFragmentManager(fm) ?: RouterHostFragment().also {
+                fm.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()
             })
         }
 
-        private fun findInActivity(activity: Activity): RouterHostFragment? {
-            return (activity as? FragmentActivity)?.supportFragmentManager
-                ?.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment
-        }
+        private fun findInFragmentManager(fm: FragmentManager): RouterHostFragment? =
+            fm.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment
     }
 
 }

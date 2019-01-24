@@ -17,38 +17,59 @@
 package com.ivianuu.director.fragmenthost
 
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 
 /**
- * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
- * If an existing [Router] is already associated with this Activity/ViewGroup pair, either in memory
- * or in the savedInstanceState, that router will be used and rebound instead of creating a new one with
- * an empty backstack.
+ * Returns a [Router] for the [container]
  */
-fun FragmentActivity.attachRouter(
+fun FragmentActivity.getRouter(
     container: ViewGroup,
     controllerFactory: ControllerFactory? = null
+): Router = getRouter(supportFragmentManager, container, controllerFactory)
+
+/**
+ * Returns a [Router] for the [containerId]
+ */
+fun FragmentActivity.getRouter(
+    containerId: Int,
+    controllerFactory: ControllerFactory? = null
+): Router = getRouter(
+    findViewById<ViewGroup>(containerId),
+    controllerFactory
+)
+
+/**
+ * Returns a [Router] for the [container]
+ */
+fun Fragment.getRouter(
+    container: ViewGroup,
+    controllerFactory: ControllerFactory? = null
+): Router = getRouter(childFragmentManager, container, controllerFactory)
+
+/**
+ * Returns a [Router] for the [containerId]
+ */
+fun Fragment.getRouter(
+    containerId: Int,
+    controllerFactory: ControllerFactory? = null
+): Router = getRouter(
+    view!!.findViewById<ViewGroup>(containerId),
+    controllerFactory
+)
+
+private fun getRouter(
+    fm: FragmentManager,
+    container: ViewGroup,
+    controllerFactory: ControllerFactory?
 ): Router {
-    val routerHost = RouterHostFragment.install(this)
+    val routerHost = RouterHostFragment.install(fm)
 
     val router = routerHost.getRouter(container, controllerFactory)
     router.rebind()
 
     return router
 }
-
-/**
- * Director will create a [Router] that has been initialized for your Activity and containing ViewGroup.
- * If an existing [Router] is already associated with this Activity/ViewGroup pair, either in memory
- * or in the savedInstanceState, that router will be used and rebound instead of creating a new one with
- * an empty backstack.
- */
-fun FragmentActivity.attachRouter(
-    containerId: Int,
-    controllerFactory: ControllerFactory? = null
-): Router = attachRouter(
-    findViewById<ViewGroup>(containerId),
-    controllerFactory
-)

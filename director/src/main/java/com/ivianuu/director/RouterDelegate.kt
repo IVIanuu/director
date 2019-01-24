@@ -84,6 +84,25 @@ class RouterDelegate(
         }
     }
 
+    fun getRouter(
+        containerId: Int,
+        controllerFactory: ControllerFactory?
+    ): Router = getRouter(
+        activity.findViewById<ViewGroup>(containerId),
+        savedInstanceState,
+        controllerFactory
+    )
+
+    fun getRouter(
+        containerId: Int,
+        savedInstanceState: Bundle?,
+        controllerFactory: ControllerFactory?
+    ): Router = getRouter(
+        activity.findViewById<ViewGroup>(containerId),
+        savedInstanceState,
+        controllerFactory
+    )
+
     private fun prepareForHostDetachIfNeeded() {
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
