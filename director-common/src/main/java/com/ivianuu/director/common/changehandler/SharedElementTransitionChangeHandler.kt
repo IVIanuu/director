@@ -741,7 +741,7 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
      * potentially lock up your app indefinitely if the view never loads!
      */
     protected fun waitOnSharedElementNamed(name: String) {
-        check(!sharedElementNames.values.contains(name)) {
+        check(sharedElementNames.values.contains(name)) {
             "Can't wait on a shared element that hasn't been registered using addSharedElement"
         }
         waitForTransitionNames.add(name)

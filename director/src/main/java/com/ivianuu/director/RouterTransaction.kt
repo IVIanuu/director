@@ -86,7 +86,7 @@ class RouterTransaction {
     }
 
     private fun checkModify() {
-        check(!allowModification && attachedToRouter) {
+        check(allowModification || !attachedToRouter) {
             "transactions cannot be modified after being added to a Router."
         }
     }

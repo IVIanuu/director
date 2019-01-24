@@ -756,7 +756,7 @@ abstract class Controller {
     private inline fun requireSuperCalled(block: () -> Unit) {
         superCalled = false
         block()
-        check(!superCalled) { "super not called ${javaClass.name}" }
+        check(superCalled) { "super not called ${javaClass.name}" }
     }
 
     companion object {
