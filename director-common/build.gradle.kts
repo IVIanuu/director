@@ -1,5 +1,5 @@
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
+
 import java.io.File
 
 /*
@@ -21,7 +21,6 @@ import java.io.File
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("com.github.dcendents.android-maven")
 }
 
@@ -34,13 +33,6 @@ android {
         buildToolsVersion = Build.buildToolsVersion
         minSdkVersion(Build.minSdk)
         targetSdkVersion(Build.targetSdk)
-    }
-
-    androidExtensions {
-        // isExperimental = true
-        configure(delegateClosureOf<AndroidExtensionsExtension> {
-            isExperimental = true
-        })
     }
 }
 

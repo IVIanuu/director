@@ -17,6 +17,7 @@
 package com.ivianuu.director.sample.app
 
 import android.app.Application
+import com.squareup.leakcanary.LeakCanary
 
 /**
  * @author Manuel Wrage (IVIanuu)

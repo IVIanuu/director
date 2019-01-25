@@ -83,7 +83,6 @@ abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner,
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
     }
 
     override fun onRequestPermissionsResult(

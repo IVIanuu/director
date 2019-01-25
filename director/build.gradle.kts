@@ -1,5 +1,5 @@
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
+
 
 /*
  * Copyright 2018 Manuel Wrage
@@ -20,7 +20,6 @@ import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("com.github.dcendents.android-maven")
 }
 
@@ -34,13 +33,6 @@ android {
         minSdkVersion(Build.minSdk)
         targetSdkVersion(Build.targetSdk)
         consumerProguardFile("proguard-rules.txt")
-    }
-
-    androidExtensions {
-        // isExperimental = true
-        configure(delegateClosureOf<AndroidExtensionsExtension> {
-            isExperimental = true
-        })
     }
 
     testOptions.unitTests.isIncludeAndroidResources = true
