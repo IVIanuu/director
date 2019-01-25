@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
-
 /*
  * Copyright 2018 Manuel Wrage
  *
@@ -27,6 +25,10 @@ apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/kt
 apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/kt-kapt.gradle")
 
 android {
+    defaultConfig {
+        minSdkVersion(Build.minSdkSample)
+    }
+
     testOptions.unitTests.isIncludeAndroidResources = true
 }
 
