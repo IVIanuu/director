@@ -17,25 +17,13 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("com.github.dcendents.android-maven")
 }
 
-group = "com.github.ivianuu"
-
-android {
-    compileSdkVersion(Build.compileSdk)
-
-    defaultConfig {
-        buildToolsVersion = Build.buildToolsVersion
-        minSdkVersion(Build.minSdk)
-        targetSdkVersion(Build.targetSdk)
-    }
-}
+apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/android-build-lib.gradle")
+apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/jitpack-publish.gradle")
 
 dependencies {
     api(Deps.androidxLifecycleExtensions)
     api(project(":director"))
     api(project(":director-retained"))
 }
-
-apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/mvn-sources.gradle")

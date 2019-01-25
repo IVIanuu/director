@@ -19,36 +19,15 @@ import org.jetbrains.kotlin.gradle.internal.AndroidExtensionsExtension
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("kotlin-kapt")
 }
 
+apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/android-build-app.gradle")
+apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/kt-android-ext.gradle")
+apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/kt-kapt.gradle")
+
 android {
-    compileSdkVersion(Build.compileSdk)
-
-    defaultConfig {
-        applicationId = Build.applicationId
-        buildToolsVersion = Build.buildToolsVersion
-        minSdkVersion(Build.minSdkSample)
-        targetSdkVersion(Build.targetSdk)
-        versionCode = Build.versionCode
-        versionName = Build.versionName
-        vectorDrawables.useSupportLibrary = true
-    }
-
-    androidExtensions {
-        // isExperimental = true
-        configure(delegateClosureOf<AndroidExtensionsExtension> {
-            isExperimental = true
-        })
-    }
-
-    kapt {
-        correctErrorTypes = true
-    }
-
     testOptions.unitTests.isIncludeAndroidResources = true
-
 }
 
 dependencies {
