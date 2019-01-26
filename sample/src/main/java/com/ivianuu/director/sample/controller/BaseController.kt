@@ -19,6 +19,7 @@ import com.ivianuu.director.permission.PermissionCallback
 
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.util.LoggingControllerFactory
+import com.ivianuu.director.scopes.scopeFor
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -44,6 +45,7 @@ abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner,
             it.controllerFactory =
                     LoggingControllerFactory()
         }
+
         super.onCreate(savedInstanceState)
     }
 

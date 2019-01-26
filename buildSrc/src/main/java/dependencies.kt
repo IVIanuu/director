@@ -12,6 +12,12 @@ object Build {
     const val versionName = "0.0.1"
 }
 
+object Publishing {
+    const val groupId = "com.ivianuu.director"
+    const val vcsUrl = "https://github.com/IVIanuu/director"
+    const val version = "git"
+}
+
 object Versions {
     const val androidGradlePlugin = "3.3.0"
 
@@ -24,10 +30,12 @@ object Versions {
     const val androidxTestRunner = "1.1.0"
     const val androidxViewPager = "1.0.0"
 
+    const val bintray = "1.8.4"
+
     const val dagger = "2.19"
 
     const val epoxy = "3.0.0"
-    const val epoxyKtx = "9e8f7d3b81"
+    const val epoxyKtx = "caefab01eb"
 
     const val junit = "4.12"
 
@@ -44,9 +52,9 @@ object Versions {
 
     const val rxJava = "2.2.6"
 
-    const val scopes = "dcbe44f5d0"
+    const val scopes = "bfe7dc6610"
 
-    const val traveler = "d7876b6baf"
+    const val traveler = "1ee53b9e9a"
 }
 
 object Deps {
@@ -63,12 +71,15 @@ object Deps {
     const val androidxTestRules = "androidx.test:rules:${Versions.androidxTestRules}"
     const val androidxTestRunner = "androidx.test:runner:${Versions.androidxTestRunner}"
 
+    const val bintrayGradlePlugin =
+        "com.jfrog.bintray.gradle:gradle-bintray-plugin:${Versions.bintray}"
+
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
 
     const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
     const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
-    const val epoxyKtx = "com.github.IVIanuu:epoxy-ktx:${Versions.epoxyKtx}"
+    const val epoxyKtx = "com.ivianuu.epoxyktx:epoxyktx:${Versions.epoxyKtx}"
 
     const val junit = "junit:junit:${Versions.junit}"
 
@@ -88,13 +99,13 @@ object Deps {
 
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
 
-    const val scopes = "com.github.IVIanuu.scopes:scopes:${Versions.scopes}"
-    const val scopesCache = "com.github.IVIanuu.scopes:scopes-cache:${Versions.scopes}"
-    const val scopesLifecycle = "com.github.IVIanuu.scopes:scopes-lifecycle:${Versions.scopes}"
-    const val scopesRx = "com.github.IVIanuu.scopes:scopes-rx:${Versions.scopes}"
+    const val scopes = "com.ivianuu.scopes:scopes:${Versions.scopes}"
+    const val scopesCache = "com.ivianuu.scopes:scopes-cache:${Versions.scopes}"
+    const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
+    const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
 
-    const val traveler = "com.github.IVIanuu.traveler:traveler:${Versions.traveler}"
-    const val travelerAndroid = "com.github.IVIanuu.traveler:traveler-android:${Versions.traveler}"
+    const val traveler = "com.ivianuu.traveler:traveler:${Versions.traveler}"
+    const val travelerAndroid = "com.ivianuu.traveler:traveler-android:${Versions.traveler}"
     const val travelerCommon =
-        "com.github.IVIanuu.traveler:traveler-common:${Versions.traveler}"
+        "com.ivianuu.traveler:traveler-common:${Versions.traveler}"
 }
