@@ -54,7 +54,7 @@ object Versions {
 
     const val scopes = "bfe7dc6610"
 
-    const val traveler = "1ee53b9e9a"
+    const val traveler = "929fae2c1a"
 }
 
 object Deps {
