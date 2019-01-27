@@ -46,3 +46,41 @@ interface ControllerChangeListener {
     ) {
     }
 }
+
+fun Router.doOnChangeStarted(
+    recursive: Boolean = false,
+    block: (to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
+): ControllerChangeListener = addChangeListener(recursive = recursive, onChangeStarted = block)
+
+fun Router.doOnChangeEnded(
+    recursive: Boolean = false,
+    block: (to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
+): ControllerChangeListener = addChangeListener(recursive = recursive, onChangeEnded = block)
+
+fun Router.addChangeListener(
+    recursive: Boolean = false,
+    onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
+): ControllerChangeListener {
+    return object : ControllerChangeListener {
+        override fun onChangeStarted(
+            to: Controller?,
+            from: Controller?,
+            isPush: Boolean,
+            container: ViewGroup,
+            handler: ControllerChangeHandler
+        ) {
+            onChangeStarted?.invoke(to, from, isPush, container, handler)
+        }
+
+        override fun onChangeCompleted(
+            to: Controller?,
+            from: Controller?,
+            isPush: Boolean,
+            container: ViewGroup,
+            handler: ControllerChangeHandler
+        ) {
+            onChangeEnded?.invoke(to, from, isPush, container, handler)
+        }
+    }.also { addChangeListener(it, recursive) }
+}
