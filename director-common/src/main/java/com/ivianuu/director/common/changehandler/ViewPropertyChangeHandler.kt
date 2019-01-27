@@ -32,7 +32,6 @@ abstract class ViewPropertyChangeHandler(
 
     private var fromEnded = false
     private var toEnded = false
-    private var animatorCanceled = false
 
     private var changeData: ChangeData? = null
 
@@ -102,15 +101,7 @@ abstract class ViewPropertyChangeHandler(
             onReadyOrAbortedListener?.onReadyOrAborted()
         } else if (changeData != null) {
             val (container, from, _, isPush, onChangeComplete) = changeData!!
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-
-            complete(onChangeComplete)
-
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+            complete(container, from, isPush, onChangeComplete)
         }
     }
 
@@ -150,13 +141,7 @@ abstract class ViewPropertyChangeHandler(
         onChangeComplete: () -> Unit
     ) {
         if (needsImmediateCompletion) {
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-            complete(onChangeComplete)
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+            complete(container, from, isPush, onChangeComplete)
             return
         }
 
@@ -168,7 +153,6 @@ abstract class ViewPropertyChangeHandler(
             setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationCancel(animation: Animator?) {
                     super.onAnimationCancel(animation)
-                    animatorCanceled = true
                     fromEnded = true
                     onAnimationEnd(
                         container,
@@ -205,7 +189,6 @@ abstract class ViewPropertyChangeHandler(
             setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationCancel(animation: Animator?) {
                     super.onAnimationCancel(animation)
-                    animatorCanceled = true
                     toEnded = true
                     onAnimationEnd(
                         container,
@@ -243,52 +226,41 @@ abstract class ViewPropertyChangeHandler(
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        if ((fromAnimator != null && !fromEnded) || (toAnimator != null && !toEnded)) {
-            return
-        }
-
-        if (animatorCanceled) {
-            if (from != null) {
-                resetFromView(from)
-            }
-
-            if (to != null && to.parent == container) {
-                container.removeView(to)
-            }
-
-            complete(onChangeComplete)
-        } else {
-            if (fromAnimator != null || toAnimator != null) {
-                if (from != null && (!isPush || removesFromViewOnPush)) {
-                    container.removeView(from)
-                }
-
-                complete(onChangeComplete)
-
-                if (isPush && from != null) {
-                    resetFromView(from)
-                }
-            }
-        }
+        if ((fromAnimator != null && !fromEnded) || (toAnimator != null && !toEnded)) return
+        complete(container, from, isPush, onChangeComplete)
     }
 
-    private fun complete(onChangeComplete: () -> Unit) {
-        if (!completed) {
-            completed = true
-            onChangeComplete()
-            fromAnimator?.let { animation ->
-                animation.setListener(null)
-                animation.cancel()
-            }
+    private fun complete(
+        container: ViewGroup,
+        from: View?,
+        isPush: Boolean,
+        onChangeComplete: () -> Unit
+    ) {
+        if (completed) return
+        completed = true
 
-            toAnimator?.let { animation ->
-                animation.setListener(null)
-                animation.cancel()
-            }
-
-            onReadyOrAbortedListener = null
-            changeData = null
+        if (from != null && (!isPush || removesFromViewOnPush)) {
+            container.removeView(from)
         }
+
+        if (isPush && from != null) {
+            resetFromView(from)
+        }
+
+        onChangeComplete()
+
+        fromAnimator?.let { animation ->
+            animation.setListener(null)
+            animation.cancel()
+        }
+
+        toAnimator?.let { animation ->
+            animation.setListener(null)
+            animation.cancel()
+        }
+
+        onReadyOrAbortedListener = null
+        changeData = null
     }
 
     companion object {

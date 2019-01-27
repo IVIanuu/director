@@ -93,15 +93,7 @@ abstract class AnimationChangeHandler(
             onReadyOrAbortedListener?.onReadyOrAborted()
         } else if (changeData != null) {
             val (container, from, _, isPush, onChangeComplete) = changeData!!
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-
-            complete(onChangeComplete)
-
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+            complete(container, from, isPush, onChangeComplete)
         }
     }
 
@@ -141,13 +133,7 @@ abstract class AnimationChangeHandler(
         onChangeComplete: () -> Unit
     ) {
         if (needsImmediateCompletion) {
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-            complete(onChangeComplete)
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+            complete(container, from, isPush, onChangeComplete)
             return
         }
 
@@ -222,23 +208,28 @@ abstract class AnimationChangeHandler(
     ) {
         if ((fromAnimation != null && !fromEnded) || (toAnimation != null && !toEnded)) return
         if (fromAnimation != null || toAnimation != null) {
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-
-            complete(onChangeComplete)
-
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+            complete(container, from, isPush, onChangeComplete)
         }
     }
 
-    private fun complete(onChangeComplete: () -> Unit) {
-        if (!completed) {
-            completed = true
-            onChangeComplete()
+    private fun complete(
+        container: ViewGroup,
+        from: View?,
+        isPush: Boolean,
+        onChangeComplete: () -> Unit
+    ) {
+        if (completed) return
+        completed = true
+
+        if (from != null && (!isPush || removesFromViewOnPush)) {
+            container.removeView(from)
         }
+
+        if (isPush && from != null) {
+            resetFromView(from)
+        }
+
+        onChangeComplete()
 
         fromAnimation?.let { animation ->
             animation.setAnimationListener(null)

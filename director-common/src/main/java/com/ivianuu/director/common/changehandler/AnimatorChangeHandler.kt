@@ -104,18 +104,12 @@ abstract class AnimatorChangeHandler(
     override fun completeImmediately() {
         super.completeImmediately()
         needsImmediateCompletion = true
-        if (animator != null) {
-            animator?.end()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        } else if (changeData != null) {
-            val (container, from, _, isPush, onChangeComplete) = changeData!!
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-            complete(onChangeComplete, null)
-            if (isPush && from != null) {
-                resetFromView(from)
+        when {
+            animator != null -> animator?.end()
+            onReadyOrAbortedListener != null -> onReadyOrAbortedListener?.onReadyOrAborted()
+            changeData != null -> {
+                val (container, from, _, isPush, onChangeComplete) = changeData!!
+                complete(container, from, isPush, onChangeComplete, null)
             }
         }
     }
@@ -145,13 +139,7 @@ abstract class AnimatorChangeHandler(
         onChangeComplete: () -> Unit
     ) {
         if (needsImmediateCompletion) {
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-            complete(onChangeComplete, null)
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+            complete(container, from, isPush, onChangeComplete, null)
             return
         }
 
@@ -161,30 +149,8 @@ abstract class AnimatorChangeHandler(
             }
 
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationCancel(animation: Animator) {
-                    if (from != null) {
-                        resetFromView(from)
-                    }
-
-                    if (to != null && to.parent == container) {
-                        container.removeView(to)
-                    }
-
-                    complete(onChangeComplete, this)
-                }
-
                 override fun onAnimationEnd(animation: Animator) {
-                    if (animator != null) {
-                        if (from != null && (!isPush || removesFromViewOnPush)) {
-                            container.removeView(from)
-                        }
-
-                        complete(onChangeComplete, this)
-
-                        if (isPush && from != null) {
-                            resetFromView(from)
-                        }
-                    }
+                    complete(container, from, isPush, onChangeComplete, this)
                 }
             })
         }
@@ -193,13 +159,24 @@ abstract class AnimatorChangeHandler(
     }
 
     private fun complete(
+        container: ViewGroup,
+        from: View?,
+        isPush: Boolean,
         onChangeComplete: () -> Unit,
         animatorListener: Animator.AnimatorListener?
     ) {
-        if (!completed) {
-            completed = true
-            onChangeComplete()
+        if (completed) return
+        completed = true
+
+        if (from != null && (!isPush || removesFromViewOnPush)) {
+            container.removeView(from)
         }
+
+        if (isPush && from != null) {
+            resetFromView(from)
+        }
+
+        onChangeComplete()
 
         animator?.let { animator ->
             animatorListener?.let { animator.removeListener(it) }
