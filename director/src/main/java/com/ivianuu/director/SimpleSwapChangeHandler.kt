@@ -25,8 +25,6 @@ import android.view.ViewGroup
  */
 open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean = true) : ControllerChangeHandler() {
 
-    private var canceled = false
-
     private var container: ViewGroup? = null
     private var onChangeComplete: (() -> Unit)? = null
 
@@ -53,11 +51,6 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_ON_PUSH)
     }
 
-    override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-        super.onAbortPush(newHandler, newTop)
-        canceled = true
-    }
-
     override fun completeImmediately() {
         onChangeComplete?.let {
             it()
@@ -77,14 +70,12 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
         this.onChangeComplete = onChangeComplete
         this.container = container
 
-        if (!canceled) {
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
+        if (from != null && (!isPush || removesFromViewOnPush)) {
+            container.removeView(from)
+        }
 
-            if (to != null && to.parent == null) {
-                container.addView(to)
-            }
+        if (to != null && to.parent == null) {
+            container.addView(to)
         }
 
         if (container.windowToken != null) {

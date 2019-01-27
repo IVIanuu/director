@@ -26,8 +26,6 @@ import android.transition.TransitionSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnPreDrawListener
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.common.TransitionUtils
 
 /**
@@ -105,11 +103,6 @@ abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() 
         }
 
         super.executePropertyChanges(container, from, to, transition, isPush)
-    }
-
-    override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-        super.onAbortPush(newHandler, newTop)
-        removedViews.clear()
     }
 
     private fun configureTransition(

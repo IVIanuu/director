@@ -101,8 +101,10 @@ class RouterTransaction {
 
         private const val INVALID_INDEX = -1
 
-        internal fun fromBundle(bundle: Bundle, controllerFactory: ControllerFactory) =
-            RouterTransaction(
+        internal fun fromBundle(
+            bundle: Bundle,
+            controllerFactory: ControllerFactory
+        ) = RouterTransaction(
                 Controller.fromBundle(bundle.getBundle(KEY_CONTROLLER_BUNDLE)!!, controllerFactory),
             bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let { ControllerChangeHandler.fromBundle(it) },
             bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let { ControllerChangeHandler.fromBundle(it) },

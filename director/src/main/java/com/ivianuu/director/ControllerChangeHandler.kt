@@ -47,13 +47,6 @@ abstract class ControllerChangeHandler {
 
     /**
      * Will be called on change handlers that push a controller if the controller being pushed is
-     * popped before it has completed.
-     */
-    open fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-    }
-
-    /**
-     * Will be called on change handlers that push a controller if the controller being pushed is
      * needs to be attached immediately, without any animations or transitions.
      */
     open fun completeImmediately() {

@@ -20,7 +20,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.internal.newInstanceOrThrow
 
@@ -84,10 +83,6 @@ open class TransitionChangeHandlerCompat : ControllerChangeHandler {
 
     override fun copy(): TransitionChangeHandlerCompat = TransitionChangeHandlerCompat()
         .also { it.changeHandler = changeHandler.copy() }
-
-    override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-        changeHandler.onAbortPush(newHandler, newTop)
-    }
 
     override fun completeImmediately() {
         changeHandler.completeImmediately()

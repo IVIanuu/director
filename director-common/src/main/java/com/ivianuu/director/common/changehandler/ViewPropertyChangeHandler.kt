@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewPropertyAnimator
-import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
@@ -28,7 +27,6 @@ abstract class ViewPropertyChangeHandler(
 
     private var onReadyOrAbortedListener: OnReadyOrAbortedListener? = null
 
-    private var canceled = false
     private var needsImmediateCompletion = false
     private var completed = false
 
@@ -94,28 +92,6 @@ abstract class ViewPropertyChangeHandler(
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_ON_PUSH)
     }
 
-    override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-        super.onAbortPush(newHandler, newTop)
-        canceled = true
-        if (fromAnimator != null || toAnimator != null) {
-            fromAnimator?.cancel()
-            toAnimator?.cancel()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        } else if (changeData != null) {
-            val (container, from, _, isPush, onChangeComplete) = changeData!!
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-
-            complete(onChangeComplete)
-
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
-        }
-    }
-
     override fun completeImmediately() {
         super.completeImmediately()
         needsImmediateCompletion = true
@@ -173,11 +149,6 @@ abstract class ViewPropertyChangeHandler(
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        if (canceled) {
-            complete(onChangeComplete)
-            return
-        }
-
         if (needsImmediateCompletion) {
             if (from != null && (!isPush || removesFromViewOnPush)) {
                 container.removeView(from)
@@ -287,7 +258,7 @@ abstract class ViewPropertyChangeHandler(
 
             complete(onChangeComplete)
         } else {
-            if (!canceled && (fromAnimator != null || toAnimator != null)) {
+            if (fromAnimator != null || toAnimator != null) {
                 if (from != null && (!isPush || removesFromViewOnPush)) {
                     container.removeView(from)
                 }
@@ -305,20 +276,19 @@ abstract class ViewPropertyChangeHandler(
         if (!completed) {
             completed = true
             onChangeComplete()
-        }
+            fromAnimator?.let { animation ->
+                animation.setListener(null)
+                animation.cancel()
+            }
 
-        fromAnimator?.let { animation ->
-            animation.setListener(null)
-            animation.cancel()
-        }
+            toAnimator?.let { animation ->
+                animation.setListener(null)
+                animation.cancel()
+            }
 
-        toAnimator?.let { animation ->
-            animation.setListener(null)
-            animation.cancel()
+            onReadyOrAbortedListener = null
+            changeData = null
         }
-
-        onReadyOrAbortedListener = null
-        changeData = null
     }
 
     companion object {

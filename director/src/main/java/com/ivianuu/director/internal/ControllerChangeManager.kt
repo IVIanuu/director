@@ -28,11 +28,7 @@ internal class ControllerChangeManager {
         handler.hasBeenUsed = true
 
         if (from != null) {
-            if (isPush) {
-                completeChangeImmediately(from.instanceId)
-            } else {
-                abortOrCompleteChange(from, to, handler)
-            }
+            completeChangeImmediately(from.instanceId)
         }
 
         if (to != null) {
@@ -87,27 +83,9 @@ internal class ControllerChangeManager {
         }
     }
 
-    fun completeChangeImmediately(controllerInstanceId: String) {
-        inProgressChangeHandlers.remove(controllerInstanceId)
+    fun completeChangeImmediately(instanceId: String) {
+        inProgressChangeHandlers.remove(instanceId)
             ?.changeHandler?.completeImmediately()
-    }
-
-    private fun abortOrCompleteChange(
-        toAbort: Controller,
-        newController: Controller?,
-        newChangeHandler: ControllerChangeHandler
-    ) {
-        val changeHandlerData = inProgressChangeHandlers[toAbort.instanceId]
-
-        if (changeHandlerData != null) {
-            if (changeHandlerData.isPush) {
-                changeHandlerData.changeHandler.onAbortPush(newChangeHandler, newController)
-            } else {
-                changeHandlerData.changeHandler.completeImmediately()
-            }
-
-            inProgressChangeHandlers.remove(toAbort.instanceId)
-        }
     }
 
 }

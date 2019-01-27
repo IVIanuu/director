@@ -22,7 +22,6 @@ import android.transition.Transition
 import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 
 /**
@@ -31,7 +30,6 @@ import com.ivianuu.director.ControllerChangeHandler
 @TargetApi(Build.VERSION_CODES.KITKAT)
 abstract class TransitionChangeHandler : ControllerChangeHandler() {
 
-    private var canceled = false
     private var needsImmediateCompletion = false
 
     override val removesFromViewOnPush: Boolean get() = true
@@ -43,11 +41,6 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        if (canceled) {
-            onChangeComplete()
-            return
-        }
-
         if (needsImmediateCompletion) {
             executePropertyChanges(container, from, to, null, isPush)
             onChangeComplete()
@@ -81,16 +74,9 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
             transition,
             isPush
         ) {
-            if (!canceled) {
-                TransitionManager.beginDelayedTransition(container, transition)
-                executePropertyChanges(container, from, to, transition, isPush)
-            }
+            TransitionManager.beginDelayedTransition(container, transition)
+            executePropertyChanges(container, from, to, transition, isPush)
         }
-    }
-
-    override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-        super.onAbortPush(newHandler, newTop)
-        canceled = true
     }
 
     override fun completeImmediately() {

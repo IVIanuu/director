@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
-import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 
 /**
- * A base [ControllerChangeHandler] that facilitates using [android.view.animation.Animation]s to replace Controller Views
+ * A base [ControllerChangeHandler] which uses [android.view.animation.Animation]s to replace Controller Views
  */
 abstract class AnimationChangeHandler(
     duration: Long = DEFAULT_ANIMATION_DURATION,
@@ -26,7 +25,6 @@ abstract class AnimationChangeHandler(
 
     private var onReadyOrAbortedListener: OnReadyOrAbortedListener? = null
 
-    private var canceled = false
     private var needsImmediateCompletion = false
     private var completed = false
 
@@ -58,7 +56,7 @@ abstract class AnimationChangeHandler(
                 container.addView(to, container.indexOfChild(from))
             }
 
-            if (!canceled && !needsImmediateCompletion && !completed && to!!.width <= 0 && to.height <= 0) {
+            if (!needsImmediateCompletion && !completed && to!!.width <= 0 && to.height <= 0) {
                 onReadyOrAbortedListener =
                         OnReadyOrAbortedListener(to) {
                             performAnimation(container, from, to, isPush, true, onChangeComplete)
@@ -82,29 +80,6 @@ abstract class AnimationChangeHandler(
         super.restoreFromBundle(bundle)
         duration = bundle.getLong(KEY_DURATION)
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_ON_PUSH)
-    }
-
-    override fun onAbortPush(newHandler: ControllerChangeHandler, newTop: Controller?) {
-        super.onAbortPush(newHandler, newTop)
-        canceled = true
-
-        if (fromAnimation != null || toAnimation != null) {
-            fromAnimation?.cancel()
-            toAnimation?.cancel()
-        } else if (onReadyOrAbortedListener != null) {
-            onReadyOrAbortedListener?.onReadyOrAborted()
-        } else if (changeData != null) {
-            val (container, from, _, isPush, onChangeComplete) = changeData!!
-            if (from != null && (!isPush || removesFromViewOnPush)) {
-                container.removeView(from)
-            }
-
-            complete(onChangeComplete)
-
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
-        }
     }
 
     override fun completeImmediately() {
@@ -165,11 +140,6 @@ abstract class AnimationChangeHandler(
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        if (canceled) {
-            complete(onChangeComplete)
-            return
-        }
-
         if (needsImmediateCompletion) {
             if (from != null && (!isPush || removesFromViewOnPush)) {
                 container.removeView(from)
@@ -251,28 +221,15 @@ abstract class AnimationChangeHandler(
         onChangeComplete: () -> Unit
     ) {
         if ((fromAnimation != null && !fromEnded) || (toAnimation != null && !toEnded)) return
-
-        if (canceled) {
-            if (from != null) {
-                resetFromView(from)
-            }
-
-            if (to != null && to.parent == container) {
-                container.removeView(to)
+        if (fromAnimation != null || toAnimation != null) {
+            if (from != null && (!isPush || removesFromViewOnPush)) {
+                container.removeView(from)
             }
 
             complete(onChangeComplete)
-        } else {
-            if (!canceled && (fromAnimation != null || toAnimation != null)) {
-                if (from != null && (!isPush || removesFromViewOnPush)) {
-                    container.removeView(from)
-                }
 
-                complete(onChangeComplete)
-
-                if (isPush && from != null) {
-                    resetFromView(from)
-                }
+            if (isPush && from != null) {
+                resetFromView(from)
             }
         }
     }
