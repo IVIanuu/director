@@ -20,7 +20,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.doOnPostDestroy
 
 /**
  * Notifies the [listener] on activity results for [requestCode]
@@ -29,14 +29,11 @@ fun Controller.registerActivityResultListener(
     requestCode: Int,
     listener: ActivityResultListener
 ) {
-    addLifecycleListener(object : ControllerLifecycleListener {
-        override fun postDestroy(controller: Controller) {
-            super.postDestroy(controller)
-            // remove the listener on controller destruction
-            ActivityResultHandler.get(this@registerActivityResultListener)
-                .unregisterListener(requestCode, listener)
-        }
-    })
+    // remove the listener on controller destruction
+    doOnPostDestroy {
+        ActivityResultHandler.get(this)
+            .unregisterListener(requestCode, listener)
+    }
 
     ActivityResultHandler.get(this).registerListener(requestCode, listener)
 }

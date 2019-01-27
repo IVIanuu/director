@@ -19,7 +19,7 @@ package com.ivianuu.director.arch.lifecycle
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.doOnPostDestroy
 import com.ivianuu.director.retained.retainedLazy
 
 /**
@@ -30,14 +30,11 @@ class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwne
     private val _viewModelStore by controller.retainedLazy(KEY_VIEW_MODEL_STORE) { ViewModelStore() }
 
     init {
-        controller.addLifecycleListener(object : ControllerLifecycleListener {
-            override fun postDestroy(controller: Controller) {
-                super.postDestroy(controller)
-                if (!controller.activity.isChangingConfigurations) {
-                    _viewModelStore.clear()
-                }
+        controller.doOnPostDestroy {
+            if (!it.activity.isChangingConfigurations) {
+                _viewModelStore.clear()
             }
-        })
+        }
     }
 
     override fun getViewModelStore(): ViewModelStore = _viewModelStore

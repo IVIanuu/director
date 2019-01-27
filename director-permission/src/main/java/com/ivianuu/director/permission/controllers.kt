@@ -19,7 +19,7 @@ package com.ivianuu.director.permission
 import android.annotation.TargetApi
 import android.os.Build
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.doOnPostDestroy
 
 /**
  * Notifies the [callback] on activity results for [requestCode]
@@ -28,15 +28,11 @@ fun Controller.registerPermissionCallback(
     requestCode: Int,
     callback: PermissionCallback
 ) {
-    addLifecycleListener(object : ControllerLifecycleListener {
-        override fun postDestroy(controller: Controller) {
-            super.postDestroy(controller)
-            // remove the callback on controller destruction
-            PermissionHandler.get(this@registerPermissionCallback)
-                .unregisterCallback(requestCode, callback)
-        }
-    })
-
+    // remove the callback on controller destruction
+    doOnPostDestroy {
+        PermissionHandler.get(this)
+            .unregisterCallback(requestCode, callback)
+    }
     PermissionHandler.get(this).registerCallback(requestCode, callback)
 }
 
