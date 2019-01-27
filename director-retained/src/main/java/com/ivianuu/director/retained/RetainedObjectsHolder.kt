@@ -16,22 +16,19 @@
 
 package com.ivianuu.director.retained
 
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
 
 /**
  * Holds retained objects of controller
  */
-class RetainedObjectsHolder : Fragment(), ControllerLifecycleListener {
+internal class RetainedObjectsHolder : ViewModel(), ControllerLifecycleListener {
 
     private val retainedObjects =
         mutableMapOf<String, RetainedObjects>()
-
-    init {
-        retainInstance = true
-    }
 
     override fun postDestroy(controller: Controller) {
         super.postDestroy(controller)
@@ -45,23 +42,18 @@ class RetainedObjectsHolder : Fragment(), ControllerLifecycleListener {
         return retainedObjects.getOrPut(controller.instanceId) { RetainedObjects() }
     }
 
-    companion object {
-        private const val FRAGMENT_TAG =
-            "com.ivianuu.director.retained.RetainedObjectsHolder"
+    private object Factory : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return RetainedObjectsHolder() as T
+        }
+    }
 
+    companion object {
         internal fun get(controller: Controller): RetainedObjects {
             val activity = (controller.activity as? FragmentActivity)
                 ?: error("controller is not attached to a FragmentActivity")
-            return ((activity as? FragmentActivity)?.supportFragmentManager
-                ?.findFragmentByTag(FRAGMENT_TAG) as? RetainedObjectsHolder
-                ?: RetainedObjectsHolder().also {
-                activity.supportFragmentManager.beginTransaction()
-                    .add(
-                        it,
-                        FRAGMENT_TAG
-                    )
-                    .commitNow()
-            }).getRetainedObjects(controller)
+            return ViewModelProvider(activity, Factory)
+                .get(RetainedObjectsHolder::class.java).getRetainedObjects(controller)
         }
 
     }
