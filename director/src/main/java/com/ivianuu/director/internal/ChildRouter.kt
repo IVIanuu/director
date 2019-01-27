@@ -43,11 +43,6 @@ internal class ChildRouter : Router {
         super.getAllLifecycleListeners(recursiveOnly) +
                 hostController.router.getAllLifecycleListeners(true)
 
-    override fun onActivityDestroyed() {
-        super.onActivityDestroyed()
-        removeContainer(true)
-    }
-
     fun saveIdentity(outState: Bundle) {
         outState.putInt(KEY_HOST_ID, hostId)
         outState.putString(KEY_TAG, tag)
