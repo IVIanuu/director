@@ -38,12 +38,11 @@ abstract class Router {
     internal var container: ViewGroup? = null
         set(value) {
             if (value == field) return
+            field = value
 
             // in case the user uses a ChangeHandlerFrameLayout
             (field as? ControllerChangeListener)?.let { removeChangeListener(it) }
             (value as? ControllerChangeListener)?.let { addChangeListener(it) }
-
-            field = value
         }
 
     /**
