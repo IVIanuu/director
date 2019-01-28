@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ChildRouter
-import com.ivianuu.director.internal.ViewAttachHandler
+import com.ivianuu.director.internal.ControllerAttachHandler
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -105,7 +105,6 @@ abstract class Controller {
     private var viewState: Bundle? = null
     private var childRouterStates: Map<ChildRouter, Bundle>? = null
 
-    private var viewIsAttached = false
     private var awaitingParentAttach = false
     private var hasSavedViewState = false
 
@@ -120,7 +119,7 @@ abstract class Controller {
             }
         }
 
-    private var viewAttachHandler: ViewAttachHandler? = null
+    private var controllerAttachHandler: ControllerAttachHandler? = null
 
     /**
      * All child routers of this controller
@@ -343,18 +342,12 @@ abstract class Controller {
     }
 
     internal fun activityStarted() {
-        viewAttachHandler?.onActivityStarted()
         _childRouters.forEach { it.onActivityStarted() }
+        controllerAttachHandler?.onActivityStarted()
     }
 
     internal fun activityResumed() {
-        val view = view
-        if (!isAttached && view != null && viewIsAttached) {
-            attach(view)
-        } else if (isAttached) {
-            hasSavedViewState = false
-        }
-
+        hasSavedViewState = false
         _childRouters.forEach { it.onActivityResumed() }
     }
 
@@ -363,7 +356,7 @@ abstract class Controller {
     }
 
     internal fun activityStopped() {
-        viewAttachHandler?.onActivityStopped()
+        controllerAttachHandler?.onActivityStopped()
 
         // cancel any pending input event
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -408,19 +401,24 @@ abstract class Controller {
 
             restoreViewState(view)
 
-            viewAttachHandler = ViewAttachHandler(object : ViewAttachHandler.Listener {
+            controllerAttachHandler =
+                ControllerAttachHandler(object : ControllerAttachHandler.Listener {
                 override fun onAttached() {
-                    viewIsAttached = true
                     attach(view)
                 }
 
                 override fun onDetached(fromActivityStop: Boolean) {
-                    viewIsAttached = false
-                    detach(view, false, fromActivityStop, false, false)
+                    detach(
+                        view, false,
+                        fromActivityStop, false, false
+                    )
                 }
 
                 override fun onViewDetachAfterStop() {
-                    detach(view, false, false, false, false)
+                    detach(
+                        view, false,
+                        false, false, false
+                    )
                 }
             }).also { it.listenForAttach(view) }
         } else if (retainView) {
@@ -442,8 +440,6 @@ abstract class Controller {
         } else {
             awaitingParentAttach = false
         }
-
-        hasSavedViewState = false
 
         notifyLifecycleListeners { it.preAttach(this, view) }
 
@@ -503,9 +499,8 @@ abstract class Controller {
 
             requireSuperCalled { onUnbindView(view) }
 
-            viewAttachHandler?.unregisterAttachListener(view)
-            viewAttachHandler = null
-            viewIsAttached = false
+            controllerAttachHandler?.unregisterAttachListener(view)
+            controllerAttachHandler = null
 
             this.view = null
 

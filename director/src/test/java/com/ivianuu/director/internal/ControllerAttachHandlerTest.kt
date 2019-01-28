@@ -28,14 +28,51 @@ import org.robolectric.annotation.Config
 
 @Config(manifest = Config.NONE)
 @RunWith(AndroidJUnit4::class)
-class ViewAttachHandlerTest {
+class ControllerAttachHandlerTest {
 
     private val activityProxy = ActivityProxy()
-    private val listener = CountingViewAttachHandlerListener()
-    private val viewAttachHandler = ViewAttachHandler(listener)
+    private val listener = CountingControllerAttachHandlerListener()
+    private val viewAttachHandler = ControllerAttachHandler(listener)
+
+    @Test
+    fun testActivityStartStop() {
+        val view = View(activityProxy.activity)
+        viewAttachHandler.listenForAttach(view)
+
+        assertEquals(0, listener.attaches)
+        assertEquals(0, listener.detaches)
+        assertEquals(0, listener.detachAfterStops)
+
+        ViewUtils.reportAttached(view, true)
+        assertEquals(0, listener.attaches)
+        assertEquals(0, listener.detaches)
+        assertEquals(0, listener.detachAfterStops)
+
+        viewAttachHandler.onActivityStarted()
+        assertEquals(1, listener.attaches)
+        assertEquals(0, listener.detaches)
+        assertEquals(0, listener.detachAfterStops)
+
+        viewAttachHandler.onActivityStopped()
+        assertEquals(1, listener.attaches)
+        assertEquals(1, listener.detaches)
+        assertEquals(0, listener.detachAfterStops)
+
+        viewAttachHandler.onActivityStarted()
+        assertEquals(2, listener.attaches)
+        assertEquals(1, listener.detaches)
+        assertEquals(0, listener.detachAfterStops)
+
+        viewAttachHandler.onActivityStopped()
+        assertEquals(2, listener.attaches)
+        assertEquals(2, listener.detaches)
+        assertEquals(0, listener.detachAfterStops)
+    }
 
     @Test
     fun testSimpleViewAttachDetach() {
+        viewAttachHandler.onActivityStarted()
+
         val view = View(activityProxy.activity)
 
         viewAttachHandler.listenForAttach(view)
@@ -92,6 +129,8 @@ class ViewAttachHandlerTest {
 
     @Test
     fun testSimpleViewGroupAttachDetach() {
+        viewAttachHandler.onActivityStarted()
+
         val view = LinearLayout(activityProxy.activity)
         viewAttachHandler.listenForAttach(view)
 
@@ -147,6 +186,8 @@ class ViewAttachHandlerTest {
 
     @Test
     fun testNestedViewGroupAttachDetach() {
+        viewAttachHandler.onActivityStarted()
+
         val view = LinearLayout(activityProxy.activity)
         val child = LinearLayout(activityProxy.activity)
         view.addView(child)
@@ -214,7 +255,7 @@ class ViewAttachHandlerTest {
         assertEquals(1, listener.detachAfterStops)
     }
 
-    private class CountingViewAttachHandlerListener : ViewAttachHandler.Listener {
+    private class CountingControllerAttachHandlerListener : ControllerAttachHandler.Listener {
 
         var attaches = 0
         var detaches = 0

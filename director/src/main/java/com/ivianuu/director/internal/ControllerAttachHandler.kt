@@ -4,12 +4,12 @@ import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 
-internal class ViewAttachHandler(private val listener: Listener) : OnAttachStateChangeListener {
+internal class ControllerAttachHandler(private val listener: Listener) :
+    OnAttachStateChangeListener {
 
     private var rootAttached = false
     private var childrenAttached = false
-
-    private var activityStopped = false
+    private var activityReady = false
 
     private var reportedState = ReportedState.VIEW_DETACHED
 
@@ -49,17 +49,17 @@ internal class ViewAttachHandler(private val listener: Listener) : OnAttachState
     }
 
     fun onActivityStarted() {
-        activityStopped = false
+        activityReady = true
         reportAttached()
     }
 
     fun onActivityStopped() {
-        activityStopped = true
+        activityReady = false
         reportDetached(true)
     }
 
     private fun reportAttached() {
-        if (rootAttached && childrenAttached && !activityStopped && reportedState != ReportedState.ATTACHED) {
+        if (rootAttached && childrenAttached && activityReady && reportedState != ReportedState.ATTACHED) {
             reportedState = ReportedState.ATTACHED
             listener.onAttached()
         }
