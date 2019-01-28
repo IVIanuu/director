@@ -66,6 +66,8 @@ abstract class Router {
 
     private val changeManager = ControllerChangeManager()
 
+    private var hasPreparedForHostDetach = false
+
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
@@ -327,6 +329,7 @@ abstract class Router {
             .map { it.listener }
 
     open fun onActivityStarted() {
+        hasPreparedForHostDetach = false
         _backstack.reversed().forEach { it.controller.activityStarted() }
     }
 
@@ -339,6 +342,10 @@ abstract class Router {
     }
 
     open fun onActivityStopped() {
+        if (!hasPreparedForHostDetach) {
+            hasPreparedForHostDetach = true
+            prepareForHostDetach()
+        }
         _backstack.reversed().forEach { it.controller.activityStopped() }
     }
 
@@ -348,7 +355,7 @@ abstract class Router {
         container = null
     }
 
-    open fun prepareForHostDetach() {
+    protected open fun prepareForHostDetach() {
         _backstack.reversed().forEach {
             changeManager.completeChangeImmediately(it.controller.instanceId)
             it.controller.prepareForHostDetach()
@@ -394,6 +401,11 @@ abstract class Router {
     }
 
     open fun saveInstanceState(outState: Bundle) {
+        if (!hasPreparedForHostDetach) {
+            hasPreparedForHostDetach = true
+            prepareForHostDetach()
+        }
+
         val backstack = _backstack.map { it.saveInstanceState() }
         outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
         outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)

@@ -30,14 +30,11 @@ class RouterDelegate(
 
     private val routers = mutableMapOf<Int, Router>()
 
-    private var hasPreparedForHostDetach = false
-
     fun onCreate(savedInstanceState: Bundle?) {
         this.savedInstanceState = savedInstanceState
     }
 
     fun onStart() {
-        hasPreparedForHostDetach = false
         routers.values.forEach { it.onActivityStarted() }
     }
 
@@ -50,8 +47,6 @@ class RouterDelegate(
     }
 
     fun onSaveInstanceState(outState: Bundle) {
-        prepareForHostDetachIfNeeded()
-
         routers.values.forEach { router ->
             val bundle = Bundle().also { router.saveInstanceState(it) }
             outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
@@ -59,7 +54,6 @@ class RouterDelegate(
     }
 
     fun onStop() {
-        prepareForHostDetachIfNeeded()
         routers.values.forEach { it.onActivityStopped() }
     }
 
@@ -101,13 +95,6 @@ class RouterDelegate(
         savedInstanceState,
         controllerFactory
     )
-
-    private fun prepareForHostDetachIfNeeded() {
-        if (!hasPreparedForHostDetach) {
-            hasPreparedForHostDetach = true
-            routers.values.forEach { it.prepareForHostDetach() }
-        }
-    }
 
     private companion object {
         private const val KEY_ROUTER_STATE_PREFIX = "RouterDelegate.routerState"

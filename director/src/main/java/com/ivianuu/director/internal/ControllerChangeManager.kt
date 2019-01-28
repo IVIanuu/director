@@ -10,7 +10,7 @@ import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal class ControllerChangeManager {
 
-    private val inProgressChangeHandlers = mutableMapOf<String, ChangeHandlerData>()
+    private val inProgressChangeHandlers = mutableMapOf<String, ControllerChangeHandler>()
 
     fun executeChange(
         to: Controller?,
@@ -32,7 +32,7 @@ internal class ControllerChangeManager {
         }
 
         if (to != null) {
-            inProgressChangeHandlers[to.instanceId] = ChangeHandlerData(handler, isPush)
+            inProgressChangeHandlers[to.instanceId] = handler
         }
 
         listeners.forEach { it.onChangeStarted(to, from, isPush, container, handler) }
@@ -84,13 +84,7 @@ internal class ControllerChangeManager {
     }
 
     fun completeChangeImmediately(instanceId: String) {
-        inProgressChangeHandlers.remove(instanceId)
-            ?.changeHandler?.completeImmediately()
+        inProgressChangeHandlers.remove(instanceId)?.completeImmediately()
     }
 
 }
-
-private data class ChangeHandlerData(
-    val changeHandler: ControllerChangeHandler,
-    val isPush: Boolean
-)
