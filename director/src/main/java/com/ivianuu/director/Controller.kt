@@ -113,16 +113,6 @@ abstract class Controller {
     private var hasSavedViewState = false
 
     /**
-     * Overrides the push handler which will be used when this controller gets pushed
-     */
-    var overriddenPushHandler: ControllerChangeHandler? = null
-
-    /**
-     * Overrides the pop handler which will be used when this controller gets popped
-     */
-    var overriddenPopHandler: ControllerChangeHandler? = null
-
-    /**
      * Whether or not the view should be retained while being detached
      */
     var retainView = false
@@ -601,14 +591,6 @@ abstract class Controller {
         outState.putString(KEY_TARGET_INSTANCE_ID, instanceId)
         outState.putBoolean(KEY_RETAIN_VIEW, retainView)
 
-        overriddenPushHandler?.let {
-            outState.putBundle(
-                KEY_OVERRIDDEN_PUSH_HANDLER,
-                it.toBundle()
-            )
-        }
-        overriddenPopHandler?.let { outState.putBundle(KEY_OVERRIDDEN_POP_HANDLER, it.toBundle()) }
-
         val childBundles = _childRouters
             .map { childRouter ->
                 Bundle().also {
@@ -641,11 +623,6 @@ abstract class Controller {
 
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
         targetInstanceId = savedInstanceState.getString(KEY_TARGET_INSTANCE_ID)
-
-        overriddenPushHandler = savedInstanceState.getBundle(KEY_OVERRIDDEN_PUSH_HANDLER)
-            ?.let { ControllerChangeHandler.fromBundle(it) }
-        overriddenPopHandler = savedInstanceState.getBundle(KEY_OVERRIDDEN_POP_HANDLER)
-            ?.let { ControllerChangeHandler.fromBundle(it) }
 
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
@@ -713,7 +690,6 @@ abstract class Controller {
         changeType: ControllerChangeType
     ) {
         onChangeStarted(changeHandler, changeType)
-
         notifyLifecycleListeners { it.onChangeStart(this, changeHandler, changeType) }
     }
 
@@ -722,7 +698,6 @@ abstract class Controller {
         changeType: ControllerChangeType
     ) {
         onChangeEnded(changeHandler, changeType)
-
         notifyLifecycleListeners { it.onChangeEnd(this, changeHandler, changeType) }
 
         val destroyedView = destroyedView?.get()
@@ -758,8 +733,6 @@ abstract class Controller {
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"
         private const val KEY_ARGS = "Controller.args"
-        private const val KEY_OVERRIDDEN_PUSH_HANDLER = "Controller.overriddenPushHandler"
-        private const val KEY_OVERRIDDEN_POP_HANDLER = "Controller.overriddenPopHandler"
         private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"
         private const val KEY_VIEW_STATE_BUNDLE = "Controller.viewState.bundle"
         private const val KEY_RETAIN_VIEW = "Controller.retainViewMode"

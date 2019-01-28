@@ -27,7 +27,6 @@ class RouterTransaction {
      * The push change handler of this transaction
      */
     var pushChangeHandler: ControllerChangeHandler? = null
-        get() = controller.overriddenPushHandler ?: field
         set(value) {
             checkModify()
             field = value
@@ -37,7 +36,6 @@ class RouterTransaction {
      * The pop change handler of this transaction
      */
     var popChangeHandler: ControllerChangeHandler? = null
-        get() = controller.overriddenPopHandler ?: field
         set(value) {
             checkModify()
             field = value
