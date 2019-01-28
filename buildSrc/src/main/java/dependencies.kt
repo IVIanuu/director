@@ -15,7 +15,7 @@ object Build {
 object Publishing {
     const val groupId = "com.ivianuu.director"
     const val vcsUrl = "https://github.com/IVIanuu/director"
-    const val version = "git"
+    const val version = "${Build.versionName}-dev-1"
 }
 
 object Versions {
@@ -35,7 +35,7 @@ object Versions {
     const val dagger = "2.19"
 
     const val epoxy = "3.0.0"
-    const val epoxyKtx = "caefab01eb"
+    const val epoxyKtx = "0.0.1-dev-1"
 
     const val junit = "4.12"
 
@@ -52,9 +52,9 @@ object Versions {
 
     const val rxJava = "2.2.6"
 
-    const val scopes = "bfe7dc6610"
+    const val scopes = "0.0.1-dev-1"
 
-    const val traveler = "929fae2c1a"
+    const val traveler = "0.0.1-dev-1"
 }
 
 object Deps {
