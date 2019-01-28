@@ -358,7 +358,6 @@ abstract class Router {
     protected open fun prepareForHostDetach() {
         _backstack.reversed().forEach {
             changeManager.completeChangeImmediately(it.controller.instanceId)
-            it.controller.prepareForHostDetach()
         }
     }
 

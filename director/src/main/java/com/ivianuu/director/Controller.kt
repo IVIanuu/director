@@ -357,10 +357,6 @@ abstract class Controller {
         performRestoreInstanceState()
     }
 
-    internal fun prepareForHostDetach() {
-        _childRouters.forEach { it.prepareForHostDetach() }
-    }
-
     internal fun activityStarted() {
         viewAttachHandler?.onActivityStarted()
         _childRouters.forEach { it.onActivityStarted() }
@@ -450,8 +446,6 @@ abstract class Controller {
     }
 
     private fun attach(view: View) {
-        val router = router
-
         attachedToUnownedParent = view.parent != router.container
 
         // this can happen while transitions just ignore it
@@ -492,10 +486,6 @@ abstract class Controller {
         forceChildViewRemoval: Boolean,
         fromHostRemoval: Boolean
     ) {
-        if (!attachedToUnownedParent) {
-            _childRouters.forEach { it.prepareForHostDetach() }
-        }
-
         val removeViewRef =
             !blockViewRemoval && (forceViewRemoval || !retainView || isBeingDestroyed)
 
@@ -565,14 +555,14 @@ abstract class Controller {
         destroy(false)
     }
 
-    private fun destroy(removeViews: Boolean) {
+    private fun destroy(removeView: Boolean) {
         isBeingDestroyed = true
 
         _childRouters.forEach { it.destroy(false) }
 
         if (!isAttached) {
             removeViewReference(true)
-        } else if (removeViews) {
+        } else if (removeView) {
             view?.let {
                 detach(
                     it,
