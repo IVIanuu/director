@@ -63,18 +63,6 @@ internal class ChildRouter : Router {
     fun removeContainer(forceViewRemoval: Boolean) {
         prepareForHostDetach()
 
-        destroyingControllers.toList()
-            .filter { it.view != null }
-            .forEach {
-                it.detach(
-                    it.view!!,
-                    true,
-                    false,
-                    true,
-                    true
-                )
-            }
-
         backstack
             .filter { it.controller.view != null }
             .forEach {

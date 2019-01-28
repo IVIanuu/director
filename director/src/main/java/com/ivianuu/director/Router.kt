@@ -19,14 +19,13 @@ import com.ivianuu.director.internal.filterVisible
 abstract class Router {
 
     /**
-     * The current backstack, ordered from root to most recently pushed.
+     * The current backstack
      */
     val backstack: List<RouterTransaction> get() = _backstack.toList()
     private val _backstack = mutableListOf<RouterTransaction>()
 
     /**
-     * Returns this Router's host Activity or `null` if it has either not yet been attached to
-     * an Activity or if the Activity has been destroyed.
+     * The host activity of this router
      */
     abstract val activity: Activity
 
@@ -45,7 +44,7 @@ abstract class Router {
         }
 
     /**
-     * Will be used to instantiate controllers after process death
+     * Will be used to instantiate controllers after config changes or  process death
      */
     var controllerFactory: ControllerFactory?
         get() = _controllerFactory
@@ -60,7 +59,6 @@ abstract class Router {
 
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
     private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
-    protected val destroyingControllers = mutableListOf<Controller>()
 
     private val changeManager = ControllerChangeManager()
 
@@ -282,7 +280,7 @@ abstract class Router {
     }
 
     /**
-     * Adds a listener for all of this Router's [Controller] change events
+     * Adds a listener for all controller change events
      */
     fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
         if (!getAllChangeListeners(false).contains(listener)) {
@@ -291,7 +289,7 @@ abstract class Router {
     }
 
     /**
-     * Removes a previously added listener
+     * Removes the previously added [listener]
      */
     fun removeChangeListener(listener: ControllerChangeListener) {
         changeListeners.removeAll { it.listener == listener }
@@ -303,7 +301,7 @@ abstract class Router {
             .map { it.listener }
 
     /**
-     * Adds a lifecycle listener for controllers of this router
+     * Adds a lifecycle listener for all controllers
      */
     fun addLifecycleListener(listener: ControllerLifecycleListener, recursive: Boolean = false) {
         if (!getAllLifecycleListeners(false).contains(listener)) {
@@ -312,7 +310,7 @@ abstract class Router {
     }
 
     /**
-     * Removes a previously added listener
+     * Removes the previously added [listener]
      */
     fun removeLifecycleListener(listener: ControllerLifecycleListener) {
         lifecycleListeners.removeAll { it.listener == listener }
@@ -349,7 +347,6 @@ abstract class Router {
 
     open fun onActivityDestroyed() {
         _backstack.reversed().forEach { it.controller.activityDestroyed() }
-        destroyingControllers.reversed().forEach { it.activityDestroyed() }
         container = null
     }
 
@@ -360,40 +357,9 @@ abstract class Router {
     }
 
     internal open fun destroy(popViews: Boolean) {
-        popsLastView = true
-
-        val poppedControllers = _backstack.reversed()
-        _backstack.clear()
-
-        poppedControllers
-            .onEach { it.controller.destroy() }
-            .onEach { trackDestroyingController(it) }
-
-        if (popViews && poppedControllers.isNotEmpty()) {
-            val topTransaction = poppedControllers.first()
-            topTransaction.controller.addLifecycleListener(object : ControllerLifecycleListener {
-                override fun onChangeEnd(
-                    controller: Controller,
-                    changeHandler: ControllerChangeHandler,
-                    changeType: ControllerChangeType
-                ) {
-                    if (changeType == ControllerChangeType.POP_EXIT) {
-                        poppedControllers
-                            .drop(1)
-                            .reversed()
-                            .forEach {
-                                performControllerChange(
-                                    null,
-                                    it,
-                                    true,
-                                    SimpleSwapChangeHandler()
-                                )
-                            }
-                    }
-                }
-            })
-
-            performControllerChange(null, topTransaction, false, topTransaction.popChangeHandler)
+        if (popViews) {
+            popsLastView = true
+            setBackstack(emptyList(), _backstack.lastOrNull()?.popChangeHandler)
         }
     }
 
@@ -449,18 +415,6 @@ abstract class Router {
 
     protected open fun setControllerRouter(controller: Controller) {
         controller.setRouter(this)
-    }
-
-    private fun trackDestroyingController(transaction: RouterTransaction) {
-        if (!transaction.controller.isDestroyed) {
-            destroyingControllers.add(transaction.controller)
-
-            transaction.controller.addLifecycleListener(object : ControllerLifecycleListener {
-                override fun postDestroy(controller: Controller) {
-                    destroyingControllers.remove(controller)
-                }
-            })
-        }
     }
 
     private data class ChangeListenerEntry(
