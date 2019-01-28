@@ -1,7 +1,3 @@
-import org.gradle.jvm.tasks.Jar
-
-import java.io.File
-
 /*
  * Copyright 2018 Manuel Wrage
  *

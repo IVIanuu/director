@@ -374,7 +374,13 @@ abstract class Controller {
         var view = view
 
         if (view != null && view.parent != null && view.parent != parent) {
-            detach(view, true, false, false, false)
+            detach(
+                view,
+                forceViewRemoval = true,
+                blockViewRemoval = false,
+                forceChildViewRemoval = false,
+                fromHostRemoval = false
+            )
             removeViewReference(false)
             view = null
         }
@@ -409,14 +415,17 @@ abstract class Controller {
                 override fun onDetached(fromActivityStop: Boolean) {
                     detach(
                         view, false,
-                        fromActivityStop, false, false
+                        fromActivityStop, forceChildViewRemoval = false, fromHostRemoval = false
                     )
                 }
 
                 override fun onViewDetachAfterStop() {
                     detach(
-                        view, false,
-                        false, false, false
+                        view,
+                        forceViewRemoval = false,
+                        blockViewRemoval = false,
+                        forceChildViewRemoval = false,
+                        fromHostRemoval = false
                     )
                 }
                 }).also {
@@ -545,10 +554,10 @@ abstract class Controller {
             view?.let {
                 detach(
                     it,
-                    true,
-                    false,
-                    true,
-                    false
+                    forceViewRemoval = true,
+                    blockViewRemoval = false,
+                    forceChildViewRemoval = true,
+                    fromHostRemoval = false
                 )
             }
         }

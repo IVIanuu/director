@@ -644,7 +644,7 @@ class ControllerLifecycleCallbacksTest {
         assertTrue(parent.isAttached)
         assertTrue(child.isAttached)
 
-        ViewUtils.reportAttached(parent.view!!, false, true)
+        ViewUtils.reportAttached(parent.view!!, attached = false, propogateToChildren = true)
         assertFalse(parent.isAttached)
         assertFalse(child.isAttached)
 

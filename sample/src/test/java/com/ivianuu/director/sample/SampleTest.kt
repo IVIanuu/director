@@ -17,6 +17,7 @@
 package com.ivianuu.director.sample
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.ivianuu.director.retained.retainedObjects
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.testing.ControllerState
 import com.ivianuu.director.testing.launch
