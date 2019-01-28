@@ -11,10 +11,8 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.ivianuu.director.internal.ChildRouter
 import com.ivianuu.director.internal.ViewAttachHandler
-import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -108,7 +106,6 @@ abstract class Controller {
     private var childRouterStates: Map<ChildRouter, Bundle>? = null
 
     private var viewIsAttached = false
-    private var attachedToUnownedParent = false
     private var awaitingParentAttach = false
     private var hasSavedViewState = false
 
@@ -133,8 +130,6 @@ abstract class Controller {
     private val _childRouters = mutableListOf<ChildRouter>()
 
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
-
-    private var destroyedView: WeakReference<View>? = null
 
     private var superCalled = false
 
@@ -436,13 +431,8 @@ abstract class Controller {
     }
 
     private fun attach(view: View) {
-        attachedToUnownedParent = view.parent != router.container
-
-        // this can happen while transitions just ignore it
-        if (attachedToUnownedParent) return
-
-        // do not attach while destroyed
-        if (isBeingDestroyed) return
+        // this can happen during transitions just ignore it
+        if (view.parent != router.container) return
 
         val parentController = parentController
 
@@ -488,6 +478,8 @@ abstract class Controller {
             notifyLifecycleListeners { it.postDetach(this, view) }
         }
 
+        awaitingParentAttach = false
+
         if (removeViewRef) {
             removeViewReference(forceChildViewRemoval)
         } else if (retainView && fromHostRemoval) {
@@ -514,10 +506,6 @@ abstract class Controller {
             viewAttachHandler?.unregisterAttachListener(view)
             viewAttachHandler = null
             viewIsAttached = false
-
-            if (isBeingDestroyed) {
-                destroyedView = WeakReference(view)
-            }
 
             this.view = null
 
@@ -699,19 +687,6 @@ abstract class Controller {
     ) {
         onChangeEnded(changeHandler, changeType)
         notifyLifecycleListeners { it.onChangeEnd(this, changeHandler, changeType) }
-
-        val destroyedView = destroyedView?.get()
-
-        if (isBeingDestroyed && !viewIsAttached && !isAttached && destroyedView != null) {
-            val router = router
-
-            val container = router.container
-            if (container != null && destroyedView.parent == router.container) {
-                container.removeView(destroyedView)
-            }
-
-            this.destroyedView = null
-        }
     }
 
     private inline fun notifyLifecycleListeners(block: (ControllerLifecycleListener) -> Unit) {
