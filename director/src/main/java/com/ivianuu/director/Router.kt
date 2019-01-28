@@ -64,6 +64,9 @@ abstract class Router {
 
     private var hasPreparedForHostDetach = false
 
+    internal var activityStarted = false
+        private set
+
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
@@ -325,6 +328,7 @@ abstract class Router {
             .map { it.listener }
 
     open fun onActivityStarted() {
+        activityStarted = true
         hasPreparedForHostDetach = false
         _backstack.reversed().forEach { it.controller.activityStarted() }
     }
@@ -338,6 +342,7 @@ abstract class Router {
     }
 
     open fun onActivityStopped() {
+        activityStarted = false
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
             prepareForHostDetach()

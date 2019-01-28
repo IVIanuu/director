@@ -342,12 +342,11 @@ abstract class Controller {
     }
 
     internal fun activityStarted() {
-        _childRouters.forEach { it.onActivityStarted() }
         controllerAttachHandler?.onActivityStarted()
+        _childRouters.forEach { it.onActivityStarted() }
     }
 
     internal fun activityResumed() {
-        hasSavedViewState = false
         _childRouters.forEach { it.onActivityResumed() }
     }
 
@@ -420,7 +419,12 @@ abstract class Controller {
                         false, false, false
                     )
                 }
-            }).also { it.listenForAttach(view) }
+                }).also {
+                    if (router.rootRouter.activityStarted) {
+                        it.onActivityStarted()
+                    }
+                    it.listenForAttach(view)
+                }
         } else if (retainView) {
             restoreChildControllerContainers()
         }
@@ -448,6 +452,8 @@ abstract class Controller {
         requireSuperCalled { onAttach(view) }
 
         notifyLifecycleListeners { it.postAttach(this, view) }
+
+        hasSavedViewState = false
 
         _childRouters
             .flatMap { it.backstack }
