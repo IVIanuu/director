@@ -8,6 +8,7 @@ import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
+import com.ivianuu.director.sample.util.LoggingChangeListener
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import com.ivianuu.director.setRoot
@@ -31,7 +32,8 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             R.id.controller_container,
             LoggingControllerFactory()
         ).apply {
-            addLifecycleListener(LoggingLifecycleListener())
+            addLifecycleListener(LoggingLifecycleListener(), true)
+            addChangeListener(LoggingChangeListener(), true)
 
             if (!hasRootController) {
                 setRoot(HomeController().toTransaction())
