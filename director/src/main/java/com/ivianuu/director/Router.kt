@@ -360,6 +360,9 @@ abstract class Router {
         if (popViews) {
             popsLastView = true
             setBackstack(emptyList(), _backstack.lastOrNull()?.popChangeHandler)
+        } else {
+            // manually destroy the controllers
+            _backstack.reversed().forEach { it.controller.destroy() }
         }
     }
 

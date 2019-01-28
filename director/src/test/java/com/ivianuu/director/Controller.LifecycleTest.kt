@@ -598,6 +598,7 @@ class ControllerLifecycleCallbacksTest {
 
         val childRouter =
             parent.getChildRouter(parent.childContainer1!!)
+
         childRouter
             .setRoot(
                 child.toTransaction()
