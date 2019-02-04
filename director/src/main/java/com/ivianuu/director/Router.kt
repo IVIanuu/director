@@ -64,7 +64,7 @@ abstract class Router {
 
     private var hasPreparedForHostDetach = false
 
-    internal var activityStarted = false
+    internal var hostStarted = false
         private set
 
     /**
@@ -330,31 +330,23 @@ abstract class Router {
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener }
 
-    open fun onActivityStarted() {
-        activityStarted = true
+    open fun onStart() {
+        hostStarted = true
         hasPreparedForHostDetach = false
-        _backstack.reversed().forEach { it.controller.activityStarted() }
+        _backstack.reversed().forEach { it.controller.hostStarted() }
     }
 
-    open fun onActivityResumed() {
-        _backstack.reversed().forEach { it.controller.activityResumed() }
-    }
-
-    open fun onActivityPaused() {
-        _backstack.reversed().forEach { it.controller.activityPaused() }
-    }
-
-    open fun onActivityStopped() {
-        activityStarted = false
+    open fun onStop() {
+        hostStarted = false
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
             prepareForHostDetach()
         }
-        _backstack.reversed().forEach { it.controller.activityStopped() }
+        _backstack.reversed().forEach { it.controller.hostStopped() }
     }
 
-    open fun onActivityDestroyed() {
-        _backstack.reversed().forEach { it.controller.activityDestroyed() }
+    open fun onDestroy() {
+        _backstack.reversed().forEach { it.controller.hostDestroyed() }
         container = null
     }
 

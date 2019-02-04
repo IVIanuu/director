@@ -285,6 +285,10 @@ abstract class Controller {
             childRouter.controllerFactory = controllerFactory
 
             _childRouters.add(childRouter)
+
+            if (router.hostStarted) {
+                childRouter.onStart()
+            }
         }
 
         return childRouter.also { restoreChildControllerContainers() }
@@ -341,33 +345,25 @@ abstract class Controller {
         performRestoreInstanceState()
     }
 
-    internal fun activityStarted() {
-        controllerAttachHandler?.onActivityStarted()
-        _childRouters.forEach { it.onActivityStarted() }
+    internal fun hostStarted() {
+        controllerAttachHandler?.hostStarted()
+        _childRouters.forEach { it.onStart() }
     }
 
-    internal fun activityResumed() {
-        _childRouters.forEach { it.onActivityResumed() }
-    }
-
-    internal fun activityPaused() {
-        _childRouters.forEach { it.onActivityPaused() }
-    }
-
-    internal fun activityStopped() {
-        controllerAttachHandler?.onActivityStopped()
+    internal fun hostStopped() {
+        controllerAttachHandler?.hostStopped()
 
         // cancel any pending input event
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             view?.cancelPendingInputEvents()
         }
 
-        _childRouters.forEach { it.onActivityStopped() }
+        _childRouters.forEach { it.onStop() }
     }
 
-    internal fun activityDestroyed() {
+    internal fun hostDestroyed() {
         destroy(true)
-        _childRouters.forEach { it.onActivityDestroyed() }
+        _childRouters.forEach { it.onDestroy() }
     }
 
     internal fun inflate(parent: ViewGroup): View {
@@ -428,12 +424,12 @@ abstract class Controller {
                         fromHostRemoval = false
                     )
                 }
-                }).also {
-                    if (router.rootRouter.activityStarted) {
-                        it.onActivityStarted()
-                    }
-                    it.listenForAttach(view)
-                }
+                })
+
+            if (router.hostStarted) {
+                controllerAttachHandler!!.hostStarted()
+            }
+            controllerAttachHandler!!.listenForAttach(view)
         } else if (retainView) {
             restoreChildControllerContainers()
         }

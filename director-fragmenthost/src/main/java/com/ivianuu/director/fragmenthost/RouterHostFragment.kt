@@ -26,26 +26,16 @@ import com.ivianuu.director.RouterDelegate
 
 class RouterHostFragment : Fragment() {
 
-    private val delegate by lazy(LazyThreadSafetyMode.NONE) { RouterDelegate(requireActivity()) }
+    private lateinit var delegate: RouterDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate.onCreate(savedInstanceState)
+        delegate = RouterDelegate(requireActivity(), savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
         delegate.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        delegate.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        delegate.onPause()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -411,7 +411,7 @@ class RouterTest {
         val newTopTransaction = TestController().toTransaction()
             .pushChangeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
         router.replaceTopController(newTopTransaction)
-        newTopTransaction.pushChangeHandler!!.completeImmediately()
+        newTopTransaction.pushChangeHandler!!.cancel(true)
 
         assertEquals(2, router.backstack.size)
 

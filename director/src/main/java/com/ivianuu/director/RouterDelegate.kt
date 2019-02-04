@@ -30,20 +30,11 @@ class RouterDelegate(
 
     private val routers = mutableMapOf<Int, Router>()
 
-    fun onCreate(savedInstanceState: Bundle?) {
-        this.savedInstanceState = savedInstanceState
-    }
+    private var hostStarted = false
 
     fun onStart() {
-        routers.values.forEach { it.onActivityStarted() }
-    }
-
-    fun onResume() {
-        routers.values.forEach { it.onActivityResumed() }
-    }
-
-    fun onPause() {
-        routers.values.forEach { it.onActivityPaused() }
+        hostStarted = true
+        routers.values.forEach { it.onStart() }
     }
 
     fun onSaveInstanceState(outState: Bundle) {
@@ -54,11 +45,12 @@ class RouterDelegate(
     }
 
     fun onStop() {
-        routers.values.forEach { it.onActivityStopped() }
+        hostStarted = false
+        routers.values.forEach { it.onStop() }
     }
 
     fun onDestroy() {
-        routers.values.forEach { it.onActivityDestroyed() }
+        routers.values.forEach { it.onDestroy() }
     }
 
     fun getRouter(
@@ -73,7 +65,13 @@ class RouterDelegate(
     ): Router {
         return routers.getOrPut(container.id) {
             val routerState = savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + container.id)
-            Router(activity, container, routerState, controllerFactory)
+            val router = Router(activity, container, routerState, controllerFactory)
+
+            if (hostStarted) {
+                router.onStart()
+            }
+
+            router
         }
     }
 

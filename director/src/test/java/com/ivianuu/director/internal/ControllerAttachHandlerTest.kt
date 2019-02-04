@@ -48,22 +48,22 @@ class ControllerAttachHandlerTest {
         assertEquals(0, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStopped()
+        viewAttachHandler.hostStopped()
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStopped()
+        viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
@@ -71,7 +71,7 @@ class ControllerAttachHandlerTest {
 
     @Test
     fun testSimpleViewAttachDetach() {
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
 
         val view = View(activityProxy.activity)
 
@@ -106,7 +106,7 @@ class ControllerAttachHandlerTest {
         assertEquals(1, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStopped()
+        viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
@@ -121,7 +121,7 @@ class ControllerAttachHandlerTest {
         assertEquals(2, listener.detaches)
         assertEquals(1, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(1, listener.detachAfterStops)
@@ -129,7 +129,7 @@ class ControllerAttachHandlerTest {
 
     @Test
     fun testSimpleViewGroupAttachDetach() {
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
 
         val view = LinearLayout(activityProxy.activity)
         viewAttachHandler.listenForAttach(view)
@@ -163,7 +163,7 @@ class ControllerAttachHandlerTest {
         assertEquals(1, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStopped()
+        viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
@@ -178,7 +178,7 @@ class ControllerAttachHandlerTest {
         assertEquals(2, listener.detaches)
         assertEquals(1, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(1, listener.detachAfterStops)
@@ -186,7 +186,7 @@ class ControllerAttachHandlerTest {
 
     @Test
     fun testNestedViewGroupAttachDetach() {
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
 
         val view = LinearLayout(activityProxy.activity)
         val child = LinearLayout(activityProxy.activity)
@@ -233,7 +233,7 @@ class ControllerAttachHandlerTest {
         assertEquals(1, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStopped()
+        viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(0, listener.detachAfterStops)
@@ -249,7 +249,7 @@ class ControllerAttachHandlerTest {
         assertEquals(2, listener.detaches)
         assertEquals(1, listener.detachAfterStops)
 
-        viewAttachHandler.onActivityStarted()
+        viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
         assertEquals(1, listener.detachAfterStops)

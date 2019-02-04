@@ -9,7 +9,7 @@ internal class ControllerAttachHandler(private val listener: Listener) :
 
     private var rootAttached = false
     private var childrenAttached = false
-    private var activityReady = false
+    private var hostReady = false
 
     private var reportedState = ReportedState.VIEW_DETACHED
 
@@ -48,18 +48,18 @@ internal class ControllerAttachHandler(private val listener: Listener) :
         }
     }
 
-    fun onActivityStarted() {
-        activityReady = true
+    fun hostStarted() {
+        hostReady = true
         reportAttached()
     }
 
-    fun onActivityStopped() {
-        activityReady = false
+    fun hostStopped() {
+        hostReady = false
         reportDetached(true)
     }
 
     private fun reportAttached() {
-        if (rootAttached && childrenAttached && activityReady && reportedState != ReportedState.ATTACHED) {
+        if (rootAttached && childrenAttached && hostReady && reportedState != ReportedState.ATTACHED) {
             reportedState = ReportedState.ATTACHED
             listener.onAttached()
         }

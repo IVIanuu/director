@@ -31,26 +31,16 @@ class TestActivity : Activity() {
     var changingConfigurations = false
     var isDestroying = false
 
-    private val delegate by lazy(LazyThreadSafetyMode.NONE) { RouterDelegate(this) }
+    private lateinit var delegate: RouterDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate.onCreate(savedInstanceState)
+        delegate = RouterDelegate(this, savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
         delegate.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        delegate.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        delegate.onPause()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

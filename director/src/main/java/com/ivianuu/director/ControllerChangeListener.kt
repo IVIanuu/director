@@ -23,7 +23,7 @@ import android.view.ViewGroup
  */
 interface ControllerChangeListener {
     /**
-     * Called when a [ControllerChangeHandler] has started changing [Controller]s
+     * Called when a [ControllerChangeHandler] has hostStarted changing [Controller]s
      */
     fun onChangeStarted(
         to: Controller?,
