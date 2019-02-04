@@ -210,7 +210,10 @@ abstract class Router {
                     if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
                         // Ensure the existing root controller is fully pushed to the view hierarchy
                         if (oldRootTransaction != null) {
-                            changeManager.completeChangeImmediately(oldRootTransaction.controller.instanceId)
+                            changeManager.cancelChange(
+                                oldRootTransaction.controller.instanceId,
+                                true
+                            )
                         }
 
                         performControllerChange(
@@ -229,7 +232,7 @@ abstract class Router {
                         .forEach {
                             val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
                             localHandler.forceRemoveViewOnPush = true
-                            changeManager.completeChangeImmediately(it.controller.instanceId)
+                            changeManager.cancelChange(it.controller.instanceId, true)
                             performControllerChange(
                                 null,
                                 it,
@@ -256,7 +259,7 @@ abstract class Router {
             else -> {
                 oldVisibleTransactions.reversed().forEach {
                     val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
-                    changeManager.completeChangeImmediately(it.controller.instanceId)
+                    changeManager.cancelChange(it.controller.instanceId, true)
                     performControllerChange(null, it, false, localHandler)
                 }
             }
@@ -357,7 +360,7 @@ abstract class Router {
 
     protected open fun prepareForHostDetach() {
         _backstack.reversed().forEach {
-            changeManager.completeChangeImmediately(it.controller.instanceId)
+            changeManager.cancelChange(it.controller.instanceId, true)
         }
     }
 

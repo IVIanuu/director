@@ -51,7 +51,8 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_ON_PUSH)
     }
 
-    override fun completeImmediately() {
+    override fun cancel(immediate: Boolean) {
+        super.cancel(immediate)
         onChangeComplete?.let {
             it()
             onChangeComplete = null

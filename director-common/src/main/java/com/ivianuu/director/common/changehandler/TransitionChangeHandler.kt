@@ -30,6 +30,7 @@ import com.ivianuu.director.ControllerChangeHandler
 @TargetApi(Build.VERSION_CODES.KITKAT)
 abstract class TransitionChangeHandler : ControllerChangeHandler() {
 
+    private var canceled = false
     private var needsImmediateCompletion = false
 
     override val removesFromViewOnPush: Boolean get() = true
@@ -41,8 +42,10 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        if (needsImmediateCompletion) {
-            executePropertyChanges(container, from, to, null, isPush)
+        if (canceled) {
+            if (needsImmediateCompletion) {
+                executePropertyChanges(container, from, to, null, isPush)
+            }
             onChangeComplete()
             return
         }
@@ -79,9 +82,10 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
         }
     }
 
-    override fun completeImmediately() {
-        super.completeImmediately()
-        needsImmediateCompletion = true
+    override fun cancel(immediate: Boolean) {
+        super.cancel(immediate)
+        canceled = true
+        needsImmediateCompletion
     }
 
     /**

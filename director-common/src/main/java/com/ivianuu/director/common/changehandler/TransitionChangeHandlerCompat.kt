@@ -84,8 +84,9 @@ open class TransitionChangeHandlerCompat : ControllerChangeHandler {
     override fun copy(): TransitionChangeHandlerCompat = TransitionChangeHandlerCompat()
         .also { it.changeHandler = changeHandler.copy() }
 
-    override fun completeImmediately() {
-        changeHandler.completeImmediately()
+    override fun cancel(immediate: Boolean) {
+        super.cancel(immediate)
+        changeHandler.cancel(immediate)
     }
 
     companion object {
