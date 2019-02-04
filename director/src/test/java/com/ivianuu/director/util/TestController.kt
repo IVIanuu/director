@@ -34,6 +34,9 @@ class TestController : Controller() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            currentCallState = savedInstanceState.getParcelable(KEY_CALL_STATE)!!
+        }
         currentCallState.createCalls++
     }
 
@@ -118,11 +121,6 @@ class TestController : Controller() {
         currentCallState.saveInstanceStateCalls++
         outState.putParcelable(KEY_CALL_STATE, currentCallState)
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentCallState = savedInstanceState.getParcelable(KEY_CALL_STATE)!!
     }
 
     companion object {

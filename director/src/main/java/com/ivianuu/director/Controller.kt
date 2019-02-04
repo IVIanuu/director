@@ -219,23 +219,9 @@ abstract class Controller {
     }
 
     /**
-     * Restores the view state which was saved in [onSaveViewState]
-     */
-    protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        superCalled = true
-    }
-
-    /**
      * Called to save the instance state of this controller
      */
     protected open fun onSaveInstanceState(outState: Bundle) {
-        superCalled = true
-    }
-
-    /**
-     * Restores the instance state which was saved in [onSaveInstanceState]
-     */
-    protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
         superCalled = true
     }
 

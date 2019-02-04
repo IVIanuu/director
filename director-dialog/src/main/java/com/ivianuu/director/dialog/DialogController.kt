@@ -68,6 +68,16 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
 
     private var dialogView: View? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            style = savedInstanceState.getInt(KEY_STYLE, STYLE_NORMAL)
+            theme = savedInstanceState.getInt(KEY_THEME, 0)
+            isCancelable = savedInstanceState.getBoolean(KEY_CANCELABLE, true)
+            isDismissed = savedInstanceState.getBoolean(KEY_DISMISSED, isDismissed)
+        }
+    }
+
     override fun onInflateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -149,15 +159,6 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         outState.putInt(KEY_THEME, theme)
         outState.putBoolean(KEY_CANCELABLE, isCancelable)
         outState.putBoolean(KEY_DISMISSED, isDismissed)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-        style = savedInstanceState.getInt(KEY_STYLE, STYLE_NORMAL)
-        theme = savedInstanceState.getInt(KEY_THEME, 0)
-        isCancelable = savedInstanceState.getBoolean(KEY_CANCELABLE, true)
-        isDismissed = savedInstanceState.getBoolean(KEY_DISMISSED, isDismissed)
     }
 
     override fun onShow(dialogInterface: DialogInterface) {
