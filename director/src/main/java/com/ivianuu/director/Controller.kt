@@ -148,13 +148,6 @@ abstract class Controller {
     }
 
     /**
-     * Called when this Controller has been destroyed.
-     */
-    protected open fun onDestroy() {
-        superCalled = true
-    }
-
-    /**
      * Returns the view for this controller
      */
     protected abstract fun onInflateView(
@@ -171,9 +164,30 @@ abstract class Controller {
     }
 
     /**
+     * Called when this Controller is attached to its container
+     */
+    protected open fun onAttach(view: View) {
+        superCalled = true
+    }
+
+    /**
+     * Called when this Controller is detached from its container
+     */
+    protected open fun onDetach(view: View) {
+        superCalled = true
+    }
+
+    /**
      * Called when the view of this controller gets destroyed
      */
     protected open fun onUnbindView(view: View) {
+        superCalled = true
+    }
+
+    /**
+     * Called when this Controller has been destroyed.
+     */
+    protected open fun onDestroy() {
         superCalled = true
     }
 
@@ -194,20 +208,6 @@ abstract class Controller {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller is attached to its container
-     */
-    protected open fun onAttach(view: View) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller is detached from its container
-     */
-    protected open fun onDetach(view: View) {
         superCalled = true
     }
 
@@ -324,11 +324,10 @@ abstract class Controller {
         _router = router
 
         // restore the internal state
-        allState?.let { restoreInstanceState(it) }
-        allState = null
+        allState?.let { restoreInstanceState() }
 
         // create
-        performCreate()
+        create()
     }
 
     internal fun hostStarted() {
@@ -356,8 +355,9 @@ abstract class Controller {
         var view = view
 
         if (view != null && view.parent != null && view.parent != parent) {
-            detach(
-                view,
+            detach()
+
+            oldOnDetachCode(
                 forceViewRemoval = true,
                 blockViewRemoval = false,
                 forceChildViewRemoval = false,
@@ -402,26 +402,29 @@ abstract class Controller {
 
             controllerAttachHandler =
                 ControllerAttachHandler(object : ControllerAttachHandler.Listener {
-                override fun onAttached() {
-                    attach(view)
-                }
+                    override fun onAttached() {
+                        attach()
+                    }
 
-                override fun onDetached(fromActivityStop: Boolean) {
-                    detach(
-                        view, false,
-                        fromActivityStop, forceChildViewRemoval = false, fromHostRemoval = false
-                    )
-                }
+                    override fun onDetached(fromActivityStop: Boolean) {
+                        detach()
+                        oldOnDetachCode(
+                            forceViewRemoval = false,
+                            blockViewRemoval = fromActivityStop,
+                            forceChildViewRemoval = false,
+                            fromHostRemoval = false
+                        )
+                    }
 
-                override fun onViewDetachAfterStop() {
-                    detach(
-                        view,
-                        forceViewRemoval = false,
-                        blockViewRemoval = false,
-                        forceChildViewRemoval = false,
-                        fromHostRemoval = false
-                    )
-                }
+                    override fun onViewDetachAfterStop() {
+                        detach()
+                        oldOnDetachCode(
+                            forceViewRemoval = false,
+                            blockViewRemoval = false,
+                            forceChildViewRemoval = false,
+                            fromHostRemoval = false
+                        )
+                    }
                 })
 
             if (router.hostStarted) {
@@ -435,7 +438,9 @@ abstract class Controller {
         return view
     }
 
-    private fun attach(view: View) {
+    private fun attach() {
+        val view = view ?: return
+
         // this can happen during transitions just ignore it
         if (view.parent != router.container) return
 
@@ -461,18 +466,12 @@ abstract class Controller {
         _childRouters
             .flatMap { it.backstack }
             .filter { it.controller.awaitingParentAttach }
-            .forEach { it.controller.attach(it.controller.view!!) }
+            .forEach { it.controller.attach() }
     }
 
-    internal fun detach(
-        view: View,
-        forceViewRemoval: Boolean,
-        blockViewRemoval: Boolean,
-        forceChildViewRemoval: Boolean,
-        fromHostRemoval: Boolean
-    ) {
-        val removeViewRef =
-            !blockViewRemoval && (forceViewRemoval || !retainView || isBeingDestroyed)
+    private fun detach() {
+        // todo detach child routers
+        val view = view ?: return
 
         if (isAttached) {
             notifyLifecycleListeners { it.preDetach(this, view) }
@@ -484,6 +483,22 @@ abstract class Controller {
         }
 
         awaitingParentAttach = false
+    }
+
+    internal fun oldOnDetachCode(
+        forceViewRemoval: Boolean,
+        blockViewRemoval: Boolean,
+        forceChildViewRemoval: Boolean,
+        fromHostRemoval: Boolean
+    ) {
+        val view = view ?: return
+
+        if (isAttached) {
+            detach()
+        }
+
+        val removeViewRef =
+            !blockViewRemoval && (forceViewRemoval || !retainView || isBeingDestroyed)
 
         if (removeViewRef) {
             removeViewReference(forceChildViewRemoval)
@@ -501,7 +516,7 @@ abstract class Controller {
         val view = view
         if (view != null) {
             if (!isBeingDestroyed && !hasSavedViewState) {
-                saveViewState(view)
+                saveViewState()
             }
 
             notifyLifecycleListeners { it.preUnbindView(this, view) }
@@ -517,10 +532,11 @@ abstract class Controller {
             notifyLifecycleListeners { it.postUnbindView(this) }
 
             _childRouters.forEach { it.removeContainer(forceChildViewRemoval) }
-        }
 
-        if (isBeingDestroyed) {
-            performDestroy()
+            // todo doesn't belong here imho
+            if (isBeingDestroyed) {
+                performDestroy()
+            }
         }
     }
 
@@ -549,14 +565,25 @@ abstract class Controller {
     private fun destroy(removeView: Boolean) {
         isBeingDestroyed = true
 
-        _childRouters.forEach { it.destroy(false) }
+        if (isAttached) {
+            detach()
+        }
+
+        if (view != null) {
+            oldOnDetachCode(
+                forceViewRemoval = true,
+                blockViewRemoval = false,
+                forceChildViewRemoval = true,
+                fromHostRemoval = false
+            )
+        }
 
         if (!isAttached) {
             removeViewReference(true)
         } else if (removeView) {
             view?.let {
-                detach(
-                    it,
+                detach()
+                oldOnDetachCode(
                     forceViewRemoval = true,
                     blockViewRemoval = false,
                     forceChildViewRemoval = true,
@@ -564,6 +591,21 @@ abstract class Controller {
                 )
             }
         }
+
+        performDestroy()
+
+        _childRouters.forEach { it.destroy(false) }
+    }
+
+    private fun create() {
+        if (isCreated) return
+        notifyLifecycleListeners { it.preCreate(this, instanceState) }
+
+        isCreated = true
+
+        requireSuperCalled { onCreate(instanceState) }
+
+        notifyLifecycleListeners { it.postCreate(this, instanceState) }
     }
 
     private fun performDestroy() {
@@ -581,7 +623,7 @@ abstract class Controller {
     internal fun saveInstanceState(): Bundle {
         val view = view
         if (!hasSavedViewState && view != null) {
-            saveViewState(view)
+            saveViewState()
         }
 
         val outState = Bundle()
@@ -592,6 +634,13 @@ abstract class Controller {
         outState.putString(KEY_TARGET_INSTANCE_ID, instanceId)
         outState.putBoolean(KEY_RETAIN_VIEW, retainView)
 
+        val savedState = Bundle(javaClass.classLoader)
+        requireSuperCalled { onSaveInstanceState(savedState) }
+
+        notifyLifecycleListeners { it.onSaveInstanceState(this, savedState) }
+
+        outState.putBundle(KEY_SAVED_STATE, savedState)
+
         val childBundles = _childRouters
             .map { childRouter ->
                 Bundle().also {
@@ -601,17 +650,12 @@ abstract class Controller {
             }
         outState.putParcelableArrayList(KEY_CHILD_ROUTERS, ArrayList(childBundles))
 
-        val savedState = Bundle(javaClass.classLoader)
-        requireSuperCalled { onSaveInstanceState(savedState) }
-
-        notifyLifecycleListeners { it.onSaveInstanceState(this, savedState) }
-
-        outState.putBundle(KEY_SAVED_STATE, savedState)
-
         return outState
     }
 
-    private fun restoreInstanceState(savedInstanceState: Bundle) {
+    private fun restoreInstanceState() {
+        val savedInstanceState = allState ?: return
+
         savedInstanceState.getBundle(KEY_ARGS)?.let { bundle ->
             args = bundle.apply { classLoader = this@Controller.javaClass.classLoader }
         }
@@ -639,7 +683,9 @@ abstract class Controller {
             .toMap()
     }
 
-    private fun saveViewState(view: View) {
+    private fun saveViewState() {
+        val view = view ?: return
+
         hasSavedViewState = true
 
         val viewState = Bundle(javaClass.classLoader).also { this.viewState = it }
@@ -653,17 +699,6 @@ abstract class Controller {
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
         notifyLifecycleListeners { it.onSaveViewState(this, viewState) }
-    }
-
-    private fun performCreate() {
-        if (isCreated) return
-        notifyLifecycleListeners { it.preCreate(this, instanceState) }
-
-        isCreated = true
-
-        requireSuperCalled { onCreate(instanceState) }
-
-        notifyLifecycleListeners { it.postCreate(this, instanceState) }
     }
 
     internal fun changeStarted(

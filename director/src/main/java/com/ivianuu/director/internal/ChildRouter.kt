@@ -66,12 +66,11 @@ internal class ChildRouter : Router {
         backstack
             .filter { it.controller.view != null }
             .forEach {
-                it.controller.detach(
-                    it.controller.view!!,
-                    forceViewRemoval,
-                    false,
-                    forceViewRemoval,
-                    true
+                it.controller.oldOnDetachCode(
+                    forceViewRemoval = forceViewRemoval,
+                    blockViewRemoval = false,
+                    forceChildViewRemoval = forceViewRemoval,
+                    fromHostRemoval = true
                 )
             }
 
