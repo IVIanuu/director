@@ -20,14 +20,14 @@ import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
-import com.ivianuu.scopes.lifecycle.BaseLifecycle
+import com.ivianuu.scopes.lifecycle.AbstractLifecycle
 
 /**
  * A [com.ivianuu.scopes.lifecycle.Lifecycle] for [Controller]s
  */
 class ControllerLifecycle(
     controller: Controller
-) : BaseLifecycle<ControllerEvent>() {
+) : AbstractLifecycle<ControllerEvent>() {
 
     init {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
