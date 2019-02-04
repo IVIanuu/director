@@ -32,25 +32,25 @@ class RouterDelegate(
 
     private var hostStarted = false
 
-    fun onStart() {
+    fun hostStarted() {
         hostStarted = true
-        routers.values.forEach { it.onStart() }
+        routers.values.forEach { it.hostStarted() }
     }
 
-    fun onSaveInstanceState(outState: Bundle) {
+    fun hostStopped() {
+        hostStarted = false
+        routers.values.forEach { it.hostStopped() }
+    }
+
+    fun hostDestroyed() {
+        routers.values.forEach { it.hostDestroyed() }
+    }
+
+    fun saveInstanceState(outState: Bundle) {
         routers.values.forEach { router ->
             val bundle = Bundle().also { router.saveInstanceState(it) }
             outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
         }
-    }
-
-    fun onStop() {
-        hostStarted = false
-        routers.values.forEach { it.onStop() }
-    }
-
-    fun onDestroy() {
-        routers.values.forEach { it.onDestroy() }
     }
 
     fun getRouter(
@@ -68,7 +68,7 @@ class RouterDelegate(
             val router = Router(activity, container, routerState, controllerFactory)
 
             if (hostStarted) {
-                router.onStart()
+                router.hostStarted()
             }
 
             router

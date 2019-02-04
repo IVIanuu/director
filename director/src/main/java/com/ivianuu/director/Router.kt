@@ -330,13 +330,13 @@ abstract class Router {
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener }
 
-    open fun onStart() {
+    open fun hostStarted() {
         hostStarted = true
         hasPreparedForHostDetach = false
         _backstack.reversed().forEach { it.controller.hostStarted() }
     }
 
-    open fun onStop() {
+    open fun hostStopped() {
         hostStarted = false
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
@@ -345,7 +345,7 @@ abstract class Router {
         _backstack.reversed().forEach { it.controller.hostStopped() }
     }
 
-    open fun onDestroy() {
+    open fun hostDestroyed() {
         _backstack.reversed().forEach { it.controller.hostDestroyed() }
         container = null
     }
