@@ -114,11 +114,6 @@ class TestController : Controller() {
         currentCallState.saveViewStateCalls++
     }
 
-    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        super.onRestoreViewState(view, savedViewState)
-        currentCallState.restoreViewStateCalls++
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         currentCallState.saveInstanceStateCalls++
         outState.putParcelable(KEY_CALL_STATE, currentCallState)
@@ -128,7 +123,6 @@ class TestController : Controller() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         currentCallState = savedInstanceState.getParcelable(KEY_CALL_STATE)!!
-        currentCallState.restoreInstanceStateCalls++
     }
 
     companion object {

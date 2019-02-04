@@ -774,20 +774,10 @@ class ControllerLifecycleCallbacksTest {
                 currentCallState.saveInstanceStateCalls++
             }
 
-            override fun onRestoreInstanceState(
-                controller: Controller,
-                savedInstanceState: Bundle
-            ) {
-                currentCallState.restoreInstanceStateCalls++
-            }
-
             override fun onSaveViewState(controller: Controller, outState: Bundle) {
                 currentCallState.saveViewStateCalls++
             }
 
-            override fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
-                currentCallState.restoreViewStateCalls++
-            }
         })
     }
 }

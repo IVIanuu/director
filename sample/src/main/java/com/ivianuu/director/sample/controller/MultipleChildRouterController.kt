@@ -1,15 +1,10 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.View
-import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_0
-import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_1
-import kotlinx.android.synthetic.main.controller_multiple_child_routers.container_2
 
 class MultipleChildRouterController : BaseController() {
 
@@ -18,12 +13,8 @@ class MultipleChildRouterController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBarTitle = "Child Router Demo"
-    }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-
-        listOf(container_0, container_1, container_2)
+        listOf(R.id.container_0/*, R.id.container_1, R.id.container_2*/)
             .map { getChildRouter(it) }
             .filterNot { it.hasRootController }
             .forEach {
@@ -37,4 +28,5 @@ class MultipleChildRouterController : BaseController() {
                 )
             }
     }
+
 }

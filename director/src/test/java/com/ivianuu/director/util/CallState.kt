@@ -35,8 +35,5 @@ data class CallState(
     var detachCalls: Int = 0,
 
     var saveInstanceStateCalls: Int = 0,
-    var restoreInstanceStateCalls: Int = 0,
-
-    var saveViewStateCalls: Int = 0,
-    var restoreViewStateCalls: Int = 0
+    var saveViewStateCalls: Int = 0
 ) : Parcelable

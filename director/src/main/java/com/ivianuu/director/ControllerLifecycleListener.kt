@@ -70,13 +70,7 @@ interface ControllerLifecycleListener {
     fun onSaveInstanceState(controller: Controller, outState: Bundle) {
     }
 
-    fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
-    }
-
     fun onSaveViewState(controller: Controller, outState: Bundle) {
-    }
-
-    fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
     }
 
     fun onChangeStart(
@@ -139,14 +133,8 @@ fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit): Control
 fun Controller.doOnSaveInstanceState(block: (controller: Controller, outState: Bundle) -> Unit): ControllerLifecycleListener =
     addLifecycleListener(onSaveInstanceState = block)
 
-fun Controller.doOnRestoreInstanceState(block: (controller: Controller, savedInstanceState: Bundle) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onRestoreInstanceState = block)
-
 fun Controller.doOnSaveViewState(block: (controller: Controller, outState: Bundle) -> Unit): ControllerLifecycleListener =
     addLifecycleListener(onSaveViewState = block)
-
-fun Controller.doOnRestoreViewState(block: (controller: Controller, savedViewState: Bundle) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onRestoreViewState = block)
 
 fun Controller.doOnChangeStart(block: (controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
     addLifecycleListener(onChangeStart = block)
@@ -170,9 +158,7 @@ fun Controller.addLifecycleListener(
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreViewState: ((controller: Controller, savedViewState: Bundle) -> Unit)? = null,
     onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
@@ -184,8 +170,8 @@ fun Controller.addLifecycleListener(
         preDetach, postDetach,
         preUnbindView, postUnbindView,
         preDestroy, postDestroy,
-        onSaveInstanceState, onRestoreInstanceState,
-        onSaveViewState, onRestoreViewState,
+        onSaveInstanceState,
+        onSaveViewState,
         onChangeStart, onChangeEnd
     ).also { addLifecycleListener(it) }
 }
@@ -280,23 +266,11 @@ fun Router.doOnControllerSaveInstanceState(
 ): ControllerLifecycleListener =
     addLifecycleListener(recursive = recursive, onSaveInstanceState = block)
 
-fun Router.doOnControllerRestoreInstanceState(
-    recursive: Boolean = false,
-    block: (controller: Controller, savedInstanceState: Bundle) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onRestoreInstanceState = block)
-
 fun Router.doOnControllerSaveViewState(
     recursive: Boolean = false,
     block: (controller: Controller, outState: Bundle) -> Unit
 ): ControllerLifecycleListener =
     addLifecycleListener(recursive = recursive, onSaveViewState = block)
-
-fun Router.doOnControllerRestoreViewState(
-    recursive: Boolean = false,
-    block: (controller: Controller, savedViewState: Bundle) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onRestoreViewState = block)
 
 fun Router.doOnControllerChangeStart(
     recursive: Boolean = false,
@@ -327,9 +301,7 @@ fun Router.addLifecycleListener(
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreViewState: ((controller: Controller, savedViewState: Bundle) -> Unit)? = null,
     onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
@@ -341,8 +313,8 @@ fun Router.addLifecycleListener(
         preDetach, postDetach,
         preUnbindView, postUnbindView,
         preDestroy, postDestroy,
-        onSaveInstanceState, onRestoreInstanceState,
-        onSaveViewState, onRestoreViewState,
+        onSaveInstanceState,
+        onSaveViewState,
         onChangeStart, onChangeEnd
     ).also { addLifecycleListener(it, recursive) }
 }

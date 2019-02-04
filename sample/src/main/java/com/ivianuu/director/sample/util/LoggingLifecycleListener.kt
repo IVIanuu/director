@@ -104,19 +104,9 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         controller.d { "on change end -> $changeType, $changeHandler" }
     }
 
-    override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(controller, savedInstanceState)
-        controller.d { "on restore instance state" }
-    }
-
     override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
         super.onSaveInstanceState(controller, outState)
         controller.d { "on save instance state" }
-    }
-
-    override fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
-        super.onRestoreViewState(controller, savedViewState)
-        controller.d { "on restore view state" }
     }
 
     override fun onSaveViewState(controller: Controller, outState: Bundle) {

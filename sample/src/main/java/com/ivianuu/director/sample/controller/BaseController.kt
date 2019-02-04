@@ -19,6 +19,7 @@ import com.ivianuu.director.permission.PermissionCallback
 
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.util.LoggingControllerFactory
+import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -38,6 +39,10 @@ abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner,
 
     private val actionBar: ActionBar?
         get() = (activity as? ActionBarProvider)?.providedActionBar
+
+    init {
+        addLifecycleListener(LoggingLifecycleListener())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         childRouters.forEach {

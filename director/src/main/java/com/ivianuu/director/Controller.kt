@@ -105,6 +105,7 @@ abstract class Controller {
     private var viewState: Bundle? = null
     private var childRouterStates: Map<ChildRouter, Bundle>? = null
 
+    private var viewFullyCreated = false
     private var awaitingParentAttach = false
     private var hasSavedViewState = false
 
@@ -291,7 +292,9 @@ abstract class Controller {
             }
         }
 
-        return childRouter.also { restoreChildControllerContainers() }
+        restoreChildControllerContainers()
+
+        return childRouter
     }
 
     /**
@@ -340,9 +343,6 @@ abstract class Controller {
 
         // create
         performCreate()
-
-        // restore instance state
-        performRestoreInstanceState()
     }
 
     internal fun hostStarted() {
@@ -390,7 +390,17 @@ abstract class Controller {
                 viewState
             ).also { this.view = it }
 
-            restoreChildControllerContainers()
+            val viewState = viewState
+
+            if (viewState != null) {
+                view.restoreHierarchyState(
+                    viewState.getSparseParcelableArray(
+                        KEY_VIEW_STATE_HIERARCHY
+                    )
+                )
+                val savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE)!!
+                savedViewState.classLoader = javaClass.classLoader
+            }
 
             notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
 
@@ -400,7 +410,9 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.postBindView(this, view, viewState) }
 
-            restoreViewState(view)
+            viewFullyCreated = true
+
+            restoreChildControllerContainers()
 
             controllerAttachHandler =
                 ControllerAttachHandler(object : ControllerAttachHandler.Listener {
@@ -514,6 +526,7 @@ abstract class Controller {
             controllerAttachHandler = null
 
             this.view = null
+            viewFullyCreated = false
 
             notifyLifecycleListeners { it.postUnbindView(this) }
 
@@ -526,13 +539,21 @@ abstract class Controller {
     }
 
     private fun restoreChildControllerContainers() {
-        _childRouters
-            .filterNot { it.hasContainer }
-            .forEach {
-                val containerView = (view?.findViewById(it.hostId) as? ViewGroup) ?: return@forEach
-                it.container = containerView
-                it.rebind()
-            }
+        val view = view
+
+        // we check here if were in a fully created view state
+        // because call child router methods in onBindView
+        // would cause the child controller view to be fully created
+        // before our view is fully created
+        if (view != null && viewFullyCreated) {
+            _childRouters
+                .filterNot { it.hasContainer }
+                .forEach {
+                    val containerView = view.findViewById(it.hostId) as? ViewGroup ?: return@forEach
+                    it.container = containerView
+                    it.rebind()
+                }
+        }
     }
 
     internal fun destroy() {
@@ -648,19 +669,6 @@ abstract class Controller {
         notifyLifecycleListeners { it.onSaveViewState(this, viewState) }
     }
 
-    private fun restoreViewState(view: View) {
-        val viewState = viewState ?: return
-
-        view.restoreHierarchyState(viewState.getSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY))
-        val savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE)!!
-        savedViewState.classLoader = javaClass.classLoader
-        onRestoreViewState(view, savedViewState)
-
-        restoreChildControllerContainers()
-
-        notifyLifecycleListeners { it.onRestoreViewState(this, viewState) }
-    }
-
     private fun performCreate() {
         if (isCreated) return
         notifyLifecycleListeners { it.preCreate(this, instanceState) }
@@ -670,13 +678,6 @@ abstract class Controller {
         requireSuperCalled { onCreate(instanceState) }
 
         notifyLifecycleListeners { it.postCreate(this, instanceState) }
-    }
-
-    private fun performRestoreInstanceState() {
-        val state = instanceState ?: return
-        onRestoreInstanceState(state)
-        notifyLifecycleListeners { it.onRestoreInstanceState(this, state) }
-        instanceState = null
     }
 
     internal fun changeStarted(

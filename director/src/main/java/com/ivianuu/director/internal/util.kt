@@ -64,9 +64,7 @@ internal fun LambdaLifecycleListener(
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreViewState: ((controller: Controller, savedViewState: Bundle) -> Unit)? = null,
     onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
@@ -131,16 +129,8 @@ internal fun LambdaLifecycleListener(
             onSaveInstanceState?.invoke(controller, outState)
         }
 
-        override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
-            onRestoreInstanceState?.invoke(controller, savedInstanceState)
-        }
-
         override fun onSaveViewState(controller: Controller, outState: Bundle) {
             onSaveViewState?.invoke(controller, outState)
-        }
-
-        override fun onRestoreViewState(controller: Controller, savedViewState: Bundle) {
-            onRestoreViewState?.invoke(controller, savedViewState)
         }
 
         override fun onChangeStart(
