@@ -2,10 +2,14 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.*
+import com.ivianuu.director.Router
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
-import kotlinx.android.synthetic.main.controller_bottom_nav.*
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
+import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
 import java.util.*
 
 /**
@@ -23,6 +27,10 @@ class BottomNavController : BaseController() {
         super.onCreate(savedInstanceState)
         bottomNavRouter = getChildRouter(R.id.bottom_nav_container)
         actionBarTitle = "Bottom Nav Demo"
+
+        if (savedInstanceState != null) {
+            currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
+        }
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
@@ -84,11 +92,6 @@ class BottomNavController : BaseController() {
         } else {
             false
         }
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

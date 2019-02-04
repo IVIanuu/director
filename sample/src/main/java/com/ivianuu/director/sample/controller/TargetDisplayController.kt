@@ -30,6 +30,15 @@ class TargetDisplayController : BaseController(),
         super.onCreate(savedInstanceState)
         actionBarTitle = "Target Controller Demo"
 
+        if (savedInstanceState != null) {
+            selectedText = savedInstanceState.getString(KEY_SELECTED_TEXT)
+
+            val uriString = savedInstanceState.getString(KEY_SELECTED_IMAGE, "")
+            if (uriString.isNotEmpty()) {
+                imageUri = Uri.parse(uriString)
+            }
+        }
+
         registerActivityResultListener(REQUEST_SELECT_IMAGE, this)
     }
 
@@ -69,16 +78,6 @@ class TargetDisplayController : BaseController(),
             KEY_SELECTED_IMAGE,
             if (imageUri != null) imageUri!!.toString() else null
         )
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        selectedText = savedInstanceState.getString(KEY_SELECTED_TEXT)
-
-        val uriString = savedInstanceState.getString(KEY_SELECTED_IMAGE, "")
-        if (uriString.isNotEmpty()) {
-            imageUri = Uri.parse(uriString)
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

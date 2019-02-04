@@ -35,22 +35,22 @@ class RouterHostFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        delegate.onStart()
+        delegate.hostStarted()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        delegate.onSaveInstanceState(outState)
+        delegate.saveInstanceState(outState)
     }
 
     override fun onStop() {
         super.onStop()
-        delegate.onStop()
+        delegate.hostStopped()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        delegate.onDestroy()
+        delegate.hostDestroyed()
     }
 
     internal fun getRouter(

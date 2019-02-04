@@ -274,7 +274,7 @@ abstract class Controller {
             _childRouters.add(childRouter)
 
             if (router.hostStarted) {
-                childRouter.onStart()
+                childRouter.hostStarted()
             }
         }
 
@@ -333,7 +333,7 @@ abstract class Controller {
 
     internal fun hostStarted() {
         controllerAttachHandler?.hostStarted()
-        _childRouters.forEach { it.onStart() }
+        _childRouters.forEach { it.hostStarted() }
     }
 
     internal fun hostStopped() {
@@ -344,12 +344,12 @@ abstract class Controller {
             view?.cancelPendingInputEvents()
         }
 
-        _childRouters.forEach { it.onStop() }
+        _childRouters.forEach { it.hostStopped() }
     }
 
     internal fun hostDestroyed() {
         destroy(true)
-        _childRouters.forEach { it.onDestroy() }
+        _childRouters.forEach { it.hostDestroyed() }
     }
 
     internal fun inflate(parent: ViewGroup): View {

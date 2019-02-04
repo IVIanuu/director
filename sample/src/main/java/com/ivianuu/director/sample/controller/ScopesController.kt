@@ -29,7 +29,8 @@ import com.ivianuu.director.scopes.unbindView
 import com.ivianuu.director.toTransaction
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_scopes.*
+import kotlinx.android.synthetic.main.controller_scopes.btn_next_release_view
+import kotlinx.android.synthetic.main.controller_scopes.btn_next_retain_view
 import java.util.concurrent.TimeUnit
 
 class ScopesController : BaseController() {
@@ -45,7 +46,7 @@ class ScopesController : BaseController() {
         Observable.interval(1, TimeUnit.SECONDS)
             .doOnDispose { d { "Disposing from onCreate()" } }
             .subscribe {
-                d { "Started in onCreate(), running until onDestroy(): $it" }
+                d { "Started in onCreate(), running until hostDestroyed(): $it" }
             }
             .disposeBy(destroy)
     }
@@ -111,6 +112,6 @@ class ScopesController : BaseController() {
 
     override fun onDestroy() {
         super.onDestroy()
-        d { "onDestroy() called" }
+        d { "hostDestroyed() called" }
     }
 }

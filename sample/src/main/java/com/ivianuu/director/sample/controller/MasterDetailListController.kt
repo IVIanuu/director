@@ -6,14 +6,20 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.getChildRouter
+import com.ivianuu.director.pushController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_master_detail_list.*
-import kotlinx.android.synthetic.main.row_detail_item.*
+import kotlinx.android.synthetic.main.controller_master_detail_list.detail_container
+import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
+import kotlinx.android.synthetic.main.row_detail_item.item_title
+import kotlinx.android.synthetic.main.row_detail_item.row_root
 
 class MasterDetailListController : BaseController() {
 
@@ -25,6 +31,9 @@ class MasterDetailListController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBarTitle = "Master/Detail Flow"
+        if (savedInstanceState != null) {
+            selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
+        }
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
@@ -52,14 +61,7 @@ class MasterDetailListController : BaseController() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
         outState.putInt(KEY_SELECTED_INDEX, selectedIndex)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-        selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
     }
 
     private fun onItemClicked(item: DetailItem, index: Int) {
