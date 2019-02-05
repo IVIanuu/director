@@ -2,7 +2,6 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.Router
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popToRoot
@@ -21,11 +20,12 @@ class BottomNavController : BaseController() {
 
     private var currentIndex = -1
 
-    private lateinit var bottomNavRouter: Router
+    private val bottomNavRouter by lazy {
+        getChildRouter(R.id.bottom_nav_container)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bottomNavRouter = getChildRouter(R.id.bottom_nav_container)
         actionBarTitle = "Bottom Nav Demo"
 
         if (savedInstanceState != null) {

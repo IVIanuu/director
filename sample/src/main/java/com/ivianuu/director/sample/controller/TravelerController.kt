@@ -31,7 +31,9 @@ class TravelerController : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_traveler
 
-    private val childRouter = getChildRouter(R.id.traveler_container)
+    private val childRouter by lazy {
+        getChildRouter(R.id.traveler_container)
+    }
 
     val travelerRouter = Router().apply {
         setNavigator(ControllerNavigator(childRouter))
