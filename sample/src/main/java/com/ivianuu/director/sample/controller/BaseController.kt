@@ -12,9 +12,9 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
 import com.ivianuu.director.activityresult.ActivityResultListener
-import com.ivianuu.director.arch.lifecycle.ControllerLifecycleOwner
-import com.ivianuu.director.arch.lifecycle.ControllerViewLifecycleOwner
-import com.ivianuu.director.arch.lifecycle.ControllerViewModelStoreOwner
+import com.ivianuu.director.androidx.lifecycle.ControllerLifecycleOwner
+import com.ivianuu.director.androidx.lifecycle.ControllerViewLifecycleOwner
+import com.ivianuu.director.androidx.lifecycle.ControllerViewModelStoreOwner
 import com.ivianuu.director.permission.PermissionCallback
 
 import com.ivianuu.director.sample.ActionBarProvider

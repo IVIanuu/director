@@ -1,7 +1,7 @@
 include(
     ":director",
     ":director-activityresult",
-    ":director-arch-lifecycle",
+    ":director-androidx-lifecycle",
     ":director-common",
     ":director-dialog",
     ":director-fragmenthost",

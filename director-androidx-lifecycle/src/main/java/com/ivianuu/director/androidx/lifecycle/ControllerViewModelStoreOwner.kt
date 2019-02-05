@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.arch.lifecycle
+package com.ivianuu.director.androidx.lifecycle
 
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
