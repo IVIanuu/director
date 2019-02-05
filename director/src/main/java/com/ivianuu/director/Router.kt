@@ -12,9 +12,7 @@ import com.ivianuu.director.internal.backstacksAreEqual
 import com.ivianuu.director.internal.filterVisible
 
 /**
- * A Router implements navigation and backstack handling for [Controller]s. Router objects are attached
- * to Activity/containing ViewGroup pairs. Routers do not directly render or push Views to the container ViewGroup,
- * but instead defer this responsibility to the [ControllerChangeHandler] specified in a given transaction.
+ * Handles the backstack and delegates the host lifecycle to it's controllers
  */
 abstract class Router {
 
@@ -45,7 +43,7 @@ abstract class Router {
         }
 
     /**
-     * Will be used to instantiate controllers after config changes or  process death
+     * Will be used to instantiate controllers after config changes or process death
      */
     var controllerFactory: ControllerFactory?
         get() = _controllerFactory

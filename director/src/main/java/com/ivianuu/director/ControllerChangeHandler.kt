@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.internal.newInstanceOrThrow
 
 /**
- * ControllerChangeHandlers are responsible for swapping the View for one Controller to the View
- * of another. They can be useful for performing animations and transitions between Controllers. Several
- * default ControllerChangeHandlers are included.
+ * Swaps views on controller changes
  */
 abstract class ControllerChangeHandler {
 

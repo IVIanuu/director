@@ -14,11 +14,6 @@ internal class ControllerAttachHandler(
     private var hostStarted = false
     private var parentAttached = false
 
-    private var lastReason = ChangeReason.VIEW
-    private var wasViewAttached = false
-    private var wasHostStarted = false
-    private var wasParentAttached = false
-
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
 
     override fun onViewAttachedToWindow(v: View) {
