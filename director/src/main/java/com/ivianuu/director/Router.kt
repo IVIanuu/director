@@ -96,7 +96,7 @@ abstract class Router {
         _backstack.clear()
         _backstack.addAll(newBackstack)
 
-        oldTransactions
+        val destroyedTransactions = oldTransactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
             .onEach {
                 // Inform the controller that it will be destroyed soon
@@ -264,6 +264,8 @@ abstract class Router {
                 }
             }
         }
+
+        destroyedTransactions.forEach { it.controller.destroy() }
     }
 
     /**

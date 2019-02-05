@@ -65,6 +65,11 @@ internal class ChildRouter : Router {
         }
     }
 
+    fun parentDestroyed() {
+        backstack.forEach { it.controller.parentDestroyed() }
+        container = null
+    }
+
     fun removeContainer(forceViewRemoval: Boolean) {
         prepareForHostDetach()
 

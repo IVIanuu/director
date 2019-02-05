@@ -289,6 +289,7 @@ abstract class Controller {
      */
     fun removeChildRouter(childRouter: Router) {
         if (_childRouters.remove(childRouter)) {
+            childRouter.isBeingDestroyed()
             childRouter.destroy(true)
         }
     }
@@ -353,7 +354,7 @@ abstract class Controller {
 
     internal fun hostDestroyed() {
         _childRouters.forEach { it.hostDestroyed() }
-        destroy(true)
+        destroy()
     }
 
     internal fun inflate(parent: ViewGroup): View {
@@ -419,23 +420,13 @@ abstract class Controller {
         } else {
             detach()
 
-            if (!viewAttached) {
-                val parentController = parentController
+            if (!viewAttached && !isBeingDestroyed) {
                 oldOnDetachCode(
                     forceViewRemoval = false,
-                    blockViewRemoval = reason != ControllerAttachHandler.ChangeReason.VIEW ||
-                            parentController != null && parentController.isBeingDestroyed
-                    ,
+                    blockViewRemoval = reason != ControllerAttachHandler.ChangeReason.VIEW,
                     forceChildViewRemoval = false,
                     fromHostRemoval = false
                 )
-
-                if (isBeingDestroyed && (parentController == null
-                            || !parentController.isBeingDestroyed)
-                ) {
-                    unbindView(true)
-                    performDestroy()
-                }
             }
         }
     }
@@ -495,10 +486,8 @@ abstract class Controller {
             detach()
         }
 
-        val parentController = parentController
         val removeViewRef =
-            !blockViewRemoval && (forceViewRemoval || !retainView || (isBeingDestroyed
-                    && (parentController == null || !parentController.isBeingDestroyed)))
+            !blockViewRemoval && (forceViewRemoval || !retainView)
 
         if (removeViewRef) {
             unbindView(forceChildViewRemoval)
@@ -513,25 +502,23 @@ abstract class Controller {
     }
 
     private fun unbindView(forceChildViewRemoval: Boolean) {
-        val view = view
-        if (view != null) {
-            if (!isBeingDestroyed && !hasSavedViewState) {
-                saveViewState()
-            }
-
-            _childRouters.forEach { it.removeContainer(forceChildViewRemoval) }
-
-            notifyLifecycleListeners { it.preUnbindView(this, view) }
-
-            requireSuperCalled { onUnbindView(view) }
-
-            attachHandler.dropView(view)
-
-            this.view = null
-            viewFullyCreated = false
-
-            notifyLifecycleListeners { it.postUnbindView(this) }
+        val view = view ?: return
+        if (!isBeingDestroyed && !hasSavedViewState) {
+            saveViewState()
         }
+
+        _childRouters.forEach { it.removeContainer(forceChildViewRemoval) }
+
+        notifyLifecycleListeners { it.preUnbindView(this, view) }
+
+        requireSuperCalled { onUnbindView(view) }
+
+        attachHandler.dropView(view)
+
+        this.view = null
+        viewFullyCreated = false
+
+        notifyLifecycleListeners { it.postUnbindView(this) }
     }
 
     private fun restoreChildControllerContainers() {
@@ -556,35 +543,34 @@ abstract class Controller {
         isBeingDestroyed = true
         _childRouters.forEach { it.isBeingDestroyed() }
 
-        // todo combine with destroy(boolean)
+        // we should only handle the destruction if we are the root controller
+        // or we get popped
         val parentController = parentController
-        if (parentController == null || !parentController.isBeingDestroyed) {
-            if (!isAttached && view != null) {
-                unbindView(true)
-            } else if (view == null) {
-                performDestroy()
-            }
+        if ((parentController == null
+                    || !parentController.isBeingDestroyed) && isAttached
+        ) {
+            addLifecycleListener(object : ControllerLifecycleListener {
+                override fun postDetach(controller: Controller, view: View) {
+                    super.postDetach(controller, view)
+                    removeLifecycleListener(this)
+                    unbindView(true)
+                    performDestroy()
+                }
+            })
         }
     }
 
-    private fun destroy(removeView: Boolean) {
-        isBeingDestroyed = true
-        _childRouters.forEach { it.destroy(false) }
-
-        if (!isAttached) {
+    internal fun destroy() {
+        val parentController = parentController
+        if ((parentController == null
+                    || !parentController.isBeingDestroyed)
+        ) {
             unbindView(true)
-        } else if (removeView) {
-            view?.let {
-                detach()
-                oldOnDetachCode(
-                    forceViewRemoval = true,
-                    blockViewRemoval = false,
-                    forceChildViewRemoval = true,
-                    fromHostRemoval = false
-                )
-            }
+            performDestroy()
         }
+    }
 
+    internal fun parentDestroyed() {
         performDestroy()
     }
 
@@ -604,7 +590,7 @@ abstract class Controller {
     private fun performDestroy() {
         if (isDestroyed) return
 
-        _childRouters.forEach { it.hostDestroyed() }
+        _childRouters.forEach { it.parentDestroyed() }
 
         notifyLifecycleListeners { it.preDestroy(this) }
         isDestroyed = true
