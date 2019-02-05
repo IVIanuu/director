@@ -636,14 +636,11 @@ abstract class Controller {
 
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
-        val childBundles = _childRouters
-            .map { childRouter ->
-                Bundle().apply {
-                    putBundle(KEY_CHILD_ROUTER_IDENTITY, childRouter.saveIdentity())
-                    putBundle(KEY_CHILD_ROUTER_STATE, childRouter.saveInstanceState())
-                }
-            }
-        outState.putParcelableArrayList(KEY_CHILD_ROUTERS, ArrayList(childBundles))
+        val childIdentities = _childRouters.map { it.saveIdentity() }
+        val childStates = _childRouters.map { it.saveInstanceState() }
+
+        outState.putParcelableArrayList(KEY_CHILD_ROUTER_IDENTITIES, ArrayList(childIdentities))
+        outState.putParcelableArrayList(KEY_CHILD_ROUTER_STATES, ArrayList(childStates))
 
         return outState
     }
@@ -666,10 +663,15 @@ abstract class Controller {
 
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
-        childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
-            .map { bundle ->
-                val identity = bundle.getBundle(KEY_CHILD_ROUTER_IDENTITY)!!
-                val state = bundle.getBundle(KEY_CHILD_ROUTER_STATE)!!
+        val childIdentities = savedInstanceState.getParcelableArrayList<Bundle>(
+            KEY_CHILD_ROUTER_IDENTITIES
+        )!!
+
+        val childStates = savedInstanceState
+            .getParcelableArrayList<Bundle>(KEY_CHILD_ROUTER_STATES)!!
+
+        childRouterStates = childIdentities.zip(childStates)
+            .map { (identity, state) ->
                 ChildRouter(this).apply {
                     // we only restore the identity for now
                     // to give the user a chance to set a [ControllerFactory] in [onCreate]
@@ -728,9 +730,8 @@ abstract class Controller {
     companion object {
         private const val KEY_CLASS_NAME = "Controller.className"
         private const val KEY_VIEW_STATE = "Controller.viewState"
-        private const val KEY_CHILD_ROUTERS = "Controller.childRouters"
-        private const val KEY_CHILD_ROUTER_IDENTITY = "Controller.childRouterIdentity"
-        private const val KEY_CHILD_ROUTER_STATE = "Controller.childRouterState"
+        private const val KEY_CHILD_ROUTER_IDENTITIES = "Controller.childRouterIdentities"
+        private const val KEY_CHILD_ROUTER_STATES = "Controller.childRouterStates"
         private const val KEY_SAVED_STATE = "Controller.instanceState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"
