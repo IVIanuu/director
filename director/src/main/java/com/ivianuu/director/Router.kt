@@ -273,7 +273,7 @@ abstract class Router {
     open fun rebind() {
         _backstack
             .filterVisible()
-            .filterNot { it.controller.isAttached }
+            .filterNot { it.controller.state == ControllerState.ATTACHED }
             .forEach {
                 performControllerChange(
                     it, null, true,
@@ -397,7 +397,7 @@ abstract class Router {
         isPush: Boolean,
         changeHandler: ControllerChangeHandler? = null
     ) {
-        check(!isPush || to == null || !to.controller.isDestroyed) {
+        check(!isPush || to == null || to.controller.state != ControllerState.DESTROYED) {
             "Trying to push a controller that has already been destroyed ${to!!.javaClass.simpleName}"
         }
 

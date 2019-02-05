@@ -11,6 +11,11 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.ControllerState.ATTACHED
+import com.ivianuu.director.ControllerState.CREATED
+import com.ivianuu.director.ControllerState.DESTROYED
+import com.ivianuu.director.ControllerState.INITIALIZED
+import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.internal.ChildRouter
 import com.ivianuu.director.internal.ControllerAttachHandler
 import java.util.*
@@ -77,22 +82,9 @@ abstract class Controller {
     private var targetInstanceId: String? = null
 
     /**
-     * Whether or not this controller is already created
+     * The current state of this controller
      */
-    var isCreated = false
-        private set
-
-    /**
-     * Whether or not this Controller is currently attached to its container.
-     */
-    var isAttached = false
-        private set
-
-    /**
-     * Whether or not this Controller has been destroyed.
-     */
-    var isDestroyed = false
-        private set
+    var state: ControllerState = INITIALIZED
 
     /**
      * Whether or not this Controller is currently in the process of being destroyed.
@@ -114,7 +106,7 @@ abstract class Controller {
     var retainView = false
         set(value) {
             field = value
-            if (!value && !isAttached) {
+            if (!value && !state.isAtLeast(ATTACHED)) {
                 unbindView()
             }
         }
@@ -234,7 +226,7 @@ abstract class Controller {
             .asSequence()
             .sortedByDescending { it.transactionIndex }
             .map { it.controller }
-            .any { it.isAttached && it.router.handleBack() }
+            .any { state.isAtLeast(ATTACHED) && it.router.handleBack() }
     }
 
     /**
@@ -306,17 +298,17 @@ abstract class Controller {
      * Sets the initial state of this controller which was previously created by
      * [Router.saveControllerInstanceState]
      */
-    fun setInitialSavedState(state: Bundle?) {
+    fun setInitialSavedState(initialState: Bundle?) {
         check(!routerSet) { "controller already added" }
 
-        if (state != null) {
-            val className = state.getString(KEY_CLASS_NAME)
+        if (initialState != null) {
+            val className = initialState.getString(KEY_CLASS_NAME)
             require(javaClass.name == className) {
-                "state of $className cannot be used for ${javaClass.name}"
+                "initialState of $className cannot be used for ${javaClass.name}"
             }
         }
 
-        allState = state
+        allState = initialState
     }
 
     internal fun setRouter(router: Router) {
@@ -436,7 +428,7 @@ abstract class Controller {
 
         notifyLifecycleListeners { it.preAttach(this, view) }
 
-        isAttached = true
+        state = ATTACHED
 
         requireSuperCalled { onAttach(view) }
 
@@ -450,11 +442,11 @@ abstract class Controller {
     private fun detach() {
         val view = view ?: return
 
-        if (isAttached) {
+        if (state == ATTACHED) {
             _childRouters.forEach { it.parentDetached() }
 
             notifyLifecycleListeners { it.preDetach(this, view) }
-            isAttached = false
+            state = VIEW_BOUND
 
             requireSuperCalled { onDetach(view) }
 
@@ -530,7 +522,7 @@ abstract class Controller {
         // or we get popped
         val parentController = parentController
         if ((parentController == null
-                    || !parentController.isBeingDestroyed) && isAttached
+                    || !parentController.isBeingDestroyed) && state == ATTACHED
         ) {
             doOnPostUnbindView { performDestroy() }
         }
@@ -554,25 +546,27 @@ abstract class Controller {
     }
 
     private fun create() {
-        if (isCreated) return
-        notifyLifecycleListeners { it.preCreate(this, instanceState) }
+        if (!state.isAtLeast(CREATED)) {
+            notifyLifecycleListeners { it.preCreate(this, instanceState) }
 
-        isCreated = true
+            state = CREATED
 
-        requireSuperCalled { onCreate(instanceState) }
+            requireSuperCalled { onCreate(instanceState) }
 
-        notifyLifecycleListeners { it.postCreate(this, instanceState) }
+            notifyLifecycleListeners { it.postCreate(this, instanceState) }
 
-        instanceState = null
+            instanceState = null
+        }
     }
 
     private fun performDestroy() {
-        if (isDestroyed) return
+        if (state == DESTROYED) return
 
         _childRouters.forEach { it.parentDestroyed() }
 
         notifyLifecycleListeners { it.preDestroy(this) }
-        isDestroyed = true
+
+        state = DESTROYED
 
         requireSuperCalled { onDestroy() }
 

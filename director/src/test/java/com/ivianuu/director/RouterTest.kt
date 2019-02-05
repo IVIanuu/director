@@ -293,8 +293,8 @@ class RouterTest {
         router.pushController(oldTopTransaction)
         assertEquals(2, router.backstack.size)
 
-        assertTrue(oldRootTransaction.controller.isAttached)
-        assertTrue(oldTopTransaction.controller.isAttached)
+        assertTrue(oldRootTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(oldTopTransaction.controller.state == ControllerState.ATTACHED)
 
         val rootTransaction = TestController().toTransaction()
         val middleTransaction = TestController().toTransaction()
@@ -312,11 +312,11 @@ class RouterTest {
         assertEquals(middleTransaction, fetchedBackstack[1])
         assertEquals(topTransaction, fetchedBackstack[2])
 
-        assertFalse(oldRootTransaction.controller.isAttached)
-        assertFalse(oldTopTransaction.controller.isAttached)
-        assertTrue(rootTransaction.controller.isAttached)
-        assertTrue(middleTransaction.controller.isAttached)
-        assertTrue(topTransaction.controller.isAttached)
+        assertFalse(oldRootTransaction.controller.state == ControllerState.ATTACHED)
+        assertFalse(oldTopTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(middleTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(topTransaction.controller.state == ControllerState.ATTACHED)
     }
 
     @Test
@@ -336,9 +336,9 @@ class RouterTest {
         assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.isAttached)
-        assertFalse(transaction1.controller.isAttached)
-        assertFalse(transaction2.controller.isAttached)
+        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
+        assertFalse(transaction1.controller.state == ControllerState.ATTACHED)
+        assertFalse(transaction2.controller.state == ControllerState.ATTACHED)
     }
 
     @Test
@@ -361,9 +361,9 @@ class RouterTest {
         assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.isAttached)
-        assertFalse(transaction1.controller.isAttached)
-        assertFalse(transaction2.controller.isAttached)
+        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
+        assertFalse(transaction1.controller.state == ControllerState.ATTACHED)
+        assertFalse(transaction2.controller.state == ControllerState.ATTACHED)
     }
 
     @Test
@@ -401,8 +401,8 @@ class RouterTest {
 
         assertEquals(2, router.backstack.size)
 
-        assertTrue(rootTransaction.controller.isAttached)
-        assertTrue(topTransaction.controller.isAttached)
+        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(topTransaction.controller.state == ControllerState.ATTACHED)
 
         var fetchedBackstack = router.backstack
         assertEquals(rootTransaction, fetchedBackstack[0])
@@ -419,9 +419,9 @@ class RouterTest {
         assertEquals(rootTransaction, fetchedBackstack[0])
         assertEquals(newTopTransaction, fetchedBackstack[1])
 
-        assertTrue(rootTransaction.controller.isAttached)
-        assertFalse(topTransaction.controller.isAttached)
-        assertTrue(newTopTransaction.controller.isAttached)
+        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
+        assertFalse(topTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(newTopTransaction.controller.state == ControllerState.ATTACHED)
     }
 
     @Test

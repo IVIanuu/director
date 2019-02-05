@@ -3,6 +3,7 @@ package com.ivianuu.director.internal
 import android.app.Activity
 import android.os.Bundle
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerState
 import com.ivianuu.director.Router
 
 internal class ChildRouter : Router {
@@ -58,7 +59,7 @@ internal class ChildRouter : Router {
         super.setControllerRouter(controller)
 
         // bring into the right state
-        if (hostController.isAttached) {
+        if (hostController.state == ControllerState.ATTACHED) {
             controller.parentAttached()
         }
     }

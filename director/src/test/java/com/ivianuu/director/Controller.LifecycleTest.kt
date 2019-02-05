@@ -610,11 +610,9 @@ class ControllerLifecycleCallbacksTest {
 
         router.popCurrentController()
 
-        expectedCallState.changeStartCalls++
         expectedCallState.detachCalls++
         expectedCallState.unbindViewCalls++
         expectedCallState.destroyCalls++
-        expectedCallState.changeEndCalls++
 
         assertCalls(expectedCallState, child)
     }
@@ -640,20 +638,20 @@ class ControllerLifecycleCallbacksTest {
                     .popChangeHandler(SimpleSwapChangeHandler())
             )
 
-        assertTrue(parent.isAttached)
-        assertTrue(child.isAttached)
+        assertTrue(parent.state == ControllerState.ATTACHED)
+        assertTrue(child.state == ControllerState.ATTACHED)
 
         ViewUtils.reportAttached(parent.view!!, attached = false, propogateToChildren = true)
-        assertFalse(parent.isAttached)
-        assertFalse(child.isAttached)
+        assertFalse(parent.state == ControllerState.ATTACHED)
+        assertFalse(child.state == ControllerState.ATTACHED)
 
         ViewUtils.reportAttached(child.view!!, true)
-        assertFalse(parent.isAttached)
-        assertFalse(child.isAttached)
+        assertFalse(parent.state == ControllerState.ATTACHED)
+        assertFalse(child.state == ControllerState.ATTACHED)
 
         ViewUtils.reportAttached(parent.view!!, true)
-        assertTrue(parent.isAttached)
-        assertTrue(child.isAttached)
+        assertTrue(parent.state == ControllerState.ATTACHED)
+        assertTrue(child.state == ControllerState.ATTACHED)
     }
 
     private fun getPushHandler(

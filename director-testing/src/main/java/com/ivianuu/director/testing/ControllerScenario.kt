@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerFactory
+import com.ivianuu.director.ControllerState
 import com.ivianuu.director.Router
 import com.ivianuu.director.findControllerByTag
 import com.ivianuu.director.fragmenthost.getRouter

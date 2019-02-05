@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.testing
+package com.ivianuu.director
 
+/**
+ * All states a [Controller] can have
+ */
 enum class ControllerState {
+    DESTROYED,
     INITIALIZED,
     CREATED,
     VIEW_BOUND,
     ATTACHED,
-    DESTROYED
 }
+
+/**
+ * Whether or not this state is at least [other]
+ */
+fun ControllerState.isAtLeast(other: ControllerState): Boolean =
+    compareTo(other) >= 0
