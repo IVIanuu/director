@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.fragmenthost.getRouter
-import com.ivianuu.director.handleBack
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.MultipleChildRouterController
 import com.ivianuu.director.sample.util.LoggingChangeListener
@@ -37,12 +36,6 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             if (!hasRootController) {
                 setRoot(MultipleChildRouterController().toTransaction())
             }
-        }
-    }
-
-    override fun onBackPressed() {
-        if (!router.handleBack()) {
-            super.onBackPressed()
         }
     }
 

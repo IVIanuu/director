@@ -18,13 +18,15 @@ package com.ivianuu.director.fragmenthost
 
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterDelegate
+import com.ivianuu.director.handleBack
 
-class RouterHostFragment : Fragment() {
+class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     private lateinit var delegate: RouterDelegate
 
@@ -34,6 +36,8 @@ class RouterHostFragment : Fragment() {
             requireActivity(),
             savedInstanceState?.getBundle(KEY_ROUTER_STATES)
         )
+
+        requireActivity().addOnBackPressedCallback(this)
     }
 
     override fun onStart() {
@@ -53,6 +57,7 @@ class RouterHostFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        requireActivity().removeOnBackPressedCallback(this)
         delegate.hostDestroyed()
     }
 
@@ -60,6 +65,9 @@ class RouterHostFragment : Fragment() {
         container: ViewGroup,
         controllerFactory: ControllerFactory?
     ): Router = delegate.getRouter(container, controllerFactory)
+
+    override fun handleOnBackPressed(): Boolean = delegate.routers
+        .any { it.handleBack() }
 
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
