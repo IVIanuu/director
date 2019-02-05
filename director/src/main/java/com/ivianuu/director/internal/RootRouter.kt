@@ -19,14 +19,20 @@ internal class RootRouter(
         this.container = container
     }
 
-    override fun saveInstanceState(outState: Bundle) {
-        super.saveInstanceState(outState)
-        transactionIndexer.saveInstanceState(outState)
+    override fun saveInstanceState(): Bundle {
+        return super.saveInstanceState().also {
+            it.putBundle(KEY_TRANSACTION_INDEXER, transactionIndexer.saveInstanceState())
+        }
     }
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {
         super.restoreInstanceState(savedInstanceState)
-        transactionIndexer.restoreInstanceState(savedInstanceState)
+        transactionIndexer.restoreInstanceState(
+            savedInstanceState.getBundle(KEY_TRANSACTION_INDEXER)!!
+        )
     }
 
+    private companion object {
+        private const val KEY_TRANSACTION_INDEXER = "RootRouter.transactionIndexer"
+    }
 }

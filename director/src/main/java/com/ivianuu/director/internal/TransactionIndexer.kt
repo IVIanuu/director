@@ -8,8 +8,8 @@ internal class TransactionIndexer {
 
     fun nextIndex(): Int = ++currentIndex
 
-    fun saveInstanceState(outState: Bundle) {
-        outState.putInt(KEY_INDEX, currentIndex)
+    fun saveInstanceState(): Bundle = Bundle().apply {
+        putInt(KEY_INDEX, currentIndex)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle) {

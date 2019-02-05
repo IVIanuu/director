@@ -46,10 +46,10 @@ class RouterDelegate(
         routers.values.forEach { it.hostDestroyed() }
     }
 
-    fun saveInstanceState(outState: Bundle) {
+    fun saveInstanceState(): Bundle = Bundle().apply {
         routers.values.forEach { router ->
-            val bundle = Bundle().also { router.saveInstanceState(it) }
-            outState.putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
+            val bundle = router.saveInstanceState()
+            putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
         }
     }
 

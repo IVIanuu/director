@@ -35,7 +35,7 @@ class TestActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate = RouterDelegate(this, savedInstanceState)
+        delegate = RouterDelegate(this, savedInstanceState?.getBundle(KEY_ROUTER_STATES))
     }
 
     override fun onStart() {
@@ -45,7 +45,7 @@ class TestActivity : Activity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        delegate.saveInstanceState(outState)
+        outState.putBundle(KEY_ROUTER_STATES, delegate.saveInstanceState())
     }
 
     override fun onStop() {
@@ -68,4 +68,7 @@ class TestActivity : Activity() {
 
     override fun isDestroyed(): Boolean = isDestroying || super.isDestroyed()
 
+    private companion object {
+        private const val KEY_ROUTER_STATES = "TestActivity.routerStates"
+    }
 }

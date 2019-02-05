@@ -74,7 +74,7 @@ class RouterTransaction {
     /**
      * Used to serialize this transaction into a Bundle
      */
-    internal fun saveInstanceState(): Bundle = Bundle().apply {
+    internal fun saveInstanceState() = Bundle().apply {
         putBundle(KEY_CONTROLLER_BUNDLE, controller.saveInstanceState())
         pushChangeHandler?.let { putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
         popChangeHandler?.let { putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }

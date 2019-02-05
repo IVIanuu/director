@@ -43,9 +43,9 @@ internal class ChildRouter : Router {
         super.getAllLifecycleListeners(recursiveOnly) +
                 hostController.router.getAllLifecycleListeners(true)
 
-    fun saveIdentity(outState: Bundle) {
-        outState.putInt(KEY_HOST_ID, hostId)
-        outState.putString(KEY_TAG, tag)
+    fun saveIdentity(): Bundle = Bundle().apply {
+        putInt(KEY_HOST_ID, hostId)
+        putString(KEY_TAG, tag)
     }
 
     fun restoreIdentity(savedInstanceState: Bundle) {

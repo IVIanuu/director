@@ -30,7 +30,8 @@ class RouterHostFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate = RouterDelegate(requireActivity(), savedInstanceState)
+        delegate =
+            RouterDelegate(requireActivity(), savedInstanceState?.getBundle(KEY_ROUTER_STATES))
     }
 
     override fun onStart() {
@@ -40,7 +41,7 @@ class RouterHostFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        delegate.saveInstanceState(outState)
+        outState.putBundle(KEY_ROUTER_STATES, delegate.saveInstanceState())
     }
 
     override fun onStop() {
@@ -60,6 +61,8 @@ class RouterHostFragment : Fragment() {
 
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
+
+        private const val KEY_ROUTER_STATES = "RouterHostFragment.routerState"
 
         internal fun install(fm: FragmentManager): RouterHostFragment {
             return (fm.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment)

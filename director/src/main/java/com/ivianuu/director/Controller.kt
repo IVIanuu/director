@@ -638,9 +638,9 @@ abstract class Controller {
 
         val childBundles = _childRouters
             .map { childRouter ->
-                Bundle().also {
-                    childRouter.saveIdentity(it)
-                    childRouter.saveInstanceState(it)
+                Bundle().apply {
+                    putBundle(KEY_CHILD_ROUTER_IDENTITY, childRouter.saveIdentity())
+                    putBundle(KEY_CHILD_ROUTER_STATE, childRouter.saveInstanceState())
                 }
             }
         outState.putParcelableArrayList(KEY_CHILD_ROUTERS, ArrayList(childBundles))
@@ -668,11 +668,13 @@ abstract class Controller {
 
         childRouterStates = savedInstanceState.getParcelableArrayList<Bundle>(KEY_CHILD_ROUTERS)!!
             .map { bundle ->
+                val identity = bundle.getBundle(KEY_CHILD_ROUTER_IDENTITY)!!
+                val state = bundle.getBundle(KEY_CHILD_ROUTER_STATE)!!
                 ChildRouter(this).apply {
                     // we only restore the identity for now
                     // to give the user a chance to set a [ControllerFactory] in [onCreate]
-                    restoreIdentity(bundle)
-                } to bundle
+                    restoreIdentity(identity)
+                } to state
             }
             .onEach { _childRouters.add(it.first) }
             .toMap()
@@ -727,6 +729,8 @@ abstract class Controller {
         private const val KEY_CLASS_NAME = "Controller.className"
         private const val KEY_VIEW_STATE = "Controller.viewState"
         private const val KEY_CHILD_ROUTERS = "Controller.childRouters"
+        private const val KEY_CHILD_ROUTER_IDENTITY = "Controller.childRouterIdentity"
+        private const val KEY_CHILD_ROUTER_STATE = "Controller.childRouterState"
         private const val KEY_SAVED_STATE = "Controller.instanceState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"

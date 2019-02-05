@@ -77,9 +77,7 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         val router = `object` as Router
 
-        val savedState = Bundle()
-        router.saveInstanceState(savedState)
-        savedPages.put(position, savedState)
+        savedPages.put(position, router.saveInstanceState())
 
         savedPageHistory.remove(position)
         savedPageHistory.add(position)

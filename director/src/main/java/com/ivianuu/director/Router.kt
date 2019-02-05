@@ -365,15 +365,17 @@ abstract class Router {
         }
     }
 
-    open fun saveInstanceState(outState: Bundle) {
+    open fun saveInstanceState(): Bundle {
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
             prepareForHostDetach()
         }
 
-        val backstack = _backstack.map { it.saveInstanceState() }
-        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
-        outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
+        return Bundle().apply {
+            val backstack = _backstack.map { it.saveInstanceState() }
+            putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
+            putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
+        }
     }
 
     open fun restoreInstanceState(savedInstanceState: Bundle) {
