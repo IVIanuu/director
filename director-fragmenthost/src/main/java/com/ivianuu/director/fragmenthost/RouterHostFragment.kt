@@ -30,8 +30,10 @@ class RouterHostFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate =
-            RouterDelegate(requireActivity(), savedInstanceState?.getBundle(KEY_ROUTER_STATES))
+        delegate = RouterDelegate(
+            requireActivity(),
+            savedInstanceState?.getBundle(KEY_ROUTER_STATES)
+        )
     }
 
     override fun onStart() {

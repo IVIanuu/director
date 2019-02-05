@@ -369,6 +369,8 @@ abstract class Controller {
                 viewState
             ).also { this.view = it }
 
+            notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
+
             val viewState = viewState
 
             if (viewState != null) {
@@ -382,8 +384,6 @@ abstract class Controller {
             }
 
             this.viewState = null
-
-            notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
 
             notifyLifecycleListeners { it.preBindView(this, view, viewState) }
 
