@@ -565,6 +565,7 @@ abstract class Controller {
         if ((parentController == null
                     || !parentController.isBeingDestroyed)
         ) {
+            detach()
             unbindView(true)
             performDestroy()
         }
