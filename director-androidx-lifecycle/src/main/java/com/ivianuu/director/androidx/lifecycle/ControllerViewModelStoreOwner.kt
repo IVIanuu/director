@@ -20,14 +20,14 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
 import com.ivianuu.director.doOnPostDestroy
-import com.ivianuu.director.retained.retainedLazy
+import com.ivianuu.director.retained.retained
 
 /**
  * A [ViewModelStoreOwner] for [Controller]s
  */
 class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwner {
 
-    private val _viewModelStore by controller.retainedLazy(KEY_VIEW_MODEL_STORE) { ViewModelStore() }
+    private val _viewModelStore by controller.retained(KEY_VIEW_MODEL_STORE) { ViewModelStore() }
 
     init {
         controller.doOnPostDestroy {

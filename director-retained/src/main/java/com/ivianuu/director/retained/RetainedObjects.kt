@@ -42,13 +42,6 @@ class RetainedObjects {
     /**
      * Sets the value for [key] to [value]
      */
-    fun <T> put(key: String, value: T) {
-        set(key, value)
-    }
-
-    /**
-     * Sets the value for [key] to [value]
-     */
     operator fun <T> set(key: String, value: T) {
         _entries[key] = value as Any
     }
@@ -72,14 +65,14 @@ class RetainedObjects {
 }
 
 /**
- * Returns the value for [key] or puts the result of [defaultValue]
+ * Returns the value for [key] or sets the result of [defaultValue]
  */
-fun <T> RetainedObjects.getOrPut(key: String, defaultValue: () -> T): T {
+fun <T> RetainedObjects.getOrSet(key: String, defaultValue: () -> T): T {
     var value = get<T>(key)
 
     if (value == null) {
         value = defaultValue()
-        put(key, value)
+        set(key, value)
     }
 
     return value as T
@@ -104,41 +97,35 @@ fun <T> RetainedObjects.getOrDefault(key: String, defaultValue: () -> T): T {
 val Controller.retainedObjects: RetainedObjects
     get() = RetainedObjectsHolder.get(this)
 
-fun <T> Controller.retainedLazy(
-    key: String = com.ivianuu.director.retained.USE_PROPERTY_NAME,
-    initializer: () -> T
-): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) { retainedObjects.getOrPut(key, initializer) }
-
-fun <T> retained(
+fun <T> Controller.retained(
     key: String = USE_PROPERTY_NAME,
-    initialValue: () -> T
-): ReadWriteProperty<Controller, T> =
-    RetainedProperty(initialValue, key)
+    initializer: () -> T
+): ReadWriteProperty<Any, T> =
+    RetainedProperty(this, key, initializer)
 
 private class RetainedProperty<T>(
-    private val initialValue: () -> T,
-    private val key: String
-) : ReadWriteProperty<Controller, T> {
+    private val controller: Controller,
+    private val key: String,
+    private val initializer: () -> T
+) : ReadWriteProperty<Any, T> {
 
-    private val usePropertyName get() = key == USE_PROPERTY_NAME
-
-    override fun getValue(thisRef: Controller, property: KProperty<*>): T {
-        val key = if (usePropertyName) {
+    override fun getValue(thisRef: Any, property: KProperty<*>): T {
+        val key = if (key == USE_PROPERTY_NAME) {
             property.name
         } else {
             this.key
         }
 
-        return thisRef.retainedObjects.getOrPut(key, initialValue)
+        return controller.retainedObjects.getOrSet(key, initializer)
     }
 
-    override fun setValue(thisRef: Controller, property: KProperty<*>, value: T) {
-        val key = if (usePropertyName) {
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+        val key = if (key == USE_PROPERTY_NAME) {
             property.name
         } else {
             this.key
         }
 
-        thisRef.retainedObjects.put(key, value)
+        controller.retainedObjects[key] = value
     }
 }
