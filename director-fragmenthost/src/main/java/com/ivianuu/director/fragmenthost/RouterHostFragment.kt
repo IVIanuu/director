@@ -24,7 +24,6 @@ import androidx.fragment.app.FragmentManager
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterDelegate
-import com.ivianuu.director.handleBack
 
 class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
@@ -66,8 +65,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         controllerFactory: ControllerFactory?
     ): Router = delegate.getRouter(container, controllerFactory)
 
-    override fun handleOnBackPressed(): Boolean = delegate.routers
-        .any { it.handleBack() }
+    override fun handleOnBackPressed(): Boolean = delegate.handleBack()
 
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"

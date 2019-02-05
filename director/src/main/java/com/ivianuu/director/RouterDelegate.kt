@@ -57,6 +57,8 @@ class RouterDelegate(
         }
     }
 
+    fun handleBack(): Boolean = _routers.values.any { it.handleBack() }
+
     fun getRouter(
         container: ViewGroup,
         controllerFactory: ControllerFactory?
