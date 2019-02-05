@@ -10,6 +10,8 @@ internal class RootRouter(
     container: ViewGroup
 ) : Router() {
 
+    override val containerId = container.id
+
     override val transactionIndexer = TransactionIndexer()
 
     override val rootRouter: Router

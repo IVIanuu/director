@@ -34,6 +34,7 @@ abstract class Router {
      */
     var popsLastView = false
 
+    abstract val containerId: Int
     internal var container: ViewGroup? = null
         set(value) {
             // in case the user uses a ChangeHandlerFrameLayout
@@ -468,12 +469,6 @@ val Router.backstackSize: Int get() = backstack.size
  * Whether or not this router has root [Controller]
  */
 val Router.hasRootController: Boolean get() = backstackSize > 0
-
-/**
- * The container id which will be used by this router
- */
-val Router.containerId: Int
-    get() = container?.id ?: 0
 
 /**
  * Fluent version of pops last view

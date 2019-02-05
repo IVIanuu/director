@@ -7,6 +7,9 @@ import com.ivianuu.director.Router
 
 internal class ChildRouter : Router {
 
+    override val containerId: Int
+        get() = hostId
+
     override val activity: Activity
         get() = hostController.activity
 
