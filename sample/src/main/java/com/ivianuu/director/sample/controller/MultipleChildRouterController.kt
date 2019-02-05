@@ -1,7 +1,6 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import com.ivianuu.director.containerId
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
@@ -26,12 +25,7 @@ class MultipleChildRouterController : BaseController() {
                         0,
                         NavigationController.DisplayUpMode.HIDE,
                         false
-                    ).also { c ->
-                        if (it.containerId == R.id.container_1) {
-                            c.retainView = true
-                        }
-                    }
-                        .toTransaction()
+                    ).toTransaction()
                 )
             }
     }

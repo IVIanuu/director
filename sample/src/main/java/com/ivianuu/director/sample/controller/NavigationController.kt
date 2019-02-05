@@ -51,13 +51,6 @@ class NavigationController : BaseController() {
         view.setBackgroundColor(ColorUtil.getMaterialColor(resources, index))
         tv_title.text = resources.getString(R.string.navigation_title, index)
 
-        btn_next.setOnLongClickListener {
-            parentController!!.router.pushController(
-                ArchController().toTransaction()
-            )
-            true
-        }
-
         btn_next.setOnClickListener {
             if (useTraveler) {
                 travelerRouter.navigate(
