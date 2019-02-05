@@ -17,7 +17,7 @@
 package com.ivianuu.director
 
 /**
- * All states a [Controller] can have
+ * All possible states a [Controller] can have
  */
 enum class ControllerState {
     DESTROYED,
