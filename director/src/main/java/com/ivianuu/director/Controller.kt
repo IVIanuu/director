@@ -142,6 +142,7 @@ abstract class Controller {
         childRouterStates
             ?.filterKeys { _childRouters.contains(it) }
             ?.forEach { it.key.restoreInstanceState(it.value) }
+        childRouterStates = null
 
         superCalled = true
     }
@@ -324,6 +325,7 @@ abstract class Controller {
 
         // restore the internal state
         allState?.let { restoreInstanceState() }
+        allState = null
 
         // create
         create()
@@ -377,6 +379,8 @@ abstract class Controller {
                 val savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE)!!
                 savedViewState.classLoader = javaClass.classLoader
             }
+
+            this.viewState = null
 
             notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
 
@@ -593,6 +597,8 @@ abstract class Controller {
         requireSuperCalled { onCreate(instanceState) }
 
         notifyLifecycleListeners { it.postCreate(this, instanceState) }
+
+        instanceState = null
     }
 
     private fun performDestroy() {
