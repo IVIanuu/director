@@ -423,7 +423,7 @@ abstract class Controller {
             detach()
 
             if (reason == ControllerAttachHandler.ChangeReason.VIEW
-                && !viewAttached && !isBeingDestroyed && !retainView
+                && !viewAttached && (isBeingDestroyed || !retainView)
             ) {
                 unbindView()
             }
@@ -532,10 +532,9 @@ abstract class Controller {
                     || !parentController.isBeingDestroyed) && isAttached
         ) {
             addLifecycleListener(object : ControllerLifecycleListener {
-                override fun postDetach(controller: Controller, view: View) {
-                    super.postDetach(controller, view)
+                override fun postUnbindView(controller: Controller) {
+                    super.postUnbindView(controller)
                     removeLifecycleListener(this)
-                    unbindView()
                     performDestroy()
                 }
             })
@@ -543,6 +542,8 @@ abstract class Controller {
     }
 
     internal fun destroy() {
+        // todo check those lines
+        // seems like something could be wrong there
         val parentController = parentController
         if ((parentController == null
                     || !parentController.isBeingDestroyed)
