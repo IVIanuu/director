@@ -1,6 +1,5 @@
 package com.ivianuu.director.internal
 
-import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
@@ -43,21 +42,11 @@ internal class ControllerChangeManager {
         val fromChangeType =
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
-        val toView: View?
-        if (to != null) {
-            toView = to.inflate(container)
-            to.changeStarted(handler, toChangeType)
-        } else {
-            toView = null
-        }
+        val toView = to?.inflate(container)
+        to?.changeStarted(handler, toChangeType)
 
-        val fromView: View?
-        if (from != null) {
-            fromView = from.view
-            from.changeStarted(handler, fromChangeType)
-        } else {
-            fromView = null
-        }
+        val fromView = from?.view
+        from?.changeStarted(handler, fromChangeType)
 
         handler.performChange(
             container,
