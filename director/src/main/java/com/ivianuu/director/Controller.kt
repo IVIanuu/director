@@ -115,7 +115,7 @@ abstract class Controller {
         set(value) {
             field = value
             if (!value && !isAttached) {
-                unbindView(false)
+                unbindView()
             }
         }
 
@@ -393,6 +393,8 @@ abstract class Controller {
 
             viewFullyCreated = true
 
+            _childRouters.forEach { it.parentViewBound() }
+
             restoreChildControllerContainers()
 
             attachHandler.takeView(view)
@@ -420,13 +422,10 @@ abstract class Controller {
         } else {
             detach()
 
-            if (!viewAttached && !isBeingDestroyed) {
-                oldOnDetachCode(
-                    forceViewRemoval = false,
-                    blockViewRemoval = reason != ControllerAttachHandler.ChangeReason.VIEW,
-                    forceChildViewRemoval = false,
-                    fromHostRemoval = false
-                )
+            if (reason == ControllerAttachHandler.ChangeReason.VIEW
+                && !viewAttached && !isBeingDestroyed && !retainView
+            ) {
+                unbindView()
             }
         }
     }
@@ -444,18 +443,14 @@ abstract class Controller {
 
         hasSavedViewState = false
 
-        _childRouters
-            .flatMap { it.backstack }
-            .forEach { it.controller.parentAttached() }
+        _childRouters.forEach { it.parentAttached() }
     }
 
     private fun detach() {
         val view = view ?: return
 
         if (isAttached) {
-            _childRouters
-                .flatMap { it.backstack }
-                .forEach { it.controller.parentDetached() }
+            _childRouters.forEach { it.parentDetached() }
 
             notifyLifecycleListeners { it.preDetach(this, view) }
             isAttached = false
@@ -466,6 +461,9 @@ abstract class Controller {
         }
     }
 
+    internal fun parentViewBound() {
+    }
+
     internal fun parentAttached() {
         attachHandler.parentAttached()
     }
@@ -474,40 +472,24 @@ abstract class Controller {
         attachHandler.parentDetached()
     }
 
-    internal fun oldOnDetachCode(
-        forceViewRemoval: Boolean,
-        blockViewRemoval: Boolean,
-        forceChildViewRemoval: Boolean,
-        fromHostRemoval: Boolean
-    ) {
+    internal fun parentViewUnbound() {
         val view = view ?: return
 
-        if (isAttached) {
-            detach()
-        }
-
-        val removeViewRef =
-            !blockViewRemoval && (forceViewRemoval || !retainView)
-
-        if (removeViewRef) {
-            unbindView(forceChildViewRemoval)
-        } else if (retainView && fromHostRemoval) {
-            // this happens if we are a child controller, have RETAIN_DETACH
-            // and the parent does not RETAIN_DETACH
-            // we remove the view from the container to make sure that
-            // we don't re-inflate the view in Controller.inflate
-            // because we would be attached to the old container otherwise
+        // decide whether or not our view should be retained
+        if (retainView) {
             (view.parent as? ViewGroup)?.removeView(view)
+        } else {
+            unbindView()
         }
     }
 
-    private fun unbindView(forceChildViewRemoval: Boolean) {
+    private fun unbindView() {
         val view = view ?: return
         if (!isBeingDestroyed && !hasSavedViewState) {
             saveViewState()
         }
 
-        _childRouters.forEach { it.removeContainer(forceChildViewRemoval) }
+        _childRouters.forEach { it.parentViewUnbound() }
 
         notifyLifecycleListeners { it.preUnbindView(this, view) }
 
@@ -553,7 +535,7 @@ abstract class Controller {
                 override fun postDetach(controller: Controller, view: View) {
                     super.postDetach(controller, view)
                     removeLifecycleListener(this)
-                    unbindView(true)
+                    unbindView()
                     performDestroy()
                 }
             })
@@ -566,7 +548,7 @@ abstract class Controller {
                     || !parentController.isBeingDestroyed)
         ) {
             detach()
-            unbindView(true)
+            unbindView()
             performDestroy()
         }
     }

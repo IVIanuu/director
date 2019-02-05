@@ -2,7 +2,6 @@ package com.ivianuu.director.internal
 
 import android.app.Activity
 import android.os.Bundle
-
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 
@@ -65,25 +64,26 @@ internal class ChildRouter : Router {
         }
     }
 
-    fun parentDestroyed() {
-        backstack.forEach { it.controller.parentDestroyed() }
+    fun parentViewBound() {
+        backstack.forEach { it.controller.parentViewBound() }
+    }
+
+    fun parentAttached() {
+        backstack.forEach { it.controller.parentAttached() }
+    }
+
+    fun parentDetached() {
+        backstack.forEach { it.controller.parentDetached() }
+    }
+
+    fun parentViewUnbound() {
+        prepareForHostDetach()
+        backstack.forEach { it.controller.parentViewUnbound() }
         container = null
     }
 
-    fun removeContainer(forceViewRemoval: Boolean) {
-        prepareForHostDetach()
-
-        backstack
-            .filter { it.controller.view != null }
-            .forEach {
-                it.controller.oldOnDetachCode(
-                    forceViewRemoval = forceViewRemoval,
-                    blockViewRemoval = false,
-                    forceChildViewRemoval = forceViewRemoval,
-                    fromHostRemoval = true
-                )
-            }
-
+    fun parentDestroyed() {
+        backstack.forEach { it.controller.parentDestroyed() }
         container = null
     }
 

@@ -2,17 +2,29 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.popToRoot
+import com.ivianuu.director.popToTag
+import com.ivianuu.director.pushController
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.sample.util.bundleOf
+import com.ivianuu.director.toTransaction
 import com.ivianuu.director.traveler.ControllerKey
 import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
 import com.ivianuu.traveler.popToRoot
-import kotlinx.android.synthetic.main.controller_navigation.*
-import kotlinx.android.synthetic.main.controller_navigation.view.*
+import kotlinx.android.synthetic.main.controller_navigation.btn_next
+import kotlinx.android.synthetic.main.controller_navigation.btn_pop_to_root
+import kotlinx.android.synthetic.main.controller_navigation.btn_up
+import kotlinx.android.synthetic.main.controller_navigation.tv_title
+import kotlinx.android.synthetic.main.controller_navigation.view.btn_up
 
 class NavigationController : BaseController() {
 
@@ -38,6 +50,13 @@ class NavigationController : BaseController() {
 
         view.setBackgroundColor(ColorUtil.getMaterialColor(resources, index))
         tv_title.text = resources.getString(R.string.navigation_title, index)
+
+        btn_next.setOnLongClickListener {
+            parentController!!.router.pushController(
+                ArchController().toTransaction()
+            )
+            true
+        }
 
         btn_next.setOnClickListener {
             if (useTraveler) {
