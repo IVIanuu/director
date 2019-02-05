@@ -273,6 +273,7 @@ abstract class Router {
     open fun rebind() {
         _backstack
             .filterVisible()
+            .filterNot { it.controller.isAttached }
             .forEach {
                 performControllerChange(
                     it, null, true,
@@ -464,7 +465,7 @@ internal val Router.hasContainer: Boolean get() = container != null
 val Router.backstackSize: Int get() = backstack.size
 
 /**
- * Whether or not this router has root [Controller]
+ * Whether or not this router has a root [Controller]
  */
 val Router.hasRootController: Boolean get() = backstackSize > 0
 
