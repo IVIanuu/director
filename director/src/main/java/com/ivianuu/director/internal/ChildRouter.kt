@@ -7,8 +7,7 @@ import com.ivianuu.director.Router
 
 internal class ChildRouter : Router {
 
-    override val containerId: Int
-        get() = hostId
+    override var containerId = 0
 
     override val activity: Activity
         get() = hostController.activity
@@ -21,9 +20,6 @@ internal class ChildRouter : Router {
 
     private val hostController: Controller
 
-    var hostId = 0
-        private set
-
     var tag: String? = null
         private set
 
@@ -31,9 +27,9 @@ internal class ChildRouter : Router {
         this.hostController = hostController
     }
 
-    constructor(hostController: Controller, hostId: Int, tag: String?) {
+    constructor(hostController: Controller, containerId: Int, tag: String?) {
         this.hostController = hostController
-        this.hostId = hostId
+        this.containerId = containerId
         this.tag = tag
     }
 
@@ -46,12 +42,12 @@ internal class ChildRouter : Router {
                 hostController.router.getAllLifecycleListeners(true)
 
     fun saveIdentity(): Bundle = Bundle().apply {
-        putInt(KEY_HOST_ID, hostId)
+        putInt(KEY_CONTAINER_ID, containerId)
         putString(KEY_TAG, tag)
     }
 
     fun restoreIdentity(savedInstanceState: Bundle) {
-        hostId = savedInstanceState.getInt(KEY_HOST_ID)
+        containerId = savedInstanceState.getInt(KEY_CONTAINER_ID)
         tag = savedInstanceState.getString(KEY_TAG)
     }
 
@@ -91,7 +87,7 @@ internal class ChildRouter : Router {
     }
 
     private companion object {
-        private const val KEY_HOST_ID = "ChildRouter.hostId"
+        private const val KEY_CONTAINER_ID = "ChildRouter.hostId"
         private const val KEY_TAG = "ChildRouter.tag"
     }
 }

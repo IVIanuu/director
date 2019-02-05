@@ -260,7 +260,7 @@ abstract class Controller {
         controllerFactory: ControllerFactory? = null
     ): Router {
         var childRouter = _childRouters
-            .firstOrNull { it.hostId == containerId && it.tag == tag }
+            .firstOrNull { it.containerId == containerId && it.tag == tag }
 
         if (childRouter == null) {
             childRouter = ChildRouter(
@@ -514,7 +514,8 @@ abstract class Controller {
             _childRouters
                 .filterNot { it.hasContainer }
                 .forEach {
-                    val containerView = view.findViewById(it.hostId) as? ViewGroup ?: return@forEach
+                    val containerView = view.findViewById(it.containerId)
+                            as? ViewGroup ?: return@forEach
                     it.container = containerView
                     it.rebind()
                 }
