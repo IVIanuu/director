@@ -100,6 +100,7 @@ class ControllerScenario<C : Controller> internal constructor(
     private fun ControllerState.toLifecycleState(): Lifecycle.State = when (this) {
         ControllerState.INITIALIZED -> Lifecycle.State.INITIALIZED
         ControllerState.CREATED -> Lifecycle.State.CREATED
+        ControllerState.VIEW_BOUND -> Lifecycle.State.STARTED
         ControllerState.ATTACHED -> Lifecycle.State.RESUMED
         ControllerState.DESTROYED -> Lifecycle.State.DESTROYED
     }

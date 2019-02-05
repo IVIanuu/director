@@ -19,6 +19,7 @@ package com.ivianuu.director.testing
 enum class ControllerState {
     INITIALIZED,
     CREATED,
+    VIEW_BOUND,
     ATTACHED,
     DESTROYED
 }
