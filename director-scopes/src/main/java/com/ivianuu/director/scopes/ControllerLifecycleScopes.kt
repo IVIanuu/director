@@ -17,6 +17,12 @@
 package com.ivianuu.director.scopes
 
 import com.ivianuu.director.Controller
+import com.ivianuu.director.common.ControllerEvent.ATTACH
+import com.ivianuu.director.common.ControllerEvent.BIND_VIEW
+import com.ivianuu.director.common.ControllerEvent.CREATE
+import com.ivianuu.director.common.ControllerEvent.DESTROY
+import com.ivianuu.director.common.ControllerEvent.DETACH
+import com.ivianuu.director.common.ControllerEvent.UNBIND_VIEW
 import com.ivianuu.scopes.Scope
 import com.ivianuu.scopes.cache.LifecycleScopesStore
 import com.ivianuu.scopes.lifecycle.LifecycleScopes
