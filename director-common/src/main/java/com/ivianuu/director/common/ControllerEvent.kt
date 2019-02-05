@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.scopes
+package com.ivianuu.director.common
+
+import com.ivianuu.director.Controller
 
 /**
- * Lifecycle events for [com.ivianuu.director.Controller]s
+ * Lifecycle events of a [Controller] represented as an enum
+ * This can be useful for AutoDispose RxLifecycle or Scopes
  */
 enum class ControllerEvent {
     CREATE,

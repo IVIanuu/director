@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.common.ControllerEvent
 import com.ivianuu.scopes.lifecycle.AbstractLifecycle
 
 /**

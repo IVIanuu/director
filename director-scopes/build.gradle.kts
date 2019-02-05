@@ -24,6 +24,7 @@ apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/mv
 
 dependencies {
     api(project(":director"))
+    api(project(":director-common"))
     api(Deps.scopes)
     api(Deps.scopesCache)
     api(Deps.scopesLifecycle)
