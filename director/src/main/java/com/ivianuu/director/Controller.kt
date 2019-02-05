@@ -339,10 +339,12 @@ abstract class Controller {
     internal fun hostStarted() {
         attachHandler.hostStarted()
         _childRouters.forEach { it.hostStarted() }
+        destroyingChilds.forEach { it.hostStarted() }
     }
 
     internal fun hostStopped() {
         _childRouters.forEach { it.hostStopped() }
+        destroyingChilds.forEach { it.hostStopped() }
 
         attachHandler.hostStopped()
 
@@ -354,6 +356,7 @@ abstract class Controller {
 
     internal fun hostDestroyed() {
         _childRouters.forEach { it.hostDestroyed() }
+        destroyingChilds.forEach { it.hostDestroyed() }
         destroy()
     }
 
@@ -394,6 +397,7 @@ abstract class Controller {
             viewFullyCreated = true
 
             _childRouters.forEach { it.parentViewBound() }
+            destroyingChilds.forEach { it.parentViewBound() }
 
             restoreChildControllerContainers()
 
@@ -444,6 +448,7 @@ abstract class Controller {
         hasSavedViewState = false
 
         _childRouters.forEach { it.parentAttached() }
+        destroyingChilds.forEach { it.parentAttached() }
     }
 
     private fun detach() {
@@ -451,6 +456,7 @@ abstract class Controller {
 
         if (isAttached) {
             _childRouters.forEach { it.parentDetached() }
+            destroyingChilds.forEach { it.parentDetached() }
 
             notifyLifecycleListeners { it.preDetach(this, view) }
             isAttached = false
@@ -490,6 +496,7 @@ abstract class Controller {
         }
 
         _childRouters.forEach { it.parentViewUnbound() }
+        destroyingChilds.forEach { it.parentViewUnbound() }
 
         notifyLifecycleListeners { it.preUnbindView(this, view) }
 
@@ -525,6 +532,7 @@ abstract class Controller {
     internal fun isBeingDestroyed() {
         isBeingDestroyed = true
         _childRouters.forEach { it.isBeingDestroyed() }
+        destroyingChilds.forEach { it.isBeingDestroyed() }
 
         // we should only handle the destruction if we are the root controller
         // or we get popped
@@ -532,13 +540,7 @@ abstract class Controller {
         if ((parentController == null
                     || !parentController.isBeingDestroyed) && isAttached
         ) {
-            addLifecycleListener(object : ControllerLifecycleListener {
-                override fun postUnbindView(controller: Controller) {
-                    super.postUnbindView(controller)
-                    removeLifecycleListener(this)
-                    performDestroy()
-                }
-            })
+            doOnPostUnbindView { performDestroy() }
         }
     }
 
@@ -576,6 +578,7 @@ abstract class Controller {
         if (isDestroyed) return
 
         _childRouters.forEach { it.parentDestroyed() }
+        destroyingChilds.forEach { it.parentDestroyed() }
 
         notifyLifecycleListeners { it.preDestroy(this) }
         isDestroyed = true
@@ -671,10 +674,44 @@ abstract class Controller {
         notifyLifecycleListeners { it.onSaveViewState(this, viewState) }
     }
 
+    private val childChangeHandlers = mutableListOf<ChildChangeHandler>()
+    private val destroyingChilds = mutableListOf<Controller>()
+
+    private class ChildChangeHandler : ControllerChangeHandler() {
+
+        private var onChangeComplete: (() -> Unit)? = null
+
+        override fun performChange(
+            container: ViewGroup,
+            from: View?,
+            to: View?,
+            isPush: Boolean,
+            onChangeComplete: () -> Unit
+        ) {
+            this.onChangeComplete = onChangeComplete
+        }
+
+        fun complete() {
+            onChangeComplete?.invoke()
+            onChangeComplete = null
+        }
+    }
+
     internal fun changeStarted(
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
+        if (!changeType.isEnter && !changeType.isPush) {
+            _childRouters.forEach { childRouter ->
+                val topTransaction = childRouter.backstack.lastOrNull()
+                if (topTransaction != null) {
+                    destroyingChilds.add(topTransaction.controller)
+                    childRouter.popController(topTransaction.controller, ChildChangeHandler()
+                        .also { childChangeHandlers.add(it) })
+                }
+            }
+        }
+
         onChangeStarted(changeHandler, changeType)
         notifyLifecycleListeners { it.onChangeStart(this, changeHandler, changeType) }
     }
@@ -683,6 +720,12 @@ abstract class Controller {
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
+        if (!changeType.isEnter && !changeType.isPush) {
+            childChangeHandlers.forEach { it.complete() }
+            childChangeHandlers.clear()
+            destroyingChilds.clear()
+        }
+
         onChangeEnded(changeHandler, changeType)
         notifyLifecycleListeners { it.onChangeEnd(this, changeHandler, changeType) }
     }

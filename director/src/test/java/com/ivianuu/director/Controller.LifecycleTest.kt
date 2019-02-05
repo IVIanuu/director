@@ -610,9 +610,11 @@ class ControllerLifecycleCallbacksTest {
 
         router.popCurrentController()
 
+        expectedCallState.changeStartCalls++
         expectedCallState.detachCalls++
         expectedCallState.unbindViewCalls++
         expectedCallState.destroyCalls++
+        expectedCallState.changeEndCalls++
 
         assertCalls(expectedCallState, child)
     }
