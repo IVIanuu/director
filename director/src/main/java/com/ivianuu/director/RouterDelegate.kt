@@ -28,26 +28,30 @@ class RouterDelegate(
     private var savedInstanceState: Bundle? = null
 ) {
 
-    private val routers = mutableMapOf<Int, Router>()
+    /**
+     * All routers contained by this delegate
+     */
+    val routers: List<Router> get() = _routers.values.toList()
+    private val _routers = mutableMapOf<Int, Router>()
 
     private var hostStarted = false
 
     fun hostStarted() {
         hostStarted = true
-        routers.values.forEach { it.hostStarted() }
+        _routers.values.forEach { it.hostStarted() }
     }
 
     fun hostStopped() {
         hostStarted = false
-        routers.values.forEach { it.hostStopped() }
+        _routers.values.forEach { it.hostStopped() }
     }
 
     fun hostDestroyed() {
-        routers.values.forEach { it.hostDestroyed() }
+        _routers.values.forEach { it.hostDestroyed() }
     }
 
     fun saveInstanceState(): Bundle = Bundle().apply {
-        routers.values.forEach { router ->
+        _routers.values.forEach { router ->
             val bundle = router.saveInstanceState()
             putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
         }
@@ -63,7 +67,7 @@ class RouterDelegate(
         savedInstanceState: Bundle?,
         controllerFactory: ControllerFactory?
     ): Router {
-        return routers.getOrPut(container.id) {
+        return _routers.getOrPut(container.id) {
             val routerState = savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + container.id)
             val router = Router(activity, container, routerState, controllerFactory)
 

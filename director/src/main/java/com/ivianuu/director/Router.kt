@@ -19,7 +19,7 @@ abstract class Router {
     /**
      * The current backstack
      */
-    val backstack: List<RouterTransaction> get() = _backstack.toList()
+    val backstack: List<RouterTransaction> get() = _backstack
     private val _backstack = mutableListOf<RouterTransaction>()
 
     /**

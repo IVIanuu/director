@@ -123,7 +123,7 @@ abstract class Controller {
      * All child routers of this controller
      */
     val childRouters: List<Router>
-        get() = _childRouters.toList()
+        get() = _childRouters
     private val _childRouters = mutableListOf<ChildRouter>()
 
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
@@ -729,7 +729,7 @@ val Controller.application: Application
 val Controller.resources: Resources get() = activity.resources
 
 /**
- * Starts the [intent]
+ * Starts the [intent]+ü
  */
 fun Controller.startActivity(intent: Intent) {
     activity.startActivity(intent)
