@@ -30,7 +30,14 @@ interface ControllerFactory {
     fun createController(
         classLoader: ClassLoader,
         className: String,
-        args: Bundle
+        args: Bundle = Bundle()
     ): Controller = newInstanceOrThrow(className)
 
 }
+
+/**
+ * Returns a new instance of a [T]
+ */
+inline fun <reified T> ControllerFactory.createController(
+    args: Bundle = Bundle()
+): T = createController(T::class.java.classLoader!!, T::class.java.name, args) as T
