@@ -16,7 +16,6 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
@@ -160,8 +159,7 @@ class ControllerTest {
         childRouter.setRoot(childTransaction1)
         childRouter.pushController(childTransaction2)
 
-        val savedState = Bundle()
-        childRouter.saveInstanceState(savedState)
+        val savedState = childRouter.saveInstanceState()
         parent.removeChildRouter(childRouter)
 
         childRouter =
