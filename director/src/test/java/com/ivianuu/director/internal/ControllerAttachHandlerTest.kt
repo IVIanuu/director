@@ -32,245 +32,246 @@ class ControllerAttachHandlerTest {
 
     private val activityProxy = ActivityProxy()
     private val listener = CountingControllerAttachHandlerListener()
-    private val viewAttachHandler = ControllerAttachHandler(listener)
+    private val viewAttachHandler = ControllerAttachHandler(true, listener)
 
     @Test
     fun testActivityStartStop() {
         val view = View(activityProxy.activity)
-        viewAttachHandler.listenForAttach(view)
+        viewAttachHandler.takeView(view)
+        viewAttachHandler.parentAttached()
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStarted()
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStopped()
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStarted()
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
+    }
+
+    @Test
+    fun testParentAttachDetach() {
+        val view = View(activityProxy.activity)
+        viewAttachHandler.takeView(view)
+        viewAttachHandler.hostStarted()
+        ViewUtils.reportAttached(view, true)
+
+        assertEquals(0, listener.attaches)
+        assertEquals(0, listener.detaches)
+
+        viewAttachHandler.parentAttached()
+        assertEquals(1, listener.attaches)
+        assertEquals(0, listener.detaches)
+
+        viewAttachHandler.parentDetached()
+        assertEquals(1, listener.attaches)
+        assertEquals(1, listener.detaches)
+
+        viewAttachHandler.parentAttached()
+        assertEquals(2, listener.attaches)
+        assertEquals(1, listener.detaches)
+
+        viewAttachHandler.parentDetached()
+        assertEquals(2, listener.attaches)
+        assertEquals(2, listener.detaches)
     }
 
     @Test
     fun testSimpleViewAttachDetach() {
         viewAttachHandler.hostStarted()
+        viewAttachHandler.parentAttached()
 
         val view = View(activityProxy.activity)
 
-        viewAttachHandler.listenForAttach(view)
+        viewAttachHandler.takeView(view)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
 
         viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
     }
 
     @Test
     fun testSimpleViewGroupAttachDetach() {
         viewAttachHandler.hostStarted()
+        viewAttachHandler.parentAttached()
 
         val view = LinearLayout(activityProxy.activity)
-        viewAttachHandler.listenForAttach(view)
+        viewAttachHandler.takeView(view)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, true)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
 
         viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
     }
 
     @Test
     fun testNestedViewGroupAttachDetach() {
         viewAttachHandler.hostStarted()
+        viewAttachHandler.parentAttached()
 
         val view = LinearLayout(activityProxy.activity)
         val child = LinearLayout(activityProxy.activity)
         view.addView(child)
-        viewAttachHandler.listenForAttach(view)
+        viewAttachHandler.takeView(view)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
         ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = false, propogateToChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = false, propogateToChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         viewAttachHandler.hostStopped()
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(0, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = false, propogateToChildren = false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
 
         ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
         ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
 
         viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
-        assertEquals(1, listener.detachAfterStops)
     }
 
-    private class CountingControllerAttachHandlerListener : ControllerAttachHandler.Listener {
+    private class CountingControllerAttachHandlerListener :
+            (ControllerAttachHandler.ChangeReason, Boolean, Boolean, Boolean) -> Unit {
 
         var attaches = 0
         var detaches = 0
-        var detachAfterStops = 0
 
-        override fun onAttached() {
-            attaches++
+        private var wasAttached = false
+
+        override fun invoke(
+            reason: ControllerAttachHandler.ChangeReason,
+            viewAttached: Boolean,
+            parentAttached: Boolean,
+            hostStarted: Boolean
+        ) {
+            val isAttached = viewAttached && parentAttached && hostStarted
+            if (isAttached != wasAttached) {
+                wasAttached = isAttached
+                if (isAttached) {
+                    attaches++
+                } else {
+                    detaches++
+                }
+            }
         }
 
-        override fun onDetached(fromActivityStop: Boolean) {
-            detaches++
-        }
-
-        override fun onViewDetachAfterStop() {
-            detachAfterStops++
-        }
     }
 }

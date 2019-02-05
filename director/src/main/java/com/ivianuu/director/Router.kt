@@ -96,11 +96,11 @@ abstract class Router {
         _backstack.clear()
         _backstack.addAll(newBackstack)
 
-        val transactionsToBeRemoved = oldTransactions
+        oldTransactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
             .onEach {
                 // Inform the controller that it will be destroyed soon
-                it.controller.isBeingDestroyed = true
+                it.controller.isBeingDestroyed()
             }
 
         // Ensure all new controllers have a valid router set
@@ -264,11 +264,6 @@ abstract class Router {
                 }
             }
         }
-
-        // Destroy all old controllers that are no longer on the backstack. We don't do this when we initially
-        // set the backstack to prevent the possibility that they'll be destroyed before the controller
-        // change handler runs.
-        transactionsToBeRemoved.forEach { it.controller.destroy() }
     }
 
     /**
@@ -356,13 +351,17 @@ abstract class Router {
         }
     }
 
+    internal open fun isBeingDestroyed() {
+        _backstack.reversed().forEach { it.controller.isBeingDestroyed() }
+    }
+
     internal open fun destroy(popViews: Boolean) {
         if (popViews) {
             popsLastView = true
             setBackstack(emptyList(), _backstack.lastOrNull()?.popChangeHandler)
         } else {
             // manually destroy the controllers
-            _backstack.reversed().forEach { it.controller.destroy() }
+            _backstack.reversed().forEach { it.controller.hostDestroyed() }
         }
     }
 
@@ -418,6 +417,11 @@ abstract class Router {
 
     protected open fun setControllerRouter(controller: Controller) {
         controller.setRouter(this)
+
+        // bring them in the correct state
+        if (hostStarted) {
+            controller.hostStarted()
+        }
     }
 
     private data class ChangeListenerEntry(

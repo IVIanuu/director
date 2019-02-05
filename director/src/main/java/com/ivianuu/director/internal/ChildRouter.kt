@@ -56,8 +56,13 @@ internal class ChildRouter : Router {
     override fun setControllerRouter(controller: Controller) {
         // make sure to set the parent controller before the
         // router is set
-        controller.parentController = hostController
+        controller.setParentController(hostController)
         super.setControllerRouter(controller)
+
+        // bring into the right state
+        if (hostController.isAttached) {
+            controller.parentAttached()
+        }
     }
 
     fun removeContainer(forceViewRemoval: Boolean) {

@@ -4,14 +4,20 @@ import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 
-internal class ControllerAttachHandler(private val listener: Listener) :
-    OnAttachStateChangeListener {
+internal class ControllerAttachHandler(
+    private val hasParent: Boolean,
+    private val listener: (reason: ChangeReason, viewAttached: Boolean, parentAttached: Boolean, hostStarted: Boolean) -> Unit
+) : OnAttachStateChangeListener {
 
     private var rootAttached = false
     private var childrenAttached = false
-    private var hostReady = false
+    private var hostStarted = false
+    private var parentAttached = false
 
-    private var reportedState = ReportedState.VIEW_DETACHED
+    private var lastReason = ChangeReason.VIEW
+    private var wasViewAttached = false
+    private var wasHostStarted = false
+    private var wasParentAttached = false
 
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
 
@@ -21,24 +27,29 @@ internal class ControllerAttachHandler(private val listener: Listener) :
 
             listenForDeepestChildAttach(v) {
                 childrenAttached = true
-                reportAttached()
+                notifyChange(ChangeReason.VIEW)
             }
         }
     }
 
     override fun onViewDetachedFromWindow(v: View) {
-        rootAttached = false
-        if (childrenAttached) {
-            childrenAttached = false
-            reportDetached(false)
+        if (rootAttached) {
+            rootAttached = false
+            if (childrenAttached) {
+                childrenAttached = false
+                notifyChange(ChangeReason.VIEW)
+            }
         }
     }
 
-    fun listenForAttach(view: View) {
+    fun takeView(view: View) {
         view.addOnAttachStateChangeListener(this)
     }
 
-    fun unregisterAttachListener(view: View) {
+    fun dropView(view: View) {
+        rootAttached = false
+        childrenAttached = false
+
         view.removeOnAttachStateChangeListener(this)
 
         if (childOnAttachStateChangeListener != null && view is ViewGroup) {
@@ -49,36 +60,38 @@ internal class ControllerAttachHandler(private val listener: Listener) :
     }
 
     fun hostStarted() {
-        hostReady = true
-        reportAttached()
+        if (!hostStarted) {
+            hostStarted = true
+            notifyChange(ChangeReason.HOST)
+        }
     }
 
     fun hostStopped() {
-        hostReady = false
-        reportDetached(true)
-    }
-
-    private fun reportAttached() {
-        if (rootAttached && childrenAttached && hostReady && reportedState != ReportedState.ATTACHED) {
-            reportedState = ReportedState.ATTACHED
-            listener.onAttached()
+        if (hostStarted) {
+            hostStarted = false
+            notifyChange(ChangeReason.HOST)
         }
     }
 
-    private fun reportDetached(detachedForActivity: Boolean) {
-        val wasDetachedForActivity = reportedState == ReportedState.ACTIVITY_STOPPED
-
-        reportedState = if (detachedForActivity) {
-            ReportedState.ACTIVITY_STOPPED
-        } else {
-            ReportedState.VIEW_DETACHED
+    fun parentAttached() {
+        if (!parentAttached) {
+            parentAttached = true
+            notifyChange(ChangeReason.PARENT)
         }
+    }
 
-        if (wasDetachedForActivity && !detachedForActivity) {
-            listener.onViewDetachAfterStop()
-        } else {
-            listener.onDetached(detachedForActivity)
+    fun parentDetached() {
+        if (parentAttached) {
+            parentAttached = false
+            notifyChange(ChangeReason.PARENT)
         }
+    }
+
+    private fun notifyChange(reason: ChangeReason) {
+        listener(
+            reason, rootAttached && childrenAttached,
+            !hasParent || parentAttached, hostStarted
+        )
     }
 
     private fun listenForDeepestChildAttach(view: View, onAttach: () -> Unit) {
@@ -123,15 +136,7 @@ internal class ControllerAttachHandler(private val listener: Listener) :
         }
     }
 
-    private enum class ReportedState {
-        VIEW_DETACHED,
-        ACTIVITY_STOPPED,
-        ATTACHED
-    }
-
-    interface Listener {
-        fun onAttached()
-        fun onDetached(fromActivityStop: Boolean)
-        fun onViewDetachAfterStop()
+    enum class ChangeReason {
+        VIEW, PARENT, HOST
     }
 }

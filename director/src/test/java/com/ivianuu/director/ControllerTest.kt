@@ -19,7 +19,6 @@ package com.ivianuu.director
 import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.CallState
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.ViewUtils
 import org.junit.Assert.assertEquals
@@ -28,8 +27,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-
-// todo test child controller view retained with parent NOT retained
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
@@ -198,11 +195,4 @@ class ControllerTest {
         assertEquals(0, childRouter.backstack.size)
     }
 
-    private fun assertCalls(callState: CallState, controller: TestController) {
-        assertEquals(
-            "Expected call counts and controller call counts do not match.",
-            callState,
-            controller.currentCallState
-        )
-    }
 }
