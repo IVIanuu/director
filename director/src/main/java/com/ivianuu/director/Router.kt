@@ -1,18 +1,22 @@
 package com.ivianuu.director
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
-import com.ivianuu.director.internal.RootRouter
 import com.ivianuu.director.internal.TransactionIndexer
+import com.ivianuu.stdlibx.safeAs
 import com.ivianuu.stdlibx.takeLastUntil
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's controllers
  */
-abstract class Router {
+open class Router internal constructor(
+    containerId: Int,
+    tag: String? = null,
+    val host: Any,
+    val hostRouter: Router?
+) {
 
     /**
      * The current backstack
@@ -21,24 +25,27 @@ abstract class Router {
     private val _backstack = mutableListOf<RouterTransaction>()
 
     /**
-     * The host activity of this router
-     */
-    abstract val activity: Activity
-
-    /**
      * Whether or not the last view should be popped
      */
     var popsLastView = false
 
-    abstract val containerId: Int
-    internal var container: ViewGroup? = null
-        set(value) {
-            // in case the user uses a ChangeHandlerFrameLayout
-            (field as? ControllerChangeListener)?.let { removeChangeListener(it) }
-            (value as? ControllerChangeListener)?.let { addChangeListener(it) }
+    /**
+     * The tag of this router
+     */
+    var tag: String? = tag
+        private set
 
-            field = value
-        }
+    /**
+     * The container id of this router
+     */
+    var containerId: Int = containerId
+        private set
+
+    /**
+     * The container of this router
+     */
+    var container: ViewGroup? = null
+        private set
 
     /**
      * Will be used to instantiate controllers after config changes or process death
@@ -51,8 +58,11 @@ abstract class Router {
 
     private var _controllerFactory: ControllerFactory = DefaultControllerFactory()
 
-    internal abstract val rootRouter: Router
-    internal abstract val transactionIndexer: TransactionIndexer
+    internal val rootRouter: Router get() = hostRouter?.rootRouter ?: this
+
+    private val transactionIndexer: TransactionIndexer by lazy(LazyThreadSafetyMode.NONE) {
+        hostRouter?.transactionIndexer ?: TransactionIndexer()
+    }
 
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
     private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
@@ -63,6 +73,8 @@ abstract class Router {
 
     internal var hostStarted = false
         private set
+
+    private val isRootRouter get() = hostRouter == null
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -293,10 +305,11 @@ abstract class Router {
         changeListeners.removeAll { it.listener == listener }
     }
 
-    internal open fun getAllChangeListeners(recursiveOnly: Boolean) =
-        changeListeners
+    internal open fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
+        return changeListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener }
+            .map { it.listener } + (hostRouter?.getAllChangeListeners(true) ?: emptyList())
+    }
 
     /**
      * Adds a lifecycle listener for all controllers
@@ -314,45 +327,68 @@ abstract class Router {
         lifecycleListeners.removeAll { it.listener == listener }
     }
 
-    internal fun getAllLifecycleListeners() =
-        getAllLifecycleListeners(false)
-
-    internal open fun getAllLifecycleListeners(recursiveOnly: Boolean) =
-        lifecycleListeners
+    internal fun getAllLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
+        return lifecycleListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener }
+            .map { it.listener } + (hostRouter?.getAllLifecycleListeners(true) ?: emptyList())
+    }
 
-    open fun hostStarted() {
+    fun setContainer(container: ViewGroup) {
+        require(container.id == containerId) {
+            "container id must be matching the container id"
+        }
+
+        if (this.container != container) {
+            removeContainer()
+            (container as? ControllerChangeListener)?.let { addChangeListener(it) }
+            this.container = container
+
+            _backstack.forEach { it.controller.containerAttached() }
+        }
+    }
+
+    fun removeContainer() {
+        prepareForContainerRemoval()
+
+        _backstack.forEach { it.controller.containerDetached() }
+
+        container?.let { container ->
+            (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
+        }
+        container = null
+    }
+
+    fun hostStarted() {
         hostStarted = true
         hasPreparedForHostDetach = false
         _backstack.reversed().forEach { it.controller.hostStarted() }
     }
 
-    open fun hostStopped() {
+    fun hostStopped() {
         hostStarted = false
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
-            prepareForHostDetach()
+            prepareForContainerRemoval()
         }
         _backstack.reversed().forEach { it.controller.hostStopped() }
     }
 
-    open fun hostDestroyed() {
+    fun hostDestroyed() {
         _backstack.reversed().forEach { it.controller.hostDestroyed() }
         container = null
     }
 
-    protected open fun prepareForHostDetach() {
+    private fun prepareForContainerRemoval() {
         _backstack.reversed().forEach {
             changeManager.cancelChange(it.controller.instanceId, true)
         }
     }
 
-    internal open fun isBeingDestroyed() {
+    internal fun isBeingDestroyed() {
         _backstack.reversed().forEach { it.controller.isBeingDestroyed() }
     }
 
-    internal open fun destroy(popViews: Boolean) {
+    internal fun destroy(popViews: Boolean) {
         if (popViews) {
             popsLastView = true
             setBackstack(emptyList(), _backstack.lastOrNull()?.popChangeHandler)
@@ -362,28 +398,47 @@ abstract class Router {
         }
     }
 
-    open fun saveInstanceState(): Bundle {
+    fun saveInstanceState(): Bundle {
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
-            prepareForHostDetach()
+            prepareForContainerRemoval()
         }
 
         return Bundle().apply {
             val backstack = _backstack.map { it.saveInstanceState() }
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
+            putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
+            putString(KEY_TAG, tag)
+            if (isRootRouter) {
+                putBundle(
+                    KEY_TRANSACTION_INDEXER,
+                    transactionIndexer.saveInstanceState()
+                )
+            }
         }
     }
 
-    open fun restoreInstanceState(savedInstanceState: Bundle) {
+    fun restoreInstanceState(savedInstanceState: Bundle) {
         _backstack.clear()
         _backstack.addAll(
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
                 .map { RouterTransaction.fromBundle(it, _controllerFactory) }
         )
+
+        containerId = savedInstanceState.getInt(KEY_CONTAINER_ID)
+
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
+        tag = savedInstanceState.getString(KEY_TAG)
+
         _backstack.forEach { setControllerRouter(it.controller) }
+
+        if (isRootRouter) {
+            transactionIndexer.restoreInstanceState(
+                savedInstanceState.getBundle(KEY_TRANSACTION_INDEXER)!!
+            )
+        }
     }
 
     private fun performControllerChange(
@@ -414,8 +469,16 @@ abstract class Router {
         )
     }
 
-    protected open fun setControllerRouter(controller: Controller) {
+    private fun setControllerRouter(controller: Controller) {
+        // make sure to set the parent controller before the
+        // router is set
+        host.safeAs<Controller>()?.let(controller::setParentController)
+
         controller.setRouter(this)
+
+        if (hasContainer) {
+            controller.containerAttached()
+        }
 
         // bring them in the correct state
         if (hostStarted) {
@@ -429,6 +492,11 @@ abstract class Router {
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
 
+    private fun manageControllerDestruction(
+        controller: Controller
+    ) {
+
+    }
 
     private data class ChangeListenerEntry(
         val listener: ControllerChangeListener,
@@ -442,7 +510,10 @@ abstract class Router {
 
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
+        private const val KEY_CONTAINER_ID = "Router.containerId"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
+        private const val KEY_TAG = "Router.tag"
+        private const val KEY_TRANSACTION_INDEXER = "Router.transactionIndexer"
     }
 }
 
@@ -450,16 +521,21 @@ abstract class Router {
  * Returns a new [Router] instance
  */
 fun Router(
-    activity: Activity,
-    container: ViewGroup,
-    savedInstanceState: Bundle?,
-    controllerFactory: ControllerFactory?
-): Router = RootRouter(activity, container).apply {
+    host: Any,
+    containerId: Int,
+    tag: String? = null,
+    hostRouter: Router? = null,
+    savedInstanceState: Bundle? = null,
+    controllerFactory: ControllerFactory? = null
+): Router = Router(containerId, tag, host, hostRouter).apply {
     controllerFactory?.let { this.controllerFactory = it }
     savedInstanceState?.let { restoreInstanceState(it) }
 }
 
-internal val Router.hasContainer: Boolean get() = container != null
+/**
+ * Whether or not the router has currently a container attached to it
+ */
+val Router.hasContainer: Boolean get() = container != null
 
 /**
  * The current size of the backstack

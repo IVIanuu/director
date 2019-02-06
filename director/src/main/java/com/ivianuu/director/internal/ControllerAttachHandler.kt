@@ -5,14 +5,12 @@ import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 
 internal class ControllerAttachHandler(
-    private val hasParent: Boolean,
-    private val listener: (reason: ChangeReason, viewAttached: Boolean, parentAttached: Boolean, hostStarted: Boolean) -> Unit
+    private val listener: (reason: ChangeReason, viewAttached: Boolean, hostStarted: Boolean) -> Unit
 ) : OnAttachStateChangeListener {
 
     private var rootAttached = false
     private var childrenAttached = false
     private var hostStarted = false
-    private var parentAttached = false
 
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
 
@@ -80,24 +78,9 @@ internal class ControllerAttachHandler(
         }
     }
 
-    fun parentAttached() {
-        if (!parentAttached) {
-            parentAttached = true
-            notifyChange(ChangeReason.PARENT)
-        }
-    }
-
-    fun parentDetached() {
-        if (parentAttached) {
-            parentAttached = false
-            notifyChange(ChangeReason.PARENT)
-        }
-    }
-
     private fun notifyChange(reason: ChangeReason) {
         listener(
-            reason, rootAttached && childrenAttached,
-            !hasParent || parentAttached, hostStarted
+            reason, rootAttached && childrenAttached, hostStarted
         )
     }
 
@@ -144,6 +127,6 @@ internal class ControllerAttachHandler(
     }
 
     enum class ChangeReason {
-        VIEW, PARENT, HOST
+        VIEW, HOST
     }
 }

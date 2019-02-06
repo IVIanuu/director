@@ -27,6 +27,7 @@ import android.view.WindowManager
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.SimpleSwapChangeHandler
+import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.popController
 import com.ivianuu.director.pushController

@@ -20,6 +20,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.ivianuu.director.activity
 import com.ivianuu.director.dialog.DialogController
 
 

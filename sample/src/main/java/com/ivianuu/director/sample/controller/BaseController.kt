@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
+import com.ivianuu.director.activity
 import com.ivianuu.director.activityresult.ActivityResultListener
 import com.ivianuu.director.androidx.lifecycle.ControllerLifecycleOwner
 import com.ivianuu.director.androidx.lifecycle.ControllerViewLifecycleOwner

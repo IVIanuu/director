@@ -19,6 +19,7 @@ package com.ivianuu.director.androidx.lifecycle
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
+import com.ivianuu.director.activity
 import com.ivianuu.director.doOnPostDestroy
 import com.ivianuu.director.retained.retained
 

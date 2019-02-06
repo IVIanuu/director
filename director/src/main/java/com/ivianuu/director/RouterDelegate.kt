@@ -16,15 +16,17 @@
 
 package com.ivianuu.director
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
 
 /**
  * Router delegate
  */
+// todo support tagged routers
+// todo allow to define a host router per router
 class RouterDelegate(
-    private val activity: Activity,
+    private val host: Any,
+    private val hostRouter: Router? = null,
     private var savedInstanceState: Bundle? = null
 ) {
 
@@ -60,18 +62,25 @@ class RouterDelegate(
     fun handleBack(): Boolean = _routers.values.any { it.handleBack() }
 
     fun getRouter(
-        container: ViewGroup,
+        containerId: Int,
         controllerFactory: ControllerFactory?
-    ): Router = getRouter(container, savedInstanceState, controllerFactory)
+    ): Router = getRouter(
+        containerId,
+        savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId), controllerFactory
+    )
 
     fun getRouter(
-        container: ViewGroup,
-        savedInstanceState: Bundle?,
-        controllerFactory: ControllerFactory?
+        containerId: Int,
+        savedInstanceState: Bundle? = null,
+        controllerFactory: ControllerFactory? = null
     ): Router {
-        return _routers.getOrPut(container.id) {
-            val routerState = savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + container.id)
-            val router = Router(activity, container, routerState, controllerFactory)
+        return _routers.getOrPut(containerId) {
+            val router = Router(
+                host, containerId,
+                null, hostRouter, null, controllerFactory
+            )
+
+            savedInstanceState?.let { router.restoreInstanceState(it) }
 
             if (hostStarted) {
                 router.hostStarted()
@@ -82,23 +91,19 @@ class RouterDelegate(
     }
 
     fun getRouter(
-        containerId: Int,
-        controllerFactory: ControllerFactory?
-    ): Router = getRouter(
-        activity.findViewById<ViewGroup>(containerId),
-        savedInstanceState,
-        controllerFactory
-    )
+        container: ViewGroup,
+        controllerFactory: ControllerFactory? = null
+    ): Router = getRouter(container.id, controllerFactory).also {
+        it.setContainer(container)
+    }
 
     fun getRouter(
-        containerId: Int,
+        container: ViewGroup,
         savedInstanceState: Bundle?,
-        controllerFactory: ControllerFactory?
-    ): Router = getRouter(
-        activity.findViewById<ViewGroup>(containerId),
-        savedInstanceState,
-        controllerFactory
-    )
+        controllerFactory: ControllerFactory? = null
+    ): Router = getRouter(container.id, savedInstanceState, controllerFactory).also {
+        it.setContainer(container)
+    }
 
     private companion object {
         private const val KEY_ROUTER_STATE_PREFIX = "RouterDelegate.routerState"

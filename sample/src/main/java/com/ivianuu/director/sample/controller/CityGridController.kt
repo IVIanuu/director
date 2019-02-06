@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
+import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.pushController
 import com.ivianuu.director.resources

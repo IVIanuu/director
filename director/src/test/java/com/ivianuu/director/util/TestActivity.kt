@@ -35,7 +35,10 @@ class TestActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate = RouterDelegate(this, savedInstanceState?.getBundle(KEY_ROUTER_STATES))
+        delegate = RouterDelegate(
+            this,
+            savedInstanceState = savedInstanceState?.getBundle(KEY_ROUTER_STATES)
+        )
     }
 
     override fun onStart() {

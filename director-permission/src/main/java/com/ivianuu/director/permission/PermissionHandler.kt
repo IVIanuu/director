@@ -19,6 +19,7 @@ package com.ivianuu.director.permission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
+import com.ivianuu.director.activity
 
 /**
  * Permission handler

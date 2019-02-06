@@ -20,6 +20,7 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
+import com.ivianuu.director.activity
 
 /**
  * Handles activity results of controllers

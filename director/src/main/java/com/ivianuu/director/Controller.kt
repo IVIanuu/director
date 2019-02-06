@@ -16,7 +16,6 @@ import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
-import com.ivianuu.director.internal.ChildRouter
 import com.ivianuu.director.internal.ControllerAttachHandler
 import java.util.*
 import kotlin.collections.ArrayList
@@ -46,8 +45,8 @@ abstract class Controller {
     /**
      * Returns the host activity of this controller
      */
-    val activity: Activity
-        get() = if (routerSet) router.activity else error("activity is only available after onCreate")
+    val host: Any
+        get() = if (routerSet) router.host else error("host is only available after onCreate")
 
     /**
      * The view of this controller or null
@@ -95,10 +94,12 @@ abstract class Controller {
     private var allState: Bundle? = null
     private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
-    private var childRouterStates: Map<ChildRouter, Bundle>? = null
+    private var childRouterStates: Map<Router, Bundle>? = null
 
     private var viewFullyCreated = false
     private var hasSavedViewState = false
+
+    private var detachingForDestruction = false
 
     /**
      * Whether or not the view should be retained while being detached
@@ -116,12 +117,12 @@ abstract class Controller {
      */
     val childRouters: List<Router>
         get() = _childRouters
-    private val _childRouters = mutableListOf<ChildRouter>()
+    private val _childRouters = mutableListOf<Router>()
 
     private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
 
     private val attachHandler by lazy(LazyThreadSafetyMode.NONE) {
-        ControllerAttachHandler(parentController != null, ::handleAttachStateChange)
+        ControllerAttachHandler(::handleAttachStateChange)
     }
 
     private var superCalled = false
@@ -257,17 +258,18 @@ abstract class Controller {
             .firstOrNull { it.containerId == containerId && it.tag == tag }
 
         if (childRouter == null) {
-            childRouter = ChildRouter(
+            childRouter = Router(
                 this,
                 containerId,
-                tag
+                tag,
+                router,
+                null,
+                controllerFactory
             )
-
-            childRouter.controllerFactory = controllerFactory
 
             _childRouters.add(childRouter)
 
-            if (router.hostStarted) {
+            if (state == ATTACHED) {
                 childRouter.hostStarted()
             }
         }
@@ -330,14 +332,15 @@ abstract class Controller {
         this.parentController = parentController
     }
 
+    internal fun containerAttached() {
+
+    }
+
     internal fun hostStarted() {
         attachHandler.hostStarted()
-        _childRouters.forEach { it.hostStarted() }
     }
 
     internal fun hostStopped() {
-        _childRouters.forEach { it.hostStopped() }
-
         attachHandler.hostStopped()
 
         // cancel any pending input event
@@ -346,9 +349,19 @@ abstract class Controller {
         }
     }
 
+    internal fun containerDetached() {
+        val view = view ?: return
+
+        // decide whether or not our view should be retained
+        if (retainView && !isBeingDestroyed) {
+            (view.parent as? ViewGroup)?.removeView(view)
+        } else {
+            unbindView()
+        }
+    }
+
     internal fun hostDestroyed() {
         isBeingDestroyed()
-        _childRouters.forEach { it.hostDestroyed() }
         destroy()
     }
 
@@ -388,8 +401,6 @@ abstract class Controller {
 
             viewFullyCreated = true
 
-            _childRouters.forEach { it.parentViewBound() }
-
             restoreChildControllerContainers()
 
             attachHandler.takeView(router.container!!, view)
@@ -403,10 +414,9 @@ abstract class Controller {
     private fun handleAttachStateChange(
         reason: ControllerAttachHandler.ChangeReason,
         viewAttached: Boolean,
-        parentAttached: Boolean,
         hostStarted: Boolean
     ) {
-        if (viewAttached && parentAttached && hostStarted) {
+        if (viewAttached && hostStarted) {
             attach()
         } else {
             detach()
@@ -432,14 +442,14 @@ abstract class Controller {
 
         hasSavedViewState = false
 
-        _childRouters.forEach { it.parentAttached() }
+        _childRouters.forEach { it.hostStarted() }
     }
 
     private fun detach() {
         val view = view ?: return
 
         if (state == ATTACHED) {
-            _childRouters.forEach { it.parentDetached() }
+            _childRouters.forEach { it.hostStopped() }
 
             notifyLifecycleListeners { it.preDetach(this, view) }
             state = VIEW_BOUND
@@ -450,35 +460,13 @@ abstract class Controller {
         }
     }
 
-    internal fun parentViewBound() {
-    }
-
-    internal fun parentAttached() {
-        attachHandler.parentAttached()
-    }
-
-    internal fun parentDetached() {
-        attachHandler.parentDetached()
-    }
-
-    internal fun parentViewUnbound() {
-        val view = view ?: return
-
-        // decide whether or not our view should be retained
-        if (retainView) {
-            (view.parent as? ViewGroup)?.removeView(view)
-        } else {
-            unbindView()
-        }
-    }
-
     private fun unbindView() {
         val view = view ?: return
         if (!isBeingDestroyed && !hasSavedViewState) {
             saveViewState()
         }
 
-        _childRouters.forEach { it.parentViewUnbound() }
+        _childRouters.forEach { it.removeContainer() }
 
         notifyLifecycleListeners { it.preUnbindView(this, view) }
 
@@ -504,40 +492,31 @@ abstract class Controller {
                 .filterNot { it.hasContainer }
                 .forEach {
                     val containerView = view.findViewById<ViewGroup>(it.containerId)
-                    it.container = containerView
+                    it.setContainer(containerView)
                     it.rebind()
                 }
         }
     }
 
     internal fun isBeingDestroyed() {
-        isBeingDestroyed = true
-        _childRouters.forEach { it.isBeingDestroyed() }
+        if (!isBeingDestroyed) {
+            isBeingDestroyed = true
+            _childRouters.forEach { it.isBeingDestroyed() }
 
-        // we should only handle the destruction if we are the root controller
-        // or we get popped
-        val parentController = parentController
-        if ((parentController == null
-                    || !parentController.isBeingDestroyed) && state == ATTACHED
-        ) {
-            doOnPostUnbindView { performDestroy() }
+            // we should only handle the destruction if we are the root controller
+            // or we get popped
+            val parentController = parentController
+            if ((parentController == null
+                        || !parentController.isBeingDestroyed) && state == ATTACHED
+            ) {
+                doOnPostUnbindView { performDestroy() }
+            }
         }
     }
 
     internal fun destroy() {
-        // todo check those lines
-        // seems like something could be wrong there
-        val parentController = parentController
-        if ((parentController == null
-                    || !parentController.isBeingDestroyed)
-        ) {
-            detach()
-            unbindView()
-            performDestroy()
-        }
-    }
-
-    internal fun parentDestroyed() {
+        detach()
+        unbindView()
         performDestroy()
     }
 
@@ -558,7 +537,7 @@ abstract class Controller {
     private fun performDestroy() {
         if (state == DESTROYED) return
 
-        _childRouters.forEach { it.parentDestroyed() }
+        _childRouters.forEach { it.hostDestroyed() }
 
         notifyLifecycleListeners { it.preDestroy(this) }
 
@@ -591,10 +570,8 @@ abstract class Controller {
 
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
-        val childIdentities = _childRouters.map { it.saveIdentity() }
         val childStates = _childRouters.map { it.saveInstanceState() }
 
-        outState.putParcelableArrayList(KEY_CHILD_ROUTER_IDENTITIES, ArrayList(childIdentities))
         outState.putParcelableArrayList(KEY_CHILD_ROUTER_STATES, ArrayList(childStates))
 
         return outState
@@ -618,20 +595,19 @@ abstract class Controller {
 
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
-        val childIdentities = savedInstanceState.getParcelableArrayList<Bundle>(
-            KEY_CHILD_ROUTER_IDENTITIES
-        )!!
-
         val childStates = savedInstanceState
             .getParcelableArrayList<Bundle>(KEY_CHILD_ROUTER_STATES)!!
 
-        childRouterStates = childIdentities.zip(childStates)
-            .map { (identity, state) ->
-                ChildRouter(this).apply {
-                    // we only restore the identity for now
+        childRouterStates = childStates
+            .map { childState ->
+                // todo little hacky make this easier
+                val containerId = childState.getInt("Router.containerId")
+                val tag = childState.getString("Router.tag")
+
+                Router(this, containerId, tag, router).apply {
+                    // we restore the state later
                     // to give the user a chance to set a [ControllerFactory] in [onCreate]
-                    restoreIdentity(identity)
-                } to state
+                } to childState
             }
             .onEach { _childRouters.add(it.first) }
             .toMap()
@@ -685,7 +661,6 @@ abstract class Controller {
     companion object {
         private const val KEY_CLASS_NAME = "Controller.className"
         private const val KEY_VIEW_STATE = "Controller.viewState"
-        private const val KEY_CHILD_ROUTER_IDENTITIES = "Controller.childRouterIdentities"
         private const val KEY_CHILD_ROUTER_STATES = "Controller.childRouterStates"
         private const val KEY_SAVED_STATE = "Controller.instanceState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
@@ -707,6 +682,15 @@ abstract class Controller {
     }
 }
 
+val Controller.activity: Activity
+    get() {
+        return if (host is Activity) {
+            host as Activity
+        } else {
+            (host as? Controller)?.activity
+        } ?: error("no activity found")
+    }
+
 /**
  * The application of the attached activity
  */
@@ -719,7 +703,7 @@ val Controller.application: Application
 val Controller.resources: Resources get() = activity.resources
 
 /**
- * Starts the [intent]+ü
+ * Starts the [intent]
  */
 fun Controller.startActivity(intent: Intent) {
     activity.startActivity(intent)

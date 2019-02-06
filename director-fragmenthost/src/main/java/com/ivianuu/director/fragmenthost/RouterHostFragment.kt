@@ -33,6 +33,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         super.onCreate(savedInstanceState)
         delegate = RouterDelegate(
             requireActivity(),
+            null,
             savedInstanceState?.getBundle(KEY_ROUTER_STATES)
         )
 
