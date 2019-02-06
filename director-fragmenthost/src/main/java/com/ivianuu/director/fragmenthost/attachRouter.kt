@@ -67,9 +67,5 @@ private fun getRouter(
     controllerFactory: ControllerFactory?
 ): Router {
     val routerHost = RouterHostFragment.install(fm)
-
-    val router = routerHost.getRouter(container, controllerFactory)
-    router.rebind()
-
-    return router
+    return routerHost.getRouter(container, controllerFactory)
 }

@@ -40,7 +40,7 @@ abstract class Controller {
         get() = if (routerSet) _router else error("router is only available after onCreate")
 
     private lateinit var _router: Router
-    private var routerSet = false
+    internal var routerSet = false
 
     /**
      * Returns the host activity of this controller
@@ -99,8 +99,6 @@ abstract class Controller {
     private var viewFullyCreated = false
     private var hasSavedViewState = false
 
-    private var detachingForDestruction = false
-
     /**
      * Whether or not the view should be retained while being detached
      */
@@ -127,6 +125,7 @@ abstract class Controller {
         } else {
             detach()
 
+            // this means that a controller was pushed on top of us
             if (!fromHost && !isBeingDestroyed && !retainView) {
                 unbindView()
             }
@@ -342,7 +341,6 @@ abstract class Controller {
     }
 
     internal fun containerAttached() {
-
     }
 
     internal fun hostStarted() {

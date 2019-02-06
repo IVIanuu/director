@@ -122,10 +122,14 @@ open class Router internal constructor(
             .partition { it.controller.state == ATTACHED }
 
         destroyedVisibleTransactions.forEach {
+            d { "handle destroyed visible transaction ${it.controller}" }
             val view = it.controller.view!!
             view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
                 override fun onViewAttachedToWindow(v: View) {}
                 override fun onViewDetachedFromWindow(v: View) {
+                    this@Router.d {
+                        "detach container for handled on view detached ${it.controller}"
+                    }
                     view.removeOnAttachStateChangeListener(this)
                     it.controller.containerDetached()
                     it.controller.hostDestroyed()
@@ -293,6 +297,7 @@ open class Router internal constructor(
         }
 
         destroyedInvisibleTransactions.forEach {
+            d { "handle destroyed invisible transaction ${it.controller}" }
             it.controller.containerDetached()
             it.controller.hostDestroyed()
         }
@@ -372,14 +377,16 @@ open class Router internal constructor(
     }
 
     fun removeContainer() {
-        prepareForContainerRemoval()
+        if (container != null) {
+            prepareForContainerRemoval()
 
-        _backstack.forEach { it.controller.containerDetached() }
+            _backstack.forEach { it.controller.containerDetached() }
 
-        container?.let { container ->
-            (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
+            container?.let { container ->
+                (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
+            }
+            container = null
         }
-        container = null
     }
 
     fun hostStarted() {
@@ -480,19 +487,21 @@ open class Router internal constructor(
     }
 
     private fun setControllerRouter(controller: Controller) {
-        // make sure to set the parent controller before the
-        // router is set
-        host.safeAs<Controller>()?.let { controller.parentController = it }
+        if (!controller.routerSet) {
+            // make sure to set the parent controller before the
+            // router is set
+            host.safeAs<Controller>()?.let { controller.parentController = it }
 
-        controller.setRouter(this)
+            controller.setRouter(this)
 
-        if (hasContainer) {
-            controller.containerAttached()
-        }
+            if (hasContainer) {
+                controller.containerAttached()
+            }
 
-        // bring them in the correct state
-        if (hostStarted) {
-            controller.hostStarted()
+            // bring them in the correct state
+            if (hostStarted) {
+                controller.hostStarted()
+            }
         }
     }
 

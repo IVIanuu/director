@@ -99,6 +99,7 @@ class RouterDelegate(
         controllerFactory: ControllerFactory? = null
     ): Router = getRouter(container.id, controllerFactory).also {
         it.setContainer(container)
+        it.rebind()
     }
 
     fun getRouter(
@@ -107,6 +108,7 @@ class RouterDelegate(
         controllerFactory: ControllerFactory? = null
     ): Router = getRouter(container.id, savedInstanceState, controllerFactory).also {
         it.setContainer(container)
+        it.rebind()
     }
 
     private companion object {
