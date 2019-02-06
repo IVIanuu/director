@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.hasRootController
-import com.ivianuu.director.sample.controller.MultipleChildRouterController
+import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingChangeListener
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.setRoot
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
             addChangeListener(LoggingChangeListener(), true)
 
             if (!hasRootController) {
-                setRoot(MultipleChildRouterController().toTransaction())
+                setRoot(HomeController().toTransaction())
             }
         }
     }

@@ -32,10 +32,6 @@ open class TransitionChangeHandlerCompat : ControllerChangeHandler {
     override val removesFromViewOnPush: Boolean
         get() = changeHandler.removesFromViewOnPush
 
-    override var forceRemoveViewOnPush: Boolean
-        get() = changeHandler.forceRemoveViewOnPush
-        set(value) { changeHandler.forceRemoveViewOnPush = value }
-
     private lateinit var changeHandler: ControllerChangeHandler
 
     constructor()

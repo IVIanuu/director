@@ -14,10 +14,9 @@ abstract class ControllerChangeHandler {
     /**
      * Whether or not this handler removes the from view on push
      */
-    open val removesFromViewOnPush: Boolean get() = forceRemoveViewOnPush
+    open val removesFromViewOnPush: Boolean get() = true
 
-    open var forceRemoveViewOnPush = false
-
+    internal var forceRemoveViewOnPush = false
     internal var hasBeenUsed = false
 
     /**
