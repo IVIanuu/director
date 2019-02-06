@@ -82,10 +82,14 @@ internal class ControllerAttachHandler(
 
     private fun notifyChange(fromHost: Boolean) {
         val attached = rootAttached && childrenAttached && hostStarted
-        if (attached != reportedState) {
-            reportedState = attached
-            listener(attached, fromHost)
+        if (attached && reportedState != attached) {
+            reportedState = true
+            listener(true, fromHost)
+            return
         }
+
+        reportedState = false
+        listener(false, fromHost)
     }
 
     private fun listenForDeepestChildAttach(view: View, onAttach: () -> Unit) {
@@ -100,9 +104,7 @@ internal class ControllerAttachHandler(
         }
 
         childOnAttachStateChangeListener = object : OnAttachStateChangeListener {
-
             private var attached = false
-
             override fun onViewAttachedToWindow(v: View) {
                 if (!attached) {
                     attached = true

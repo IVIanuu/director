@@ -8,6 +8,7 @@ import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.RouterTransaction
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.parentController
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
 import com.ivianuu.director.pushController

@@ -43,7 +43,7 @@ abstract class Controller {
     internal var routerSet = false
 
     /**
-     * Returns the host activity of this controller
+     * The host of the router this controller lives in
      */
     val host: Any
         get() = if (routerSet) router.host else error("host is only available after onCreate")
@@ -53,12 +53,6 @@ abstract class Controller {
      */
     var view: View? = null
         private set
-
-    /**
-     * The parent controller of this controller or null
-     */
-    var parentController: Controller? = null
-        internal set
 
     /**
      * The instance id of this controller
@@ -378,7 +372,6 @@ abstract class Controller {
 
         requireSuperCalled { onDestroy() }
 
-        parentController = null
         notifyLifecycleListeners { it.postDestroy(this) }
     }
 
@@ -645,6 +638,15 @@ abstract class Controller {
     }
 }
 
+/**
+ * The parent controller of this controller or null
+ */
+val Controller.parentController: Controller?
+    get() = host as? Controller
+
+/**
+ * The activity of this controller if any of the hosts is one
+ */
 val Controller.activity: Activity
     get() {
         return if (host is Activity) {

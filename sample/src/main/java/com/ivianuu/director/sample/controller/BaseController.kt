@@ -16,6 +16,7 @@ import com.ivianuu.director.activityresult.ActivityResultListener
 import com.ivianuu.director.androidx.lifecycle.ControllerLifecycleOwner
 import com.ivianuu.director.androidx.lifecycle.ControllerViewLifecycleOwner
 import com.ivianuu.director.androidx.lifecycle.ControllerViewModelStoreOwner
+import com.ivianuu.director.parentController
 import com.ivianuu.director.permission.PermissionCallback
 
 import com.ivianuu.director.sample.ActionBarProvider

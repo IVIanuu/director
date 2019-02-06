@@ -7,7 +7,6 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.stdlibx.safeAs
 import com.ivianuu.stdlibx.takeLastUntil
 
 /**
@@ -17,7 +16,7 @@ open class Router internal constructor(
     containerId: Int,
     tag: String? = null,
     val host: Any,
-    val hostRouter: Router?
+    private val hostRouter: Router?
 ) {
 
     /**
@@ -77,10 +76,10 @@ open class Router internal constructor(
 
     private val changeManager = ControllerChangeManager()
 
-    private var hasPreparedForHostDetach = false
+    private var hasPreparedForContainerRemoval = false
 
     private var hostStarted = false
-        private set
+    private var hostDestroyed = false
 
     private val isRootRouter get() = hostRouter == null
 
@@ -382,36 +381,40 @@ open class Router internal constructor(
     }
 
     fun hostStarted() {
-        hostStarted = true
-        hasPreparedForHostDetach = false
-        _backstack.reversed().forEach { it.controller.hostStarted() }
+        if (!hostStarted) {
+            hostStarted = true
+            hasPreparedForContainerRemoval = false
+            _backstack.reversed().forEach { it.controller.hostStarted() }
+        }
     }
 
     fun hostStopped() {
-        hostStarted = false
-        if (!hasPreparedForHostDetach) {
-            hasPreparedForHostDetach = true
+        if (hostStarted) {
+            hostStarted = false
             prepareForContainerRemoval()
+            _backstack.reversed().forEach { it.controller.hostStopped() }
         }
-        _backstack.reversed().forEach { it.controller.hostStopped() }
     }
 
     fun hostDestroyed() {
-        _backstack.reversed().forEach { it.controller.hostDestroyed() }
-        container = null
+        if (!hostDestroyed) {
+            hostDestroyed = true
+            _backstack.reversed().forEach { it.controller.hostDestroyed() }
+            container = null
+        }
     }
 
     private fun prepareForContainerRemoval() {
-        _backstack.reversed().forEach {
-            changeManager.cancelChange(it.controller.instanceId, true)
+        if (!hasPreparedForContainerRemoval) {
+            hasPreparedForContainerRemoval = true
+            _backstack.reversed().forEach {
+                changeManager.cancelChange(it.controller.instanceId, true)
+            }
         }
     }
 
     fun saveInstanceState(): Bundle {
-        if (!hasPreparedForHostDetach) {
-            hasPreparedForHostDetach = true
-            prepareForContainerRemoval()
-        }
+        prepareForContainerRemoval()
 
         return Bundle().apply {
             val backstack = _backstack.map { it.saveInstanceState() }
@@ -480,10 +483,6 @@ open class Router internal constructor(
 
     private fun setControllerRouter(controller: Controller) {
         if (!controller.routerSet) {
-            // make sure to set the parent controller before the
-            // router is set
-            host.safeAs<Controller>()?.let { controller.parentController = it }
-
             controller.setRouter(this)
 
             if (hasContainer) {

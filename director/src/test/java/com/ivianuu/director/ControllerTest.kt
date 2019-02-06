@@ -20,9 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.reportAttached
-
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,8 +46,6 @@ class ControllerTest {
         router.pushController(parent.toTransaction())
 
         assertEquals(0, parent.childRouters.size)
-        assertNull(child1.parentController)
-        assertNull(child2.parentController)
 
         var childRouter =
             parent.getChildRouter(parent.childContainer1!!)
@@ -62,7 +58,6 @@ class ControllerTest {
         assertEquals(1, childRouter.backstack.size)
         assertEquals(child1, childRouter.backstack.firstOrNull()?.controller)
         assertEquals(parent, child1.parentController)
-        assertNull(child2.parentController)
 
         childRouter =
                 parent.getChildRouter(parent.childContainer1!!)
@@ -83,15 +78,12 @@ class ControllerTest {
         assertEquals(1, childRouter.backstack.size)
         assertEquals(child1, childRouter.backstack.firstOrNull()?.controller)
         assertEquals(parent, child1.parentController)
-        assertNull(child2.parentController)
 
         childRouter.popController(child1)
 
         assertEquals(1, parent.childRouters.size)
         assertEquals(childRouter, parent.childRouters.firstOrNull())
         assertEquals(0, childRouter.backstack.size)
-        assertNull(child1.parentController)
-        assertNull(child2.parentController)
     }
 
     @Test
@@ -104,8 +96,6 @@ class ControllerTest {
         router.pushController(parent.toTransaction())
 
         assertEquals(0, parent.childRouters.size)
-        assertNull(child1.parentController)
-        assertNull(child2.parentController)
 
         val childRouter1 =
             parent.getChildRouter(parent.childContainer1!!)
@@ -133,15 +123,12 @@ class ControllerTest {
         assertEquals(0, childRouter2.backstack.size)
         assertEquals(child1, childRouter1.backstack.firstOrNull()?.controller)
         assertEquals(parent, child1.parentController)
-        assertNull(child2.parentController)
 
         parent.removeChildRouter(childRouter1)
 
         assertEquals(0, parent.childRouters.size)
         assertEquals(0, childRouter1.backstack.size)
         assertEquals(0, childRouter2.backstack.size)
-        assertNull(child1.parentController)
-        assertNull(child2.parentController)
     }
 
     @Test
