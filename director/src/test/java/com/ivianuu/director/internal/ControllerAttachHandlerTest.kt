@@ -281,8 +281,7 @@ class ControllerAttachHandlerTest {
         assertEquals(1, listener.detaches)
     }
 
-    private class CountingControllerAttachHandlerListener :
-            (ControllerAttachHandler.ChangeReason, Boolean, Boolean) -> Unit {
+    private class CountingControllerAttachHandlerListener : (Boolean, Boolean) -> Unit {
 
         var attaches = 0
         var detaches = 0
@@ -290,14 +289,12 @@ class ControllerAttachHandlerTest {
         private var wasAttached = false
 
         override fun invoke(
-            reason: ControllerAttachHandler.ChangeReason,
-            viewAttached: Boolean,
-            hostStarted: Boolean
+            attached: Boolean,
+            fromHost: Boolean
         ) {
-            val isAttached = viewAttached && hostStarted
-            if (isAttached != wasAttached) {
-                wasAttached = isAttached
-                if (isAttached) {
+            if (attached != wasAttached) {
+                wasAttached = attached
+                if (attached) {
                     attaches++
                 } else {
                     detaches++

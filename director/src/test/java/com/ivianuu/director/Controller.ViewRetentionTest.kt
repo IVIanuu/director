@@ -19,9 +19,6 @@ package com.ivianuu.director
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.reportAttached
-import com.ivianuu.director.util.setParent
-
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
@@ -42,28 +39,26 @@ class ControllerViewRetentionTest {
     }
 
     @Test
-    fun testViewRetention() {
-        val controller = TestController()
-        controller.setRouter(router)
+    fun testViewRetentionWithRetainViewOff() {
+        var controller = TestController()
+        var onTopController = TestController()
 
         // without retain view
         controller.retainView = false
         assertNull(controller.view)
-        var view = controller.inflate(router.container!!)
-        view.setParent(router.container!!)
+        router.pushController(controller.toTransaction())
         assertNotNull(controller.view)
-        view.reportAttached(true)
-        assertNotNull(controller.view)
-        view.reportAttached(false)
+        router.popController(controller)
         assertNull(controller.view)
 
         // with retain view
+        controller = TestController()
+        onTopController = TestController()
         controller.retainView = true
-        view = controller.inflate(router.container!!)
+        assertNull(controller.view)
+        router.pushController(controller.toTransaction())
         assertNotNull(controller.view)
-        view.reportAttached(true)
-        assertNotNull(controller.view)
-        view.reportAttached(false)
+        router.pushController(onTopController.toTransaction())
         assertNotNull(controller.view)
 
         // disable retain should release the view

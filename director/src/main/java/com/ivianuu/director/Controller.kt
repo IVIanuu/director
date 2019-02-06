@@ -58,7 +58,7 @@ abstract class Controller {
      * The parent controller of this controller or null
      */
     var parentController: Controller? = null
-        private set
+        internal set
 
     /**
      * The instance id of this controller
@@ -85,11 +85,11 @@ abstract class Controller {
      */
     var state: ControllerState = INITIALIZED
 
-    /**
-     * Whether or not this Controller is currently in the process of being destroyed.
-     */
-    var isBeingDestroyed = false
-        private set
+    var isBeingDestroyed: Boolean = false
+        internal set(value) {
+            _childRouters.forEach { it.isBeingDestroyed = value }
+            field = value
+        }
 
     private var allState: Bundle? = null
     private var instanceState: Bundle? = null
@@ -119,10 +119,18 @@ abstract class Controller {
         get() = _childRouters
     private val _childRouters = mutableListOf<Router>()
 
-    private val lifecycleListeners = mutableSetOf<ControllerLifecycleListener>()
+    private val lifecycleListeners = mutableListOf<ControllerLifecycleListener>()
 
-    private val attachHandler by lazy(LazyThreadSafetyMode.NONE) {
-        ControllerAttachHandler(::handleAttachStateChange)
+    private val attachHandler = ControllerAttachHandler { attached, fromHost ->
+        if (attached) {
+            attach()
+        } else {
+            detach()
+
+            if (!fromHost && !isBeingDestroyed && !retainView) {
+                unbindView()
+            }
+        }
     }
 
     private var superCalled = false
@@ -234,7 +242,9 @@ abstract class Controller {
      * Adds a listener for all of this Controller's lifecycle events
      */
     fun addLifecycleListener(listener: ControllerLifecycleListener) {
-        lifecycleListeners.add(listener)
+        if (!lifecycleListeners.contains(listener)) {
+            lifecycleListeners.add(listener)
+        }
     }
 
     /**
@@ -285,8 +295,11 @@ abstract class Controller {
      */
     fun removeChildRouter(childRouter: Router) {
         if (_childRouters.remove(childRouter)) {
-            childRouter.isBeingDestroyed()
-            childRouter.destroy(true)
+            childRouter.setBackstack(emptyList())
+            childRouter.isBeingDestroyed = true
+            childRouter.hostStopped()
+            childRouter.removeContainer()
+            childRouter.hostDestroyed()
         }
     }
 
@@ -328,10 +341,6 @@ abstract class Controller {
         create()
     }
 
-    internal fun setParentController(parentController: Controller) {
-        this.parentController = parentController
-    }
-
     internal fun containerAttached() {
 
     }
@@ -353,7 +362,7 @@ abstract class Controller {
         val view = view ?: return
 
         // decide whether or not our view should be retained
-        if (retainView && !isBeingDestroyed) {
+        if (!isBeingDestroyed && retainView) {
             (view.parent as? ViewGroup)?.removeView(view)
         } else {
             unbindView()
@@ -361,8 +370,18 @@ abstract class Controller {
     }
 
     internal fun hostDestroyed() {
-        isBeingDestroyed()
-        destroy()
+        if (state == DESTROYED) return
+
+        _childRouters.forEach { it.hostDestroyed() }
+
+        notifyLifecycleListeners { it.preDestroy(this) }
+
+        state = DESTROYED
+
+        requireSuperCalled { onDestroy() }
+
+        parentController = null
+        notifyLifecycleListeners { it.postDestroy(this) }
     }
 
     internal fun inflate(parent: ViewGroup): View {
@@ -411,24 +430,6 @@ abstract class Controller {
         return view
     }
 
-    private fun handleAttachStateChange(
-        reason: ControllerAttachHandler.ChangeReason,
-        viewAttached: Boolean,
-        hostStarted: Boolean
-    ) {
-        if (viewAttached && hostStarted) {
-            attach()
-        } else {
-            detach()
-
-            if (reason == ControllerAttachHandler.ChangeReason.VIEW
-                && !viewAttached && (isBeingDestroyed || !retainView)
-            ) {
-                unbindView()
-            }
-        }
-    }
-
     private fun attach() {
         val view = view ?: return
 
@@ -452,6 +453,7 @@ abstract class Controller {
             _childRouters.forEach { it.hostStopped() }
 
             notifyLifecycleListeners { it.preDetach(this, view) }
+
             state = VIEW_BOUND
 
             requireSuperCalled { onDetach(view) }
@@ -498,28 +500,6 @@ abstract class Controller {
         }
     }
 
-    internal fun isBeingDestroyed() {
-        if (!isBeingDestroyed) {
-            isBeingDestroyed = true
-            _childRouters.forEach { it.isBeingDestroyed() }
-
-            // we should only handle the destruction if we are the root controller
-            // or we get popped
-            val parentController = parentController
-            if ((parentController == null
-                        || !parentController.isBeingDestroyed) && state == ATTACHED
-            ) {
-                doOnPostUnbindView { performDestroy() }
-            }
-        }
-    }
-
-    internal fun destroy() {
-        detach()
-        unbindView()
-        performDestroy()
-    }
-
     private fun create() {
         if (!state.isAtLeast(CREATED)) {
             notifyLifecycleListeners { it.preCreate(this, instanceState) }
@@ -532,21 +512,6 @@ abstract class Controller {
 
             instanceState = null
         }
-    }
-
-    private fun performDestroy() {
-        if (state == DESTROYED) return
-
-        _childRouters.forEach { it.hostDestroyed() }
-
-        notifyLifecycleListeners { it.preDestroy(this) }
-
-        state = DESTROYED
-
-        requireSuperCalled { onDestroy() }
-
-        parentController = null
-        notifyLifecycleListeners { it.postDestroy(this) }
     }
 
     internal fun saveInstanceState(): Bundle {

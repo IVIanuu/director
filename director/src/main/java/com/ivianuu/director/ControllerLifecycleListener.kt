@@ -163,16 +163,16 @@ fun Controller.addLifecycleListener(
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
     return LambdaLifecycleListener(
-        preCreate, postCreate,
-        preInflateView, postInflateView,
-        preBindView, postBindView,
-        preAttach, postAttach,
-        preDetach, postDetach,
-        preUnbindView, postUnbindView,
-        preDestroy, postDestroy,
-        onSaveInstanceState,
-        onSaveViewState,
-        onChangeStart, onChangeEnd
+        preCreate = preCreate, postCreate = postCreate,
+        preInflateView = preInflateView, postInflateView = postInflateView,
+        preBindView = preBindView, postBindView = postBindView,
+        preAttach = preAttach, postAttach = postAttach,
+        preDetach = preDetach, postDetach = postDetach,
+        preUnbindView = preUnbindView, postUnbindView = postUnbindView,
+        preDestroy = preDestroy, postDestroy = postDestroy,
+        onSaveInstanceState = onSaveInstanceState,
+        onSaveViewState = onSaveViewState,
+        onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
     ).also { addLifecycleListener(it) }
 }
 
@@ -306,15 +306,15 @@ fun Router.addLifecycleListener(
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
     return LambdaLifecycleListener(
-        preCreate, postCreate,
-        preInflateView, postInflateView,
-        preBindView, postBindView,
-        preAttach, postAttach,
-        preDetach, postDetach,
-        preUnbindView, postUnbindView,
-        preDestroy, postDestroy,
-        onSaveInstanceState,
-        onSaveViewState,
-        onChangeStart, onChangeEnd
+        preCreate = preCreate, postCreate = postCreate,
+        preInflateView = preInflateView, postInflateView = postInflateView,
+        preBindView = preBindView, postBindView = postBindView,
+        preAttach = preAttach, postAttach = postAttach,
+        preDetach = preDetach, postDetach = postDetach,
+        preUnbindView = preUnbindView, postUnbindView = postUnbindView,
+        preDestroy = preDestroy, postDestroy = postDestroy,
+        onSaveInstanceState = onSaveInstanceState,
+        onSaveViewState = onSaveViewState,
+        onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
     ).also { addLifecycleListener(it, recursive) }
 }

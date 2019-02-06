@@ -49,7 +49,11 @@ class RouterDelegate(
     }
 
     fun hostDestroyed() {
-        _routers.values.forEach { it.hostDestroyed() }
+        _routers.values.forEach {
+            it.isBeingDestroyed = true
+            it.removeContainer()
+            it.hostDestroyed()
+        }
     }
 
     fun saveInstanceState(): Bundle = Bundle().apply {

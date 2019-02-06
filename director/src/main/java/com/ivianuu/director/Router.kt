@@ -1,7 +1,10 @@
 package com.ivianuu.director
 
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.ControllerState.ATTACHED
+import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
@@ -47,6 +50,12 @@ open class Router internal constructor(
     var container: ViewGroup? = null
         private set
 
+    var isBeingDestroyed: Boolean = false
+        internal set(value) {
+            _backstack.forEach { it.controller.isBeingDestroyed = true }
+            field = value
+        }
+
     /**
      * Will be used to instantiate controllers after config changes or process death
      */
@@ -71,7 +80,7 @@ open class Router internal constructor(
 
     private var hasPreparedForHostDetach = false
 
-    internal var hostStarted = false
+    private var hostStarted = false
         private set
 
     private val isRootRouter get() = hostRouter == null
@@ -105,12 +114,24 @@ open class Router internal constructor(
         _backstack.clear()
         _backstack.addAll(newBackstack)
 
-        val destroyedTransactions = oldTransactions
+        val (destroyedVisibleTransactions, destroyedInvisibleTransactions) = oldTransactions
+            // find destroyed transactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
-            .onEach {
-                // Inform the controller that it will be destroyed soon
-                it.controller.isBeingDestroyed()
-            }
+            // Inform the controller that it will be destroyed soon
+            .onEach { it.controller.isBeingDestroyed = true }
+            .partition { it.controller.state == ATTACHED }
+
+        destroyedVisibleTransactions.forEach {
+            val view = it.controller.view!!
+            view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View) {}
+                override fun onViewDetachedFromWindow(v: View) {
+                    view.removeOnAttachStateChangeListener(this)
+                    it.controller.containerDetached()
+                    it.controller.hostDestroyed()
+                }
+            })
+        }
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach {
@@ -271,7 +292,10 @@ open class Router internal constructor(
             }
         }
 
-        destroyedTransactions.forEach { it.controller.destroy() }
+        destroyedInvisibleTransactions.forEach {
+            it.controller.containerDetached()
+            it.controller.hostDestroyed()
+        }
     }
 
     /**
@@ -280,7 +304,7 @@ open class Router internal constructor(
     open fun rebind() {
         _backstack
             .filterVisible()
-            .filterNot { it.controller.state == ControllerState.ATTACHED }
+            .filterNot { it.controller.state == ATTACHED }
             .forEach {
                 performControllerChange(
                     it, null, true,
@@ -384,20 +408,6 @@ open class Router internal constructor(
         }
     }
 
-    internal fun isBeingDestroyed() {
-        _backstack.reversed().forEach { it.controller.isBeingDestroyed() }
-    }
-
-    internal fun destroy(popViews: Boolean) {
-        if (popViews) {
-            popsLastView = true
-            setBackstack(emptyList(), _backstack.lastOrNull()?.popChangeHandler)
-        } else {
-            // manually destroy the controllers
-            _backstack.reversed().forEach { it.controller.hostDestroyed() }
-        }
-    }
-
     fun saveInstanceState(): Bundle {
         if (!hasPreparedForHostDetach) {
             hasPreparedForHostDetach = true
@@ -447,7 +457,7 @@ open class Router internal constructor(
         isPush: Boolean,
         changeHandler: ControllerChangeHandler? = null
     ) {
-        check(!isPush || to == null || to.controller.state != ControllerState.DESTROYED) {
+        check(!isPush || to == null || to.controller.state != DESTROYED) {
             "Trying to push a controller that has already been destroyed ${to!!.javaClass.simpleName}"
         }
 
@@ -472,7 +482,7 @@ open class Router internal constructor(
     private fun setControllerRouter(controller: Controller) {
         // make sure to set the parent controller before the
         // router is set
-        host.safeAs<Controller>()?.let(controller::setParentController)
+        host.safeAs<Controller>()?.let { controller.parentController = it }
 
         controller.setRouter(this)
 
@@ -491,12 +501,6 @@ open class Router internal constructor(
             it.pushChangeHandler != null
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
-
-    private fun manageControllerDestruction(
-        controller: Controller
-    ) {
-
-    }
 
     private data class ChangeListenerEntry(
         val listener: ControllerChangeListener,

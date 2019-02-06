@@ -486,24 +486,6 @@ class RouterTest {
     }
 
     @Test
-    fun testRemovesAllViewsOnDestroy() {
-        val controller1 = TestController()
-        val controller2 = TestController()
-
-        router.setRoot(controller1.toTransaction())
-        router.pushController(
-            controller2.toTransaction()
-                .pushChangeHandler(SimpleSwapChangeHandler(false))
-        )
-
-        assertEquals(2, router.container!!.childCount)
-
-        router.destroy(true)
-
-        assertEquals(0, router.container!!.childCount)
-    }
-
-    @Test
     fun testIsBeingDestroyed() {
         val lifecycleListener = object : ControllerLifecycleListener {
             override fun preUnbindView(controller: Controller, view: View) {
