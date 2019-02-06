@@ -53,28 +53,28 @@ class AttachFakingFrameLayout(context: Context) : FrameLayout(context) {
 
     override fun getWindowToken(): IBinder? = if (reportAttached) fakeWindowToken else null
 
-    @JvmOverloads fun setAttached(attached: Boolean, reportToViewUtils: Boolean = true) {
+    fun setAttached(attached: Boolean, reportToViewUtils: Boolean = true) {
         if (reportAttached != attached) {
             reportAttached = attached
             if (reportToViewUtils) {
-                ViewUtils.reportAttached(this, attached)
+                reportAttached(attached)
             }
 
             for (i in 0 until childCount) {
-                ViewUtils.reportAttached(getChildAt(i), attached)
+                getChildAt(i).reportAttached(attached)
             }
         }
     }
 
     override fun onViewAdded(child: View) {
         if (reportAttached) {
-            ViewUtils.reportAttached(child, true)
+            child.reportAttached(true)
         }
         super.onViewAdded(child)
     }
 
     override fun onViewRemoved(child: View) {
-        ViewUtils.reportAttached(child, false)
+        child.reportAttached(false)
         super.onViewRemoved(child)
     }
 }

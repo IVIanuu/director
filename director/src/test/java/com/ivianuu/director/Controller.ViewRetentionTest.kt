@@ -19,7 +19,9 @@ package com.ivianuu.director
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.ViewUtils
+import com.ivianuu.director.util.reportAttached
+import com.ivianuu.director.util.setParent
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
@@ -44,26 +46,27 @@ class ControllerViewRetentionTest {
         val controller = TestController()
         controller.setRouter(router)
 
-        // Test View getting released w/ RELEASE_DETACH
+        // without retain view
         controller.retainView = false
         assertNull(controller.view)
         var view = controller.inflate(router.container!!)
+        view.setParent(router.container!!)
         assertNotNull(controller.view)
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertNotNull(controller.view)
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertNull(controller.view)
 
-        // Test View getting retained w/ RETAIN_DETACH
+        // with retain view
         controller.retainView = true
         view = controller.inflate(router.container!!)
         assertNotNull(controller.view)
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertNotNull(controller.view)
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertNotNull(controller.view)
 
-        // Ensure re-setting RELEASE_DETACH releases
+        // disable retain should release the view
         controller.retainView = false
         assertNull(controller.view)
     }

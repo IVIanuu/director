@@ -23,7 +23,8 @@ import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.CallState
 import com.ivianuu.director.util.MockChangeHandler
 import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.ViewUtils
+
+import com.ivianuu.director.util.reportAttached
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -116,7 +117,7 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, controller)
 
         assertNotNull(controller.view)
-        ViewUtils.reportAttached(controller.view!!, false)
+        controller.view!!.reportAttached(false)
 
         expectedCallState.saveViewStateCalls++
         expectedCallState.unbindViewCalls++
@@ -641,15 +642,15 @@ class ControllerLifecycleCallbacksTest {
         assertTrue(parent.state == ControllerState.ATTACHED)
         assertTrue(child.state == ControllerState.ATTACHED)
 
-        ViewUtils.reportAttached(parent.view!!, attached = false, propogateToChildren = true)
+        parent.view!!.reportAttached(attached = false, applyOnChildren = true)
         assertFalse(parent.state == ControllerState.ATTACHED)
         assertFalse(child.state == ControllerState.ATTACHED)
 
-        ViewUtils.reportAttached(child.view!!, true)
+        child.view!!.reportAttached(true)
         assertFalse(parent.state == ControllerState.ATTACHED)
         assertFalse(child.state == ControllerState.ATTACHED)
 
-        ViewUtils.reportAttached(parent.view!!, true)
+        parent.view!!.reportAttached(true)
         assertTrue(parent.state == ControllerState.ATTACHED)
         assertTrue(child.state == ControllerState.ATTACHED)
     }

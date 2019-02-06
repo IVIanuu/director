@@ -16,8 +16,13 @@ internal class ControllerAttachHandler(
 
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
 
+    private var container: ViewGroup? = null
+    private var view: View? = null
+
     override fun onViewAttachedToWindow(v: View) {
-        if (!rootAttached) {
+        // explicitly check the container
+        // we could get attached to another container while transitioning
+        if (!rootAttached && v.parent == container) {
             rootAttached = true
 
             listenForDeepestChildAttach(v) {
@@ -37,21 +42,28 @@ internal class ControllerAttachHandler(
         }
     }
 
-    fun takeView(view: View) {
+    fun takeView(container: ViewGroup, view: View) {
+        this.container = container
+        this.view = view
         view.addOnAttachStateChangeListener(this)
     }
 
-    fun dropView(view: View) {
+    fun dropView() {
         rootAttached = false
         childrenAttached = false
 
-        view.removeOnAttachStateChangeListener(this)
+        container = null
 
-        if (childOnAttachStateChangeListener != null && view is ViewGroup) {
-            findDeepestChild(view).removeOnAttachStateChangeListener(
-                childOnAttachStateChangeListener
-            )
+        view?.let { view ->
+            view.removeOnAttachStateChangeListener(this)
+            if (childOnAttachStateChangeListener != null && view is ViewGroup) {
+                findDeepestChild(view).removeOnAttachStateChangeListener(
+                    childOnAttachStateChangeListener
+                )
+            }
         }
+
+        view = null
     }
 
     fun hostStarted() {

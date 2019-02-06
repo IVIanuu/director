@@ -392,7 +392,7 @@ abstract class Controller {
 
             restoreChildControllerContainers()
 
-            attachHandler.takeView(view)
+            attachHandler.takeView(router.container!!, view)
         } else if (retainView) {
             restoreChildControllerContainers()
         }
@@ -406,14 +406,8 @@ abstract class Controller {
         parentAttached: Boolean,
         hostStarted: Boolean
     ) {
-        val view = view ?: return
-
         if (viewAttached && parentAttached && hostStarted) {
-            // explicitly check the container
-            // we could get attached to another container while transitioning
-            if (view.parent == router.container) {
-                attach()
-            }
+            attach()
         } else {
             detach()
 
@@ -490,7 +484,7 @@ abstract class Controller {
 
         requireSuperCalled { onUnbindView(view) }
 
-        attachHandler.dropView(view)
+        attachHandler.dropView()
 
         this.view = null
         viewFullyCreated = false

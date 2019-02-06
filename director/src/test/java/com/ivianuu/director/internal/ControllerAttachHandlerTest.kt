@@ -17,10 +17,12 @@
 package com.ivianuu.director.internal
 
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.ViewUtils
+import com.ivianuu.director.util.AttachFakingFrameLayout
+import com.ivianuu.director.util.reportAttached
+import com.ivianuu.director.util.setParent
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,14 +38,17 @@ class ControllerAttachHandlerTest {
 
     @Test
     fun testActivityStartStop() {
+        val container = AttachFakingFrameLayout(activityProxy.activity)
         val view = View(activityProxy.activity)
-        viewAttachHandler.takeView(view)
+        view.setParent(container)
+
+        viewAttachHandler.takeView(container, view)
         viewAttachHandler.parentAttached()
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
 
@@ -66,10 +71,13 @@ class ControllerAttachHandlerTest {
 
     @Test
     fun testParentAttachDetach() {
+        val container = AttachFakingFrameLayout(activityProxy.activity)
         val view = View(activityProxy.activity)
-        viewAttachHandler.takeView(view)
+        view.setParent(container)
+
+        viewAttachHandler.takeView(container, view)
         viewAttachHandler.hostStarted()
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
@@ -96,30 +104,32 @@ class ControllerAttachHandlerTest {
         viewAttachHandler.hostStarted()
         viewAttachHandler.parentAttached()
 
+        val container = AttachFakingFrameLayout(activityProxy.activity)
         val view = View(activityProxy.activity)
+        view.setParent(container)
 
-        viewAttachHandler.takeView(view)
+        viewAttachHandler.takeView(container, view)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
 
@@ -127,11 +137,11 @@ class ControllerAttachHandlerTest {
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
@@ -145,29 +155,32 @@ class ControllerAttachHandlerTest {
         viewAttachHandler.hostStarted()
         viewAttachHandler.parentAttached()
 
-        val view = LinearLayout(activityProxy.activity)
-        viewAttachHandler.takeView(view)
+        val container = AttachFakingFrameLayout(activityProxy.activity)
+        val view = View(activityProxy.activity)
+        view.setParent(container)
+
+        viewAttachHandler.takeView(container, view)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
 
@@ -175,11 +188,11 @@ class ControllerAttachHandlerTest {
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
-        ViewUtils.reportAttached(view, false)
+        view.reportAttached(false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
-        ViewUtils.reportAttached(view, true)
+        view.reportAttached(true)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
@@ -193,40 +206,44 @@ class ControllerAttachHandlerTest {
         viewAttachHandler.hostStarted()
         viewAttachHandler.parentAttached()
 
-        val view = LinearLayout(activityProxy.activity)
-        val child = LinearLayout(activityProxy.activity)
+        val container = AttachFakingFrameLayout(activityProxy.activity)
+        val view = FrameLayout(activityProxy.activity)
+        view.setParent(container)
+
+        val child = FrameLayout(activityProxy.activity)
         view.addView(child)
-        viewAttachHandler.takeView(view)
+
+        viewAttachHandler.takeView(container, view)
 
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
+        view.reportAttached(attached = true, applyOnChildren = false)
         assertEquals(0, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
+        child.reportAttached(attached = true, applyOnChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
-        ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
+        view.reportAttached(attached = true, applyOnChildren = false)
+        child.reportAttached(attached = true, applyOnChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(0, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = false, propogateToChildren = false)
+        view.reportAttached(attached = false, applyOnChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = false, propogateToChildren = false)
+        view.reportAttached(attached = false, applyOnChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
+        view.reportAttached(attached = true, applyOnChildren = false)
         assertEquals(1, listener.attaches)
         assertEquals(1, listener.detaches)
 
-        ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
+        child.reportAttached(attached = true, applyOnChildren = false)
         assertEquals(2, listener.attaches)
         assertEquals(1, listener.detaches)
 
@@ -234,18 +251,69 @@ class ControllerAttachHandlerTest {
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = false, propogateToChildren = false)
+        view.reportAttached(attached = false, applyOnChildren = false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
-        ViewUtils.reportAttached(view, attached = true, propogateToChildren = false)
-        ViewUtils.reportAttached(child, attached = true, propogateToChildren = false)
+        view.reportAttached(attached = true, applyOnChildren = false)
+        child.reportAttached(attached = true, applyOnChildren = false)
         assertEquals(2, listener.attaches)
         assertEquals(2, listener.detaches)
 
         viewAttachHandler.hostStarted()
         assertEquals(3, listener.attaches)
         assertEquals(2, listener.detaches)
+    }
+
+    @Test
+    fun testAttachedToUnownedParent() {
+        viewAttachHandler.hostStarted()
+        viewAttachHandler.parentAttached()
+
+        val container = AttachFakingFrameLayout(activityProxy.activity)
+        val otherContainer = AttachFakingFrameLayout(activityProxy.activity)
+        val view = FrameLayout(activityProxy.activity)
+
+        viewAttachHandler.takeView(container, view)
+
+        view.setParent(otherContainer)
+
+        assertEquals(0, listener.attaches)
+        assertEquals(0, listener.detaches)
+
+        view.reportAttached(true)
+
+        assertEquals(0, listener.attaches)
+        assertEquals(0, listener.detaches)
+
+        view.reportAttached(false)
+
+        assertEquals(0, listener.attaches)
+        assertEquals(0, listener.detaches)
+
+        view.setParent(container)
+
+        view.reportAttached(true)
+
+        assertEquals(1, listener.attaches)
+        assertEquals(0, listener.detaches)
+
+        view.reportAttached(false)
+
+        assertEquals(1, listener.attaches)
+        assertEquals(1, listener.detaches)
+
+        view.setParent(otherContainer)
+
+        view.reportAttached(true)
+
+        assertEquals(1, listener.attaches)
+        assertEquals(1, listener.detaches)
+
+        view.reportAttached(false)
+
+        assertEquals(1, listener.attaches)
+        assertEquals(1, listener.detaches)
     }
 
     private class CountingControllerAttachHandlerListener :

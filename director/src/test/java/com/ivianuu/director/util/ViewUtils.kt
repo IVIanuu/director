@@ -19,38 +19,36 @@ package com.ivianuu.director.util
 import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
+import android.view.ViewParent
 import org.robolectric.util.ReflectionHelpers
 
-object ViewUtils {
+fun View.reportAttached(attached: Boolean, applyOnChildren: Boolean = true) {
+    if (this is AttachFakingFrameLayout) {
+        setAttached(attached, false)
+    }
 
-    @JvmOverloads fun reportAttached(
-        view: View,
-        attached: Boolean,
-        propogateToChildren: Boolean = true
-    ) {
-        if (view is AttachFakingFrameLayout) {
-            view.setAttached(attached, false)
-        }
-
-        getAttachStateListeners(view).forEach {
-            if (attached) {
-                it.onViewAttachedToWindow(view)
-            } else {
-                it.onViewDetachedFromWindow(view)
-            }
-        }
-
-        if (propogateToChildren && view is ViewGroup) {
-            val childCount = view.childCount
-            for (i in 0 until childCount) {
-                reportAttached(view.getChildAt(i), attached, true)
-            }
+    getAttachStateListeners().forEach {
+        if (attached) {
+            it.onViewAttachedToWindow(this)
+        } else {
+            it.onViewDetachedFromWindow(this)
         }
     }
 
-    private fun getAttachStateListeners(view: View): List<OnAttachStateChangeListener> {
-        val listenerInfo = ReflectionHelpers.callInstanceMethod<Any>(view, "getListenerInfo")
-        return ReflectionHelpers.getField(listenerInfo, "mOnAttachStateChangeListeners")
-            ?: emptyList()
+    if (applyOnChildren && this is ViewGroup) {
+        val childCount = childCount
+        for (i in 0 until childCount) {
+            getChildAt(i).reportAttached(attached = attached, applyOnChildren = true)
+        }
     }
+}
+
+fun View.setParent(parent: ViewParent?) {
+    ReflectionHelpers.setField(this, "mParent", parent)
+}
+
+private fun View.getAttachStateListeners(): List<OnAttachStateChangeListener> {
+    val listenerInfo = ReflectionHelpers.callInstanceMethod<Any>(this, "getListenerInfo")
+    return ReflectionHelpers.getField(listenerInfo, "mOnAttachStateChangeListeners")
+        ?: emptyList()
 }

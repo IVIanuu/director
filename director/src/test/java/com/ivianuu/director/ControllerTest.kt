@@ -19,7 +19,8 @@ package com.ivianuu.director
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.ViewUtils
+import com.ivianuu.director.util.reportAttached
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -147,7 +148,7 @@ class ControllerTest {
     fun testRestoredChildRouterBackstack() {
         val parent = TestController()
         router.pushController(parent.toTransaction())
-        ViewUtils.reportAttached(parent.view!!, true)
+        parent.view!!.reportAttached(true)
 
         val childTransaction1 = TestController().toTransaction()
         val childTransaction2 = TestController().toTransaction()
