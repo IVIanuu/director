@@ -251,6 +251,8 @@ abstract class Controller {
         tag: String? = null,
         controllerFactory: ControllerFactory? = null
     ): Router {
+        check(routerSet) { "Cannot access child routers before onCreate" }
+
         var childRouter = _childRouters
             .firstOrNull { it.containerId == containerId && it.tag == tag }
 
