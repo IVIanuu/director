@@ -200,4 +200,15 @@ class ControllerTest {
         assertTrue(controller.state == ControllerState.ATTACHED)
     }
 
+    @Test
+    fun testAttachHostAwareness() {
+        val controller = TestController()
+        router.pushController(controller.toTransaction())
+
+        assertTrue(controller.state == ControllerState.ATTACHED)
+        router.hostStopped()
+        assertFalse(controller.state == ControllerState.ATTACHED)
+        router.hostStarted()
+        assertTrue(controller.state == ControllerState.ATTACHED)
+    }
 }
