@@ -16,7 +16,7 @@ import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
-import com.ivianuu.director.internal.ControllerAttachHandler
+import com.ivianuu.director.internal.ViewAttachHandler
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -92,6 +92,8 @@ abstract class Controller {
 
     private var viewFullyCreated = false
     private var hasSavedViewState = false
+    private var viewIsAttached = false
+    private var attachedToUnownedParent = false
 
     /**
      * Whether or not the view should be retained while being detached
@@ -113,20 +115,25 @@ abstract class Controller {
 
     private val lifecycleListeners = mutableListOf<ControllerLifecycleListener>()
 
-    private val attachHandler = ControllerAttachHandler { attached, fromHost, detachAfterStop ->
+    private val attachHandler = ViewAttachHandler { attached ->
+        viewIsAttached = attached
+
         if (attached) {
             attach()
         } else {
             detach()
 
             // this means that a controller was pushed on top of us
-            if ((detachAfterStop || !fromHost) && !isBeingDestroyed && !retainView) {
+            if (!isBeingDestroyed && !retainView) {
                 unbindView()
             }
         }
     }
 
     private var superCalled = false
+
+    private var hostStarted = false
+    private var awaitingHostStart = false
 
     /**
      * Will be called once when the router was set for the first time
@@ -204,6 +211,7 @@ abstract class Controller {
     ) {
         superCalled = true
     }
+
 
     /**
      * Called to save the view state of this controller
@@ -338,11 +346,14 @@ abstract class Controller {
     }
 
     internal fun hostStarted() {
-        attachHandler.hostStarted()
+        hostStarted = true
+        attach()
     }
 
     internal fun hostStopped() {
-        attachHandler.hostStopped()
+        hostStarted = false
+
+        detach()
 
         // cancel any pending input event
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -411,7 +422,7 @@ abstract class Controller {
 
             viewFullyCreated = true
 
-            attachHandler.takeView(router.container!!, view)
+            attachHandler.takeView(view)
 
             restoreChildControllerContainers()
         } else if (retainView) {
@@ -423,6 +434,22 @@ abstract class Controller {
 
     private fun attach() {
         val view = view ?: return
+
+        if (state == ATTACHED) return
+
+        if (!viewIsAttached) return
+
+        attachedToUnownedParent = view.parent != router.container
+
+        // this can happen while transitions just ignore it
+        if (attachedToUnownedParent) return
+
+        if (!hostStarted) {
+            awaitingHostStart = true
+            return
+        } else {
+            awaitingHostStart = false
+        }
 
         notifyLifecycleListeners { it.preAttach(this, view) }
 
@@ -439,6 +466,8 @@ abstract class Controller {
 
     private fun detach() {
         val view = view ?: return
+
+        if (attachedToUnownedParent) return
 
         if (state == ATTACHED) {
             _childRouters.forEach { it.hostStopped() }
@@ -465,7 +494,7 @@ abstract class Controller {
 
         requireSuperCalled { onUnbindView(view) }
 
-        attachHandler.dropView()
+        attachHandler.dropView(view)
 
         this.view = null
         viewFullyCreated = false

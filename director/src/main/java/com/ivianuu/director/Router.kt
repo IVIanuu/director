@@ -417,7 +417,7 @@ open class Router internal constructor(
         prepareForContainerRemoval()
 
         return Bundle().apply {
-            val backstack = _backstack.reversed().map { it.saveInstanceState() }
+            val backstack = _backstack.map { it.saveInstanceState() }
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)

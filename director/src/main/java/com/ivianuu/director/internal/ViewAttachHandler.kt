@@ -4,32 +4,26 @@ import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 
-internal class ControllerAttachHandler(
-    private val listener: (attached: Boolean, fromHost: Boolean, viewDetachAfterStop: Boolean) -> Unit
+internal class ViewAttachHandler(
+    private val listener: (attached: Boolean) -> Unit
 ) : OnAttachStateChangeListener {
 
     private var rootAttached = false
     private var childrenAttached = false
-    private var hostStarted = false
 
-    private var awaitingHostStart = false
-
-    private var reportedState = ReportedState.VIEW_DETACHED
+    private var reportedState = false
 
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
-
-    private var container: ViewGroup? = null
-    private var view: View? = null
 
     override fun onViewAttachedToWindow(v: View) {
         // explicitly check the container
         // we could get attached to another container while transitioning
-        if (!rootAttached && v.parent == container) {
+        if (!rootAttached) {
             rootAttached = true
 
             listenForDeepestChildAttach(v) {
                 childrenAttached = true
-                notifyChange(false)
+                notifyChange()
             }
         }
     }
@@ -39,69 +33,33 @@ internal class ControllerAttachHandler(
             rootAttached = false
             if (childrenAttached) {
                 childrenAttached = false
-                notifyChange(false)
+                notifyChange()
             }
         }
     }
 
-    fun takeView(container: ViewGroup, view: View) {
-        this.container = container
-        this.view = view
+    fun takeView(view: View) {
         view.addOnAttachStateChangeListener(this)
     }
 
-    fun dropView() {
+    fun dropView(view: View) {
         rootAttached = false
         childrenAttached = false
-
-        container = null
-
-        view?.let { view ->
-            view.removeOnAttachStateChangeListener(this)
-            if (childOnAttachStateChangeListener != null && view is ViewGroup) {
-                findDeepestChild(view).removeOnAttachStateChangeListener(
-                    childOnAttachStateChangeListener
-                )
-            }
-        }
-
-        view = null
-    }
-
-    fun hostStarted() {
-        if (!hostStarted) {
-            hostStarted = true
-            notifyChange(true)
+        view.removeOnAttachStateChangeListener(this)
+        if (childOnAttachStateChangeListener != null && view is ViewGroup) {
+            findDeepestChild(view).removeOnAttachStateChangeListener(
+                childOnAttachStateChangeListener
+            )
         }
     }
 
-    fun hostStopped() {
-        if (hostStarted) {
-            hostStarted = false
-            notifyChange(true)
+    private fun notifyChange() {
+        val attached = rootAttached && childrenAttached
+
+        if (attached != reportedState) {
+            reportedState = attached
+            listener(attached)
         }
-    }
-
-    private fun notifyChange(fromHost: Boolean) {
-        val viewAttached = rootAttached && childrenAttached
-
-        if (viewAttached && reportedState != ReportedState.ATTACHED) {
-            reportedState = ReportedState.ATTACHED
-            listener(true, fromHost, false)
-            return
-        }
-
-        val wasDetachedForHost = reportedState == ReportedState.HOST_STOPPED
-
-        reportedState = if (fromHost) {
-            ReportedState.HOST_STOPPED
-        } else {
-            ReportedState.VIEW_DETACHED
-        }
-
-        val detachAfterStop = wasDetachedForHost && !fromHost
-
-        listener(false, fromHost, detachAfterStop)
     }
 
     private fun listenForDeepestChildAttach(view: View, onAttach: () -> Unit) {
@@ -144,7 +102,4 @@ internal class ControllerAttachHandler(
         }
     }
 
-    private enum class ReportedState {
-        ATTACHED, HOST_STOPPED, VIEW_DETACHED
-    }
 }
