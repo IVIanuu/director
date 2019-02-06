@@ -306,7 +306,7 @@ abstract class Controller {
         if (initialState != null) {
             val className = initialState.getString(KEY_CLASS_NAME)
             require(javaClass.name == className) {
-                "initialState of $className cannot be used for ${javaClass.name}"
+                "initial state of $className cannot be used for ${javaClass.name}"
             }
         }
 
