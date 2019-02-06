@@ -23,6 +23,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.doOnPostDestroy
 
 /**
  * A [LifecycleOwner] for [Controller]s
@@ -72,7 +73,22 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 
 }
 
+private val lifecycleOwnersByController = mutableMapOf<Controller, LifecycleOwner>()
+
 /**
- * Returns a new [ControllerLifecycleOwner] for [this]
+ * The cached lifecycle owner of this controller
  */
-fun Controller.ControllerLifecycleOwner(): ControllerLifecycleOwner = ControllerLifecycleOwner(this)
+val Controller.lifecycleOwner: LifecycleOwner
+    get() {
+        return lifecycleOwnersByController.getOrPut(this) {
+            ControllerLifecycleOwner(this)
+                .also {
+                    doOnPostDestroy { lifecycleOwnersByController.remove(this) }
+                }
+        }
+    }
+
+/**
+ * The lifecycle of this controller
+ */
+val Controller.lifecycle: Lifecycle get() = lifecycleOwner.lifecycle

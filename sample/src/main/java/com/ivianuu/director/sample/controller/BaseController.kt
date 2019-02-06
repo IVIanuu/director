@@ -6,38 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
 import com.ivianuu.director.activity
 import com.ivianuu.director.activityresult.ActivityResultListener
-import com.ivianuu.director.androidx.lifecycle.ControllerLifecycleOwner
-import com.ivianuu.director.androidx.lifecycle.ControllerViewLifecycleOwner
-import com.ivianuu.director.androidx.lifecycle.ControllerViewModelStoreOwner
 import com.ivianuu.director.parentController
 import com.ivianuu.director.permission.PermissionCallback
-
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
-abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner,
-    ViewModelStoreOwner, PermissionCallback, ActivityResultListener {
+abstract class BaseController : Controller(), LayoutContainer, PermissionCallback,
+    ActivityResultListener {
 
     override val containerView: View?
         get() = view
 
     protected open val layoutRes = 0
     var actionBarTitle: String? = null
-
-    private val lifecycleOwner = ControllerLifecycleOwner()
-    private val viewModelStoreOwner = ControllerViewModelStoreOwner()
-
-    val viewLifecycleOwner: LifecycleOwner = ControllerViewLifecycleOwner()
 
     private val actionBar: ActionBar?
         get() = (activity as? ActionBarProvider)?.providedActionBar
@@ -104,7 +91,4 @@ abstract class BaseController : Controller(), LayoutContainer, LifecycleOwner,
         return "${javaClass.simpleName} ${System.identityHashCode(this)}"
     }
 
-    override fun getLifecycle(): Lifecycle = lifecycleOwner.lifecycle
-
-    override fun getViewModelStore(): ViewModelStore = viewModelStoreOwner.viewModelStore
 }

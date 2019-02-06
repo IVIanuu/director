@@ -7,6 +7,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.ControllerState
+import com.ivianuu.director.doOnPostUnbindView
+import com.ivianuu.director.isAtLeast
 
 /**
  * A [LifecycleOwner] for [Controller]s views
@@ -17,8 +20,8 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private val lifecycleListener = object : ControllerLifecycleListener {
 
-        override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.preBindView(controller, view, savedViewState)
+        override fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.postInflateView(controller, view, savedViewState)
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
         }
 
@@ -58,7 +61,26 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
         ?: error("only accessible between onBindView and onUnbindView")
 }
 
+private val viewLifecycleOwnersByController = mutableMapOf<Controller, LifecycleOwner>()
+
 /**
- * Returns a new [ControllerViewLifecycleOwner] for [this]
+ * The cached lifecycle owner of this controller
  */
-fun Controller.ControllerViewLifecycleOwner(): ControllerViewLifecycleOwner = ControllerViewLifecycleOwner(this)
+val Controller.viewLifecycleOwner: LifecycleOwner
+    get() {
+        require(state.isAtLeast(ControllerState.VIEW_BOUND)) {
+            "Cannot access viewLifecycleOwner while view == null"
+        }
+
+        return viewLifecycleOwnersByController.getOrPut(this) {
+            ControllerViewLifecycleOwner(this)
+                .also {
+                    doOnPostUnbindView { viewLifecycleOwnersByController.remove(this) }
+                }
+        }
+    }
+
+/**
+ * The view lifecycle of this controller
+ */
+val Controller.viewLifecycle: Lifecycle get() = lifecycleOwner.lifecycle

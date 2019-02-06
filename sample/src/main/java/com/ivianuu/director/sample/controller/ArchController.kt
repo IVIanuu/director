@@ -21,13 +21,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.ivianuu.director.androidx.lifecycle.lifecycleOwner
+import com.ivianuu.director.androidx.lifecycle.viewModelProvider
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
 import com.ivianuu.scopes.MutableScope
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_arch.*
+import kotlinx.android.synthetic.main.controller_arch.tv_title
 import java.util.concurrent.TimeUnit
 
 /**
@@ -38,13 +39,12 @@ class ArchController : BaseController() {
     override val layoutRes get() = R.layout.controller_arch
 
     private val viewModel by lazy {
-        ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
-            .get(ArchViewModel::class.java)
+        viewModelProvider().get(ArchViewModel::class.java)
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        viewModel.count.observe(this, Observer { tv_title.text = "Count: $it" })
+        viewModel.count.observe(lifecycleOwner, Observer { tv_title.text = "Count: $it" })
     }
 }
 

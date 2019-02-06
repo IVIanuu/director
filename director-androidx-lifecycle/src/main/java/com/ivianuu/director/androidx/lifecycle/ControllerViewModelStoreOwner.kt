@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.androidx.lifecycle
 
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
@@ -45,4 +46,30 @@ class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwne
     }
 }
 
-fun Controller.ControllerViewModelStoreOwner(): ControllerViewModelStoreOwner = ControllerViewModelStoreOwner(this)
+private val viewModelStoreOwnersByController = mutableMapOf<Controller, ViewModelStoreOwner>()
+
+/**
+ * The cached view model store owner of this controller
+ */
+val Controller.viewModelStoreOwner: ViewModelStoreOwner
+    get() {
+        return viewModelStoreOwnersByController.getOrPut(this) {
+            ControllerViewModelStoreOwner(this)
+                .also {
+                    doOnPostDestroy { viewModelStoreOwnersByController.remove(this) }
+                }
+        }
+    }
+
+/**
+ * The view model store of this controller
+ */
+val Controller.viewModelStore: ViewModelStore get() = viewModelStoreOwner.viewModelStore
+
+/**
+ * Returns a view model provider which uses the [viewModelStore] and the [factory]
+ */
+fun Controller.viewModelProvider(
+    factory: ViewModelProvider.Factory = ViewModelProvider.NewInstanceFactory()
+): ViewModelProvider =
+    ViewModelProvider(viewModelStore, factory)
