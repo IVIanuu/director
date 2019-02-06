@@ -18,6 +18,11 @@ package com.ivianuu.director
 
 import android.widget.FrameLayout
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.ivianuu.director.ControllerState.ATTACHED
+import com.ivianuu.director.ControllerState.CREATED
+import com.ivianuu.director.ControllerState.DESTROYED
+import com.ivianuu.director.ControllerState.INITIALIZED
+import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.reportAttached
@@ -194,10 +199,10 @@ class ControllerTest {
 
         router.pushController(controller.toTransaction())
 
-        assertFalse(controller.state == ControllerState.ATTACHED)
+        assertFalse(controller.state == ATTACHED)
         controller.view!!.setParent(router.container)
         controller.view!!.reportAttached(true)
-        assertTrue(controller.state == ControllerState.ATTACHED)
+        assertTrue(controller.state == ATTACHED)
     }
 
     @Test
@@ -205,57 +210,33 @@ class ControllerTest {
         val controller = TestController()
         router.pushController(controller.toTransaction())
 
-        assertTrue(controller.state == ControllerState.ATTACHED)
+        assertTrue(controller.state == ATTACHED)
         router.hostStopped()
-        assertFalse(controller.state == ControllerState.ATTACHED)
+        assertFalse(controller.state == ATTACHED)
         router.hostStarted()
-        assertTrue(controller.state == ControllerState.ATTACHED)
+        assertTrue(controller.state == ATTACHED)
     }
 
     @Test
     fun testControllerState() {
         val controller = TestController()
 
-        assertEquals(ControllerState.INITIALIZED, controller.state)
+        assertEquals(INITIALIZED, controller.state)
 
-        controller.addLifecycleListener(
-            preCreate = { _, _ ->
-                assertEquals(ControllerState.INITIALIZED, controller.state)
-            },
-            postCreate = { _, _ ->
-                assertEquals(ControllerState.CREATED, controller.state)
-            },
-            preBindView = { _, _, _ ->
-                assertEquals(ControllerState.CREATED, controller.state)
-            },
-            postBindView = { _, _, _ ->
-                assertEquals(ControllerState.VIEW_BOUND, controller.state)
-            },
-            preAttach = { _, _ ->
-                assertEquals(ControllerState.VIEW_BOUND, controller.state)
-            },
-            postAttach = { _, _ ->
-                assertEquals(ControllerState.ATTACHED, controller.state)
-            },
-            preDetach = { _, _ ->
-                assertEquals(ControllerState.ATTACHED, controller.state)
-            },
-            postDetach = { _, _ ->
-                assertEquals(ControllerState.VIEW_BOUND, controller.state)
-            },
-            preUnbindView = { _, _ ->
-                assertEquals(ControllerState.VIEW_BOUND, controller.state)
-            },
-            postUnbindView = {
-                assertEquals(ControllerState.CREATED, controller.state)
-            },
-            preDestroy = {
-                assertEquals(ControllerState.CREATED, controller.state)
-            },
-            postDestroy = {
-                assertEquals(ControllerState.DESTROYED, controller.state)
-            }
-        )
+        controller.addLifecycleListener {
+            preCreate { _, _ -> assertEquals(INITIALIZED, controller.state) }
+            postCreate { _, _ -> assertEquals(CREATED, controller.state) }
+            preBindView { _, _, _ -> assertEquals(CREATED, controller.state) }
+            postBindView { _, _, _ -> assertEquals(VIEW_BOUND, controller.state) }
+            preAttach { _, _ -> assertEquals(VIEW_BOUND, controller.state) }
+            postAttach { _, _ -> assertEquals(ATTACHED, controller.state) }
+            preDetach { _, _ -> assertEquals(ATTACHED, controller.state) }
+            postDetach { _, _ -> assertEquals(VIEW_BOUND, controller.state) }
+            preUnbindView { _, _ -> assertEquals(VIEW_BOUND, controller.state) }
+            postUnbindView { assertEquals(CREATED, controller.state) }
+            preDestroy { assertEquals(CREATED, controller.state) }
+            postDestroy { assertEquals(DESTROYED, controller.state) }
+        }
 
         router.pushController(controller.toTransaction())
         controller.doOnPostAttach { _, _ -> router.popCurrentController() }

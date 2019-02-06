@@ -23,20 +23,26 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     private var lifecycleRegistry: LifecycleRegistry? = null
 
     init {
-        controller.addLifecycleListener(
-            postInflateView = { _, _, _ -> lifecycleRegistry = LifecycleRegistry(this) },
-            postBindView = { _, _, _ ->
+        controller.addLifecycleListener {
+            postInflateView { _, _, _ ->
+                lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
+            }
+            postBindView { _, _, _ ->
                 lifecycleRegistry?.handleLifecycleEvent(ON_CREATE)
                 lifecycleRegistry?.handleLifecycleEvent(ON_START)
-            },
-            postAttach = { _, _ -> lifecycleRegistry?.handleLifecycleEvent(ON_RESUME) },
-            preDetach = { _, _ -> lifecycleRegistry?.handleLifecycleEvent(ON_PAUSE) },
-            preUnbindView = { _, _ ->
+            }
+            postAttach { _, _ ->
+                lifecycleRegistry?.handleLifecycleEvent(ON_RESUME)
+            }
+            preDetach { _, _ ->
+                lifecycleRegistry?.handleLifecycleEvent(ON_PAUSE)
+            }
+            preUnbindView { _, _ ->
                 lifecycleRegistry?.handleLifecycleEvent(ON_STOP)
                 lifecycleRegistry?.handleLifecycleEvent(ON_DESTROY)
-            },
-            postUnbindView = { lifecycleRegistry = null }
-        )
+            }
+            postUnbindView { lifecycleRegistry = null }
+        }
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry

@@ -486,9 +486,9 @@ class RouterTest {
 
     @Test
     fun testIsBeingDestroyed() {
-        val lifecycleListener = ControllerLifecycleListener(
-            preUnbindView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }
-        )
+        val lifecycleListener = ControllerLifecycleListener {
+            preUnbindView { controller, _ -> assertTrue(controller.isBeingDestroyed) }
+        }
 
         val controller1 = TestController()
         val controller2 = TestController()

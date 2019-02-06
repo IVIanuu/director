@@ -37,14 +37,16 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
     private val lifecycleRegistry = LifecycleRegistry(this)
 
     init {
-        controller.addLifecycleListener(
-            postCreate = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_CREATE) },
-            postBindView = { _, _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_START) },
-            postAttach = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_RESUME) },
-            preDetach = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_PAUSE) },
-            preUnbindView = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_STOP) },
-            preDestroy = { lifecycleRegistry.handleLifecycleEvent(ON_DESTROY) }
-        )
+        with(lifecycleRegistry) {
+            controller.addLifecycleListener {
+                postCreate { _, _ -> handleLifecycleEvent(ON_CREATE) }
+                postBindView { _, _, _ -> handleLifecycleEvent(ON_START) }
+                postAttach { _, _ -> handleLifecycleEvent(ON_RESUME) }
+                preDetach { _, _ -> handleLifecycleEvent(ON_PAUSE) }
+                preUnbindView { _, _ -> handleLifecycleEvent(ON_STOP) }
+                preDestroy { handleLifecycleEvent(ON_DESTROY) }
+            }
+        }
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
