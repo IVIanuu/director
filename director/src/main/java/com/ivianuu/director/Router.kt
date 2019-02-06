@@ -50,7 +50,7 @@ open class Router internal constructor(
 
     var isBeingDestroyed: Boolean = false
         internal set(value) {
-            _backstack.forEach { it.controller.isBeingDestroyed = true }
+            _backstack.reversed().forEach { it.controller.isBeingDestroyed = true }
             field = value
         }
 
@@ -363,7 +363,7 @@ open class Router internal constructor(
             (container as? ControllerChangeListener)?.let { addChangeListener(it) }
             this.container = container
 
-            _backstack.forEach { it.controller.containerAttached() }
+            _backstack.reversed().forEach { it.controller.containerAttached() }
         }
     }
 
@@ -371,7 +371,7 @@ open class Router internal constructor(
         if (container != null) {
             prepareForContainerRemoval()
 
-            _backstack.forEach { it.controller.containerDetached() }
+            _backstack.reversed().forEach { it.controller.containerDetached() }
 
             container?.let { container ->
                 (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
@@ -417,7 +417,7 @@ open class Router internal constructor(
         prepareForContainerRemoval()
 
         return Bundle().apply {
-            val backstack = _backstack.map { it.saveInstanceState() }
+            val backstack = _backstack.reversed().map { it.saveInstanceState() }
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
@@ -444,7 +444,7 @@ open class Router internal constructor(
 
         tag = savedInstanceState.getString(KEY_TAG)
 
-        _backstack.forEach { setControllerRouter(it.controller) }
+        _backstack.reversed().forEach { setControllerRouter(it.controller) }
 
         if (isRootRouter) {
             transactionIndexer.restoreInstanceState(

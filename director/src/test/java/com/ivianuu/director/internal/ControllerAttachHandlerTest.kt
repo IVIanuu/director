@@ -281,7 +281,7 @@ class ControllerAttachHandlerTest {
         assertEquals(1, listener.detaches)
     }
 
-    private class CountingControllerAttachHandlerListener : (Boolean, Boolean) -> Unit {
+    private class CountingControllerAttachHandlerListener : (Boolean, Boolean, Boolean) -> Unit {
 
         var attaches = 0
         var detaches = 0
@@ -290,7 +290,8 @@ class ControllerAttachHandlerTest {
 
         override fun invoke(
             attached: Boolean,
-            fromHost: Boolean
+            fromHost: Boolean,
+            detachAfterStop: Boolean
         ) {
             if (attached != wasAttached) {
                 wasAttached = attached

@@ -37,6 +37,15 @@ class NavigationController : BaseController() {
 
     private val travelerRouter get() = (parentController as TravelerController).travelerRouter
 
+    override fun onUnbindView(view: View) {
+        try {
+            error("")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        super.onUnbindView(view)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBarTitle = "Navigation Demos"

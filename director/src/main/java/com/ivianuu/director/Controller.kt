@@ -113,14 +113,14 @@ abstract class Controller {
 
     private val lifecycleListeners = mutableListOf<ControllerLifecycleListener>()
 
-    private val attachHandler = ControllerAttachHandler { attached, fromHost ->
+    private val attachHandler = ControllerAttachHandler { attached, fromHost, detachAfterStop ->
         if (attached) {
             attach()
         } else {
             detach()
 
             // this means that a controller was pushed on top of us
-            if (!fromHost && !isBeingDestroyed && !retainView) {
+            if ((detachAfterStop || !fromHost) && !isBeingDestroyed && !retainView) {
                 unbindView()
             }
         }
@@ -411,9 +411,9 @@ abstract class Controller {
 
             viewFullyCreated = true
 
-            restoreChildControllerContainers()
-
             attachHandler.takeView(router.container!!, view)
+
+            restoreChildControllerContainers()
         } else if (retainView) {
             restoreChildControllerContainers()
         }
