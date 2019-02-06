@@ -7,7 +7,7 @@ import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.RootRouter
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.filterVisible
+import com.ivianuu.stdlibx.takeLastUntil
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's controllers
@@ -422,6 +422,13 @@ abstract class Router {
             controller.hostStarted()
         }
     }
+
+    private fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> =
+        takeLastUntil {
+            it.pushChangeHandler != null
+                    && !it.pushChangeHandler!!.removesFromViewOnPush
+        }
+
 
     private data class ChangeListenerEntry(
         val listener: ControllerChangeListener,

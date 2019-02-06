@@ -53,7 +53,6 @@ dependencies {
     implementation(Deps.epoxyKtx)
     kapt(Deps.epoxyProcessor)
 
-    implementation(Deps.kotlinStdLib)
     implementation(Deps.leakCanary)
     implementation(Deps.materialComponents)
 

@@ -26,5 +26,4 @@ dependencies {
     api(Deps.androidxTestCore)
     api(project(":director"))
     api(project(":director-fragmenthost"))
-    api(Deps.kotlinStdLib)
 }

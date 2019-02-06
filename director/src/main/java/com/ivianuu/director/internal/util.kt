@@ -6,7 +6,6 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerLifecycleListener
-import com.ivianuu.director.RouterTransaction
 
 fun <T : Any> newInstanceOrThrow(className: String): T = try {
     classForNameOrThrow<T>(className).newInstance() as T
@@ -18,21 +17,6 @@ fun <T> classForNameOrThrow(className: String): Class<out T> = try {
     Class.forName(className) as Class<out T>
 } catch (e: Exception) {
     throw RuntimeException("couldn't find class $className")
-}
-
-internal fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> {
-    val visible = mutableListOf<RouterTransaction>()
-
-    for (transaction in reversed()) {
-        visible.add(transaction)
-        if (transaction.pushChangeHandler == null
-            || transaction.pushChangeHandler!!.removesFromViewOnPush
-        ) {
-            break
-        }
-    }
-
-    return visible.reversed()
 }
 
 internal fun LambdaLifecycleListener(

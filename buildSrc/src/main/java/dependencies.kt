@@ -54,6 +54,8 @@ object Versions {
 
     const val scopes = "0.0.1-dev-2"
 
+    const val stdlibx = "0.0.1-dev-2"
+
     const val traveler = "0.0.1-dev-1"
 }
 
@@ -84,7 +86,6 @@ object Deps {
     const val junit = "junit:junit:${Versions.junit}"
 
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
 
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
 
@@ -103,6 +104,8 @@ object Deps {
     const val scopesCache = "com.ivianuu.scopes:scopes-cache:${Versions.scopes}"
     const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
     const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
+
+    const val stdlibx = "com.ivianuu.stdlibx:stdlibx:${Versions.stdlibx}"
 
     const val traveler = "com.ivianuu.traveler:traveler:${Versions.traveler}"
     const val travelerAndroid = "com.ivianuu.traveler:traveler-android:${Versions.traveler}"

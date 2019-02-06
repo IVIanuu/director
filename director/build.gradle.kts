@@ -32,7 +32,7 @@ android {
 apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/mvn-publish.gradle")
 
 dependencies {
-    api(Deps.kotlinStdLib)
+    api(Deps.stdlibx)
 
     testImplementation(Deps.androidxTestCore)
     testImplementation(Deps.androidxTestJunit)
