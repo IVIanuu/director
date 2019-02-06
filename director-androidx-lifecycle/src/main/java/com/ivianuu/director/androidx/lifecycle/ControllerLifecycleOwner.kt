@@ -16,13 +16,17 @@
 
 package com.ivianuu.director.androidx.lifecycle
 
-import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.Event.ON_CREATE
+import androidx.lifecycle.Lifecycle.Event.ON_DESTROY
+import androidx.lifecycle.Lifecycle.Event.ON_PAUSE
+import androidx.lifecycle.Lifecycle.Event.ON_RESUME
+import androidx.lifecycle.Lifecycle.Event.ON_START
+import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.doOnPostDestroy
 
 /**
@@ -32,41 +36,15 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
-    private val lifecycleListener = object : ControllerLifecycleListener {
-
-        override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
-            super.postCreate(controller, savedInstanceState)
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        }
-
-        override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.postBindView(controller, view, savedViewState)
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        }
-
-        override fun postAttach(controller: Controller, view: View) {
-            super.postAttach(controller, view)
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        }
-
-        override fun preDetach(controller: Controller, view: View) {
-            super.preDetach(controller, view)
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        }
-
-        override fun preUnbindView(controller: Controller, view: View) {
-            super.preUnbindView(controller, view)
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-        }
-
-        override fun preDestroy(controller: Controller) {
-            super.preDestroy(controller)
-            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        }
-    }
-
     init {
-        controller.addLifecycleListener(lifecycleListener)
+        controller.addLifecycleListener(
+            postCreate = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_CREATE) },
+            postBindView = { _, _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_START) },
+            postAttach = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_RESUME) },
+            preDetach = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_PAUSE) },
+            preUnbindView = { _, _ -> lifecycleRegistry.handleLifecycleEvent(ON_STOP) },
+            preDestroy = { lifecycleRegistry.handleLifecycleEvent(ON_DESTROY) }
+        )
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry

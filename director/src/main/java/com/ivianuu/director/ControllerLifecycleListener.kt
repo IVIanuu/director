@@ -18,7 +18,6 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.internal.LambdaLifecycleListener
 
 /**
  * Allows external classes to listen for lifecycle events of a [Controller]
@@ -162,7 +161,7 @@ fun Controller.addLifecycleListener(
     onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
-    return LambdaLifecycleListener(
+    return ControllerLifecycleListener(
         preCreate = preCreate, postCreate = postCreate,
         preInflateView = preInflateView, postInflateView = postInflateView,
         preBindView = preBindView, postBindView = postBindView,
@@ -305,7 +304,7 @@ fun Router.addLifecycleListener(
     onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
-    return LambdaLifecycleListener(
+    return ControllerLifecycleListener(
         preCreate = preCreate, postCreate = postCreate,
         preInflateView = preInflateView, postInflateView = postInflateView,
         preBindView = preBindView, postBindView = postBindView,
@@ -317,4 +316,141 @@ fun Router.addLifecycleListener(
         onSaveViewState = onSaveViewState,
         onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
     ).also { addLifecycleListener(it, recursive) }
+}
+
+/**
+ * Returns a [ControllerLifecycleListener] which delegates everything to the provided functions
+ */
+fun ControllerLifecycleListener(
+    preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
+    postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
+    preInflateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    postInflateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preAttach: ((controller: Controller, view: View) -> Unit)? = null,
+    postAttach: ((controller: Controller, view: View) -> Unit)? = null,
+    preDetach: ((controller: Controller, view: View) -> Unit)? = null,
+    postDetach: ((controller: Controller, view: View) -> Unit)? = null,
+    preUnbindView: ((controller: Controller, view: View) -> Unit)? = null,
+    postUnbindView: ((controller: Controller) -> Unit)? = null,
+    preDestroy: ((controller: Controller) -> Unit)? = null,
+    postDestroy: ((controller: Controller) -> Unit)? = null,
+    onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
+    onSaveViewState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
+    onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+): ControllerLifecycleListener = ControllerLifecycleListener(
+    preCreate = preCreate, postCreate = postCreate,
+    preInflateView = preInflateView, postInflateView = postInflateView,
+    preBindView = preBindView, postBindView = postBindView,
+    preAttach = preAttach, postAttach = postAttach,
+    preDetach = preDetach, postDetach = postDetach,
+    preUnbindView = preUnbindView, postUnbindView = postUnbindView,
+    preDestroy = preDestroy, postDestroy = postDestroy,
+    onSaveInstanceState = onSaveInstanceState,
+    onSaveViewState = onSaveViewState,
+    onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
+)
+
+private class LambdaLifecycleListener(
+    private val preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
+    private val postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
+    private val preInflateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    private val postInflateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    private val preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    private val postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    private val preAttach: ((controller: Controller, view: View) -> Unit)? = null,
+    private val postAttach: ((controller: Controller, view: View) -> Unit)? = null,
+    private val preDetach: ((controller: Controller, view: View) -> Unit)? = null,
+    private val postDetach: ((controller: Controller, view: View) -> Unit)? = null,
+    private val preUnbindView: ((controller: Controller, view: View) -> Unit)? = null,
+    private val postUnbindView: ((controller: Controller) -> Unit)? = null,
+    private val preDestroy: ((controller: Controller) -> Unit)? = null,
+    private val postDestroy: ((controller: Controller) -> Unit)? = null,
+    private val onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
+    private val onSaveViewState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
+    private val onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    private val onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+) : ControllerLifecycleListener {
+    override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
+        preCreate?.invoke(controller, savedInstanceState)
+    }
+
+    override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
+        postCreate?.invoke(controller, savedInstanceState)
+    }
+
+    override fun preInflateView(controller: Controller, savedViewState: Bundle?) {
+        preInflateView?.invoke(controller, savedViewState)
+    }
+
+    override fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
+        postInflateView?.invoke(controller, view, savedViewState)
+    }
+
+    override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+        preBindView?.invoke(controller, view, savedViewState)
+    }
+
+    override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+        postBindView?.invoke(controller, view, savedViewState)
+    }
+
+    override fun preAttach(controller: Controller, view: View) {
+        preAttach?.invoke(controller, view)
+    }
+
+    override fun postAttach(controller: Controller, view: View) {
+        postAttach?.invoke(controller, view)
+    }
+
+    override fun preDetach(controller: Controller, view: View) {
+        preDetach?.invoke(controller, view)
+    }
+
+    override fun postDetach(controller: Controller, view: View) {
+        postDetach?.invoke(controller, view)
+    }
+
+    override fun preUnbindView(controller: Controller, view: View) {
+        preUnbindView?.invoke(controller, view)
+    }
+
+    override fun postUnbindView(controller: Controller) {
+        postUnbindView?.invoke(controller)
+    }
+
+    override fun preDestroy(controller: Controller) {
+        preDestroy?.invoke(controller)
+    }
+
+    override fun postDestroy(controller: Controller) {
+        postDestroy?.invoke(controller)
+    }
+
+    override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
+        onSaveInstanceState?.invoke(controller, outState)
+    }
+
+    override fun onSaveViewState(controller: Controller, outState: Bundle) {
+        onSaveViewState?.invoke(controller, outState)
+    }
+
+    override fun onChangeStart(
+        controller: Controller,
+        changeHandler: ControllerChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        onChangeStart?.invoke(controller, changeHandler, changeType)
+    }
+
+    override fun onChangeEnd(
+        controller: Controller,
+        changeHandler: ControllerChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        onChangeEnd?.invoke(controller, changeHandler, changeType)
+    }
+
 }

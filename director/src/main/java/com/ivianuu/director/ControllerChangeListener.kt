@@ -62,25 +62,41 @@ fun Router.addChangeListener(
     onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
     onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
 ): ControllerChangeListener {
-    return object : ControllerChangeListener {
-        override fun onChangeStarted(
-            to: Controller?,
-            from: Controller?,
-            isPush: Boolean,
-            container: ViewGroup,
-            handler: ControllerChangeHandler
-        ) {
-            onChangeStarted?.invoke(to, from, isPush, container, handler)
-        }
+    return ControllerChangeListener(
+        onChangeStarted = onChangeStarted,
+        onChangeEnded = onChangeEnded
+    ).also { addChangeListener(it, recursive) }
+}
 
-        override fun onChangeCompleted(
-            to: Controller?,
-            from: Controller?,
-            isPush: Boolean,
-            container: ViewGroup,
-            handler: ControllerChangeHandler
-        ) {
-            onChangeEnded?.invoke(to, from, isPush, container, handler)
-        }
-    }.also { addChangeListener(it, recursive) }
+/**
+ * Returns a [ControllerChangeListener] which delegates every call to the provided functions
+ */
+fun ControllerChangeListener(
+    onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
+): ControllerChangeListener = LambdaControllerChangeListener(onChangeStarted, onChangeEnded)
+
+private class LambdaControllerChangeListener(
+    private val onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    private val onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
+) : ControllerChangeListener {
+    override fun onChangeStarted(
+        to: Controller?,
+        from: Controller?,
+        isPush: Boolean,
+        container: ViewGroup,
+        handler: ControllerChangeHandler
+    ) {
+        onChangeStarted?.invoke(to, from, isPush, container, handler)
+    }
+
+    override fun onChangeCompleted(
+        to: Controller?,
+        from: Controller?,
+        isPush: Boolean,
+        container: ViewGroup,
+        handler: ControllerChangeHandler
+    ) {
+        onChangeEnded?.invoke(to, from, isPush, container, handler)
+    }
 }

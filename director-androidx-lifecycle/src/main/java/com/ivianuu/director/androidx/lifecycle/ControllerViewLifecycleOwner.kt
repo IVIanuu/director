@@ -1,13 +1,17 @@
 package com.ivianuu.director.androidx.lifecycle
 
-import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.Event.ON_CREATE
+import androidx.lifecycle.Lifecycle.Event.ON_DESTROY
+import androidx.lifecycle.Lifecycle.Event.ON_PAUSE
+import androidx.lifecycle.Lifecycle.Event.ON_RESUME
+import androidx.lifecycle.Lifecycle.Event.ON_START
+import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.ControllerState
+import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.doOnPostUnbindView
 import com.ivianuu.director.isAtLeast
 
@@ -18,43 +22,21 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private var lifecycleRegistry: LifecycleRegistry? = null
 
-    private val lifecycleListener = object : ControllerLifecycleListener {
-
-        override fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.postInflateView(controller, view, savedViewState)
-            lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
-        }
-
-        override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.postBindView(controller, view, savedViewState)
-            lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-            lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        }
-
-        override fun postAttach(controller: Controller, view: View) {
-            super.postAttach(controller, view)
-            lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        }
-
-        override fun preDetach(controller: Controller, view: View) {
-            super.preDetach(controller, view)
-            lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        }
-
-        override fun preUnbindView(controller: Controller, view: View) {
-            super.preUnbindView(controller, view)
-            lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
-            lifecycleRegistry?.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        }
-
-        override fun postUnbindView(controller: Controller) {
-            super.postUnbindView(controller)
-            lifecycleRegistry = null
-        }
-    }
-
     init {
-        controller.addLifecycleListener(lifecycleListener)
+        controller.addLifecycleListener(
+            postInflateView = { _, _, _ -> lifecycleRegistry = LifecycleRegistry(this) },
+            postBindView = { _, _, _ ->
+                lifecycleRegistry?.handleLifecycleEvent(ON_CREATE)
+                lifecycleRegistry?.handleLifecycleEvent(ON_START)
+            },
+            postAttach = { _, _ -> lifecycleRegistry?.handleLifecycleEvent(ON_RESUME) },
+            preDetach = { _, _ -> lifecycleRegistry?.handleLifecycleEvent(ON_PAUSE) },
+            preUnbindView = { _, _ ->
+                lifecycleRegistry?.handleLifecycleEvent(ON_STOP)
+                lifecycleRegistry?.handleLifecycleEvent(ON_DESTROY)
+            },
+            postUnbindView = { lifecycleRegistry = null }
+        )
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry

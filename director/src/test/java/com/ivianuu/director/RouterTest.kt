@@ -16,7 +16,6 @@
 
 package com.ivianuu.director
 
-import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
@@ -487,12 +486,9 @@ class RouterTest {
 
     @Test
     fun testIsBeingDestroyed() {
-        val lifecycleListener = object : ControllerLifecycleListener {
-            override fun preUnbindView(controller: Controller, view: View) {
-                super.preUnbindView(controller, view)
-                assertTrue(controller.isBeingDestroyed)
-            }
-        }
+        val lifecycleListener = ControllerLifecycleListener(
+            preUnbindView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }
+        )
 
         val controller1 = TestController()
         val controller2 = TestController()

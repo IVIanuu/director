@@ -16,11 +16,15 @@
 
 package com.ivianuu.director.scopes
 
-import android.os.Bundle
-import android.view.View
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.common.ControllerEvent
+import com.ivianuu.director.common.ControllerEvent.ATTACH
+import com.ivianuu.director.common.ControllerEvent.BIND_VIEW
+import com.ivianuu.director.common.ControllerEvent.CREATE
+import com.ivianuu.director.common.ControllerEvent.DESTROY
+import com.ivianuu.director.common.ControllerEvent.DETACH
+import com.ivianuu.director.common.ControllerEvent.UNBIND_VIEW
 import com.ivianuu.scopes.lifecycle.AbstractLifecycle
 
 /**
@@ -31,36 +35,13 @@ class ControllerLifecycle(
 ) : AbstractLifecycle<ControllerEvent>() {
 
     init {
-        controller.addLifecycleListener(object : ControllerLifecycleListener {
-            override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
-                super.preCreate(controller, savedInstanceState)
-                onEvent(ControllerEvent.CREATE)
-            }
-
-            override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-                super.preBindView(controller, view, savedViewState)
-                onEvent(ControllerEvent.BIND_VIEW)
-            }
-
-            override fun preAttach(controller: Controller, view: View) {
-                super.preAttach(controller, view)
-                onEvent(ControllerEvent.ATTACH)
-            }
-
-            override fun postDetach(controller: Controller, view: View) {
-                super.postDetach(controller, view)
-                onEvent(ControllerEvent.DETACH)
-            }
-
-            override fun postUnbindView(controller: Controller) {
-                super.postUnbindView(controller)
-                onEvent(ControllerEvent.UNBIND_VIEW)
-            }
-
-            override fun postDestroy(controller: Controller) {
-                super.postDestroy(controller)
-                onEvent(ControllerEvent.DESTROY)
-            }
-        })
+        controller.addLifecycleListener(
+            preCreate = { _, _ -> onEvent(CREATE) },
+            preBindView = { _, _, _ -> onEvent(BIND_VIEW) },
+            preAttach = { _, _ -> onEvent(ATTACH) },
+            postDetach = { _, _ -> onEvent(DETACH) },
+            postUnbindView = { onEvent(UNBIND_VIEW) },
+            postDestroy = { onEvent(DESTROY) }
+        )
     }
 }
