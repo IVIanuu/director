@@ -789,13 +789,15 @@ class ControllerLifecycleCallbacksTest {
         parent.addLifecycleListener(listener)
         child.addLifecycleListener(listener)
 
-        parent.doOnPreCreate { _, _ ->
-            parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
-                .pushController(child.toTransaction())
-        }
+        parent.addLifecycleListener(
+            preCreate = { _, _ ->
+                parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
+                    .pushController(child.toTransaction())
+            },
+            postAttach = { _, _ -> router.popCurrentController() }
+        )
 
         router.pushController(parent.toTransaction())
-        router.popCurrentController()
     }
 
     private class LastInFirstOutListener(

@@ -211,4 +211,53 @@ class ControllerTest {
         router.hostStarted()
         assertTrue(controller.state == ControllerState.ATTACHED)
     }
+
+    @Test
+    fun testControllerState() {
+        val controller = TestController()
+
+        assertEquals(ControllerState.INITIALIZED, controller.state)
+
+        controller.addLifecycleListener(
+            preCreate = { _, _ ->
+                assertEquals(ControllerState.INITIALIZED, controller.state)
+            },
+            postCreate = { _, _ ->
+                assertEquals(ControllerState.CREATED, controller.state)
+            },
+            preBindView = { _, _, _ ->
+                assertEquals(ControllerState.CREATED, controller.state)
+            },
+            postBindView = { _, _, _ ->
+                assertEquals(ControllerState.VIEW_BOUND, controller.state)
+            },
+            preAttach = { _, _ ->
+                assertEquals(ControllerState.VIEW_BOUND, controller.state)
+            },
+            postAttach = { _, _ ->
+                assertEquals(ControllerState.ATTACHED, controller.state)
+            },
+            preDetach = { _, _ ->
+                assertEquals(ControllerState.ATTACHED, controller.state)
+            },
+            postDetach = { _, _ ->
+                assertEquals(ControllerState.VIEW_BOUND, controller.state)
+            },
+            preUnbindView = { _, _ ->
+                assertEquals(ControllerState.VIEW_BOUND, controller.state)
+            },
+            postUnbindView = {
+                assertEquals(ControllerState.CREATED, controller.state)
+            },
+            preDestroy = {
+                assertEquals(ControllerState.CREATED, controller.state)
+            },
+            postDestroy = {
+                assertEquals(ControllerState.DESTROYED, controller.state)
+            }
+        )
+
+        router.pushController(controller.toTransaction())
+        controller.doOnPostAttach { _, _ -> router.popCurrentController() }
+    }
 }
