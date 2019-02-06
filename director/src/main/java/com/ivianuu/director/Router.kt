@@ -121,15 +121,13 @@ open class Router internal constructor(
             .onEach { it.controller.isBeingDestroyed = true }
             .partition { it.controller.state == ATTACHED }
 
+        // to ensure the destruction lifecycle onDetach -> onUnbindView -> onDestroy
+        // we have to await until the view gets detached
         destroyedVisibleTransactions.forEach {
-            d { "handle destroyed visible transaction ${it.controller}" }
             val view = it.controller.view!!
             view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
                 override fun onViewAttachedToWindow(v: View) {}
                 override fun onViewDetachedFromWindow(v: View) {
-                    this@Router.d {
-                        "detach container for handled on view detached ${it.controller}"
-                    }
                     view.removeOnAttachStateChangeListener(this)
                     it.controller.containerDetached()
                     it.controller.hostDestroyed()
@@ -296,8 +294,8 @@ open class Router internal constructor(
             }
         }
 
+        // destroy all invisible transactions here
         destroyedInvisibleTransactions.forEach {
-            d { "handle destroyed invisible transaction ${it.controller}" }
             it.controller.containerDetached()
             it.controller.hostDestroyed()
         }
