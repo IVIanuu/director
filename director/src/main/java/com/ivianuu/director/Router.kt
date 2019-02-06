@@ -1,7 +1,6 @@
 package com.ivianuu.director
 
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.DESTROYED
@@ -124,15 +123,10 @@ open class Router internal constructor(
         // to ensure the destruction lifecycle onDetach -> onUnbindView -> onDestroy
         // we have to await until the view gets detached
         destroyedVisibleTransactions.forEach {
-            val view = it.controller.view!!
-            view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                override fun onViewAttachedToWindow(v: View) {}
-                override fun onViewDetachedFromWindow(v: View) {
-                    view.removeOnAttachStateChangeListener(this)
-                    it.controller.containerDetached()
-                    it.controller.hostDestroyed()
-                }
-            })
+            it.controller.doOnPostDetach { _, _ ->
+                it.controller.containerDetached()
+                it.controller.hostDestroyed()
+            }
         }
 
         // Ensure all new controllers have a valid router set
