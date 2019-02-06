@@ -20,7 +20,7 @@ import com.ivianuu.director.Controller
 
 /**
  * Lifecycle events of a [Controller] represented as an enum
- * This can be useful for AutoDispose RxLifecycle or Scopes
+ * This can be useful for AutoDispose, RxLifecycle or Scopes
  */
 enum class ControllerEvent {
     CREATE,

@@ -11,8 +11,6 @@ import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.popChangeHandler
-import com.ivianuu.director.pushChangeHandler
 import com.ivianuu.director.pushController
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -125,12 +123,7 @@ class HomeController : BaseController() {
             HomeItem.DRAG_DISMISS -> {
                 router.pushController(
                     DragDismissController().toTransaction()
-                        .pushChangeHandler(
-                            FadeChangeHandler(
-                                removesFromViewOnPush = false
-                            )
-                        )
-                        .popChangeHandler(FadeChangeHandler())
+                        .changeHandler(FadeChangeHandler(removesFromViewOnPush = false))
                 )
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
