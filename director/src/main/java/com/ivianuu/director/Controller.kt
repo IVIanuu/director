@@ -416,6 +416,8 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.preBindView(this, view, viewState) }
 
+            state = VIEW_BOUND
+
             requireSuperCalled { onBindView(view, viewState) }
 
             notifyLifecycleListeners { it.postBindView(this, view, viewState) }
