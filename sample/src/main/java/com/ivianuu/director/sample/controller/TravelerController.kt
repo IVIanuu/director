@@ -35,8 +35,10 @@ class TravelerController : BaseController() {
         getChildRouter(R.id.traveler_container)
     }
 
-    val travelerRouter = Router().apply {
-        setNavigator(ControllerNavigator(childRouter))
+    val travelerRouter by lazy {
+        Router().apply {
+            setNavigator(ControllerNavigator(childRouter))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
