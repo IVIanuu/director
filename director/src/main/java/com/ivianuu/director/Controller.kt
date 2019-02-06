@@ -124,7 +124,7 @@ abstract class Controller {
             detach()
 
             // this means that a controller was pushed on top of us
-            if (!isBeingDestroyed && !retainView) {
+            if (!attachedToUnownedParent && !isBeingDestroyed && !retainView) {
                 unbindView()
             }
         }

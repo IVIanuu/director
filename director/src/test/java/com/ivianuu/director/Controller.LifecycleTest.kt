@@ -778,4 +778,110 @@ class ControllerLifecycleCallbacksTest {
 
         })
     }
+
+    @Test
+    fun testLastInFirstOutRule() {
+        val parent = TestController()
+        val child = TestController()
+
+        val listener = LastInFirstOutListener(parent, child)
+
+        parent.addLifecycleListener(listener)
+        child.addLifecycleListener(listener)
+
+        parent.doOnPreCreate { _, _ ->
+            parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
+                .pushController(child.toTransaction())
+        }
+
+        router.pushController(parent.toTransaction())
+        router.popCurrentController()
+    }
+
+    private class LastInFirstOutListener(
+        private val parent: Controller,
+        private val child: Controller
+    ) : ControllerLifecycleListener {
+
+        override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.preBindView(controller, view, savedViewState)
+            when (controller) {
+                parent -> assertNull(child.view)
+                child -> assertNotNull(parent.view)
+            }
+        }
+
+        override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.postBindView(controller, view, savedViewState)
+            when (controller) {
+                parent -> assertNull(child.view)
+                child -> assertNotNull(parent.view)
+            }
+        }
+
+        override fun preAttach(controller: Controller, view: View) {
+            super.preAttach(controller, view)
+            when (controller) {
+                parent -> assertFalse(child.state == ControllerState.ATTACHED)
+                child -> assertTrue(parent.state == ControllerState.ATTACHED)
+            }
+        }
+
+        override fun postAttach(controller: Controller, view: View) {
+            super.postAttach(controller, view)
+            when (controller) {
+                parent -> assertFalse(child.state == ControllerState.ATTACHED)
+                child -> assertTrue(parent.state == ControllerState.ATTACHED)
+            }
+        }
+
+        override fun preDetach(controller: Controller, view: View) {
+            super.preDetach(controller, view)
+            when (controller) {
+                parent -> assertFalse(child.state == ControllerState.ATTACHED)
+                child -> assertTrue(parent.state == ControllerState.ATTACHED)
+            }
+        }
+
+        override fun postDetach(controller: Controller, view: View) {
+            super.postDetach(controller, view)
+            when (controller) {
+                parent -> assertFalse(child.state == ControllerState.ATTACHED)
+                child -> assertTrue(parent.state == ControllerState.ATTACHED)
+            }
+        }
+
+        override fun preUnbindView(controller: Controller, view: View) {
+            super.preUnbindView(controller, view)
+            when (controller) {
+                parent -> assertNull(child.view)
+                child -> assertNotNull(parent.view)
+            }
+        }
+
+        override fun postUnbindView(controller: Controller) {
+            super.postUnbindView(controller)
+            when (controller) {
+                parent -> assertNull(child.view)
+                child -> assertNotNull(parent.view)
+            }
+        }
+
+        override fun preDestroy(controller: Controller) {
+            super.preDestroy(controller)
+            when (controller) {
+                parent -> assertTrue(child.state == ControllerState.DESTROYED)
+                child -> assertFalse(parent.state == ControllerState.DESTROYED)
+            }
+        }
+
+        override fun postDestroy(controller: Controller) {
+            super.postDestroy(controller)
+            when (controller) {
+                parent -> assertTrue(child.state == ControllerState.DESTROYED)
+                child -> assertFalse(parent.state == ControllerState.DESTROYED)
+            }
+        }
+
+    }
 }

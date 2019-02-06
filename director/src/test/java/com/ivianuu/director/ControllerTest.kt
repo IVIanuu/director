@@ -16,10 +16,14 @@
 
 package com.ivianuu.director
 
+import android.widget.FrameLayout
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.reportAttached
+import com.ivianuu.director.util.setParent
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -178,6 +182,22 @@ class ControllerTest {
 
         assertTrue(parent.handleBack())
         assertEquals(0, childRouter.backstack.size)
+    }
+
+    @Test
+    fun testAttachedToUnownedParent() {
+        val controller = TestController()
+
+        controller.doOnPostBindView { _, view, _ ->
+            view.setParent(FrameLayout(view.context))
+        }
+
+        router.pushController(controller.toTransaction())
+
+        assertFalse(controller.state == ControllerState.ATTACHED)
+        controller.view!!.setParent(router.container)
+        controller.view!!.reportAttached(true)
+        assertTrue(controller.state == ControllerState.ATTACHED)
     }
 
 }

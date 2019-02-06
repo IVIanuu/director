@@ -125,8 +125,8 @@ class TestController : Controller() {
 
     companion object {
         private const val VIEW_ID = 2342
-        private const val CHILD_VIEW_ID_1 = 2343
-        private const val CHILD_VIEW_ID_2 = 2344
+        const val CHILD_VIEW_ID_1 = 2343
+        const val CHILD_VIEW_ID_2 = 2344
 
         private const val KEY_CALL_STATE = "TestController.currentCallState"
     }
