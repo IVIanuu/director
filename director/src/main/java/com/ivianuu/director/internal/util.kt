@@ -35,19 +35,6 @@ internal fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> {
     return visible.reversed()
 }
 
-internal fun backstacksAreEqual(
-    lhs: List<RouterTransaction>,
-    rhs: List<RouterTransaction>
-): Boolean {
-    if (lhs.size != rhs.size) return false
-
-    lhs.forEachIndexed { i, transaction ->
-        if (transaction != rhs[i]) return false
-    }
-
-    return true
-}
-
 internal fun LambdaLifecycleListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,

@@ -3,12 +3,10 @@ package com.ivianuu.director
 import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
-
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.RootRouter
 import com.ivianuu.director.internal.TransactionIndexer
-import com.ivianuu.director.internal.backstacksAreEqual
 import com.ivianuu.director.internal.filterVisible
 
 /**
@@ -112,15 +110,15 @@ abstract class Router {
 
         val isSinglePush =
             newBackstack.isNotEmpty() && newBackstack.size - oldTransactions.size == 1
-                    && backstacksAreEqual(newBackstack.dropLast(1), oldTransactions)
+                    && newBackstack.dropLast(1) == oldTransactions
 
         val isSinglePop =
             !isSinglePush && oldTransactions.isNotEmpty() && oldTransactions.size - newBackstack.size == 1
-                    && backstacksAreEqual(newBackstack, oldTransactions.dropLast(1))
+                    && newBackstack == oldTransactions.dropLast(1)
 
         val isReplaceTop = !isSinglePush && !isSinglePop
                 && newBackstack.size == oldTransactions.size
-                && backstacksAreEqual(newBackstack.dropLast(1), oldTransactions.dropLast(1))
+                && newBackstack.dropLast(1) == oldTransactions.dropLast(1)
                 && newBackstack.lastOrNull() != oldTransactions.lastOrNull()
 
         when {
@@ -198,10 +196,7 @@ abstract class Router {
                     newVisibleTransactions.isEmpty() ||
                             !oldTransactions.contains(newVisibleTransactions.first())
 
-                val visibleTransactionsChanged =
-                    !backstacksAreEqual(newVisibleTransactions, oldVisibleTransactions)
-
-                if (visibleTransactionsChanged) {
+                if (newVisibleTransactions != oldVisibleTransactions) {
                     val oldRootTransaction = oldVisibleTransactions.firstOrNull()
                     val newRootTransaction = newVisibleTransactions.first()
 
