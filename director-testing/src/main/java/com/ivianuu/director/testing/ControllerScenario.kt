@@ -32,6 +32,8 @@ import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.Router
 import com.ivianuu.director.fragmenthost.getRouter
+import com.ivianuu.director.fragmenthost.postponeFullRestore
+import com.ivianuu.director.fragmenthost.startPostponedFullRestore
 import com.ivianuu.director.pop
 import com.ivianuu.director.setRoot
 import kotlin.reflect.KClass
@@ -121,6 +123,7 @@ class EmptyControllerActivity : FragmentActivity() {
     private lateinit var _router: Router
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        postponeFullRestore()
         super.onCreate(savedInstanceState)
 
         // Checks if we have a custom controller factory and set it.
@@ -131,7 +134,8 @@ class EmptyControllerActivity : FragmentActivity() {
             .get(ControllerFactoryHolderViewModel::class.java)
             .controllerFactory
 
-        _router = getRouter(android.R.id.content, factory)
+        _router = getRouter(android.R.id.content).apply { controllerFactory = factory }
+        startPostponedFullRestore()
     }
 }
 
