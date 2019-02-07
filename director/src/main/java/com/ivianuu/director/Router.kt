@@ -769,8 +769,8 @@ fun Router.push(
  */
 fun Router.push(
     controller: Controller,
-    pushHandler: ControllerChangeHandler? = null,
-    popHandler: ControllerChangeHandler? = null,
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null,
     handler: ControllerChangeHandler? = null
 ): RouterTransaction = transaction(controller, pushHandler, popHandler, tag)
@@ -812,8 +812,8 @@ fun Router.replaceTop(
  */
 fun Router.replaceTop(
     controller: Controller,
-    pushHandler: ControllerChangeHandler? = null,
-    popHandler: ControllerChangeHandler? = null,
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null,
     handler: ControllerChangeHandler? = null
 ): RouterTransaction =
@@ -881,8 +881,8 @@ fun Router.setRoot(transaction: RouterTransaction, handler: ControllerChangeHand
  */
 fun Router.setRoot(
     controller: Controller,
-    pushHandler: ControllerChangeHandler? = null,
-    popHandler: ControllerChangeHandler? = null,
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null,
     handler: ControllerChangeHandler? = null
 ): RouterTransaction =

@@ -145,8 +145,8 @@ class RouterTransactionBuilder @PublishedApi internal constructor() {
  */
 fun transaction(
     controller: Controller,
-    pushHandler: ControllerChangeHandler? = null,
-    popHandler: ControllerChangeHandler? = null,
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null
 ): RouterTransaction = transaction {
     controller(controller)

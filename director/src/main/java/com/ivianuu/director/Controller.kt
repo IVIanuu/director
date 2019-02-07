@@ -735,8 +735,8 @@ fun Controller.startActivity(intent: Intent) {
  * Returns a new router transaction
  */
 fun Controller.toTransaction(
-    pushHandler: ControllerChangeHandler? = null,
-    popHandler: ControllerChangeHandler? = null,
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null
 ): RouterTransaction = transaction(this, pushHandler, popHandler, tag)
 
