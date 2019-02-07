@@ -45,11 +45,11 @@ fun Controller.addActivityResultListener(
 ) {
     // remove the listener on controller destruction
     doOnPostDestroy {
-        ActivityCallbacksHandler.get(this)
+        activityCallbacks
             .removeActivityResultListener(requestCode, listener)
     }
 
-    ActivityCallbacksHandler.get(this).addActivityResultListener(requestCode, listener)
+    activityCallbacks.addActivityResultListener(requestCode, listener)
 }
 
 /**
@@ -77,7 +77,7 @@ fun Controller.removeActivityResultListener(
     requestCode: Int,
     listener: ActivityResultListener
 ) {
-    ActivityCallbacksHandler.get(this).removeActivityResultListener(requestCode, listener)
+    activityCallbacks.removeActivityResultListener(requestCode, listener)
 }
 
 /**
@@ -88,7 +88,7 @@ fun Controller.startActivityForResult(
     requestCode: Int,
     options: Bundle? = null
 ) {
-    ActivityCallbacksHandler.get(this).startActivityForResult(intent, requestCode, options)
+    activityCallbacks.startActivityForResult(intent, requestCode, options)
 }
 
 /**
@@ -103,7 +103,7 @@ fun Controller.startIntentSenderForResult(
     extraFlags: Int,
     options: Bundle? = null
 ) {
-    ActivityCallbacksHandler.get(this).startIntentSenderForResult(
+    activityCallbacks.startIntentSenderForResult(
         intent,
         requestCode,
         fillInIntent,

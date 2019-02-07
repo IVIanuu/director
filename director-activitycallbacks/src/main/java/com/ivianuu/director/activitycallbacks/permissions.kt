@@ -43,10 +43,10 @@ fun Controller.addPermissionResultListener(
 ) {
     // remove the listener on controller destruction
     doOnPostDestroy {
-        ActivityCallbacksHandler.get(this)
+        activityCallbacks
             .removePermissionResultListener(requestCode, listener)
     }
-    ActivityCallbacksHandler.get(this)
+    activityCallbacks
         .addPermissionResultListener(requestCode, listener)
 }
 
@@ -57,12 +57,12 @@ fun Controller.removePermissionResultListener(
     requestCode: Int,
     listener: PermissionListener
 ) {
-    ActivityCallbacksHandler.get(this)
+    activityCallbacks
         .removePermissionResultListener(requestCode, listener)
 }
 
 @TargetApi(Build.VERSION_CODES.M)
 fun Controller.requestPermissions(permissions: Array<out String>, requestCode: Int) {
-    ActivityCallbacksHandler.get(this)
+    activityCallbacks
         .requestPermissions(permissions, requestCode)
 }

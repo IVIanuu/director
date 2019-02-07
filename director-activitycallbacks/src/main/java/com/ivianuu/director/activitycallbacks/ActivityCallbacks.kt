@@ -16,7 +16,9 @@
 
 package com.ivianuu.director.activitycallbacks
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
@@ -25,18 +27,20 @@ import com.ivianuu.director.activity
 /**
  * Handles activity results of controllers
  */
-class ActivityCallbacksHandler : Fragment() {
+class ActivityCallbacks : Fragment() {
 
     private val activityResultListeners =
         mutableMapOf<Int, MutableSet<ActivityResultListener>>()
 
-    private val permissionResultListeners =
-        mutableMapOf<Int, MutableSet<PermissionListener>>()
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityByCallbacks.put(this, requireActivity())
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        activityResultListeners[requestCode]?.let { listeners ->
+        activityResultListeners[requestCode]?.toSet()?.let { listeners ->
             listeners.forEach { it.onActivityResult(requestCode, resultCode, data) }
         }
     }
@@ -60,14 +64,17 @@ class ActivityCallbacksHandler : Fragment() {
         }
     }
 
+    private val permissionResultListeners =
+        mutableMapOf<Int, MutableSet<PermissionListener>>()
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionResultListeners[requestCode]?.let { callbacks ->
-            callbacks.forEach {
+        permissionResultListeners[requestCode]?.toSet()?.let { listeners ->
+            listeners.forEach {
                 it.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
@@ -92,26 +99,87 @@ class ActivityCallbacksHandler : Fragment() {
         }
     }
 
+    private val multiWindowModeChangeListeners =
+        mutableSetOf<MultiWindowModeChangeListener>()
+
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode)
+        multiWindowModeChangeListeners.toList().forEach {
+            it.onMultiWindowModeChanged(isInMultiWindowMode)
+        }
+    }
+
+    internal val isInMultiWindowMode: Boolean
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            activityByCallbacks[this]!!.isInMultiWindowMode
+        } else {
+            false
+        }
+
+    internal fun addMultiWindowModeChangeListener(listener: MultiWindowModeChangeListener) {
+        multiWindowModeChangeListeners.add(listener)
+    }
+
+    internal fun removeMultiWindowModeChangeListener(listener: MultiWindowModeChangeListener) {
+        multiWindowModeChangeListeners.remove(listener)
+    }
+
+    private val pictureInPictureModeChangeListeners =
+        mutableSetOf<PictureInPictureModeChangeListener>()
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode)
+        pictureInPictureModeChangeListeners.toSet().forEach {
+            it.onPictureInPictureModeChanged(isInPictureInPictureMode)
+        }
+    }
+
+    internal val isInPictureInPictureMode: Boolean
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            activityByCallbacks[this]!!.isInPictureInPictureMode
+        } else {
+            false
+        }
+
+    internal fun addPictureInPictureModeChangeListener(listener: PictureInPictureModeChangeListener) {
+        pictureInPictureModeChangeListeners.add(listener)
+    }
+
+    internal fun removePictureInPictureModeChangeListener(listener: PictureInPictureModeChangeListener) {
+        pictureInPictureModeChangeListeners.remove(listener)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        activityByCallbacks.remove(this)
+    }
 
     companion object {
         private const val FRAGMENT_TAG =
-            "com.ivianuu.director.activitycallbacks.ActivityCallbacksHandler"
+            "com.ivianuu.director.activitycallbacks.ActivityCallbacks"
 
-        internal fun get(controller: Controller): ActivityCallbacksHandler {
+        private val activityByCallbacks = mutableMapOf<ActivityCallbacks, FragmentActivity>()
+
+        internal fun get(controller: Controller): ActivityCallbacks {
             val activity = (controller.activity as? FragmentActivity)
                 ?: error("controller is not attached to a FragmentActivity")
             return ((activity as? FragmentActivity)?.supportFragmentManager
-                ?.findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacksHandler
-                ?: ActivityCallbacksHandler().also {
+                ?.findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
+                ?: ActivityCallbacks().also {
                     activity.supportFragmentManager.beginTransaction()
                         .add(
                             it,
                             FRAGMENT_TAG
                         )
                         .commitNow()
-                })
+                }).also {
+                activityByCallbacks[it] = activity
+            }
         }
 
     }
 
 }
+
+internal val Controller.activityCallbacks: ActivityCallbacks
+    get() = ActivityCallbacks.get(this)
