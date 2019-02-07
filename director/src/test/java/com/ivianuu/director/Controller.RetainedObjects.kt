@@ -23,7 +23,7 @@ package com.ivianuu.director
 class ControllerRetainedObjectsTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
+private val router = activityProxy.activity.getOrCreateRouter(activityProxy.view).apply {
         if (!hasRootController) {
 setRoot(TestController())
         }

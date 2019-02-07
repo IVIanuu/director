@@ -46,11 +46,27 @@ class RouterManager(
         _routers.forEach { it.hostStopped() }
     }
 
+    fun hostIsBeingDestroyed() {
+        _routers.forEach { it.isBeingDestroyed = true }
+    }
+
     fun hostDestroyed() {
         _routers.forEach {
             it.isBeingDestroyed = true
             it.removeContainer()
             it.hostDestroyed()
+        }
+    }
+
+    fun restoreInstanceState(savedInstanceState: Bundle?) {
+        this.savedInstanceState = savedInstanceState
+
+        if (savedInstanceState != null) {
+            _routers.forEach { router ->
+                this@RouterManager.savedInstanceState
+                    ?.getBundle(KEY_ROUTER_STATE_PREFIX + router.containerId)
+                    ?.let { router.restoreInstanceState(it) }
+            }
         }
     }
 
@@ -61,45 +77,59 @@ class RouterManager(
         }
     }
 
-    fun handleBack(): Boolean = _routers.any { it.handleBack() }
+    fun handleBack(): Boolean {
+        return _routers
+            .flatMap { it.backstack }
+            .asSequence()
+            .sortedByDescending { it.transactionIndex }
+            .map { it.controller }
+            .any { it.isAttached && it.router.handleBack() }
+    }
 
-    fun getRouter(
+    fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
+        _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
+
+    fun getRouter(containerId: Int, tag: String? = null): Router =
+        getRouterOrNull(containerId, tag)
+            ?: error("Couldn't find router for container id: $containerId and tag: $tag")
+
+    fun getOrCreateRouter(
         containerId: Int,
         tag: String? = null,
-        controllerFactory: ControllerFactory? = null
+        init: RouterBuilder.() -> Unit = {}
     ): Router {
-        var router = _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
+        var router = getRouterOrNull(containerId, tag)
         if (router == null) {
-            router = router {
+            router = RouterBuilder().run {
+                // defaults
                 containerId(containerId)
                 tag(tag)
                 host(this@RouterManager.host)
                 hostRouter(this@RouterManager.hostRouter)
-                controllerFactory(controllerFactory)
                 savedInstanceState(
                     this@RouterManager.savedInstanceState
                         ?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId)
                 )
+
+                // user
+                apply(init)
+
+                check(containerId == containerId) { "Cannot change container id while using router manager" }
+                check(tag == tag) { "Cannot change tag while using router manager" }
+                check(host == this@RouterManager.host) { "Cannot change host while using router manager" }
+                check(hostRouter == this@RouterManager.hostRouter) { "Cannot change host router while using router manager" }
+
+                val router = build()
+                _routers.add(router)
+                if (hostStarted) {
+                    router.hostStarted()
+                }
+
+                router
             }
-
-            _routers.add(router)
-
-            if (hostStarted) {
-                router.hostStarted()
-            }
-
         }
 
         return router
-    }
-
-    fun getRouter(
-        container: ViewGroup,
-        tag: String? = null,
-        controllerFactory: ControllerFactory? = null
-    ): Router = getRouter(container.id, tag, controllerFactory).also {
-        it.setContainer(container)
-        it.rebind()
     }
 
     fun removeRouter(router: Router) {
@@ -116,3 +146,25 @@ class RouterManager(
         private const val KEY_ROUTER_STATE_PREFIX = "RouterManager.routerState"
     }
 }
+
+fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
+    getRouterOrNull(container.id, tag)?.also {
+        it.setContainer(container)
+        it.rebind()
+    }
+
+fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
+    getRouter(container.id, tag).also {
+        it.setContainer(container)
+        it.rebind()
+    }
+
+fun RouterManager.getOrCreateRouter(
+    container: ViewGroup,
+    tag: String? = null,
+    init: RouterBuilder.() -> Unit = {}
+): Router = getOrCreateRouter(container.id, tag, init)
+    .also {
+        it.setContainer(container)
+        it.rebind()
+    }

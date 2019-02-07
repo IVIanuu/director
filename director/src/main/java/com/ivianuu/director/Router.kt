@@ -570,7 +570,7 @@ open class Router internal constructor(
     }
 }
 
-class RouterBuilder @PublishedApi internal constructor() {
+class RouterBuilder {
 
     var host by Delegates.notNull<Any>()
         private set
@@ -682,6 +682,8 @@ inline fun router(init: RouterBuilder.() -> Unit): Router =
     RouterBuilder().apply(init).build()
 
 // todo add simple router constructor
+
+// todo add after init function to router builder
 
 /**
  * Whether or not the router has currently a container attached to it

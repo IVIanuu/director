@@ -19,9 +19,9 @@ package com.ivianuu.director.util
 import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
+import com.ivianuu.director.getOrCreateRouter
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -61,11 +61,10 @@ class TestActivity : Activity() {
         manager.hostDestroyed()
     }
 
-    fun attachRouter(
+    fun getOrCreateRouter(
         container: ViewGroup,
-        tag: String? = null,
-        controllerFactory: ControllerFactory? = null
-    ): Router = manager.getRouter(container, tag, controllerFactory)
+        tag: String? = null
+    ): Router = manager.getOrCreateRouter(container, tag)
 
     override fun isChangingConfigurations(): Boolean = changingConfigurations
 

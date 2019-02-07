@@ -33,7 +33,8 @@ class RouterTransaction {
     var popChangeHandler: ControllerChangeHandler? = null
         internal set
 
-    internal var transactionIndex = INVALID_INDEX
+    var transactionIndex = INVALID_INDEX
+        internal set
     internal var attachedToRouter = false
 
     internal constructor(
@@ -106,7 +107,7 @@ class RouterTransaction {
     }
 }
 
-class RouterTransactionBuilder @PublishedApi internal constructor() {
+class RouterTransactionBuilder {
 
     var controller by Delegates.notNull<Controller>()
         private set

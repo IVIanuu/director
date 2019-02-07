@@ -21,22 +21,22 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
+import com.ivianuu.director.RouterBuilder
 import com.ivianuu.director.RouterManager
+import com.ivianuu.director.getOrCreateRouter
+import com.ivianuu.director.getRouter
+import com.ivianuu.director.getRouterOrNull
 
 class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
-    private lateinit var manager: RouterManager
+    private val manager by lazy(LazyThreadSafetyMode.NONE) {
+        RouterManager(requireActivity(), null)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        manager = RouterManager(
-            requireActivity(),
-            null,
-            savedInstanceState?.getBundle(KEY_ROUTER_STATES)
-        )
-
+        manager.restoreInstanceState(savedInstanceState?.getBundle(KEY_ROUTER_STATES))
         requireActivity().addOnBackPressedCallback(this)
     }
 
@@ -61,13 +61,34 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         manager.hostDestroyed()
     }
 
-    internal fun getRouter(
-        container: ViewGroup,
-        tag: String?,
-        controllerFactory: ControllerFactory?
-    ): Router = manager.getRouter(container, tag, controllerFactory)
-
     override fun handleOnBackPressed(): Boolean = manager.handleBack()
+
+    internal fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
+        manager.getRouterOrNull(containerId, tag)
+
+    internal fun getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
+        manager.getRouterOrNull(container, tag)
+
+    internal fun getRouter(containerId: Int, tag: String? = null): Router =
+        manager.getRouter(containerId, tag)
+
+    internal fun getRouter(container: ViewGroup, tag: String? = null): Router =
+        manager.getRouter(container, tag)
+
+    internal fun getOrCreateRouter(
+        containerId: Int,
+        tag: String? = null,
+        init: RouterBuilder.() -> Unit = {}
+    ): Router = manager.getOrCreateRouter(containerId, tag, init)
+
+    internal fun getOrCreateRouter(
+        container: ViewGroup,
+        tag: String? = null,
+        init: RouterBuilder.() -> Unit = {}
+    ): Router = manager.getOrCreateRouter(container, tag, init)
+
+    internal fun removeRouter(router: Router) =
+        manager.removeRouter(router)
 
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"

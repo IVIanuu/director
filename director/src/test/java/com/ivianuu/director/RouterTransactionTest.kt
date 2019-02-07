@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config
 class RouterTransactionTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.attachRouter(activityProxy.view)
+    private val router = activityProxy.activity.getOrCreateRouter(activityProxy.view)
 
     @Test
     fun testRouterSaveRestore() {
@@ -48,7 +48,7 @@ class RouterTransactionTest {
 
         val bundle = transaction.saveInstanceState()
 
-        val restoredTransaction = RouterTransaction.fromBundle(bundle, DefaultControllerFactory())
+        val restoredTransaction = RouterTransaction.fromBundle(bundle, DefaultControllerFactory)
 
         assertEquals(transaction.controller.javaClass, restoredTransaction.controller.javaClass)
         assertEquals(

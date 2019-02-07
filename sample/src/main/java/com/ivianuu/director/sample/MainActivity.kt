@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.Router
-import com.ivianuu.director.fragmenthost.getRouter
-import com.ivianuu.director.sample.controller.HomeController
-import com.ivianuu.director.setRootIfEmpty
+import com.ivianuu.director.fragmenthost.getOrCreateRouter
 import kotlinx.android.synthetic.main.activity_main.toolbar
 
 class MainActivity : AppCompatActivity(), ActionBarProvider {
@@ -22,9 +20,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         setSupportActionBar(toolbar)
 
-        router = getRouter(R.id.controller_container).apply {
-            setRootIfEmpty { controller(HomeController()) }
-        }
+        router = getOrCreateRouter(R.id.controller_container)
     }
 
 }
