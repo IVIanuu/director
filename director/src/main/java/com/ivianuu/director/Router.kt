@@ -7,6 +7,7 @@ import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.stdlibx.takeLastUntil
+import kotlin.properties.Delegates
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's controllers
@@ -566,20 +567,118 @@ open class Router internal constructor(
     }
 }
 
-/**
- * Returns a new [Router] instance
- */
-fun Router(
-    host: Any,
-    containerId: Int,
-    tag: String? = null,
-    hostRouter: Router? = null,
-    savedInstanceState: Bundle? = null,
-    controllerFactory: ControllerFactory? = null
-): Router = Router(containerId, tag, host, hostRouter).apply {
-    controllerFactory?.let { this.controllerFactory = it }
-    savedInstanceState?.let { restoreInstanceState(it) }
+class RouterBuilder @PublishedApi internal constructor() {
+
+    var host by Delegates.notNull<Any>()
+        private set
+    var containerId = 0
+        private set
+
+    var tag: String? = null
+        private set
+    var controllerFactory: ControllerFactory? = null
+        private set
+    var popsLastView: Boolean = false
+        private set
+    var hostRouter: Router? = null
+        private set
+    var savedInstanceState: Bundle? = null
+        private set
+    var container: ViewGroup? = null
+        private set
+
+    private val changeListeners = mutableListOf<Pair<ControllerChangeListener, Boolean>>()
+    private val lifecycleListeners = mutableListOf<Pair<ControllerLifecycleListener, Boolean>>()
+
+    fun host(host: Any): RouterBuilder = apply {
+        this.host = host
+    }
+
+    fun containerId(containerId: Int): RouterBuilder = apply {
+        this.containerId = containerId
+    }
+
+    fun tag(tag: String?): RouterBuilder = apply {
+        this.tag = tag
+    }
+
+    fun controllerFactory(controllerFactory: ControllerFactory?): RouterBuilder = apply {
+        this.controllerFactory = controllerFactory
+    }
+
+    fun popsLastView(popsLastView: Boolean): RouterBuilder = apply {
+        this.popsLastView = popsLastView
+    }
+
+    fun hostRouter(hostRouter: Router?): RouterBuilder = apply {
+        this.hostRouter = hostRouter
+    }
+
+    fun savedInstanceState(savedInstanceState: Bundle?): RouterBuilder = apply {
+        this.savedInstanceState = savedInstanceState
+    }
+
+    fun container(container: ViewGroup?): RouterBuilder = apply {
+        this.container = container
+        container?.let { containerId(it.id) }
+    }
+
+    fun addChangeListener(
+        listener: ControllerChangeListener,
+        recursive: Boolean = false
+    ): RouterBuilder = apply {
+        changeListeners.add(listener to recursive)
+    }
+
+    fun addLifecycleListener(
+        listener: ControllerLifecycleListener,
+        recursive: Boolean = false
+    ): RouterBuilder = apply {
+        lifecycleListeners.add(listener to recursive)
+    }
+
+    fun build(): Router {
+        val router = Router(containerId, tag, host, hostRouter)
+
+        router.popsLastView = popsLastView
+        controllerFactory?.let { router.controllerFactory = it }
+
+        changeListeners.forEach { router.addChangeListener(it.first, it.second) }
+        lifecycleListeners.forEach { router.addLifecycleListener(it.first, it.second) }
+
+        savedInstanceState?.let { router.restoreInstanceState(it) }
+
+        container?.let {
+            router.setContainer(it)
+            router.rebind()
+        }
+
+        return router
+    }
+
 }
+
+fun RouterBuilder.addChangeListener(
+    recursive: Boolean = false,
+    init: ControllerChangeListenerBuilder.() -> Unit
+): RouterBuilder = apply {
+    addChangeListener(controllerChangeListener(init), recursive)
+}
+
+fun RouterBuilder.addLifecycleListener(
+    recursive: Boolean = false,
+    init: ControllerLifecycleListenerBuilder.() -> Unit
+): RouterBuilder = apply {
+    addLifecycleListener(controllerLifecycleListener(init), recursive)
+}
+
+/**
+ * Returns a new [Router] instance build by [init]
+ */
+inline fun router(init: RouterBuilder.() -> Unit): Router =
+    RouterBuilder().apply(init).build()
+
+// todo add simple router constructor
 
 /**
  * Whether or not the router has currently a container attached to it

@@ -31,7 +31,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -40,35 +39,14 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class ControllerLifecycleCallbacksTest {
 
-    private lateinit var activityProxy: ActivityProxy
-    private lateinit var router: Router
+    private val activityProxy = ActivityProxy().create(null).start().resume()
+    private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
+        if (!hasRootController) {
+            setRoot(TestController())
+        }
+    }
 
     private val currentCallState = CallState()
-
-    @Before
-    fun setup() {
-        createActivityController(null, true)
-    }
-
-    private fun createActivityController(
-        savedInstanceState: Bundle?,
-        includeStartAndResume: Boolean
-    ) {
-        activityProxy = ActivityProxy().create(savedInstanceState)
-
-        if (includeStartAndResume) {
-            activityProxy.start().resume()
-        }
-
-        router = activityProxy.activity.attachRouter(
-            activityProxy.view,
-            savedInstanceState
-        )
-
-        if (!router.hasRootController) {
-            router.setRoot(TestController())
-        }
-    }
 
     @Test
     fun testNormalLifecycle() {

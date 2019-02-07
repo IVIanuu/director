@@ -70,13 +70,19 @@ class RouterManager(
     ): Router {
         var router = _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
         if (router == null) {
-            router = Router(
-                host, containerId,
-                tag, hostRouter, null, controllerFactory
-            )
+            router = router {
+                containerId(containerId)
+                tag(tag)
+                host(this@RouterManager.host)
+                hostRouter(this@RouterManager.hostRouter)
+                controllerFactory(controllerFactory)
+                savedInstanceState(
+                    this@RouterManager.savedInstanceState
+                        ?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId)
+                )
+            }
 
-            savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId)
-                ?.let { router.restoreInstanceState(it) }
+            _routers.add(router)
 
             if (hostStarted) {
                 router.hostStarted()

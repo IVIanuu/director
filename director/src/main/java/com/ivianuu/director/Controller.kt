@@ -269,14 +269,13 @@ abstract class Controller {
             .firstOrNull { it.containerId == containerId && it.tag == tag }
 
         if (childRouter == null) {
-            childRouter = Router(
-                this,
-                containerId,
-                tag,
-                router,
-                null,
-                controllerFactory
-            )
+            childRouter = router {
+                containerId(containerId)
+                tag(tag)
+                host(this@Controller)
+                hostRouter(router)
+                controllerFactory(controllerFactory)
+            }
 
             _childRouters.add(childRouter)
 
@@ -591,9 +590,11 @@ abstract class Controller {
                 val containerId = childState.getInt("Router.containerId")
                 val tag = childState.getString("Router.tag")
 
-                Router(this, containerId, tag, router).apply {
-                    // we restore the state later
-                    // to give the user a chance to set a [ControllerFactory] in [onCreate]
+                router {
+                    containerId(containerId)
+                    tag(tag)
+                    host(this@Controller)
+                    hostRouter(router)
                 } to childState
             }
             .onEach { _childRouters.add(it.first) }

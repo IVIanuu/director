@@ -48,3 +48,9 @@ fun DirectorPlugins.setDefaultHandler(handler: ControllerChangeHandler?) {
 /** // todo has its use cases
 var DirectorPlugins.removesFromViewByDefault: Boolean
 get() = */
+
+// todo default pops last view
+
+// todo default retain view
+
+// todo default controller factory

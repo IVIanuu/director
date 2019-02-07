@@ -63,9 +63,9 @@ class TestActivity : Activity() {
 
     fun attachRouter(
         container: ViewGroup,
-        savedInstanceState: Bundle? = null,
+        tag: String? = null,
         controllerFactory: ControllerFactory? = null
-    ): Router = manager.getRouter(container, savedInstanceState, controllerFactory)
+    ): Router = manager.getRouter(container, tag, controllerFactory)
 
     override fun isChangingConfigurations(): Boolean = changingConfigurations
 
