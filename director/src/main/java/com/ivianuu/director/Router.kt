@@ -452,25 +452,35 @@ open class Router internal constructor(
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle) {
+        val oldContainerId = containerId
+        containerId = savedInstanceState.getInt(KEY_CONTAINER_ID)
+
+        check(oldContainerId == containerId) {
+            "Instance state does not belong to this router container id was $oldContainerId but is $containerId"
+        }
+
+        val oldTag = tag
+        tag = savedInstanceState.getString(KEY_TAG)
+
+        check(oldTag == tag) {
+            "Instance state does not belong to this router tag was $oldTag but is $tag"
+        }
+
         _backstack.clear()
         _backstack.addAll(
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
                 .map { RouterTransaction.fromBundle(it, _controllerFactory) }
         )
 
-        containerId = savedInstanceState.getInt(KEY_CONTAINER_ID)
-
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
-
-        tag = savedInstanceState.getString(KEY_TAG)
-
-        _backstack.reversed().forEach { setControllerRouter(it.controller) }
 
         if (isRootRouter) {
             transactionIndexer.restoreInstanceState(
                 savedInstanceState.getBundle(KEY_TRANSACTION_INDEXER)!!
             )
         }
+
+        _backstack.reversed().forEach { setControllerRouter(it.controller) }
     }
 
     /**

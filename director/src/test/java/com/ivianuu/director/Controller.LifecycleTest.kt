@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config
 class ControllerLifecycleCallbacksTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getRouter(activityProxy.view).apply {
+    private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRootController) {
             setRoot(TestController())
         }

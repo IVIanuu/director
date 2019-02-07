@@ -23,8 +23,12 @@ class ActivityProxy {
 
     private val activityController = Robolectric.buildActivity(TestActivity::class.java)
 
-    val view = AttachFakingFrameLayout(activityController.get()).apply {
+    val view1 = AttachFakingFrameLayout(activityController.get()).apply {
         id = 4
+    }
+
+    val view2 = AttachFakingFrameLayout(activityController.get()).apply {
+        id = 5
     }
 
     val activity: TestActivity
@@ -36,7 +40,8 @@ class ActivityProxy {
 
     fun start(): ActivityProxy = apply {
         activityController.start()
-        view.setAttached(true)
+        view1.setAttached(true)
+        view2.setAttached(true)
     }
 
     fun resume(): ActivityProxy = apply {
@@ -55,13 +60,15 @@ class ActivityProxy {
         activityController.stop()
 
         if (detachView) {
-            view.setAttached(false)
+            view1.setAttached(false)
+            view2.setAttached(false)
         }
     }
 
     fun destroy(): ActivityProxy = apply {
         activityController.destroy()
-        view.setAttached(false)
+        view1.setAttached(false)
+        view2.setAttached(false)
     }
 
     fun rotate(): ActivityProxy = apply {

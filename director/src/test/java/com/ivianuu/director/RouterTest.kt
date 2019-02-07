@@ -36,7 +36,7 @@ import org.robolectric.annotation.Config
 class RouterTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getRouter(activityProxy.view)
+    private val router = activityProxy.activity.getRouter(activityProxy.view1)
 
     @Test
     fun testSetRoot() {
