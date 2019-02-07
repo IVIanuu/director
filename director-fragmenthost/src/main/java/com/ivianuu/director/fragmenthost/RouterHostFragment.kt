@@ -16,15 +16,15 @@
 
 package com.ivianuu.director.fragmenthost
 
+import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.host
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterBuilder
 import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getOrCreateRouter
 import com.ivianuu.director.getRouter
 import com.ivianuu.director.getRouterOrNull
 
@@ -34,10 +34,17 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         RouterManager(requireActivity(), null)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (postponedActivities.contains(requireActivity())) {
+            manager.postponeRestore()
+            postponedActivities.remove(requireActivity())
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         manager.restoreInstanceState(savedInstanceState?.getBundle(KEY_ROUTER_STATES))
-        requireActivity().addOnBackPressedCallback(this)
     }
 
     override fun onStart() {
@@ -63,42 +70,67 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun handleOnBackPressed(): Boolean = manager.handleBack()
 
-    internal fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
-        manager.getRouterOrNull(containerId, tag)
-
-    internal fun getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
-        manager.getRouterOrNull(container, tag)
-
-    internal fun getRouter(containerId: Int, tag: String? = null): Router =
-        manager.getRouter(containerId, tag)
-
-    internal fun getRouter(container: ViewGroup, tag: String? = null): Router =
-        manager.getRouter(container, tag)
-
-    internal fun getOrCreateRouter(
-        containerId: Int,
-        tag: String? = null,
-        init: RouterBuilder.() -> Unit = {}
-    ): Router = manager.getOrCreateRouter(containerId, tag, init)
-
-    internal fun getOrCreateRouter(
-        container: ViewGroup,
-        tag: String? = null,
-        init: RouterBuilder.() -> Unit = {}
-    ): Router = manager.getOrCreateRouter(container, tag, init)
-
-    internal fun removeRouter(router: Router) =
-        manager.removeRouter(router)
-
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
 
         private const val KEY_ROUTER_STATES = "RouterHostFragment.routerState"
 
-        internal fun install(fm: FragmentManager): RouterHostFragment {
-            return (fm.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment)
+        private val postponedActivities = mutableListOf<FragmentActivity>()
+
+        internal fun getRouterOrNull(
+            activity: FragmentActivity,
+            containerId: Int,
+            tag: String?
+        ): Router? = get(activity).manager.getRouterOrNull(containerId, tag)
+
+        fun getRouterOrNull(
+            activity: FragmentActivity,
+            container: ViewGroup,
+            tag: String? = null
+        ): Router? =
+            get(activity).manager.getRouterOrNull(container, tag)
+
+        fun getRouter(
+            activity: FragmentActivity,
+            containerId: Int,
+            tag: String? = null
+        ): Router =
+            get(activity).manager.getRouter(containerId, tag)
+
+        fun getRouter(
+            activity: FragmentActivity,
+            container: ViewGroup,
+            tag: String? = null
+        ): Router =
+            get(activity).manager.getRouter(container, tag)
+
+        fun removeRouter(
+            activity: FragmentActivity,
+            router: Router
+        ) {
+            get(activity).manager.removeRouter(router)
+        }
+
+        fun postponeFullRestore(activity: FragmentActivity) {
+            if (activity.supportFragmentManager.host != null) {
+                get(activity).manager.postponeRestore()
+            } else {
+                postponedActivities.add(activity)
+            }
+        }
+
+        fun startPostponedFullRestore(activity: FragmentActivity) {
+            if (activity.supportFragmentManager.host != null) {
+                get(activity).manager.startPostponedFullRestore()
+            } else {
+                postponedActivities.remove(activity)
+            }
+        }
+
+        private fun get(activity: FragmentActivity): RouterHostFragment {
+            return (activity.supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment)
                 ?: RouterHostFragment().also {
-                fm.beginTransaction()
+                    activity.supportFragmentManager.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()
                 }

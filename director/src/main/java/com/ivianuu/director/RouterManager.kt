@@ -20,12 +20,13 @@ import android.os.Bundle
 import android.view.ViewGroup
 
 /**
- * Router delegate
+ * Hosts a group of routers
  */
 class RouterManager(
     private val host: Any,
     private val hostRouter: Router? = null,
-    private var savedInstanceState: Bundle? = null
+    savedInstanceState: Bundle? = null,
+    private var postponeFullRestore: Boolean = false
 ) {
 
     /**
@@ -35,6 +36,12 @@ class RouterManager(
     private val _routers = mutableListOf<Router>()
 
     private var hostStarted = false
+
+    private var routerStates: Map<Router, Bundle>? = null
+
+    init {
+        restoreInstanceState(savedInstanceState)
+    }
 
     fun hostStarted() {
         hostStarted = true
@@ -59,22 +66,17 @@ class RouterManager(
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
-        this.savedInstanceState = savedInstanceState
-
-        if (savedInstanceState != null) {
-            _routers.forEach { router ->
-                this@RouterManager.savedInstanceState
-                    ?.getBundle(KEY_ROUTER_STATE_PREFIX + router.containerId)
-                    ?.let { router.restoreInstanceState(it) }
+        savedInstanceState?.let {
+            restoreBasicState(it)
+            if (!postponeFullRestore) {
+                restoreFullState()
             }
         }
     }
 
     fun saveInstanceState(): Bundle = Bundle().apply {
-        _routers.forEach { router ->
-            val bundle = router.saveInstanceState()
-            putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
-        }
+        val routerStates = _routers.map { it.saveInstanceState() }
+        putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
     fun handleBack(): Boolean {
@@ -86,46 +88,22 @@ class RouterManager(
             .any { it.isAttached && it.router.handleBack() }
     }
 
-    fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
+    fun getRouterOrNull(containerId: Int, tag: String?): Router? =
         _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
 
-    fun getRouter(containerId: Int, tag: String? = null): Router =
-        getRouterOrNull(containerId, tag)
-            ?: error("Couldn't find router for container id: $containerId and tag: $tag")
-
-    fun getOrCreateRouter(
-        containerId: Int,
-        tag: String? = null,
-        init: RouterBuilder.() -> Unit = {}
-    ): Router {
+    fun getRouter(containerId: Int, tag: String?): Router {
         var router = getRouterOrNull(containerId, tag)
         if (router == null) {
-            router = RouterBuilder().run {
-                // defaults
+            router = router {
                 containerId(containerId)
                 tag(tag)
                 host(this@RouterManager.host)
                 hostRouter(this@RouterManager.hostRouter)
-                savedInstanceState(
-                    this@RouterManager.savedInstanceState
-                        ?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId)
-                )
+            }
 
-                // user
-                apply(init)
-
-                check(containerId == containerId) { "Cannot change container id while using router manager" }
-                check(tag == tag) { "Cannot change tag while using router manager" }
-                check(host == this@RouterManager.host) { "Cannot change host while using router manager" }
-                check(hostRouter == this@RouterManager.hostRouter) { "Cannot change host router while using router manager" }
-
-                val router = build()
-                _routers.add(router)
-                if (hostStarted) {
-                    router.hostStarted()
-                }
-
-                router
+            _routers.add(router)
+            if (hostStarted) {
+                router.hostStarted()
             }
         }
 
@@ -142,8 +120,52 @@ class RouterManager(
         }
     }
 
+    fun postponeRestore() {
+        postponeFullRestore = true
+    }
+
+    fun startPostponedFullRestore() {
+        if (postponeFullRestore) {
+            postponeFullRestore = false
+            restoreFullState()
+        }
+    }
+
+    private fun restoreBasicState(savedInstanceState: Bundle) {
+        val routerStates = savedInstanceState
+            .getParcelableArrayList<Bundle>(KEY_ROUTER_STATES)!!
+
+        _routers.clear()
+
+        this.routerStates = routerStates
+            .map { routerState ->
+                // todo little hacky make this easier
+                val containerId = routerState.getInt("Router.containerId")
+                val tag = routerState.getString("Router.tag")
+
+                router {
+                    containerId(containerId)
+                    tag(tag)
+                    host(this@RouterManager.host)
+                    hostRouter(hostRouter)
+                } to routerState
+            }
+            .onEach { _routers.add(it.first) }
+            .toMap()
+    }
+
+    private fun restoreFullState() {
+        routerStates
+            ?.filterKeys { _routers.contains(it) }
+            ?.forEach {
+                it.key.restoreInstanceState(it.value)
+                it.key.rebind()
+            }
+        routerStates = null
+    }
+
     private companion object {
-        private const val KEY_ROUTER_STATE_PREFIX = "RouterManager.routerState"
+        private const val KEY_ROUTER_STATES = "RouterManager.routerState"
     }
 }
 
@@ -155,16 +177,6 @@ fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Ro
 
 fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
     getRouter(container.id, tag).also {
-        it.setContainer(container)
-        it.rebind()
-    }
-
-fun RouterManager.getOrCreateRouter(
-    container: ViewGroup,
-    tag: String? = null,
-    init: RouterBuilder.() -> Unit = {}
-): Router = getOrCreateRouter(container.id, tag, init)
-    .also {
         it.setContainer(container)
         it.rebind()
     }

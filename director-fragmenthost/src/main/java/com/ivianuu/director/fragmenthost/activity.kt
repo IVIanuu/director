@@ -19,35 +19,27 @@ package com.ivianuu.director.fragmenthost
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterBuilder
 
 fun FragmentActivity.getRouterOrNull(containerId: Int, tag: String? = null): Router? =
-    routerHostFragment.getRouterOrNull(containerId, tag)
+    RouterHostFragment.getRouterOrNull(this, containerId, tag)
 
 fun FragmentActivity.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
-    routerHostFragment.getRouterOrNull(container, tag)
+    RouterHostFragment.getRouterOrNull(this, container, tag)
 
 fun FragmentActivity.getRouter(containerId: Int, tag: String? = null): Router =
-    routerHostFragment.getRouter(containerId, tag)
+    RouterHostFragment.getRouter(this, containerId, tag)
 
 fun FragmentActivity.getRouter(container: ViewGroup, tag: String? = null): Router =
-    routerHostFragment.getRouter(container, tag)
+    RouterHostFragment.getRouter(this, container, tag)
 
-fun FragmentActivity.getOrCreateRouter(
-    containerId: Int,
-    tag: String? = null,
-    init: RouterBuilder.() -> Unit = {}
-): Router = routerHostFragment.getOrCreateRouter(containerId, tag, init)
+fun FragmentActivity.removeRouter(router: Router) {
+    RouterHostFragment.removeRouter(this, router)
+}
 
-fun FragmentActivity.getOrCreateRouter(
-    container: ViewGroup,
-    tag: String? = null,
-    init: RouterBuilder.() -> Unit = {}
-): Router = routerHostFragment.getOrCreateRouter(container, tag, init)
+fun FragmentActivity.postponeFullRestore() {
+    RouterHostFragment.postponeFullRestore(this)
+}
 
-fun FragmentActivity.removeRouter(router: Router) =
-    routerHostFragment.removeRouter(router)
-
-private val FragmentActivity.routerHostFragment: RouterHostFragment
-    get() =
-        RouterHostFragment.install(supportFragmentManager)
+fun FragmentActivity.startPostponedFullRestore() {
+    RouterHostFragment.startPostponedFullRestore(this)
+}

@@ -260,8 +260,7 @@ abstract class Controller {
      */
     fun getChildRouter(
         containerId: Int,
-        tag: String? = null,
-        controllerFactory: ControllerFactory? = null
+        tag: String? = null
     ): Router {
         check(routerSet) { "Cannot access child routers before onCreate" }
 
@@ -274,7 +273,6 @@ abstract class Controller {
                 tag(tag)
                 host(this@Controller)
                 hostRouter(router)
-                controllerFactory(controllerFactory)
             }
 
             _childRouters.add(childRouter)
@@ -584,6 +582,7 @@ abstract class Controller {
         val childStates = savedInstanceState
             .getParcelableArrayList<Bundle>(KEY_CHILD_ROUTER_STATES)!!
 
+        _childRouters.clear()
         childRouterStates = childStates
             .map { childState ->
                 // todo little hacky make this easier
@@ -755,6 +754,5 @@ inline fun Controller.toTransaction(
  */
 fun Controller.getChildRouter(
     container: ViewGroup,
-    tag: String? = null,
-    controllerFactory: ControllerFactory? = null
-): Router = getChildRouter(container.id, tag, controllerFactory)
+    tag: String? = null
+): Router = getChildRouter(container.id, tag)
