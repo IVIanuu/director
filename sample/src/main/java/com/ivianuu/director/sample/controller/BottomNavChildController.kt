@@ -17,9 +17,9 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.View
+import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRootIfEmpty
+import com.ivianuu.director.setRoot
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -31,11 +31,10 @@ class BottomNavChildController : BaseController() {
 
     private val childRouter by lazy { getChildRouter(R.id.bottom_nav_child_container) }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-
-        childRouter.setRootIfEmpty {
-            controller(
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!childRouter.hasRootController) {
+            childRouter.setRoot(
                 NavigationController
                     .newInstance(1, NavigationController.DisplayUpMode.HIDE, false)
             )

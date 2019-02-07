@@ -930,17 +930,3 @@ inline fun Router.setRoot(
     handler: ControllerChangeHandler? = null,
     init: RouterTransactionBuilder.() -> Unit
 ): RouterTransaction = transaction(init).also { setRoot(it, handler) }
-
-/**
- * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
- */
-inline fun Router.setRootIfEmpty(
-    handler: () -> ControllerChangeHandler? = { null },
-    init: RouterTransactionBuilder.() -> Unit
-): RouterTransaction? {
-    return if (!hasRootController) {
-        transaction(init).also { setRoot(it, handler()) }
-    } else {
-        null
-    }
-}

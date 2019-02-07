@@ -40,7 +40,9 @@ class ControllerTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getOrCreateRouter(activityProxy.view).apply {
-        setRootIfEmpty { controller(TestController()) }
+        if (!hasRootController) {
+            setRoot(TestController())
+        }
     }
 
     @Test

@@ -1,8 +1,9 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRootIfEmpty
+import com.ivianuu.director.setRoot
 
 class MultipleChildRouterController : BaseController() {
 
@@ -14,16 +15,15 @@ class MultipleChildRouterController : BaseController() {
 
         listOf(R.id.container_0, R.id.container_1, R.id.container_2)
             .map { getChildRouter(it) }
+            .filter { !it.hasRootController }
             .forEach {
-                it.setRootIfEmpty {
-                    controller(
-                        NavigationController.newInstance(
-                            0,
-                            NavigationController.DisplayUpMode.HIDE,
-                            false
-                        )
+                it.setRoot(
+                    NavigationController.newInstance(
+                        0,
+                        NavigationController.DisplayUpMode.HIDE,
+                        false
                     )
-                }
+                )
             }
     }
 
