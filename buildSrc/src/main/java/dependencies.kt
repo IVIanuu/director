@@ -29,6 +29,7 @@ object Versions {
     const val androidxTestRules = "1.1.0"
     const val androidxTestRunner = "1.1.0"
     const val androidxViewPager = "1.0.0"
+    const val androidxViewPager2 = "1.0.0-alpha01"
 
     const val bintray = "1.8.4"
 
@@ -67,6 +68,7 @@ object Deps {
     const val androidxLifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.androidxLifecycle}"
     const val androidxViewPager = "androidx.viewpager:viewpager:${Versions.androidxViewPager}"
+    const val androidxViewPager2 = "androidx.viewpager2:viewpager2:${Versions.androidxViewPager2}"
 
     const val androidxTestCore = "androidx.test:core:${Versions.androidxTestCore}"
     const val androidxTestJunit = "androidx.test.ext:junit:${Versions.androidxTestJunit}"

@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
     implementation(project(":director-viewpager"))
+    implementation(project(":director-viewpager2"))
 
     implementation(Deps.epoxy)
     implementation(Deps.epoxyKtx)

@@ -88,10 +88,10 @@ class RouterManager(
             .any { it.isAttached && it.router.handleBack() }
     }
 
-    fun getRouterOrNull(containerId: Int, tag: String?): Router? =
+    fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
         _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
 
-    fun getRouter(containerId: Int, tag: String?): Router {
+    fun getRouter(containerId: Int, tag: String? = null): Router {
         var router = getRouterOrNull(containerId, tag)
         if (router == null) {
             router = router {
