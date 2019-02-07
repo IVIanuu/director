@@ -49,8 +49,11 @@ class ControllerTest {
     fun testChildControllerParent() {
         val parent = TestController()
         val child = TestController()
+
+        router.push(parent)
         parent.getChildRouter(parent.childContainer1!!)
             .push(child)
+
         assertEquals(parent, child.parentController)
     }
 
