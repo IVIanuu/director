@@ -3,7 +3,6 @@ package com.ivianuu.director.sample
 import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import com.ivianuu.director.Router
 import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
@@ -12,8 +11,6 @@ import kotlinx.android.synthetic.main.activity_main.controller_container
 import kotlinx.android.synthetic.main.activity_main.toolbar
 
 class MainActivity : AppCompatActivity(), ActionBarProvider {
-
-    private lateinit var router: Router
 
     override val providedActionBar: ActionBar
         get() = supportActionBar!!
@@ -25,7 +22,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         setSupportActionBar(toolbar)
 
-        router = getRouter(controller_container).apply {
+        with(getRouter(controller_container)) {
             if (!hasRootController) {
                 setRoot(HomeController())
             }

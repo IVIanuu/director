@@ -147,7 +147,7 @@ class RouterManager(
                     containerId(containerId)
                     tag(tag)
                     host(this@RouterManager.host)
-                    hostRouter(hostRouter)
+                    hostRouter(this@RouterManager.hostRouter)
                 } to routerState
             }
             .onEach { _routers.add(it.first) }
