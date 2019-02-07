@@ -33,7 +33,7 @@ class ActivityCallbacks : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activityByCallbacks.put(this, requireActivity())
+        activities.put(this, requireActivity())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -102,7 +102,7 @@ class ActivityCallbacks : Fragment() {
         private const val FRAGMENT_TAG =
             "com.ivianuu.director.activitycallbacks.ActivityCallbacks"
 
-        private val activityByCallbacks = mutableMapOf<ActivityCallbacks, FragmentActivity>()
+        private val activities = mutableMapOf<ActivityCallbacks, FragmentActivity>()
 
         internal fun get(controller: Controller): ActivityCallbacks {
             val activity = (controller.activity as? FragmentActivity)
@@ -118,7 +118,7 @@ class ActivityCallbacks : Fragment() {
                         .commitNow()
                 }).also {
                 if (it.activity == null) {
-                    activityByCallbacks[it] = activity
+                    activities[it] = activity
                 }
             }
         }
