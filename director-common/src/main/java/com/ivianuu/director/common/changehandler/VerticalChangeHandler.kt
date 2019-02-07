@@ -21,6 +21,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.RouterTransactionBuilder
 import com.ivianuu.director.handler
 
@@ -29,7 +30,7 @@ import com.ivianuu.director.handler
  * depending on whether a push or pop change is happening.
  */
 open class VerticalChangeHandler(
-    duration: Long = DEFAULT_ANIMATION_DURATION,
+    duration: Long = NO_DURATION,
     removesFromViewOnPush: Boolean = true
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
@@ -77,21 +78,21 @@ open class VerticalChangeHandler(
 }
 
 fun RouterTransactionBuilder.vertical(
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     handler(VerticalChangeHandler(duration, removesFromViewOnPush))
 }
 
 fun RouterTransactionBuilder.verticalPush(
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     pushHandler(VerticalChangeHandler(duration, removesFromViewOnPush))
 }
 
 fun RouterTransactionBuilder.verticalPop(
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     popHandler(VerticalChangeHandler(duration, removesFromViewOnPush))

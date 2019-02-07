@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
+import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.RouterTransactionBuilder
 import com.ivianuu.director.handler
 
@@ -25,7 +26,7 @@ open class CircularRevealChangeHandler :
     constructor(
         fromView: View,
         containerView: View,
-        duration: Long = DEFAULT_ANIMATION_DURATION,
+        duration: Long = NO_DURATION,
         removesFromViewOnPush: Boolean = true
     ) : super(duration, removesFromViewOnPush) {
         val fromLocation = IntArray(2)
@@ -44,7 +45,7 @@ open class CircularRevealChangeHandler :
     constructor(
         cx: Int,
         cy: Int,
-        duration: Long = DEFAULT_ANIMATION_DURATION,
+        duration: Long = NO_DURATION,
         removesFromViewOnPush: Boolean = true
     ) : super(duration, removesFromViewOnPush) {
         this.cx = cx
@@ -92,7 +93,7 @@ open class CircularRevealChangeHandler :
 fun RouterTransactionBuilder.circularReveal(
     cx: Int,
     cy: Int,
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     handler(CircularRevealChangeHandler(cx, cy, duration, removesFromViewOnPush))
@@ -101,7 +102,7 @@ fun RouterTransactionBuilder.circularReveal(
 fun RouterTransactionBuilder.circularReveal(
     fromView: View,
     containerView: View,
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     handler(CircularRevealChangeHandler(fromView, containerView, duration, removesFromViewOnPush))
@@ -110,7 +111,7 @@ fun RouterTransactionBuilder.circularReveal(
 fun RouterTransactionBuilder.circularRevealPush(
     cx: Int,
     cy: Int,
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     pushHandler(CircularRevealChangeHandler(cx, cy, duration, removesFromViewOnPush))
@@ -119,7 +120,7 @@ fun RouterTransactionBuilder.circularRevealPush(
 fun RouterTransactionBuilder.circularRevealPush(
     fromView: View,
     containerView: View,
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     pushHandler(
@@ -135,7 +136,7 @@ fun RouterTransactionBuilder.circularRevealPush(
 fun RouterTransactionBuilder.circularRevealPop(
     cx: Int,
     cy: Int,
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     popHandler(CircularRevealChangeHandler(cx, cy, duration, removesFromViewOnPush))
@@ -144,7 +145,7 @@ fun RouterTransactionBuilder.circularRevealPop(
 fun RouterTransactionBuilder.circularRevealPop(
     fromView: View,
     containerView: View,
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     popHandler(

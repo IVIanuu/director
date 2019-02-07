@@ -21,6 +21,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.RouterTransactionBuilder
 import com.ivianuu.director.handler
 
@@ -28,7 +29,7 @@ import com.ivianuu.director.handler
  * A [AnimatorChangeHandler] that will cross fade two views
  */
 open class FadeChangeHandler(
-    duration: Long = DEFAULT_ANIMATION_DURATION,
+    duration: Long = NO_DURATION,
     removesFromViewOnPush: Boolean = true
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
@@ -65,21 +66,21 @@ open class FadeChangeHandler(
 }
 
 fun RouterTransactionBuilder.fade(
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     handler(FadeChangeHandler(duration, removesFromViewOnPush))
 }
 
 fun RouterTransactionBuilder.fadePush(
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     pushHandler(FadeChangeHandler(duration, removesFromViewOnPush))
 }
 
 fun RouterTransactionBuilder.fadePop(
-    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ): RouterTransactionBuilder = apply {
     popHandler(FadeChangeHandler(duration, removesFromViewOnPush))

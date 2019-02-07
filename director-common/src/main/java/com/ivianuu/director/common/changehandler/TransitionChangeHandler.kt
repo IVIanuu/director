@@ -18,17 +18,24 @@ package com.ivianuu.director.common.changehandler
 
 import android.annotation.TargetApi
 import android.os.Build
+import android.os.Bundle
 import android.transition.Transition
 import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.DirectorPlugins
 
 /**
  * A base [ControllerChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
-abstract class TransitionChangeHandler : ControllerChangeHandler() {
+abstract class TransitionChangeHandler(
+    duration: Long = DirectorPlugins.defaultTransitionDuration
+) : ControllerChangeHandler() {
+
+    var duration = duration
+        private set
 
     private var canceled = false
     private var needsImmediateCompletion = false
@@ -51,6 +58,10 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
         }
 
         val transition = getTransition(container, from, to, isPush)
+        if (duration != NO_DURATION) {
+            transition.duration = duration
+        }
+
         transition.addListener(object : Transition.TransitionListener {
             override fun onTransitionStart(transition: Transition) {
             }
@@ -81,6 +92,17 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
             executePropertyChanges(container, from, to, transition, isPush)
         }
     }
+
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putLong(KEY_DURATION, duration)
+    }
+
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        duration = bundle.getLong(KEY_DURATION)
+    }
+
 
     override fun cancel(immediate: Boolean) {
         super.cancel(immediate)
@@ -131,4 +153,21 @@ abstract class TransitionChangeHandler : ControllerChangeHandler() {
             container.addView(to)
         }
     }
+
+    companion object {
+        private const val KEY_DURATION = "TransitionChangeHandler.duration"
+        const val NO_DURATION = -1L
+    }
 }
+
+
+private var _defaultTransitionDuration = TransitionChangeHandler.NO_DURATION
+
+/**
+ * The default transition duration to use in all [TransitionChangeHandler]s
+ */
+var DirectorPlugins.defaultTransitionDuration: Long
+    get() = _defaultTransitionDuration
+    set(value) {
+        _defaultTransitionDuration = value
+    }

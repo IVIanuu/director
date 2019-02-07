@@ -26,6 +26,7 @@ import android.transition.TransitionSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnPreDrawListener
+import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.TransitionUtils
 
 /**
@@ -34,7 +35,9 @@ import com.ivianuu.director.common.TransitionUtils
  */
 // Much of this class is based on FragmentTransition.java and FragmentTransitionCompat21.java from the Android support library
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-abstract class SharedElementTransitionChangeHandler : TransitionChangeHandler() {
+abstract class SharedElementTransitionChangeHandler(
+    duration: Long = DirectorPlugins.defaultTransitionDuration
+) : TransitionChangeHandler(duration) {
 
     // A map of from -> to names. Generally these will be the same.
     private val sharedElementNames = mutableMapOf<String, String>()

@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 
@@ -29,12 +30,11 @@ import com.ivianuu.director.common.OnReadyOrAbortedListener
  * A base [ControllerChangeHandler] that uses [android.animation.Animator]s to replace Controller Views
  */
 abstract class AnimatorChangeHandler(
-    duration: Long = DEFAULT_ANIMATION_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     override var removesFromViewOnPush: Boolean = true
 ) : ControllerChangeHandler() {
 
-    var duration =
-        DEFAULT_ANIMATION_DURATION
+    var duration = duration
         private set
 
     private var animator: Animator? = null
@@ -152,12 +152,11 @@ abstract class AnimatorChangeHandler(
         }
 
         animator = getAnimator(container, from, to, isPush, toAddedToContainer).apply {
-            if (this@AnimatorChangeHandler.duration > 0) {
+            if (this@AnimatorChangeHandler.duration != NO_DURATION) {
                 duration = this@AnimatorChangeHandler.duration
             }
 
             addListener(object : AnimatorListenerAdapter() {
-
                 override fun onAnimationEnd(animation: Animator) {
                     complete(this)
                 }
@@ -207,6 +206,17 @@ abstract class AnimatorChangeHandler(
         private const val KEY_DURATION = "AnimatorChangeHandler.duration"
         private const val KEY_REMOVES_FROM_ON_PUSH = "AnimatorChangeHandler.removesFromViewOnPush"
 
-        const val DEFAULT_ANIMATION_DURATION = -1L
+        const val NO_DURATION = -1L
     }
 }
+
+private var _defaultAnimationDuration = AnimatorChangeHandler.NO_DURATION
+
+/**
+ * The default animation duration to use in all [AnimatorChangeHandler]s
+ */
+var DirectorPlugins.defaultAnimationDuration: Long
+    get() = _defaultAnimationDuration
+    set(value) {
+        _defaultAnimationDuration = value
+    }

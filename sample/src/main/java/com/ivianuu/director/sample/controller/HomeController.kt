@@ -119,7 +119,6 @@ class HomeController : BaseController() {
                 }
             }
             HomeItem.DRAG_DISMISS -> {
-                router.push(DragDismissController())
                 router.push {
                     controller(DragDismissController())
                     fade(removesFromViewOnPush = false)

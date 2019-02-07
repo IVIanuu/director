@@ -17,6 +17,9 @@
 package com.ivianuu.director.sample.app
 
 import android.app.Application
+import com.ivianuu.director.DirectorPlugins
+import com.ivianuu.director.common.changehandler.defaultAnimationDuration
+import com.ivianuu.director.common.changehandler.defaultTransitionDuration
 import com.squareup.leakcanary.LeakCanary
 
 /**
@@ -28,6 +31,9 @@ class App : Application() {
         super.onCreate()
         if (LeakCanary.isInAnalyzerProcess(this)) return
         //LeakCanary.install(this)
+
+        DirectorPlugins.defaultAnimationDuration = 180
+        DirectorPlugins.defaultTransitionDuration = 180
     }
 
 }
