@@ -23,15 +23,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterDelegate
+import com.ivianuu.director.RouterManager
 
 class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
-    private lateinit var delegate: RouterDelegate
+    private lateinit var manager: RouterManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate = RouterDelegate(
+        manager = RouterManager(
             requireActivity(),
             null,
             savedInstanceState?.getBundle(KEY_ROUTER_STATES)
@@ -42,31 +42,32 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun onStart() {
         super.onStart()
-        delegate.hostStarted()
+        manager.hostStarted()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBundle(KEY_ROUTER_STATES, delegate.saveInstanceState())
+        outState.putBundle(KEY_ROUTER_STATES, manager.saveInstanceState())
     }
 
     override fun onStop() {
         super.onStop()
-        delegate.hostStopped()
+        manager.hostStopped()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         requireActivity().removeOnBackPressedCallback(this)
-        delegate.hostDestroyed()
+        manager.hostDestroyed()
     }
 
     internal fun getRouter(
+        tag: String?,
         container: ViewGroup,
         controllerFactory: ControllerFactory?
-    ): Router = delegate.getRouter(container, controllerFactory)
+    ): Router = manager.getRouter(container, tag, controllerFactory)
 
-    override fun handleOnBackPressed(): Boolean = delegate.handleBack()
+    override fun handleOnBackPressed(): Boolean = manager.handleBack()
 
     companion object {
         private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"

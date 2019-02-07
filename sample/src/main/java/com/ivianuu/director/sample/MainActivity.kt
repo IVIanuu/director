@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         router = getRouter(
             R.id.controller_container,
-            LoggingControllerFactory()
+            controllerFactory = LoggingControllerFactory()
         ).apply {
             setRootIfEmpty { controller(HomeController()) }
         }

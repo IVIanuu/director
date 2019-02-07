@@ -21,7 +21,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterDelegate
+import com.ivianuu.director.RouterManager
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -31,11 +31,11 @@ class TestActivity : Activity() {
     var changingConfigurations = false
     var isDestroying = false
 
-    private lateinit var delegate: RouterDelegate
+    private lateinit var manager: RouterManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        delegate = RouterDelegate(
+        manager = RouterManager(
             this,
             savedInstanceState = savedInstanceState?.getBundle(KEY_ROUTER_STATES)
         )
@@ -43,29 +43,29 @@ class TestActivity : Activity() {
 
     override fun onStart() {
         super.onStart()
-        delegate.hostStarted()
+        manager.hostStarted()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBundle(KEY_ROUTER_STATES, delegate.saveInstanceState())
+        outState.putBundle(KEY_ROUTER_STATES, manager.saveInstanceState())
     }
 
     override fun onStop() {
         super.onStop()
-        delegate.hostStopped()
+        manager.hostStopped()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        delegate.hostDestroyed()
+        manager.hostDestroyed()
     }
 
     fun attachRouter(
         container: ViewGroup,
         savedInstanceState: Bundle? = null,
         controllerFactory: ControllerFactory? = null
-    ): Router = delegate.getRouter(container, savedInstanceState, controllerFactory)
+    ): Router = manager.getRouter(container, savedInstanceState, controllerFactory)
 
     override fun isChangingConfigurations(): Boolean = changingConfigurations
 

@@ -22,9 +22,7 @@ import android.view.ViewGroup
 /**
  * Router delegate
  */
-// todo support tagged routers
-// todo allow to define a host router per router
-class RouterDelegate(
+class RouterManager(
     private val host: Any,
     private val hostRouter: Router? = null,
     private var savedInstanceState: Bundle? = null
@@ -33,23 +31,23 @@ class RouterDelegate(
     /**
      * All routers contained by this delegate
      */
-    val routers: List<Router> get() = _routers.values.toList()
-    private val _routers = mutableMapOf<Int, Router>()
+    val routers: List<Router> get() = _routers
+    private val _routers = mutableListOf<Router>()
 
     private var hostStarted = false
 
     fun hostStarted() {
         hostStarted = true
-        _routers.values.forEach { it.hostStarted() }
+        _routers.forEach { it.hostStarted() }
     }
 
     fun hostStopped() {
         hostStarted = false
-        _routers.values.forEach { it.hostStopped() }
+        _routers.forEach { it.hostStopped() }
     }
 
     fun hostDestroyed() {
-        _routers.values.forEach {
+        _routers.forEach {
             it.isBeingDestroyed = true
             it.removeContainer()
             it.hostDestroyed()
@@ -57,61 +55,58 @@ class RouterDelegate(
     }
 
     fun saveInstanceState(): Bundle = Bundle().apply {
-        _routers.values.forEach { router ->
+        _routers.forEach { router ->
             val bundle = router.saveInstanceState()
             putBundle(KEY_ROUTER_STATE_PREFIX + router.containerId, bundle)
         }
     }
 
-    fun handleBack(): Boolean = _routers.values.any { it.handleBack() }
+    fun handleBack(): Boolean = _routers.any { it.handleBack() }
 
     fun getRouter(
         containerId: Int,
-        controllerFactory: ControllerFactory?
-    ): Router = getRouter(
-        containerId,
-        savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId), controllerFactory
-    )
-
-    fun getRouter(
-        containerId: Int,
-        savedInstanceState: Bundle? = null,
+        tag: String? = null,
         controllerFactory: ControllerFactory? = null
     ): Router {
-        return _routers.getOrPut(containerId) {
-            val router = Router(
+        var router = _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
+        if (router == null) {
+            router = Router(
                 host, containerId,
-                null, hostRouter, null, controllerFactory
+                tag, hostRouter, null, controllerFactory
             )
 
-            savedInstanceState?.let { router.restoreInstanceState(it) }
+            savedInstanceState?.getBundle(KEY_ROUTER_STATE_PREFIX + containerId)
+                ?.let { router.restoreInstanceState(it) }
 
             if (hostStarted) {
                 router.hostStarted()
             }
 
-            router
+        }
+
+        return router
+    }
+
+    fun getRouter(
+        container: ViewGroup,
+        tag: String? = null,
+        controllerFactory: ControllerFactory? = null
+    ): Router = getRouter(container.id, tag, controllerFactory).also {
+        it.setContainer(container)
+        it.rebind()
+    }
+
+    fun removeRouter(router: Router) {
+        if (_routers.remove(router)) {
+            router.setBackstack(emptyList())
+            router.isBeingDestroyed = true
+            router.hostStopped()
+            router.removeContainer()
+            router.hostDestroyed()
         }
     }
 
-    fun getRouter(
-        container: ViewGroup,
-        controllerFactory: ControllerFactory? = null
-    ): Router = getRouter(container.id, controllerFactory).also {
-        it.setContainer(container)
-        it.rebind()
-    }
-
-    fun getRouter(
-        container: ViewGroup,
-        savedInstanceState: Bundle?,
-        controllerFactory: ControllerFactory? = null
-    ): Router = getRouter(container.id, savedInstanceState, controllerFactory).also {
-        it.setContainer(container)
-        it.rebind()
-    }
-
     private companion object {
-        private const val KEY_ROUTER_STATE_PREFIX = "RouterDelegate.routerState"
+        private const val KEY_ROUTER_STATE_PREFIX = "RouterManager.routerState"
     }
 }

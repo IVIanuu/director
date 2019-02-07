@@ -28,17 +28,20 @@ import com.ivianuu.director.Router
  */
 fun FragmentActivity.getRouter(
     container: ViewGroup,
+    tag: String? = null,
     controllerFactory: ControllerFactory? = null
-): Router = getRouter(supportFragmentManager, container, controllerFactory)
+): Router = getRouter(supportFragmentManager, container, tag, controllerFactory)
 
 /**
  * Returns a [Router] for the [containerId]
  */
 fun FragmentActivity.getRouter(
     containerId: Int,
+    tag: String? = null,
     controllerFactory: ControllerFactory? = null
 ): Router = getRouter(
     findViewById<ViewGroup>(containerId),
+    tag,
     controllerFactory
 )
 
@@ -47,25 +50,29 @@ fun FragmentActivity.getRouter(
  */
 fun Fragment.getRouter(
     container: ViewGroup,
+    tag: String? = null,
     controllerFactory: ControllerFactory? = null
-): Router = getRouter(childFragmentManager, container, controllerFactory)
+): Router = getRouter(childFragmentManager, container, tag, controllerFactory)
 
 /**
  * Returns a [Router] for the [containerId]
  */
 fun Fragment.getRouter(
     containerId: Int,
+    tag: String? = null,
     controllerFactory: ControllerFactory? = null
 ): Router = getRouter(
     view!!.findViewById<ViewGroup>(containerId),
+    tag,
     controllerFactory
 )
 
 private fun getRouter(
     fm: FragmentManager,
     container: ViewGroup,
+    tag: String? = null,
     controllerFactory: ControllerFactory?
 ): Router {
     val routerHost = RouterHostFragment.install(fm)
-    return routerHost.getRouter(container, controllerFactory)
+    return routerHost.getRouter(container, tag, controllerFactory)
 }
