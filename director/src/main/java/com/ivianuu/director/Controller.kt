@@ -80,7 +80,7 @@ abstract class Controller {
 
     var isBeingDestroyed: Boolean = false
         internal set(value) {
-            if (value) _childRouters.hostIsBeingDestroyed()
+            if (value) childRouterManager.hostIsBeingDestroyed()
             field = value
         }
 
@@ -108,8 +108,9 @@ abstract class Controller {
      * All child routers of this controller
      */
     val childRouters: List<Router>
-        get() = _childRouters.routers
-    private val _childRouters by lazy(LazyThreadSafetyMode.NONE) {
+        get() = childRouterManager.routers
+    val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
+        check(routerSet) { "Cannot access child routers before onCreate" }
         RouterManager(this, router, postponeFullRestore = true)
     }
 
@@ -140,7 +141,7 @@ abstract class Controller {
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
         // restore the full instance state of child routers
-        _childRouters.startPostponedFullRestore()
+        childRouterManager.startPostponedFullRestore()
 
         superCalled = true
     }
@@ -227,7 +228,7 @@ abstract class Controller {
     /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
-    open fun handleBack(): Boolean = _childRouters.handleBack()
+    open fun handleBack(): Boolean = childRouterManager.handleBack()
 
     /**
      * Adds a listener for all of this Controller's lifecycle events
@@ -252,8 +253,7 @@ abstract class Controller {
         containerId: Int,
         tag: String?
     ): Router? {
-        check(routerSet) { "Cannot access child routers before onCreate" }
-        return _childRouters.getRouterOrNull(containerId, tag)
+        return childRouterManager.getRouterOrNull(containerId, tag)
             ?.also { restoreChildControllerContainers() }
     }
 
@@ -264,8 +264,7 @@ abstract class Controller {
         containerId: Int,
         tag: String? = null
     ): Router {
-        check(routerSet) { "Cannot access child routers before onCreate" }
-        return _childRouters.getRouter(containerId, tag)
+        return childRouterManager.getRouter(containerId, tag)
             .also { restoreChildControllerContainers() }
     }
 
@@ -274,7 +273,7 @@ abstract class Controller {
      * the [childRouter] will be destroyed.
      */
     fun removeChildRouter(childRouter: Router) {
-        _childRouters.removeRouter(childRouter)
+        childRouterManager.removeRouter(childRouter)
     }
 
     internal fun findController(instanceId: String): Controller? {
@@ -348,7 +347,7 @@ abstract class Controller {
     internal fun hostDestroyed() {
         if (state == DESTROYED) return
 
-        _childRouters.hostDestroyed()
+        childRouterManager.hostDestroyed()
 
         notifyLifecycleListeners { it.preDestroy(this) }
 
@@ -436,7 +435,7 @@ abstract class Controller {
 
         hasSavedViewState = false
 
-        _childRouters.hostStarted()
+        childRouterManager.hostStarted()
     }
 
     private fun detach() {
@@ -445,7 +444,7 @@ abstract class Controller {
         if (attachedToUnownedParent) return
 
         if (isAttached) {
-            _childRouters.hostStopped()
+            childRouterManager.hostStopped()
 
             notifyLifecycleListeners { it.preDetach(this, view) }
 
@@ -463,7 +462,7 @@ abstract class Controller {
             saveViewState()
         }
 
-        _childRouters.routers.forEach { it.removeContainer() }
+        childRouterManager.routers.forEach { it.removeContainer() }
 
         notifyLifecycleListeners { it.preUnbindView(this, view) }
 
@@ -485,7 +484,7 @@ abstract class Controller {
         // would cause the child controller view to be fully created
         // before our view is fully created
         if (view != null && viewFullyCreated) {
-            _childRouters.routers
+            childRouterManager.routers
                 .filterNot { it.hasContainer }
                 .forEach {
                     val containerView = view.findViewById<ViewGroup>(it.containerId)
@@ -530,7 +529,7 @@ abstract class Controller {
 
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
-        outState.putBundle(KEY_CHILD_ROUTER_STATES, _childRouters.saveInstanceState())
+        outState.putBundle(KEY_CHILD_ROUTER_STATES, childRouterManager.saveInstanceState())
 
         return outState
     }
@@ -553,7 +552,7 @@ abstract class Controller {
 
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
-        _childRouters.restoreInstanceState(savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES))
+        childRouterManager.restoreInstanceState(savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES))
     }
 
     private fun saveViewState() {

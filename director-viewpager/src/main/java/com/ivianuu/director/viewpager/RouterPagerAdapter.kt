@@ -22,16 +22,18 @@ import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
-import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.director.getChildRouter
+import com.ivianuu.director.RouterManager
+import com.ivianuu.director.getRouter
 import com.ivianuu.director.hasRootController
 import java.util.*
 
 /**
  * An adapter for ViewPagers that uses Routers as pages
  */
-abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter() {
+abstract class RouterPagerAdapter(
+    private val manager: RouterManager
+) : PagerAdapter() {
 
     var maxPagesToStateSave = Integer.MAX_VALUE
         set(value) {
@@ -56,7 +58,7 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val name = (container.id + position).toString()
 
-        val router = host.getChildRouter(container, name)
+        val router = manager.getRouter(container, name)
         if (!router.hasRootController) {
             val routerSavedState = savedPages.get(position)
 
@@ -84,7 +86,7 @@ abstract class RouterPagerAdapter(private val host: Controller) : PagerAdapter()
 
         ensurePagesSaved()
 
-        host.removeChildRouter(router)
+        manager.removeRouter(router)
 
         visibleRouters.remove(position)
     }

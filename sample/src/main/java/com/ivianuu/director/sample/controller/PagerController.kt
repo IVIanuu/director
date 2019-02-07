@@ -15,25 +15,27 @@ class PagerController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_pager
 
-    private val pagerAdapter = object : RouterPagerAdapter(this@PagerController) {
+    private val pagerAdapter by lazy {
+        object : RouterPagerAdapter(childRouterManager) {
 
-        override fun configureRouter(router: Router, position: Int) {
-            if (!router.hasRootController) {
-                router.setRoot(
-                    ChildController.newInstance(
-                        String.format(
-                            Locale.getDefault(),
-                            "Child #%d (Swipe to see more)",
-                            position
-                        ), PAGE_COLORS[position], true
+            override fun configureRouter(router: Router, position: Int) {
+                if (!router.hasRootController) {
+                    router.setRoot(
+                        ChildController.newInstance(
+                            String.format(
+                                Locale.getDefault(),
+                                "Child #%d (Swipe to see more)",
+                                position
+                            ), PAGE_COLORS[position], true
+                        )
                     )
-                )
+                }
             }
+
+            override fun getPageTitle(position: Int) = "Page $position"
+
+            override fun getCount() = PAGE_COLORS.size
         }
-
-        override fun getPageTitle(position: Int) = "Page $position"
-
-        override fun getCount() = PAGE_COLORS.size
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -128,6 +128,9 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
             }
         }
 
+        fun getManager(activity: FragmentActivity): RouterManager =
+            get(activity).manager
+
         private fun get(activity: FragmentActivity): RouterHostFragment {
             return (activity.supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment)
                 ?: RouterHostFragment().also {

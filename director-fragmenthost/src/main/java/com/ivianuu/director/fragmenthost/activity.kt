@@ -19,6 +19,7 @@ package com.ivianuu.director.fragmenthost
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
+import com.ivianuu.director.RouterManager
 
 fun FragmentActivity.getRouterOrNull(containerId: Int, tag: String? = null): Router? =
     RouterHostFragment.getRouterOrNull(this, containerId, tag)
@@ -43,3 +44,6 @@ fun FragmentActivity.postponeFullRestore() {
 fun FragmentActivity.startPostponedFullRestore() {
     RouterHostFragment.startPostponedFullRestore(this)
 }
+
+val FragmentActivity.routerManager: RouterManager
+    get() = RouterHostFragment.getManager(this)
