@@ -18,7 +18,6 @@ import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.internal.ViewAttachHandler
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * A Controller manages portions of the UI. It is similar to an Activity or Fragment in that it manages its
@@ -81,14 +80,13 @@ abstract class Controller {
 
     var isBeingDestroyed: Boolean = false
         internal set(value) {
-            _childRouters.forEach { it.isBeingDestroyed = value }
+            if (value) _childRouters.hostIsBeingDestroyed()
             field = value
         }
 
     private var allState: Bundle? = null
     private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
-    private var childRouterStates: Map<Router, Bundle>? = null
 
     private var viewFullyCreated = false
     private var hasSavedViewState = false
@@ -110,8 +108,10 @@ abstract class Controller {
      * All child routers of this controller
      */
     val childRouters: List<Router>
-        get() = _childRouters
-    private val _childRouters = mutableListOf<Router>()
+        get() = _childRouters.routers
+    private val _childRouters by lazy(LazyThreadSafetyMode.NONE) {
+        RouterManager(this, router, postponeFullRestore = true)
+    }
 
     private val lifecycleListeners = mutableListOf<ControllerLifecycleListener>()
 
@@ -140,10 +140,7 @@ abstract class Controller {
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
         // restore the full instance state of child routers
-        childRouterStates
-            ?.filterKeys { _childRouters.contains(it) }
-            ?.forEach { it.key.restoreInstanceState(it.value) }
-        childRouterStates = null
+        _childRouters.startPostponedFullRestore()
 
         superCalled = true
     }
@@ -230,14 +227,7 @@ abstract class Controller {
     /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
-    open fun handleBack(): Boolean {
-        return _childRouters
-            .flatMap { it.backstack }
-            .asSequence()
-            .sortedByDescending { it.transactionIndex }
-            .map { it.controller }
-            .any { isAttached && it.router.handleBack() }
-    }
+    open fun handleBack(): Boolean = _childRouters.handleBack()
 
     /**
      * Adds a listener for all of this Controller's lifecycle events
@@ -256,6 +246,18 @@ abstract class Controller {
     }
 
     /**
+     * Returns the child router for [containerId] and [tag] or null
+     */
+    fun getChildRouterOrNull(
+        containerId: Int,
+        tag: String?
+    ): Router? {
+        check(routerSet) { "Cannot access child routers before onCreate" }
+        return _childRouters.getRouterOrNull(containerId, tag)
+            ?.also { restoreChildControllerContainers() }
+    }
+
+    /**
      * Returns the child router for [containerId] and [tag]
      */
     fun getChildRouter(
@@ -263,28 +265,8 @@ abstract class Controller {
         tag: String? = null
     ): Router {
         check(routerSet) { "Cannot access child routers before onCreate" }
-
-        var childRouter = _childRouters
-            .firstOrNull { it.containerId == containerId && it.tag == tag }
-
-        if (childRouter == null) {
-            childRouter = router {
-                containerId(containerId)
-                tag(tag)
-                host(this@Controller)
-                hostRouter(router)
-            }
-
-            _childRouters.add(childRouter)
-
-            if (isAttached) {
-                childRouter.hostStarted()
-            }
-        }
-
-        restoreChildControllerContainers()
-
-        return childRouter
+        return _childRouters.getRouter(containerId, tag)
+            .also { restoreChildControllerContainers() }
     }
 
     /**
@@ -292,13 +274,7 @@ abstract class Controller {
      * the [childRouter] will be destroyed.
      */
     fun removeChildRouter(childRouter: Router) {
-        if (_childRouters.remove(childRouter)) {
-            childRouter.setBackstack(emptyList())
-            childRouter.isBeingDestroyed = true
-            childRouter.hostStopped()
-            childRouter.removeContainer()
-            childRouter.hostDestroyed()
-        }
+        _childRouters.removeRouter(childRouter)
     }
 
     internal fun findController(instanceId: String): Controller? {
@@ -372,7 +348,7 @@ abstract class Controller {
     internal fun hostDestroyed() {
         if (state == DESTROYED) return
 
-        _childRouters.forEach { it.hostDestroyed() }
+        _childRouters.hostDestroyed()
 
         notifyLifecycleListeners { it.preDestroy(this) }
 
@@ -460,7 +436,7 @@ abstract class Controller {
 
         hasSavedViewState = false
 
-        _childRouters.forEach { it.hostStarted() }
+        _childRouters.hostStarted()
     }
 
     private fun detach() {
@@ -469,7 +445,7 @@ abstract class Controller {
         if (attachedToUnownedParent) return
 
         if (isAttached) {
-            _childRouters.forEach { it.hostStopped() }
+            _childRouters.hostStopped()
 
             notifyLifecycleListeners { it.preDetach(this, view) }
 
@@ -487,7 +463,7 @@ abstract class Controller {
             saveViewState()
         }
 
-        _childRouters.forEach { it.removeContainer() }
+        _childRouters.routers.forEach { it.removeContainer() }
 
         notifyLifecycleListeners { it.preUnbindView(this, view) }
 
@@ -509,7 +485,7 @@ abstract class Controller {
         // would cause the child controller view to be fully created
         // before our view is fully created
         if (view != null && viewFullyCreated) {
-            _childRouters
+            _childRouters.routers
                 .filterNot { it.hasContainer }
                 .forEach {
                     val containerView = view.findViewById<ViewGroup>(it.containerId)
@@ -554,9 +530,7 @@ abstract class Controller {
 
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
-        val childStates = _childRouters.map { it.saveInstanceState() }
-
-        outState.putParcelableArrayList(KEY_CHILD_ROUTER_STATES, ArrayList(childStates))
+        outState.putBundle(KEY_CHILD_ROUTER_STATES, _childRouters.saveInstanceState())
 
         return outState
     }
@@ -579,25 +553,7 @@ abstract class Controller {
 
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
-        val childStates = savedInstanceState
-            .getParcelableArrayList<Bundle>(KEY_CHILD_ROUTER_STATES)!!
-
-        _childRouters.clear()
-        childRouterStates = childStates
-            .map { childState ->
-                // todo little hacky make this easier
-                val containerId = childState.getInt("Router.containerId")
-                val tag = childState.getString("Router.tag")
-
-                router {
-                    containerId(containerId)
-                    tag(tag)
-                    host(this@Controller)
-                    hostRouter(router)
-                } to childState
-            }
-            .onEach { _childRouters.add(it.first) }
-            .toMap()
+        _childRouters.restoreInstanceState(savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES))
     }
 
     private fun saveViewState() {
@@ -748,6 +704,14 @@ inline fun Controller.toTransaction(
     controller(this@toTransaction)
     init()
 }
+
+/**
+ * Returns the child router for [container] and [tag] or null
+ */
+fun Controller.getChildRouterOrNull(
+    container: ViewGroup,
+    tag: String? = null
+): Router? = getChildRouterOrNull(container.id, tag)
 
 /**
  * Returns the child router for [container] and [tag] or creates a new instance

@@ -21,7 +21,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getOrCreateRouter
+import com.ivianuu.director.getRouter
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -61,10 +61,10 @@ class TestActivity : Activity() {
         manager.hostDestroyed()
     }
 
-    fun getOrCreateRouter(
+    fun getRouter(
         container: ViewGroup,
         tag: String? = null
-    ): Router = manager.getOrCreateRouter(container, tag)
+    ): Router = manager.getRouter(container, tag)
 
     override fun isChangingConfigurations(): Boolean = changingConfigurations
 

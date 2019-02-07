@@ -45,6 +45,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         manager.restoreInstanceState(savedInstanceState?.getBundle(KEY_ROUTER_STATES))
+        requireActivity().addOnBackPressedCallback(this)
     }
 
     override fun onStart() {

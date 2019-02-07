@@ -30,7 +30,7 @@ import org.robolectric.annotation.Config
 class ControllerChangeHandlerTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getOrCreateRouter(activityProxy.view)
+    private val router = activityProxy.activity.getRouter(activityProxy.view)
 
     @Test
     fun testSaveRestore() {
