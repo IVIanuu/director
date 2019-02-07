@@ -77,16 +77,16 @@ class HomeController : BaseController() {
                 )
             }
             HomeItem.TARGET_CONTROLLER -> {
-                router.push(TargetDisplayController())
+                router.push<TargetDisplayController>()
             }
             HomeItem.VIEW_PAGER -> {
-                router.push(PagerController())
+                router.push<PagerController>()
             }
             HomeItem.BOTTOM_NAV -> {
-                router.push(BottomNavController())
+                router.push<BottomNavController>()
             }
             HomeItem.CHILD_CONTROLLERS -> {
-                router.push(ParentController())
+                router.push<ParentController>()
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
@@ -111,16 +111,16 @@ class HomeController : BaseController() {
                 }
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
-                router.push(MultipleChildRouterController())
+                router.push<MultipleChildRouterController>()
             }
             HomeItem.MASTER_DETAIL -> {
-                router.push(MasterDetailListController())
+                router.push<MasterDetailListController>()
             }
             HomeItem.DIALOG -> {
                 SimpleDialogController().show(router)
             }
             HomeItem.EXTERNAL_MODULES -> {
-                router.push(ExternalModulesController())
+                router.push<ExternalModulesController>()
             }
         }
     }

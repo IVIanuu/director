@@ -776,6 +776,17 @@ fun Router.push(
 ): RouterTransaction = transaction(controller, pushHandler, popHandler, tag)
     .also { push(it, handler) }
 
+inline fun <reified T : Controller> Router.push(
+    args: Bundle = Bundle(),
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
+    tag: String? = null,
+    handler: ControllerChangeHandler? = null
+): RouterTransaction = push(
+    controllerFactory!!.createController<T>(args),
+    pushHandler, popHandler, tag, handler
+)
+
 /**
  * Pushes a new [Controller] to the backstack
  */
@@ -818,6 +829,17 @@ fun Router.replaceTop(
     handler: ControllerChangeHandler? = null
 ): RouterTransaction =
     transaction(controller, pushHandler, popHandler, tag).also { replaceTop(it, handler) }
+
+inline fun <reified T : Controller> Router.replaceTop(
+    args: Bundle = Bundle(),
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
+    tag: String? = null,
+    handler: ControllerChangeHandler? = null
+): RouterTransaction = replaceTop(
+    controllerFactory!!.createController<T>(args),
+    pushHandler, popHandler, tag, handler
+)
 
 /**
  * Replaces this Router's top [Controller] with the [Controller] of the [transaction]
@@ -887,6 +909,17 @@ fun Router.setRoot(
     handler: ControllerChangeHandler? = null
 ): RouterTransaction =
     transaction(controller, pushHandler, popHandler, tag).also { setRoot(it, handler) }
+
+inline fun <reified T : Controller> Router.setRoot(
+    args: Bundle = Bundle(),
+    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
+    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
+    tag: String? = null,
+    handler: ControllerChangeHandler? = null
+): RouterTransaction = setRoot(
+    controllerFactory!!.createController<T>(args),
+    pushHandler, popHandler, tag, handler
+)
 
 /**
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
