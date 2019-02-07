@@ -6,8 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import com.ivianuu.director.activityresult.registerActivityResultListener
-import com.ivianuu.director.activityresult.startActivityForResult
+import com.ivianuu.director.activitycallbacks.addActivityResultListener
+import com.ivianuu.director.activitycallbacks.startActivityForResult
 import com.ivianuu.director.common.changehandler.horizontal
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
@@ -37,7 +37,12 @@ class TargetDisplayController : BaseController(),
             }
         }
 
-        registerActivityResultListener(REQUEST_SELECT_IMAGE, this)
+        addActivityResultListener(REQUEST_SELECT_IMAGE) { requestCode, resultCode, data ->
+            if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
+                imageUri = data?.data
+                setImageView()
+            }
+        }
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
@@ -75,13 +80,6 @@ class TargetDisplayController : BaseController(),
             KEY_SELECTED_IMAGE,
             if (imageUri != null) imageUri!!.toString() else null
         )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
-            imageUri = data?.data
-            setImageView()
-        }
     }
 
     private fun setImageView() {

@@ -39,12 +39,11 @@ dependencies {
     kapt(Deps.daggerCompiler)
 
     implementation(project(":director"))
-    implementation(project(":director-activityresult"))
+    implementation(project(":director-activitycallbacks"))
     implementation(project(":director-androidx-lifecycle"))
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
     implementation(project(":director-fragmenthost"))
-    implementation(project(":director-permission"))
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
     implementation(project(":director-viewpager"))

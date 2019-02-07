@@ -1,11 +1,10 @@
 include(
     ":director",
-    ":director-activityresult",
+    ":director-activitycallbacks",
     ":director-androidx-lifecycle",
     ":director-common",
     ":director-dialog",
     ":director-fragmenthost",
-    ":director-permission",
     ":director-retained",
     ":director-scopes",
     ":director-testing",

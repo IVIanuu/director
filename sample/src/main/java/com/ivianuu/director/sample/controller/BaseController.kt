@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,16 +7,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.Controller
 import com.ivianuu.director.activity
-import com.ivianuu.director.activityresult.ActivityResultListener
 import com.ivianuu.director.parentController
-import com.ivianuu.director.permission.PermissionCallback
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
-abstract class BaseController : Controller(), LayoutContainer, PermissionCallback,
-    ActivityResultListener {
+abstract class BaseController : Controller(), LayoutContainer {
 
     override val containerView: View?
         get() = view
@@ -65,16 +61,6 @@ abstract class BaseController : Controller(), LayoutContainer, PermissionCallbac
         if (title != null && actionBar != null) {
             actionBar.title = title
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
     }
 
     override fun toString(): String {

@@ -5,12 +5,11 @@
       <module fileurl="file://$PROJECT_DIR$/Director.iml" filepath="$PROJECT_DIR$/Director.iml" />
       <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/director/director.iml" filepath="$PROJECT_DIR$/director/director.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-activityresult/director-activityresult.iml" filepath="$PROJECT_DIR$/director-activityresult/director-activityresult.iml" />
+      <module fileurl="file://$PROJECT_DIR$/director-activitycallbacks/director-activitycallbacks.iml" filepath="$PROJECT_DIR$/director-activitycallbacks/director-activitycallbacks.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-androidx-lifecycle/director-androidx-lifecycle.iml" filepath="$PROJECT_DIR$/director-androidx-lifecycle/director-androidx-lifecycle.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-common/director-common.iml" filepath="$PROJECT_DIR$/director-common/director-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-fragmenthost/director-fragmenthost.iml" filepath="$PROJECT_DIR$/director-fragmenthost/director-fragmenthost.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-permission/director-permission.iml" filepath="$PROJECT_DIR$/director-permission/director-permission.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-retained/director-retained.iml" filepath="$PROJECT_DIR$/director-retained/director-retained.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-scopes/director-scopes.iml" filepath="$PROJECT_DIR$/director-scopes/director-scopes.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-testing/director-testing.iml" filepath="$PROJECT_DIR$/director-testing/director-testing.iml" />
