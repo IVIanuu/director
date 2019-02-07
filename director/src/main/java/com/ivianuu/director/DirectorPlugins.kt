@@ -56,7 +56,6 @@ var DirectorPlugins.defaultControllerFactory: ControllerFactory?
         _defaultControllerFactory = value
     }
 
-// todo default controller factory
 // todo default removes from view on push
 // todo default pops last view
 // todo default retain view
