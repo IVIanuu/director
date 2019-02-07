@@ -18,7 +18,6 @@ package com.ivianuu.director.viewpager2
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
@@ -30,10 +29,6 @@ import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.hasContainer
 import com.ivianuu.director.hasRootController
-
-private fun d(m: () -> String) {
-    Log.d("Router Adapter", m())
-}
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -47,34 +42,28 @@ abstract class RouterAdapter(
 
     private val dataObserver = object : RecyclerView.AdapterDataObserver() {
         override fun onChanged() {
-            d { "on changed" }
             restoreState(saveState())
         }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         registerAdapterDataObserver(dataObserver)
-        d { "on attached to recycler" }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         unregisterAdapterDataObserver(dataObserver)
-        d { "on detached from recycler" }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouterViewHolder =
-        createHolder(parent).also { d { "create holder" } }
+        createHolder(parent)
 
     override fun onBindViewHolder(holder: RouterViewHolder, position: Int) {
         val router = getRouter(position, holder.container.id)
         holder.router = router
 
-        d { "on bind view holder $router, $position" }
-
         val container = holder.container
 
         if (ViewCompat.isAttachedToWindow(container)) {
-            d { "is attached" }
             if (container.parent != null) {
                 throw IllegalStateException("Design assumption violated.")
             }
@@ -96,10 +85,8 @@ abstract class RouterAdapter(
 
     override fun onViewAttachedToWindow(holder: RouterViewHolder) {
         super.onViewAttachedToWindow(holder)
-        d { "on view attached to window ${holder.router}, ${holder.adapterPosition}" }
         holder.router?.let {
             if (!it.hasContainer) {
-                d { "set container ${holder.adapterPosition}" }
                 it.setContainer(holder.container)
                 it.rebind()
             }
@@ -119,12 +106,8 @@ abstract class RouterAdapter(
     private fun getRouter(position: Int, containerId: Int): Router {
         val router = manager.getRouter(containerId)
 
-        d { "get router $position" }
-
         if (!router.hasRootController) {
             val routerSavedState = savedStates[position]
-
-            d { "try to restore state $position container id $containerId" }
 
             if (routerSavedState != null) {
                 router.restoreInstanceState(routerSavedState)
@@ -143,7 +126,6 @@ abstract class RouterAdapter(
     private fun removeRouter(holder: RouterViewHolder) {
         val router = holder.router ?: return
         val itemId = holder.itemId
-        d { "remove router $itemId" }
         if (router.hasRootController && containsItem(itemId)) {
             savedStates.put(itemCount, router.saveInstanceState())
         }
@@ -166,8 +148,6 @@ abstract class RouterAdapter(
     override fun restoreState(savedState: Parcelable) {
         if (savedState !is Bundle) return
 
-        d { "restore state" }
-
         savedStates.clear()
 
         savedState.getSparseParcelableArray<Bundle>(KEY_ROUTER_STATES)?.let { states ->
@@ -178,7 +158,6 @@ abstract class RouterAdapter(
     }
 
     override fun saveState(): Parcelable = Bundle().apply {
-        d { "save state" }
         putSparseParcelableArray(KEY_ROUTER_STATES, savedStates)
     }
 
