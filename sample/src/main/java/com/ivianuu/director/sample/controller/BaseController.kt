@@ -12,7 +12,6 @@ import com.ivianuu.director.activityresult.ActivityResultListener
 import com.ivianuu.director.parentController
 import com.ivianuu.director.permission.PermissionCallback
 import com.ivianuu.director.sample.ActionBarProvider
-import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
@@ -31,15 +30,6 @@ abstract class BaseController : Controller(), LayoutContainer, PermissionCallbac
 
     init {
         addLifecycleListener(LoggingLifecycleListener())
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        childRouters.forEach {
-            it.controllerFactory =
-                    LoggingControllerFactory()
-        }
-
-        super.onCreate(savedInstanceState)
     }
 
     override fun onInflateView(

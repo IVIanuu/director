@@ -18,4 +18,4 @@ package com.ivianuu.director.internal
 
 import com.ivianuu.director.ControllerFactory
 
-internal class DefaultControllerFactory : ControllerFactory
+internal object DefaultControllerFactory : ControllerFactory

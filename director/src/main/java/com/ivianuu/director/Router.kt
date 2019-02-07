@@ -60,10 +60,13 @@ open class Router internal constructor(
     var controllerFactory: ControllerFactory?
         get() = _controllerFactory
         set(value) {
-            _controllerFactory = value ?: DefaultControllerFactory()
+            _controllerFactory = value
+                ?: DirectorPlugins.defaultControllerFactory
+                        ?: DefaultControllerFactory
         }
 
-    private var _controllerFactory: ControllerFactory = DefaultControllerFactory()
+    private var _controllerFactory: ControllerFactory =
+        DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
 
     internal val rootRouter: Router get() = hostRouter?.rootRouter ?: this
 
@@ -576,7 +579,7 @@ class RouterBuilder @PublishedApi internal constructor() {
 
     var tag: String? = null
         private set
-    var controllerFactory: ControllerFactory? = null
+    var controllerFactory: ControllerFactory? = DirectorPlugins.defaultControllerFactory
         private set
     var popsLastView: Boolean = false
         private set

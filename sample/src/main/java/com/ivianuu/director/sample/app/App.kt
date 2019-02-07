@@ -21,6 +21,8 @@ import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.defaultAnimationDuration
 import com.ivianuu.director.common.changehandler.defaultTransitionDuration
+import com.ivianuu.director.defaultControllerFactory
+import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.setDefaultHandler
 import com.squareup.leakcanary.LeakCanary
 
@@ -37,6 +39,7 @@ class App : Application() {
         DirectorPlugins.defaultAnimationDuration = 240
         DirectorPlugins.defaultTransitionDuration = 240
         DirectorPlugins.setDefaultHandler(FadeChangeHandler())
+        DirectorPlugins.defaultControllerFactory = LoggingControllerFactory()
     }
 
 }
