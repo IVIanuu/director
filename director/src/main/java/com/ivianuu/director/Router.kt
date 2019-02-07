@@ -89,7 +89,7 @@ open class Router internal constructor(
      */
     open fun setBackstack(
         newBackstack: List<RouterTransaction>,
-        changeHandler: ControllerChangeHandler? = null
+        handler: ControllerChangeHandler? = null
     ) {
         val oldTransactions = _backstack.toList()
         val oldVisibleTransactions = oldTransactions.filterVisible()
@@ -156,7 +156,7 @@ open class Router internal constructor(
                     newBackstack.last(),
                     oldTransactions.lastOrNull(),
                     true,
-                    changeHandler ?: newBackstack.last().pushChangeHandler
+                    handler ?: newBackstack.last().pushChangeHandler
                 )
             }
             // just pop the top controller
@@ -165,7 +165,7 @@ open class Router internal constructor(
                     newBackstack.lastOrNull(),
                     oldTransactions.last(),
                     false,
-                    changeHandler ?: oldTransactions.last().popChangeHandler
+                    handler ?: oldTransactions.last().popChangeHandler
                 )
             }
             // just swap the top controllers
@@ -176,7 +176,7 @@ open class Router internal constructor(
                 val oldHandlerRemovedViews =
                     oldTopTransaction.pushChangeHandler?.removesFromViewOnPush == true
 
-                val localHandler = changeHandler ?: newTopTransaction.pushChangeHandler
+                val localHandler = handler ?: newTopTransaction.pushChangeHandler
 
                 val newHandlerRemovesViews = localHandler?.removesFromViewOnPush == true
 
@@ -209,11 +209,7 @@ open class Router internal constructor(
 
                 // swap the top controllers
                 performControllerChange(
-                    newTopTransaction.also {
-                        it.allowModification = true
-                        it.pushChangeHandler = localHandler
-                        it.allowModification = false
-                    },
+                    newTopTransaction.also { it.pushChangeHandler = localHandler },
                     oldTopTransaction,
                     true
                 )
@@ -242,7 +238,7 @@ open class Router internal constructor(
                             newRootTransaction,
                             oldRootTransaction,
                             newRootRequiresPush,
-                            changeHandler
+                            handler
                         )
                     }
 
@@ -252,7 +248,7 @@ open class Router internal constructor(
                         .reversed()
                         .filterNot { newVisibleTransactions.contains(it) }
                         .forEach {
-                            val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
+                            val localHandler = handler?.copy() ?: SimpleSwapChangeHandler()
                             localHandler.forceRemoveViewOnPush = true
                             changeManager.cancelChange(it.controller.instanceId, true)
                             performControllerChange(
@@ -280,7 +276,7 @@ open class Router internal constructor(
             // Remove all visible controllers that were previously on the backstack
             else -> {
                 oldVisibleTransactions.reversed().forEach {
-                    val localHandler = changeHandler?.copy() ?: SimpleSwapChangeHandler()
+                    val localHandler = handler?.copy() ?: SimpleSwapChangeHandler()
                     changeManager.cancelChange(it.controller.instanceId, true)
                     performControllerChange(null, it, false, localHandler)
                 }
@@ -291,6 +287,27 @@ open class Router internal constructor(
         destroyedInvisibleTransactions.forEach {
             it.controller.containerDetached()
             it.controller.hostDestroyed()
+        }
+    }
+
+    /**
+     * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
+     * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
+     */
+    fun handleBack(): Boolean {
+        val currentTransaction = backstack.lastOrNull()
+
+        return if (currentTransaction != null) {
+            if (currentTransaction.controller.handleBack()) {
+                true
+            } else if (backstackSize > 0 && (popsLastView || backstackSize > 1)) {
+                popCurrent()
+                true
+            } else {
+                false
+            }
+        } else {
+            false
         }
     }
 
@@ -453,11 +470,40 @@ open class Router internal constructor(
         }
     }
 
+    /**
+     * Saves the instance state of [controller] which can later be used in
+     * [Controller.setInitialSavedState]
+     */
+    fun saveControllerInstanceState(controller: Controller): Bundle {
+        require(backstack.any { it.controller == controller }) {
+            "controller is not attached to the router"
+        }
+
+        return controller.saveInstanceState()
+    }
+
+    /**
+     * Returns the hosted Controller with the given instance id or `null` if no such
+     * Controller exists in this Router.
+     */
+    fun findControllerByInstanceId(instanceId: String): Controller? {
+        return backstack
+            .mapNotNull { it.controller.findController(instanceId) }
+            .firstOrNull()
+    }
+
+    /**
+     * Returns the hosted Controller that was pushed with the given tag or `null` if no
+     * such Controller exists in this Router.
+     */
+    fun findControllerByTag(tag: String): Controller? =
+        backstack.firstOrNull { it.tag == tag }?.controller
+
     private fun performControllerChange(
         to: RouterTransaction?,
         from: RouterTransaction?,
         isPush: Boolean,
-        changeHandler: ControllerChangeHandler? = null
+        handler: ControllerChangeHandler? = null
     ) {
         check(!isPush || to == null || to.controller.state != DESTROYED) {
             "Trying to push a controller that has already been destroyed ${to!!.javaClass.simpleName}"
@@ -465,7 +511,7 @@ open class Router internal constructor(
 
         val container = container ?: return
 
-        val changeHandler = changeHandler ?: when {
+        val handler = handler ?: when {
             isPush -> to?.pushChangeHandler
             from != null -> from.popChangeHandler
             else -> null
@@ -476,7 +522,7 @@ open class Router internal constructor(
             from?.controller,
             isPush,
             container,
-            changeHandler,
+            handler,
             getAllChangeListeners(false)
         )
     }
@@ -557,71 +603,34 @@ val Router.hasRootController: Boolean get() = backstackSize > 0
 fun Router.popsLastView(popsLastView: Boolean): Router = apply { this.popsLastView = popsLastView }
 
 /**
- * Saves the instance state of [controller] which can later be used in
- * [Controller.setInitialSavedState]
+ * Applies the [mutation] to the current backstack and sets it afterwards
  */
-fun Router.saveControllerInstanceState(controller: Controller): Bundle {
-    require(backstack.any { it.controller == controller }) {
-        "controller is not attached to the router"
-    }
-
-    return controller.saveInstanceState()
-}
-
-/**
- * Returns the hosted Controller with the given instance id or `null` if no such
- * Controller exists in this Router.
- */
-fun Router.findControllerByInstanceId(instanceId: String): Controller? {
-    return backstack
-        .mapNotNull { it.controller.findController(instanceId) }
-        .firstOrNull()
-}
-
-/**
- * Returns the hosted Controller that was pushed with the given tag or `null` if no
- * such Controller exists in this Router.
- */
-fun Router.findControllerByTag(tag: String): Controller? =
-    backstack.firstOrNull { it.tag == tag }?.controller
-
-/**
- * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
- * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
- */
-fun Router.handleBack(): Boolean {
-    val currentTransaction = backstack.lastOrNull()
-
-    return if (currentTransaction != null) {
-        if (currentTransaction.controller.handleBack()) {
-            true
-        } else if (backstackSize > 0 && (popsLastView || backstackSize > 1)) {
-            popCurrentController()
-            true
-        } else {
-            false
-        }
-    } else {
-        false
-    }
+inline fun Router.setBackstack(
+    handler: ControllerChangeHandler? = null,
+    mutation: MutableList<RouterTransaction>.() -> Unit
+) {
+    val newBackstack = backstack.toMutableList()
+    mutation(newBackstack)
+    setBackstack(newBackstack, handler)
 }
 
 /**
  * Pops the top [Controller] from the backstack
  */
-fun Router.popCurrentController(changeHandler: ControllerChangeHandler? = null) {
+fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
     val transaction = backstack.lastOrNull()
         ?: error("Trying to pop the current controller when there are none on the backstack.")
-    popController(transaction.controller, changeHandler)
+    pop(transaction.controller, handler)
 }
 
 /**
  * Pops the passed [Controller] from the backstack
  */
-fun Router.popController(
+fun Router.pop(
     controller: Controller,
-    changeHandler: ControllerChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
+
     val oldBackstack = backstack
     val newBackstack = oldBackstack.toMutableList()
     newBackstack.removeAll { it.controller == controller }
@@ -629,37 +638,59 @@ fun Router.popController(
     val topTransaction = oldBackstack.lastOrNull()
     val poppingTopController = topTransaction?.controller == controller
 
-    val changeHandler = changeHandler ?: if (poppingTopController) {
+    val handler = handler ?: if (poppingTopController) {
         topTransaction!!.popChangeHandler
     } else {
         null
     }
 
-    setBackstack(newBackstack, changeHandler)
+    setBackstack(newBackstack, handler)
 }
 
 /**
  * Pushes a new [Controller] to the backstack
  */
-fun Router.pushController(
+fun Router.push(
     transaction: RouterTransaction,
-    changeHandler: ControllerChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
     newBackstack.add(transaction)
-    if (changeHandler != null) {
-        setBackstack(newBackstack, changeHandler)
+    if (handler != null) {
+        setBackstack(newBackstack, handler)
     } else {
         setBackstack(newBackstack)
     }
 }
 
 /**
+ * Pushes a new [Controller] to the backstack
+ */
+fun Router.push(
+    controller: Controller,
+    pushHandler: ControllerChangeHandler? = null,
+    popHandler: ControllerChangeHandler? = null,
+    tag: String? = null,
+    handler: ControllerChangeHandler? = null
+): RouterTransaction = transaction(controller, pushHandler, popHandler, tag)
+    .also { push(it, handler) }
+
+/**
+ * Pushes a new [Controller] to the backstack
+ */
+fun Router.push(
+    handler: ControllerChangeHandler? = null,
+    init: RouterTransactionBuilder.() -> Unit
+): RouterTransaction {
+    return transaction(init).also { push(it, handler) }
+}
+
+/**
  * Replaces this Router's top [Controller] with the [Controller] of the [transaction]
  */
-fun Router.replaceTopController(
+fun Router.replaceTop(
     transaction: RouterTransaction,
-    changeHandler: ControllerChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
     val from = newBackstack.lastOrNull()
@@ -668,58 +699,112 @@ fun Router.replaceTopController(
     }
     newBackstack.add(transaction)
 
-    if (changeHandler != null) {
-        setBackstack(newBackstack, changeHandler)
+    if (handler != null) {
+        setBackstack(newBackstack, handler)
     } else {
         setBackstack(newBackstack)
     }
 }
 
+/**
+ * Replaces this Router's top [Controller] with the [Controller]
+ */
+fun Router.replaceTop(
+    controller: Controller,
+    pushHandler: ControllerChangeHandler? = null,
+    popHandler: ControllerChangeHandler? = null,
+    tag: String? = null,
+    handler: ControllerChangeHandler? = null
+): RouterTransaction =
+    transaction(controller, pushHandler, popHandler, tag).also { replaceTop(it, handler) }
+
+/**
+ * Replaces this Router's top [Controller] with the [Controller] of the [transaction]
+ */
+inline fun Router.replaceTop(
+    handler: ControllerChangeHandler? = null,
+    init: RouterTransactionBuilder.() -> Unit
+): RouterTransaction = transaction(init).also { replaceTop(it, handler) }
+
 
 /**
  * Pops all [Controller] until only the root is left
  */
-fun Router.popToRoot(changeHandler: ControllerChangeHandler? = null) {
+fun Router.popToRoot(handler: ControllerChangeHandler? = null) {
     backstack.firstOrNull()
-        ?.let { popToTransaction(it, changeHandler) }
+        ?.let { popTo(it, handler) }
 }
 
 /**
  * Pops all [Controller]s until the [Controller] with the passed tag is at the top
  */
-fun Router.popToTag(tag: String, changeHandler: ControllerChangeHandler? = null) {
+fun Router.popToTag(tag: String, handler: ControllerChangeHandler? = null) {
     backstack.firstOrNull { it.tag == tag }
-        ?.let { popToTransaction(it, changeHandler) }
+        ?.let { popTo(it, handler) }
 }
 
 /**
  * Pops all [Controller]s until the [controller] is at the top
  */
-fun Router.popToController(
+fun Router.popTo(
     controller: Controller,
-    changeHandler: ControllerChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     backstack.firstOrNull { it.controller == controller }
-        ?.let { popToTransaction(it, changeHandler) }
+        ?.let { popTo(it, handler) }
 }
 
 /***
  * Pops all [Controller]s until the [transaction] is at the top
  */
-fun Router.popToTransaction(
+fun Router.popTo(
     transaction: RouterTransaction,
-    changeHandler: ControllerChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     if (backstack.isNotEmpty()) {
         val topTransaction = backstack.lastOrNull()
         val newBackstack = backstack.dropLastWhile { it != transaction }
-        setBackstack(newBackstack, changeHandler ?: topTransaction?.popChangeHandler)
+        setBackstack(newBackstack, handler ?: topTransaction?.popChangeHandler)
     }
 }
 
 /**
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
  */
-fun Router.setRoot(transaction: RouterTransaction, changeHandler: ControllerChangeHandler? = null) {
-    setBackstack(listOf(transaction), changeHandler ?: transaction.pushChangeHandler)
+fun Router.setRoot(transaction: RouterTransaction, handler: ControllerChangeHandler? = null) {
+    setBackstack(listOf(transaction), handler ?: transaction.pushChangeHandler)
+}
+
+/**
+ * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
+ */
+fun Router.setRoot(
+    controller: Controller,
+    pushHandler: ControllerChangeHandler? = null,
+    popHandler: ControllerChangeHandler? = null,
+    tag: String? = null,
+    handler: ControllerChangeHandler? = null
+): RouterTransaction =
+    transaction(controller, pushHandler, popHandler, tag).also { setRoot(it, handler) }
+
+/**
+ * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
+ */
+inline fun Router.setRoot(
+    handler: ControllerChangeHandler? = null,
+    init: RouterTransactionBuilder.() -> Unit
+): RouterTransaction = transaction(init).also { setRoot(it, handler) }
+
+/**
+ * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
+ */
+inline fun Router.setRootIfEmpty(
+    handler: () -> ControllerChangeHandler? = { null },
+    init: RouterTransactionBuilder.() -> Unit
+): RouterTransaction? {
+    return if (!hasRootController) {
+        transaction(init).also { setRoot(it, handler()) }
+    } else {
+        null
+    }
 }

@@ -94,3 +94,21 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
         private const val KEY_REMOVES_FROM_ON_PUSH = "SimpleSwapChangeHandler.removesFromViewOnPush"
     }
 }
+
+fun RouterTransactionBuilder.simpleSwap(
+    removesFromViewOnPush: Boolean = true
+): RouterTransactionBuilder = apply {
+    handler(SimpleSwapChangeHandler(removesFromViewOnPush))
+}
+
+fun RouterTransactionBuilder.simpleSwapPush(
+    removesFromViewOnPush: Boolean = true
+): RouterTransactionBuilder = apply {
+    pushHandler(SimpleSwapChangeHandler(removesFromViewOnPush))
+}
+
+fun RouterTransactionBuilder.simpleSwapPop(
+    removesFromViewOnPush: Boolean = true
+): RouterTransactionBuilder = apply {
+    popHandler(SimpleSwapChangeHandler(removesFromViewOnPush))
+}

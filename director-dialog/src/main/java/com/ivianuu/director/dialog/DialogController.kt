@@ -26,13 +26,11 @@ import android.view.Window
 import android.view.WindowManager
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.activity
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.popController
-import com.ivianuu.director.pushController
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.pop
+import com.ivianuu.director.push
+import com.ivianuu.director.simpleSwapPop
+import com.ivianuu.director.simpleSwapPush
 
 /**
  * A controller counterpart for dialog fragments
@@ -190,45 +188,25 @@ abstract class DialogController : Controller(), DialogInterface.OnShowListener, 
         dialog?.dismiss()
         isDismissed = true
 
-        router.popController(this)
+        router.pop(this)
     }
 
     /**
      * Pushes this controller and shows the dialog
      */
     fun show(router: Router, tag: String? = null) {
-        router.pushController(
-            toTransaction()
-                .tag(tag)
-                .changeHandler(SimpleSwapChangeHandler(false))
-        )
+        router.push {
+            controller(this@DialogController)
+            tag(tag)
+            simpleSwapPush(removesFromViewOnPush = false)
+            simpleSwapPop()
+        }
     }
 
     companion object {
-        /**
-         * Style for [.setStyle]: a basic,
-         * normal dialog.
-         */
         const val STYLE_NORMAL = 0
-
-        /**
-         * Style for [.setStyle]: don't include
-         * a title area.
-         */
         const val STYLE_NO_TITLE = 1
-
-        /**
-         * Style for [.setStyle]: don't draw
-         * any frame at all; the view hierarchy returned by [.onInflateView]
-         * is entirely responsible for drawing the dialog.
-         */
         const val STYLE_NO_FRAME = 2
-
-        /**
-         * Style for [.setStyle]: like
-         * [.STYLE_NO_FRAME], but also disables all input to the dialog.
-         * The user can not touch it, and its window will not receive input focus.
-         */
         const val STYLE_NO_INPUT = 3
 
         private const val KEY_DIALOG_STATE = "DialogController.dialogState"

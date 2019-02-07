@@ -36,10 +36,12 @@ class RouterTransactionTest {
 
     @Test
     fun testRouterSaveRestore() {
-        val transaction = TestController().toTransaction()
-            .pushChangeHandler(ChangeHandlerOne())
-            .popChangeHandler(ChangeHandlerTwo())
-            .tag("test")
+        val transaction = transaction {
+            controller(TestController())
+            tag("test")
+            pushHandler(ChangeHandlerOne())
+            popHandler(ChangeHandlerTwo())
+        }
 
         // attach the controller because he needs the router for notifying lifecycle callbacks
         router.setRoot(transaction)

@@ -17,7 +17,7 @@
 package com.ivianuu.director.traveler
 
 import com.ivianuu.director.Controller
-import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.RouterTransactionBuilder
 import com.ivianuu.traveler.Command
 
 /**
@@ -42,7 +42,7 @@ interface ControllerKey {
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransaction
+        transaction: RouterTransactionBuilder
     ) {
     }
 }

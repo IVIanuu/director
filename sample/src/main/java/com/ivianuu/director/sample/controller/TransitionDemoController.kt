@@ -4,16 +4,27 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.activity
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
+import com.ivianuu.director.handler
+import com.ivianuu.director.popToRoot
+import com.ivianuu.director.push
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
 import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.synthetic.main.controller_transition_demo.*
+import com.ivianuu.director.toTransaction
+import kotlinx.android.synthetic.main.controller_transition_demo.bg_view
+import kotlinx.android.synthetic.main.controller_transition_demo.btn_next
+import kotlinx.android.synthetic.main.controller_transition_demo.transition_root
+import kotlinx.android.synthetic.main.controller_transition_demo.tv_title
 
 class TransitionDemoController : BaseController() {
 
@@ -54,7 +65,7 @@ class TransitionDemoController : BaseController() {
 
         btn_next.setOnClickListener {
             if (nextIndex < TransitionDemo.values().size) {
-                router.pushController(getRouterTransaction(nextIndex, this))
+                router.push(getRouterTransaction(nextIndex, this))
             } else {
                 router.popToRoot()
             }
@@ -130,9 +141,9 @@ class TransitionDemoController : BaseController() {
 
         fun getRouterTransaction(index: Int, fromController: Controller): RouterTransaction {
             val toController = newInstance(index)
-
-            return toController.toTransaction()
-                .changeHandler(toController.getChangeHandler(fromController))
+            return toController.toTransaction {
+                handler(toController.getChangeHandler(fromController))
+            }
         }
     }
 }

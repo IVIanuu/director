@@ -71,9 +71,9 @@ class ControllerChangeListenerBuilder internal constructor() {
 }
 
 /**
- * Returns a [ControllerChangeListener] build by [init]
+ * Returns a [controllerChangeListener] build by [init]
  */
-fun ControllerChangeListener(init: ControllerChangeListenerBuilder.() -> Unit): ControllerChangeListener =
+fun controllerChangeListener(init: ControllerChangeListenerBuilder.() -> Unit): ControllerChangeListener =
     ControllerChangeListenerBuilder().apply(init).build()
 
 fun Router.doOnChangeStarted(
@@ -92,7 +92,7 @@ fun Router.addChangeListener(
     recursive: Boolean = false,
     init: ControllerChangeListenerBuilder.() -> Unit
 ): ControllerChangeListener =
-    ControllerChangeListener(init).also { addChangeListener(it, recursive) }
+    controllerChangeListener(init).also { addChangeListener(it, recursive) }
 
 private class LambdaControllerChangeListener(
     private val onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,

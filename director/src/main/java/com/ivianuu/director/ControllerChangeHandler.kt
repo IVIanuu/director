@@ -12,7 +12,7 @@ import com.ivianuu.director.internal.newInstanceOrThrow
 abstract class ControllerChangeHandler {
 
     /**
-     * Whether or not this handler removes the from view on push
+     * Whether or not this changeHandler removes the from view on push
      */
     open val removesFromViewOnPush: Boolean get() = true
 
@@ -31,7 +31,7 @@ abstract class ControllerChangeHandler {
     )
 
     /**
-     * Saves any data about this handler to a Bundle in case the application is killed.
+     * Saves any data about this changeHandler to a Bundle in case the application is killed.
      */
     open fun saveToBundle(bundle: Bundle) {
     }
@@ -50,7 +50,7 @@ abstract class ControllerChangeHandler {
 
     /**
      * Returns a copy of this ControllerChangeHandler. This method is internally used by the library, so
-     * ensure it will return an exact copy of your handler if overriding. If not overriding, the handler
+     * ensure it will return an exact copy of your changeHandler if overriding. If not overriding, the changeHandler
      * will be saved and restored from the Bundle format.
      */
     open fun copy(): ControllerChangeHandler = fromBundle(toBundle())

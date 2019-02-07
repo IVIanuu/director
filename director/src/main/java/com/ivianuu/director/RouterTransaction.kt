@@ -3,6 +3,7 @@ package com.ivianuu.director
 import android.os.Bundle
 
 import com.ivianuu.director.internal.TransactionIndexer
+import kotlin.properties.Delegates
 
 /**
  * Metadata used for adding [Controller]s to a [Router].
@@ -18,49 +19,47 @@ class RouterTransaction {
      * The tag of this transaction
      */
     var tag: String? = null
-        set(value) {
-            checkModify()
-            field = value
-        }
+        internal set
 
     /**
-     * The push change handler of this transaction
+     * The push change changeHandler of this transaction
      */
     var pushChangeHandler: ControllerChangeHandler? = null
-        set(value) {
-            checkModify()
-            field = value
-        }
+        internal set
 
     /**
-     * The pop change handler of this transaction
+     * The pop change changeHandler of this transaction
      */
     var popChangeHandler: ControllerChangeHandler? = null
-        set(value) {
-            checkModify()
-            field = value
-        }
+        internal set
 
     internal var transactionIndex = INVALID_INDEX
     internal var attachedToRouter = false
-    internal var allowModification = false
 
-    constructor(controller: Controller) {
+    internal constructor(
+        controller: Controller,
+        tag: String?,
+        pushHandler: ControllerChangeHandler?,
+        popHandler: ControllerChangeHandler?
+    ) {
         this.controller = controller
+        this.tag = tag
+        this.pushChangeHandler = pushHandler
+        this.popChangeHandler = popHandler
     }
 
     private constructor(
         controller: Controller,
-        pushChangeHandler: ControllerChangeHandler?,
-        popChangeHandler: ControllerChangeHandler?,
         tag: String?,
+        pushHandler: ControllerChangeHandler?,
+        popHandler: ControllerChangeHandler?,
         transactionIndex: Int,
         attachedToRouter: Boolean
     ) {
         this.controller = controller
-        this.pushChangeHandler = pushChangeHandler
-        this.popChangeHandler = popChangeHandler
         this.tag = tag
+        this.pushChangeHandler = pushHandler
+        this.popChangeHandler = popHandler
         this.transactionIndex = transactionIndex
         this.attachedToRouter = attachedToRouter
     }
@@ -83,12 +82,6 @@ class RouterTransaction {
         putBoolean(KEY_ATTACHED_TO_ROUTER, attachedToRouter)
     }
 
-    private fun checkModify() {
-        check(allowModification || !attachedToRouter) {
-            "transactions cannot be modified after being added to a Router."
-        }
-    }
-
     companion object {
         private const val KEY_CONTROLLER_BUNDLE = "RouterTransaction.controller.bundle"
         private const val KEY_PUSH_CHANGE_HANDLER = "RouterTransaction.pushChangeHandler"
@@ -104,40 +97,73 @@ class RouterTransaction {
             controllerFactory: ControllerFactory
         ) = RouterTransaction(
                 Controller.fromBundle(bundle.getBundle(KEY_CONTROLLER_BUNDLE)!!, controllerFactory),
+            bundle.getString(KEY_TAG),
             bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let { ControllerChangeHandler.fromBundle(it) },
             bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let { ControllerChangeHandler.fromBundle(it) },
-            bundle.getString(KEY_TAG),
             bundle.getInt(KEY_INDEX),
             bundle.getBoolean(KEY_ATTACHED_TO_ROUTER)
         )
     }
 }
 
-/**
- * Fluent version of push change handler
- */
-fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction =
-    apply {
-        pushChangeHandler = changeHandler
+class RouterTransactionBuilder @PublishedApi internal constructor() {
+
+    var controller by Delegates.notNull<Controller>()
+        private set
+    var tag: String? = null
+        private set
+    var pushChangeHandler: ControllerChangeHandler? = null
+        private set
+    var popChangeHandler: ControllerChangeHandler? = null
+        private set
+
+    fun controller(controller: Controller): RouterTransactionBuilder = apply {
+        this.controller = controller
     }
 
-/**
- * Fluent version of pop change handler
- */
-fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction =
-    apply {
-        popChangeHandler = changeHandler
+    fun tag(tag: String?): RouterTransactionBuilder = apply {
+        this.tag = tag
     }
 
-/**
- * Sets the [changeHandler] as both the [pushChangeHandler] and the [popChangeHandler]
- */
-fun RouterTransaction.changeHandler(changeHandler: ControllerChangeHandler?) =
-    pushChangeHandler(changeHandler).popChangeHandler(changeHandler)
+    fun pushHandler(handler: ControllerChangeHandler?): RouterTransactionBuilder = apply {
+        this.pushChangeHandler = handler
+    }
 
-/**
- * Fluent version of tag
- */
-fun RouterTransaction.tag(tag: String?): RouterTransaction = apply {
-    this.tag = tag
+    fun popHandler(handler: ControllerChangeHandler?): RouterTransactionBuilder = apply {
+        this.popChangeHandler = handler
+    }
+
+    fun build(): RouterTransaction {
+        return RouterTransaction(
+            controller, tag, pushChangeHandler, popChangeHandler
+        )
+    }
 }
+
+/**
+ * Returns a new [RouterTransaction] build by [init]
+ */
+fun transaction(
+    controller: Controller,
+    pushHandler: ControllerChangeHandler? = null,
+    popHandler: ControllerChangeHandler? = null,
+    tag: String? = null
+): RouterTransaction = transaction {
+    controller(controller)
+    pushHandler(pushHandler)
+    popHandler(popHandler)
+    tag(tag)
+}
+
+/**
+ * Returns a new [RouterTransaction] build by [init]
+ */
+inline fun transaction(
+    init: RouterTransactionBuilder.() -> Unit
+): RouterTransaction = RouterTransactionBuilder().apply(init).build()
+
+/**
+ * Sets the [handler] as the push and pop change handler
+ */
+fun RouterTransactionBuilder.handler(handler: ControllerChangeHandler?) =
+    pushHandler(handler).popHandler(handler)

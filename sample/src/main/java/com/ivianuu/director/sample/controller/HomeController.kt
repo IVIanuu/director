@@ -10,16 +10,13 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.pushController
+import com.ivianuu.director.common.changehandler.fade
+import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_home.recycler_view
 import kotlinx.android.synthetic.main.row_home.home_image
@@ -62,48 +59,47 @@ class HomeController : BaseController() {
     private fun onItemClicked(item: HomeItem, position: Int) {
         when (item) {
             HomeItem.NAVIGATION -> {
-                router.pushController(
-                    NavigationController.newInstance(
-                        0,
-                        NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
+                router.push {
+                    controller(
+                        NavigationController.newInstance(
+                            0,
+                            NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
+                        )
                     )
-                        .toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                        .tag(NavigationController.TAG_UP_TRANSACTION)
-                )
+
+                    fade()
+                    tag(NavigationController.TAG_UP_TRANSACTION)
+                }
             }
             HomeItem.TRANSITIONS -> {
-                router.pushController(
-                    TransitionDemoController.getRouterTransaction(
-                        0,
-                        this
-                    )
+                router.push(
+                    TransitionDemoController
+                        .getRouterTransaction(0, this)
                 )
             }
             HomeItem.TARGET_CONTROLLER -> {
-                router.pushController(
-                    TargetDisplayController()
-                        .toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(TargetDisplayController())
+                    fade()
+                }
             }
             HomeItem.VIEW_PAGER -> {
-                router.pushController(
-                    PagerController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(PagerController())
+                    fade()
+                }
             }
             HomeItem.BOTTOM_NAV -> {
-                router.pushController(
-                    BottomNavController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(BottomNavController())
+                    fade()
+                }
             }
             HomeItem.CHILD_CONTROLLERS -> {
-                router.pushController(
-                    ParentController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(ParentController())
+                    fade()
+                }
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
@@ -111,43 +107,42 @@ class HomeController : BaseController() {
                 val dotSharedElementName =
                     resources.getString(R.string.transition_tag_dot_indexed, position)
 
-                router.pushController(
-                    CityGridController.newInstance(item.title, item.color, position).toTransaction()
-                        .changeHandler(
-                            ArcFadeMoveChangeHandler(
-                                titleSharedElementName,
-                                dotSharedElementName
-                            )
+                router.push {
+                    controller(CityGridController.newInstance(item.title, item.color, position))
+                    handler(
+                        ArcFadeMoveChangeHandler(
+                            titleSharedElementName,
+                            dotSharedElementName
                         )
-                )
+                    )
+                }
             }
             HomeItem.DRAG_DISMISS -> {
-                router.pushController(
-                    DragDismissController().toTransaction()
-                        .changeHandler(FadeChangeHandler(removesFromViewOnPush = false))
-                )
+                router.push {
+                    controller(DragDismissController())
+                    fade(removesFromViewOnPush = false)
+                }
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
-                router.pushController(
-                    MultipleChildRouterController()
-                        .toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(MultipleChildRouterController())
+                    fade()
+                }
             }
             HomeItem.MASTER_DETAIL -> {
-                router.pushController(
-                    MasterDetailListController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(MasterDetailListController())
+                    fade()
+                }
             }
             HomeItem.DIALOG -> {
                 SimpleDialogController().show(router)
             }
             HomeItem.EXTERNAL_MODULES -> {
-                router.pushController(
-                    ExternalModulesController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(ExternalModulesController())
+                    fade()
+                }
             }
         }
     }

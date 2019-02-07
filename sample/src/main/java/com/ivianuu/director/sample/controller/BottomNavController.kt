@@ -2,12 +2,12 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.common.changehandler.fade
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.setBackstack
+import com.ivianuu.director.transaction
 import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
 import java.util.*
 
@@ -100,24 +100,22 @@ class BottomNavController : BaseController() {
     }
 
     private fun swapTo(index: Int) {
-        val backstack = bottomNavRouter.backstack
-        val newBackstack = backstack.toMutableList()
+        bottomNavRouter.setBackstack {
+            val backstackIndex = indexOfFirst { it.tag == index.toString() }
 
-        val backstackIndex = backstack.indexOfFirst { it.tag == index.toString() }
+            if (backstackIndex != -1) {
+                Collections.swap(this, backstackIndex, lastIndex)
+            } else {
+                add(
+                    transaction {
+                        controller(BottomNavController())
+                        fade()
+                        tag(index.toString())
+                    }
+                )
+            }
 
-        if (backstackIndex != -1) {
-            Collections.swap(newBackstack, backstackIndex, newBackstack.lastIndex)
-        } else {
-            newBackstack.add(
-                BottomNavChildController()
-                    .toTransaction()
-                    .changeHandler(FadeChangeHandler())
-                    .tag(index.toString())
-            )
         }
-
-        bottomNavRouter.setBackstack(newBackstack)
-
         currentIndex = index
     }
 

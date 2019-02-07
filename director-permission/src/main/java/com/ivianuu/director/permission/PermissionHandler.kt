@@ -22,7 +22,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.activity
 
 /**
- * Permission handler
+ * Permission changeHandler
  */
 class PermissionHandler : Fragment() {
 

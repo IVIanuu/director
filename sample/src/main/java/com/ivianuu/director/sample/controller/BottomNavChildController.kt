@@ -18,10 +18,8 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.setRootIfEmpty
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -36,11 +34,10 @@ class BottomNavChildController : BaseController() {
     override fun onBindView(view: View, savedViewState: Bundle?) {
         super.onBindView(view, savedViewState)
 
-        if (!childRouter.hasRootController) {
-            childRouter.setRoot(
+        childRouter.setRootIfEmpty {
+            controller(
                 NavigationController
                     .newInstance(1, NavigationController.DisplayUpMode.HIDE, false)
-                    .toTransaction()
             )
         }
     }

@@ -218,9 +218,9 @@ class ControllerLifecycleListenerBuilder internal constructor() {
 }
 
 /**
- * Returns a new [ControllerLifecycleListener] build by [init]
+ * Returns a new [controllerLifecycleListener] build by [init]
  */
-fun ControllerLifecycleListener(init: ControllerLifecycleListenerBuilder.() -> Unit): ControllerLifecycleListener =
+fun controllerLifecycleListener(init: ControllerLifecycleListenerBuilder.() -> Unit): ControllerLifecycleListener =
     ControllerLifecycleListenerBuilder().apply(init).build()
 
 fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerLifecycleListener =
@@ -279,7 +279,7 @@ fun Controller.doOnChangeEnd(block: (controller: Controller, changeHandler: Cont
 
 fun Controller.addLifecycleListener(
     init: ControllerLifecycleListenerBuilder.() -> Unit
-): ControllerLifecycleListener = ControllerLifecycleListener(init).also { addLifecycleListener(it) }
+): ControllerLifecycleListener = controllerLifecycleListener(init).also { addLifecycleListener(it) }
 
 fun Router.doOnControllerPreCreate(
     recursive: Boolean = false,
@@ -393,7 +393,7 @@ fun Router.addLifecycleListener(
     recursive: Boolean = false,
     init: ControllerLifecycleListenerBuilder.() -> Unit
 ): ControllerLifecycleListener {
-    return ControllerLifecycleListener(init).also { addLifecycleListener(it, recursive) }
+    return controllerLifecycleListener(init).also { addLifecycleListener(it, recursive) }
 }
 
 private class LambdaLifecycleListener(

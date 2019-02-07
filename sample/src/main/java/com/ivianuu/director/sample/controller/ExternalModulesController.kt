@@ -23,14 +23,18 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
-import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.activity
+import com.ivianuu.director.common.changehandler.fade
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_external_modules.*
-import kotlinx.android.synthetic.main.row_home.*
+import kotlinx.android.synthetic.main.controller_external_modules.recycler_view
+import kotlinx.android.synthetic.main.row_home.home_image
+import kotlinx.android.synthetic.main.row_home.home_title
 
 class ExternalModulesController : BaseController() {
 
@@ -70,22 +74,22 @@ class ExternalModulesController : BaseController() {
     private fun onItemClicked(item: AdditionalModuleItem) {
         when (item) {
             AdditionalModuleItem.ARCH -> {
-                router.pushController(
-                    ArchController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(ArchController())
+                    fade()
+                }
             }
             AdditionalModuleItem.SCOPES -> {
-                router.pushController(
-                    ScopesController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(ScopesController())
+                    fade()
+                }
             }
             AdditionalModuleItem.TRAVELER -> {
-                router.pushController(
-                    TravelerController().toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                router.push {
+                    controller(TravelerController())
+                    fade()
+                }
             }
         }
     }

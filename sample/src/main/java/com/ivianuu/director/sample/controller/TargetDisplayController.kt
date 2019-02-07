@@ -8,11 +8,9 @@ import android.provider.MediaStore
 import android.view.View
 import com.ivianuu.director.activityresult.registerActivityResultListener
 import com.ivianuu.director.activityresult.startActivityForResult
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-import com.ivianuu.director.pushController
+import com.ivianuu.director.common.changehandler.horizontal
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_target_display.btn_pick_image
 import kotlinx.android.synthetic.main.controller_target_display.btn_pick_title
 import kotlinx.android.synthetic.main.controller_target_display.image_view
@@ -45,11 +43,10 @@ class TargetDisplayController : BaseController(),
     override fun onBindView(view: View, savedViewState: Bundle?) {
         super.onBindView(view, savedViewState)
         btn_pick_title.setOnClickListener {
-            router.pushController(
-                TargetTitleEntryController.newInstance(this)
-                    .toTransaction()
-                    .changeHandler(HorizontalChangeHandler())
-            )
+            router.push {
+                controller(TargetTitleEntryController.newInstance(this@TargetDisplayController))
+                horizontal()
+            }
         }
 
         btn_pick_image.setOnClickListener {

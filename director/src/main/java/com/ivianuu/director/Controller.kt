@@ -708,7 +708,21 @@ fun Controller.startActivity(intent: Intent) {
 /**
  * Returns a new router transaction
  */
-fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
+fun Controller.toTransaction(
+    pushHandler: ControllerChangeHandler? = null,
+    popHandler: ControllerChangeHandler? = null,
+    tag: String? = null
+): RouterTransaction = transaction(this, pushHandler, popHandler, tag)
+
+/**
+ * Returns a new router transaction
+ */
+inline fun Controller.toTransaction(
+    init: RouterTransactionBuilder.() -> Unit
+): RouterTransaction = transaction {
+    controller(this@toTransaction)
+    init()
+}
 
 /**
  * Returns the child router for [container] and [tag] or creates a new instance

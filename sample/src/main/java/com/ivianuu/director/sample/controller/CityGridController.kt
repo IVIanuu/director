@@ -8,15 +8,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.activity
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.pushController
+import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_grid.img_dot
 import kotlinx.android.synthetic.main.controller_city_grid.recycler_view
@@ -69,10 +67,10 @@ class CityGridController : BaseController() {
             resources.getString(R.string.transition_tag_title_named, city.title)
         )
 
-        router.pushController(
-            CityDetailController.newInstance(city.drawableRes, city.title).toTransaction()
-                .changeHandler(CityGridSharedElementTransitionChangeHandler(names))
-        )
+        router.push {
+            controller(CityDetailController.newInstance(city.drawableRes, city.title))
+            handler(CityGridSharedElementTransitionChangeHandler(names))
+        }
     }
 
     companion object {

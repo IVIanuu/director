@@ -34,18 +34,18 @@ class ViewLeakTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
         if (!hasRootController) {
-            setRoot(TestController().toTransaction())
+            setRoot(TestController())
         }
     }
 
     @Test
     fun testPop() {
         val controller = TestController()
-        router.pushController(controller.toTransaction())
+        router.push(controller)
 
         assertNotNull(controller.view)
 
-        router.popCurrentController()
+        router.popCurrent()
 
         assertNull(controller.view)
     }
@@ -53,15 +53,14 @@ class ViewLeakTest {
     @Test
     fun testPopWhenPushNeverAdded() {
         val controller = TestController()
-        router.pushController(
-            controller.toTransaction().pushChangeHandler(
-                NeverAddChangeHandler()
-            )
-        )
+        router.push {
+            controller(controller)
+            pushHandler(NeverAddChangeHandler())
+        }
 
         assertNotNull(controller.view)
 
-        router.popCurrentController()
+        router.popCurrent()
 
         assertNull(controller.view)
     }
@@ -69,15 +68,14 @@ class ViewLeakTest {
     @Test
     fun testPopWhenPushNeverCompleted() {
         val controller = TestController()
-        router.pushController(
-            controller.toTransaction().pushChangeHandler(
-                NeverCompleteChangeHandler()
-            )
-        )
+        router.push {
+            controller(controller)
+            pushHandler(NeverCompleteChangeHandler())
+        }
 
         assertNotNull(controller.view)
 
-        router.popCurrentController()
+        router.popCurrent()
 
         assertNull(controller.view)
     }
@@ -85,7 +83,7 @@ class ViewLeakTest {
     @Test
     fun testActivityStop() {
         val controller = TestController()
-        router.pushController(controller.toTransaction())
+        router.push(controller)
 
         assertNotNull(controller.view)
 
@@ -97,11 +95,10 @@ class ViewLeakTest {
     @Test
     fun testActivityStopWhenPushNeverCompleted() {
         val controller = TestController()
-        router.pushController(
-            controller.toTransaction().pushChangeHandler(
-                NeverCompleteChangeHandler()
-            )
-        )
+        router.push {
+            controller(controller)
+            pushHandler(NeverCompleteChangeHandler())
+        }
 
         assertNotNull(controller.view)
 
@@ -113,11 +110,10 @@ class ViewLeakTest {
     @Test
     fun testActivityDestroyWhenPushNeverAdded() {
         val controller = TestController()
-        router.pushController(
-            controller.toTransaction().pushChangeHandler(
-                NeverAddChangeHandler()
-            )
-        )
+        router.push {
+            controller(controller)
+            pushHandler(NeverAddChangeHandler())
+        }
 
         assertNotNull(controller.view)
 

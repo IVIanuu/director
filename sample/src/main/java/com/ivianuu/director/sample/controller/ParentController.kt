@@ -5,18 +5,16 @@ import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.common.changehandler.fade
 import com.ivianuu.director.doOnChangeEnd
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRootController
-import com.ivianuu.director.popController
+import com.ivianuu.director.pop
 import com.ivianuu.director.popsLastView
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 
 class ParentController : BaseController() {
 
@@ -72,16 +70,16 @@ class ParentController : BaseController() {
                             if (index > 0) {
                                 removeChild(index - 1)
                             } else {
-                                router.popController(this@ParentController)
+                                router.pop(this@ParentController)
                             }
                         }
                     }
                 }
 
-                childRouter.setRoot(
-                    childController.toTransaction()
-                        .changeHandler(FadeChangeHandler())
-                )
+                childRouter.setRoot {
+                    controller(childController)
+                    fade()
+                }
             }
         }
     }

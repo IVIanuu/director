@@ -33,7 +33,7 @@ class TargetControllerTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
         if (!hasRootController) {
-            setRoot(TestController().toTransaction())
+            setRoot(TestController())
         }
     }
 
@@ -45,19 +45,17 @@ class TargetControllerTest {
         assertNull(controllerA.targetController)
         assertNull(controllerB.targetController)
 
-        router.pushController(
-            controllerA.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
-        )
+        router.push {
+            controller(controllerA)
+            handler(MockChangeHandler.defaultHandler())
+        }
 
         controllerB.targetController = controllerA
 
-        router.pushController(
-            controllerB.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
-        )
+        router.push {
+            controller(controllerB)
+            handler(MockChangeHandler.defaultHandler())
+        }
 
         assertNull(controllerA.targetController)
         assertEquals(controllerA, controllerB.targetController)
@@ -71,21 +69,19 @@ class TargetControllerTest {
         assertNull(controllerA.targetController)
         assertNull(controllerB.targetController)
 
-        router.pushController(
-            controllerA.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
-        )
+        router.push {
+            controller(controllerA)
+            handler(MockChangeHandler.defaultHandler())
+        }
 
         controllerB.targetController = controllerA
 
         val childRouter =
             controllerA.getChildRouter(controllerA.childContainer1!!)
-        childRouter.pushController(
-            controllerB.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
-        )
+        childRouter.push {
+            controller(controllerB)
+            handler(MockChangeHandler.defaultHandler())
+        }
 
         assertNull(controllerA.targetController)
         assertEquals(controllerA, controllerB.targetController)
@@ -99,11 +95,10 @@ class TargetControllerTest {
         assertNull(controllerA.targetController)
         assertNull(controllerB.targetController)
 
-        router.pushController(
-            controllerA.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
-        )
+        router.push {
+            controller(controllerA)
+            handler(MockChangeHandler.defaultHandler())
+        }
 
         controllerA.targetController = controllerB
 
@@ -112,11 +107,10 @@ class TargetControllerTest {
                 controllerA.childContainer1!!
             )
 
-        childRouter.pushController(
-            controllerB.toTransaction()
-                .pushChangeHandler(MockChangeHandler.defaultHandler())
-                .popChangeHandler(MockChangeHandler.defaultHandler())
-        )
+        childRouter.push {
+            controller(controllerB)
+            handler(MockChangeHandler.defaultHandler())
+        }
 
         assertNull(controllerB.targetController)
         assertEquals(controllerB, controllerA.targetController)

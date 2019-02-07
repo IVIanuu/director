@@ -5,18 +5,16 @@ import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.RouterTransaction
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.common.changehandler.horizontal
 import com.ivianuu.director.parentController
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
-import com.ivianuu.director.pushController
+import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.toTransaction
 import com.ivianuu.director.traveler.ControllerKey
 import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
@@ -62,15 +60,16 @@ class NavigationController : BaseController() {
                     )
                 )
             } else {
-                router.pushController(
-                    NavigationController.newInstance(
-                        index + 1,
-                        displayUpMode.displayUpModeForChild,
-                        useTraveler
+                router.push {
+                    controller(
+                        NavigationController.newInstance(
+                            index + 1,
+                            displayUpMode.displayUpModeForChild,
+                            useTraveler
+                        )
                     )
-                        .toTransaction()
-                        .changeHandler(HorizontalChangeHandler())
-                )
+                    horizontal()
+                }
             }
         }
 
@@ -160,8 +159,8 @@ data class NavigationControllerKey(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransaction
+        transaction: RouterTransactionBuilder
     ) {
-        transaction.changeHandler(HorizontalChangeHandler())
+        transaction.horizontal()
     }
 }

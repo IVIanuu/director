@@ -6,6 +6,8 @@ import android.transition.AutoTransition
 import android.transition.Transition
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.handler
 
 /**
  * A [TransitionChangeHandler] that will use an AutoTransition.
@@ -20,4 +22,16 @@ open class AutoTransitionChangeHandler : TransitionChangeHandler() {
         isPush: Boolean
     ): Transition = AutoTransition()
 
+}
+
+fun RouterTransactionBuilder.autoTransition(): RouterTransactionBuilder = apply {
+    handler(AutoTransitionChangeHandler())
+}
+
+fun RouterTransactionBuilder.autoTransitionPush(): RouterTransactionBuilder = apply {
+    pushHandler(AutoTransitionChangeHandler())
+}
+
+fun RouterTransactionBuilder.autoTransitionPop(): RouterTransactionBuilder = apply {
+    popHandler(AutoTransitionChangeHandler())
 }

@@ -3,10 +3,8 @@ package com.ivianuu.director.sample.controller
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Router
-import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.setRootIfEmpty
 import com.ivianuu.director.viewpager.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_pager.tab_layout
 import kotlinx.android.synthetic.main.controller_pager.view_pager
@@ -19,16 +17,16 @@ class PagerController : BaseController() {
     private val pagerAdapter = object : RouterPagerAdapter(this@PagerController) {
 
         override fun configureRouter(router: Router, position: Int) {
-            if (!router.hasRootController) {
-                val page = ChildController.newInstance(
-                    String.format(
-                        Locale.getDefault(),
-                        "Child #%d (Swipe to see more)",
-                        position
-                    ), PAGE_COLORS[position], true
+            router.setRootIfEmpty {
+                controller(
+                    ChildController.newInstance(
+                        String.format(
+                            Locale.getDefault(),
+                            "Child #%d (Swipe to see more)",
+                            position
+                        ), PAGE_COLORS[position], true
+                    )
                 )
-
-                router.setRoot(page.toTransaction())
             }
         }
 

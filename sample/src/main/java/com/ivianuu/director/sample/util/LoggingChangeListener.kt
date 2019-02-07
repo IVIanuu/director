@@ -32,7 +32,7 @@ class LoggingChangeListener : ControllerChangeListener {
         container: ViewGroup,
         handler: ControllerChangeHandler
     ) {
-        d { "on change started: to $to, from $from, is push $isPush, container ${container.childCount}, handler $handler" }
+        d { "on change started: to $to, from $from, is push $isPush, container ${container.childCount}, changeHandler $handler" }
     }
 
     override fun onChangeCompleted(
@@ -42,6 +42,6 @@ class LoggingChangeListener : ControllerChangeListener {
         container: ViewGroup,
         handler: ControllerChangeHandler
     ) {
-        d { "on change completed: to $to, from $from, is push $isPush, container ${container.childCount}, handler $handler" }
+        d { "on change completed: to $to, from $from, is push $isPush, container ${container.childCount}, changeHandler $handler" }
     }
 }

@@ -25,7 +25,7 @@ class ControllerRetainedObjectsTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
 private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
         if (!hasRootController) {
-            setRoot(TestController().toTransaction())
+setRoot(TestController())
         }
     }
 
@@ -59,7 +59,7 @@ private val router = activityProxy.activity.attachRouter(activityProxy.view).app
 
         controller.retainedObjects.put("key", "value")
 
-        router.popController(controller)
+router.pop(controller)
 
         assertNull(controller.retainedObjects["key"])
     }

@@ -7,15 +7,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.activity
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.common.changehandler.horizontal
 import com.ivianuu.director.getChildRouter
-import com.ivianuu.director.pushController
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_master_detail_list.detail_container
 import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
@@ -72,12 +70,12 @@ class MasterDetailListController : BaseController() {
 
         if (twoPaneView) {
             @Suppress("PLUGIN_WARNING")
-            getChildRouter(detail_container).setRoot(controller.toTransaction())
+            getChildRouter(detail_container).setRoot(controller)
         } else {
-            router.pushController(
-                controller.toTransaction()
-                    .changeHandler(HorizontalChangeHandler())
-            )
+            router.push {
+                controller(controller)
+                horizontal()
+            }
         }
     }
 

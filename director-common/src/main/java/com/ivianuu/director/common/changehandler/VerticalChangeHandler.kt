@@ -21,6 +21,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.RouterTransactionBuilder
 
 /**
  * An [AnimatorChangeHandler] that will slide either slide a new View up or slide an old View down,
@@ -72,4 +73,25 @@ open class VerticalChangeHandler(
             duration,
             removesFromViewOnPush
         )
+}
+
+fun RouterTransactionBuilder.vertical(
+    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    removesFromViewOnPush: Boolean = true
+): RouterTransactionBuilder = apply {
+    handler(VerticalChangeHandler(duration, removesFromViewOnPush))
+}
+
+fun RouterTransactionBuilder.verticalPush(
+    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    removesFromViewOnPush: Boolean = true
+): RouterTransactionBuilder = apply {
+    pushHandler(VerticalChangeHandler(duration, removesFromViewOnPush))
+}
+
+fun RouterTransactionBuilder.verticalPop(
+    duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION,
+    removesFromViewOnPush: Boolean = true
+): RouterTransactionBuilder = apply {
+    popHandler(VerticalChangeHandler(duration, removesFromViewOnPush))
 }

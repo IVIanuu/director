@@ -40,9 +40,7 @@ class ControllerTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.attachRouter(activityProxy.view).apply {
-        if (!hasRootController) {
-            setRoot(TestController().toTransaction())
-        }
+        setRootIfEmpty { controller(TestController()) }
     }
 
     @Test
@@ -51,7 +49,7 @@ class ControllerTest {
         val child1 = TestController()
         val child2 = TestController()
 
-        router.pushController(parent.toTransaction())
+        router.push(parent)
 
         assertEquals(0, parent.childRouters.size)
 
@@ -59,7 +57,7 @@ class ControllerTest {
             parent.getChildRouter(parent.childContainer1!!)
                 .popsLastView(true)
 
-        childRouter.setRoot(child1.toTransaction())
+        childRouter.setRoot(child1)
 
         assertEquals(1, parent.childRouters.size)
         assertEquals(childRouter, parent.childRouters.firstOrNull())
@@ -69,7 +67,7 @@ class ControllerTest {
 
         childRouter =
                 parent.getChildRouter(parent.childContainer1!!)
-        childRouter.pushController(child2.toTransaction())
+        childRouter.push(child2)
 
         assertEquals(1, parent.childRouters.size)
         assertEquals(childRouter, parent.childRouters.firstOrNull())
@@ -79,7 +77,7 @@ class ControllerTest {
         assertEquals(parent, child1.parentController)
         assertEquals(parent, child2.parentController)
 
-        childRouter.popController(child2)
+        childRouter.pop(child2)
 
         assertEquals(1, parent.childRouters.size)
         assertEquals(childRouter, parent.childRouters.firstOrNull())
@@ -87,7 +85,7 @@ class ControllerTest {
         assertEquals(child1, childRouter.backstack.firstOrNull()?.controller)
         assertEquals(parent, child1.parentController)
 
-        childRouter.popController(child1)
+        childRouter.pop(child1)
 
         assertEquals(1, parent.childRouters.size)
         assertEquals(childRouter, parent.childRouters.firstOrNull())
@@ -101,7 +99,7 @@ class ControllerTest {
         val child1 = TestController()
         val child2 = TestController()
 
-        router.pushController(parent.toTransaction())
+        router.push(parent)
 
         assertEquals(0, parent.childRouters.size)
 
@@ -110,8 +108,8 @@ class ControllerTest {
         val childRouter2 =
             parent.getChildRouter(parent.childContainer2!!)
 
-        childRouter1.setRoot(child1.toTransaction())
-        childRouter2.setRoot(child2.toTransaction())
+        childRouter1.setRoot(child1)
+        childRouter2.setRoot(child2)
 
         assertEquals(2, parent.childRouters.size)
         assertEquals(childRouter1, parent.childRouters.firstOrNull())
@@ -142,7 +140,7 @@ class ControllerTest {
     @Test
     fun testRestoredChildRouterBackstack() {
         val parent = TestController()
-        router.pushController(parent.toTransaction())
+        router.push(parent)
 
         val childTransaction1 = TestController().toTransaction()
         val childTransaction2 = TestController().toTransaction()
@@ -152,7 +150,7 @@ class ControllerTest {
                 .popsLastView(true)
 
         childRouter.setRoot(childTransaction1)
-        childRouter.pushController(childTransaction2)
+        childRouter.push(childTransaction2)
 
         val savedState = childRouter.saveInstanceState()
         parent.removeChildRouter(childRouter)
@@ -197,7 +195,7 @@ class ControllerTest {
             view.setParent(FrameLayout(view.context))
         }
 
-        router.pushController(controller.toTransaction())
+        router.push(controller)
 
         assertFalse(controller.state == ATTACHED)
         controller.view!!.setParent(router.container)
@@ -208,7 +206,7 @@ class ControllerTest {
     @Test
     fun testAttachHostAwareness() {
         val controller = TestController()
-        router.pushController(controller.toTransaction())
+        router.push(controller)
 
         assertTrue(controller.state == ATTACHED)
         router.hostStopped()
@@ -238,7 +236,7 @@ class ControllerTest {
             postDestroy { assertEquals(DESTROYED, controller.state) }
         }
 
-        router.pushController(controller.toTransaction())
-        controller.doOnPostAttach { _, _ -> router.popCurrentController() }
+        router.push(controller)
+        controller.doOnPostAttach { _, _ -> router.popCurrent() }
     }
 }
