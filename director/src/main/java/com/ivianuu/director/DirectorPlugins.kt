@@ -21,26 +21,29 @@ package com.ivianuu.director
  */
 object DirectorPlugins
 
-/** // todo implement those
 private var _defaultPushHandler: ControllerChangeHandler? = null
 
 /** The default push handler to use in all transactions */
 var DirectorPlugins.defaultPushHandler: ControllerChangeHandler?
-get() = _defaultPushHandler
-set(value) { _defaultPushHandler = value }
+    get() = _defaultPushHandler
+    set(value) {
+        _defaultPushHandler = value
+    }
 
 private var _defaultPopHandler: ControllerChangeHandler? = null
 
 /** The default push handler to use in all transactions */
 var DirectorPlugins.defaultPopHandler: ControllerChangeHandler?
-get() = _defaultPopHandler
-set(value) { _defaultPopHandler = value }
+    get() = _defaultPopHandler
+    set(value) {
+        _defaultPopHandler = value
+    }
 
 /** Sets the [handler] as the default push and pop handler */
 fun DirectorPlugins.setDefaultHandler(handler: ControllerChangeHandler?) {
-defaultPushHandler = handler
-defaultPopHandler = handler
-}*/
+    defaultPushHandler = handler
+    defaultPopHandler = handler
+}
 
 /** // todo has its use cases
 var DirectorPlugins.removesFromViewByDefault: Boolean

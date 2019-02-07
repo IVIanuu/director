@@ -108,7 +108,7 @@ class BottomNavController : BaseController() {
             } else {
                 add(
                     transaction {
-                        controller(BottomNavController())
+                        controller(BottomNavChildController())
                         fade()
                         tag(index.toString())
                     }

@@ -67,8 +67,6 @@ class HomeController : BaseController() {
                             NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
                         )
                     )
-
-                    fade()
                     tag(NavigationController.TAG_UP_TRANSACTION)
                 }
             }
@@ -79,28 +77,16 @@ class HomeController : BaseController() {
                 )
             }
             HomeItem.TARGET_CONTROLLER -> {
-                router.push {
-                    controller(TargetDisplayController())
-                    fade()
-                }
+                router.push(TargetDisplayController())
             }
             HomeItem.VIEW_PAGER -> {
-                router.push {
-                    controller(PagerController())
-                    fade()
-                }
+                router.push(PagerController())
             }
             HomeItem.BOTTOM_NAV -> {
-                router.push {
-                    controller(BottomNavController())
-                    fade()
-                }
+                router.push(BottomNavController())
             }
             HomeItem.CHILD_CONTROLLERS -> {
-                router.push {
-                    controller(ParentController())
-                    fade()
-                }
+                router.push(ParentController())
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
@@ -125,25 +111,16 @@ class HomeController : BaseController() {
                 }
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
-                router.push {
-                    controller(MultipleChildRouterController())
-                    fade()
-                }
+                router.push(MultipleChildRouterController())
             }
             HomeItem.MASTER_DETAIL -> {
-                router.push {
-                    controller(MasterDetailListController())
-                    fade()
-                }
+                router.push(MasterDetailListController())
             }
             HomeItem.DIALOG -> {
                 SimpleDialogController().show(router)
             }
             HomeItem.EXTERNAL_MODULES -> {
-                router.push {
-                    controller(ExternalModulesController())
-                    fade()
-                }
+                router.push(ExternalModulesController())
             }
         }
     }

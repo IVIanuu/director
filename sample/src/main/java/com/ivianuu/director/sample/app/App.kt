@@ -18,8 +18,10 @@ package com.ivianuu.director.sample.app
 
 import android.app.Application
 import com.ivianuu.director.DirectorPlugins
+import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.defaultAnimationDuration
 import com.ivianuu.director.common.changehandler.defaultTransitionDuration
+import com.ivianuu.director.setDefaultHandler
 import com.squareup.leakcanary.LeakCanary
 
 /**
@@ -34,6 +36,7 @@ class App : Application() {
 
         DirectorPlugins.defaultAnimationDuration = 180
         DirectorPlugins.defaultTransitionDuration = 180
+        DirectorPlugins.setDefaultHandler(FadeChangeHandler())
     }
 
 }

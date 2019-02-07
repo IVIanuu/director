@@ -112,9 +112,9 @@ class RouterTransactionBuilder @PublishedApi internal constructor() {
         private set
     var tag: String? = null
         private set
-    var pushChangeHandler: ControllerChangeHandler? = null
+    var pushChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler
         private set
-    var popChangeHandler: ControllerChangeHandler? = null
+    var popChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler
         private set
 
     fun controller(controller: Controller): RouterTransactionBuilder = apply {
