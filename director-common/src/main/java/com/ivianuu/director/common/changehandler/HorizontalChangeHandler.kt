@@ -29,7 +29,7 @@ import com.ivianuu.director.handler
  * A [AnimatorChangeHandler] that will slide the views left or right, depending on if it's a push or pop.
  */
 open class HorizontalChangeHandler(
-    duration: Long = NO_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 

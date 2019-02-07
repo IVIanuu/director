@@ -30,7 +30,7 @@ import com.ivianuu.director.handler
  * depending on whether a push or pop change is happening.
  */
 open class VerticalChangeHandler(
-    duration: Long = NO_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 

@@ -26,7 +26,7 @@ open class CircularRevealChangeHandler :
     constructor(
         fromView: View,
         containerView: View,
-        duration: Long = NO_DURATION,
+        duration: Long = DirectorPlugins.defaultAnimationDuration,
         removesFromViewOnPush: Boolean = true
     ) : super(duration, removesFromViewOnPush) {
         val fromLocation = IntArray(2)

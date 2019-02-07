@@ -29,7 +29,7 @@ import com.ivianuu.director.handler
  * A [AnimatorChangeHandler] that will cross fade two views
  */
 open class FadeChangeHandler(
-    duration: Long = NO_DURATION,
+    duration: Long = DirectorPlugins.defaultAnimationDuration,
     removesFromViewOnPush: Boolean = true
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
