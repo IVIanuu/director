@@ -26,7 +26,6 @@ import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.getRouter
 import com.ivianuu.director.hasRootController
-import java.util.*
 
 /**
  * An adapter for ViewPagers that uses Routers as pages
@@ -35,20 +34,8 @@ abstract class RouterPagerAdapter(
     private val manager: RouterManager
 ) : PagerAdapter() {
 
-    var maxPagesToStateSave = Integer.MAX_VALUE
-        set(value) {
-            require(value >= 1) {
-                "Only positive integers may be passed for maxPagesToStateSave."
-            }
-
-            field = value
-
-            ensurePagesSaved()
-        }
-
-    private val savedPages = SparseArray<Bundle>()
     private val visibleRouters = SparseArray<Router>()
-    private val savedPageHistory = ArrayList<Int>()
+    private val savedStates = SparseArray<Bundle>()
 
     /**
      * Called when a router is instantiated. Here the router's root should be set if needed.
@@ -60,12 +47,11 @@ abstract class RouterPagerAdapter(
 
         val router = manager.getRouter(container, name)
         if (!router.hasRootController) {
-            val routerSavedState = savedPages.get(position)
+            val routerSavedState = savedStates.get(position)
 
             if (routerSavedState != null) {
                 router.restoreInstanceState(routerSavedState)
-                savedPages.remove(position)
-                savedPageHistory.remove(position)
+                savedStates.remove(position)
             }
         }
 
@@ -79,12 +65,7 @@ abstract class RouterPagerAdapter(
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         val router = `object` as Router
 
-        savedPages.put(position, router.saveInstanceState())
-
-        savedPageHistory.remove(position)
-        savedPageHistory.add(position)
-
-        ensurePagesSaved()
+        savedStates.put(position, router.saveInstanceState())
 
         manager.removeRouter(router)
 
@@ -97,9 +78,7 @@ abstract class RouterPagerAdapter(
 
     override fun saveState(): Parcelable {
         val bundle = Bundle()
-        bundle.putSparseParcelableArray(KEY_SAVED_PAGES, savedPages)
-        bundle.putInt(KEY_MAX_PAGES_TO_STATE_SAVE, maxPagesToStateSave)
-        bundle.putIntegerArrayList(KEY_SAVE_PAGE_HISTORY, savedPageHistory)
+        bundle.putSparseParcelableArray(KEY_SAVED_PAGES, savedStates)
         return bundle
     }
 
@@ -107,17 +86,12 @@ abstract class RouterPagerAdapter(
         super.restoreState(state, loader)
         val bundle = state as? Bundle
         if (bundle != null) {
-            savedPages.clear()
+            savedStates.clear()
             bundle.getSparseParcelableArray<Bundle>(KEY_SAVED_PAGES)?.let { pages ->
                 (0 until pages.size())
                     .map { pages.valueAt(it) }
-                    .forEachIndexed { index, bundle -> savedPages.setValueAt(index, bundle) }
+                    .forEachIndexed { index, bundle -> savedStates.setValueAt(index, bundle) }
             }
-
-            maxPagesToStateSave = bundle.getInt(KEY_MAX_PAGES_TO_STATE_SAVE)
-
-            savedPageHistory.clear()
-            bundle.getIntegerArrayList(KEY_SAVE_PAGE_HISTORY)?.let { savedPageHistory.addAll(it) }
         }
     }
 
@@ -127,16 +101,7 @@ abstract class RouterPagerAdapter(
      */
     fun getRouter(position: Int): Router? = visibleRouters.get(position)
 
-    private fun ensurePagesSaved() {
-        while (savedPages.size() > maxPagesToStateSave) {
-            val positionToRemove = savedPageHistory.removeAt(0)
-            savedPages.remove(positionToRemove)
-        }
-    }
-
     companion object {
         private const val KEY_SAVED_PAGES = "RouterPagerAdapter.savedStates"
-        private const val KEY_MAX_PAGES_TO_STATE_SAVE = "RouterPagerAdapter.maxPagesToStateSave"
-        private const val KEY_SAVE_PAGE_HISTORY = "RouterPagerAdapter.savedPageHistory"
     }
 }

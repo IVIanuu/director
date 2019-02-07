@@ -35,7 +35,9 @@ import com.ivianuu.director.simpleSwapPush
 /**
  * A controller counterpart for dialog fragments
  */
-abstract class DialogController : Controller(), DialogInterface.OnShowListener, DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
+abstract class DialogController : Controller(),
+    DialogInterface.OnShowListener, DialogInterface.OnCancelListener,
+    DialogInterface.OnDismissListener {
 
     var style = STYLE_NORMAL
         private set

@@ -25,13 +25,15 @@ import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.StatefulAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.hasContainer
 import com.ivianuu.director.hasRootController
 
 /**
- * @author Manuel Wrage (IVIanuu)
+ * A [RecyclerView.Adapter] for [Controller]s which can be used with the [ViewPager2]
  */
 abstract class RouterAdapter(
     private val manager: RouterManager
@@ -160,6 +162,12 @@ abstract class RouterAdapter(
     override fun saveState(): Parcelable = Bundle().apply {
         putSparseParcelableArray(KEY_ROUTER_STATES, savedStates)
     }
+
+    /**
+     * Returns the already instantiated Router in the specified position or `null` if there
+     * is no router associated with this position.
+     */
+    fun getRouter(position: Int): Router? = visibleRouters.get(position)
 
     private fun createHolder(
         parent: ViewGroup
