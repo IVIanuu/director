@@ -17,6 +17,7 @@
 package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
 import com.ivianuu.director.util.EmptyLifecycleListener
@@ -263,8 +264,8 @@ class RouterTest {
         router.push(oldTopTransaction)
         assertEquals(2, router.backstack.size)
 
-        assertTrue(oldRootTransaction.controller.state == ControllerState.ATTACHED)
-        assertTrue(oldTopTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(oldRootTransaction.controller.state == ATTACHED)
+        assertTrue(oldTopTransaction.controller.state == ATTACHED)
 
         val rootTransaction = TestController().toTransaction()
         val middleTransaction = TestController().toTransaction(
@@ -284,11 +285,11 @@ class RouterTest {
         assertEquals(middleTransaction, fetchedBackstack[1])
         assertEquals(topTransaction, fetchedBackstack[2])
 
-        assertFalse(oldRootTransaction.controller.state == ControllerState.ATTACHED)
-        assertFalse(oldTopTransaction.controller.state == ControllerState.ATTACHED)
-        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
-        assertTrue(middleTransaction.controller.state == ControllerState.ATTACHED)
-        assertTrue(topTransaction.controller.state == ControllerState.ATTACHED)
+        assertFalse(oldRootTransaction.controller.state == ATTACHED)
+        assertFalse(oldTopTransaction.controller.state == ATTACHED)
+        assertTrue(rootTransaction.controller.state == ATTACHED)
+        assertTrue(middleTransaction.controller.state == ATTACHED)
+        assertTrue(topTransaction.controller.state == ATTACHED)
     }
 
     @Test
@@ -308,9 +309,9 @@ class RouterTest {
         assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
-        assertFalse(transaction1.controller.state == ControllerState.ATTACHED)
-        assertFalse(transaction2.controller.state == ControllerState.ATTACHED)
+        assertTrue(rootTransaction.controller.state == ATTACHED)
+        assertFalse(transaction1.controller.state == ATTACHED)
+        assertFalse(transaction2.controller.state == ATTACHED)
     }
 
     @Test
@@ -336,9 +337,9 @@ class RouterTest {
         assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
-        assertFalse(transaction1.controller.state == ControllerState.ATTACHED)
-        assertFalse(transaction2.controller.state == ControllerState.ATTACHED)
+        assertTrue(rootTransaction.controller.state == ATTACHED)
+        assertFalse(transaction1.controller.state == ATTACHED)
+        assertFalse(transaction2.controller.state == ATTACHED)
     }
 
     @Test
@@ -377,8 +378,8 @@ class RouterTest {
 
         assertEquals(2, router.backstack.size)
 
-        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
-        assertTrue(topTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(rootTransaction.controller.state == ATTACHED)
+        assertTrue(topTransaction.controller.state == ATTACHED)
 
         var fetchedBackstack = router.backstack
         assertEquals(rootTransaction, fetchedBackstack[0])
@@ -396,9 +397,9 @@ class RouterTest {
         assertEquals(rootTransaction, fetchedBackstack[0])
         assertEquals(newTopTransaction, fetchedBackstack[1])
 
-        assertTrue(rootTransaction.controller.state == ControllerState.ATTACHED)
-        assertFalse(topTransaction.controller.state == ControllerState.ATTACHED)
-        assertTrue(newTopTransaction.controller.state == ControllerState.ATTACHED)
+        assertTrue(rootTransaction.controller.state == ATTACHED)
+        assertFalse(topTransaction.controller.state == ATTACHED)
+        assertTrue(newTopTransaction.controller.state == ATTACHED)
     }
 
     @Test

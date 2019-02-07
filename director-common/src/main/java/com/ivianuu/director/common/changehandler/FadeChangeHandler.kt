@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.handler
 
 /**
  * A [AnimatorChangeHandler] that will cross fade two views

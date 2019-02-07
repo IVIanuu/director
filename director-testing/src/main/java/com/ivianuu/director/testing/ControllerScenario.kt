@@ -25,6 +25,11 @@ import androidx.test.core.app.ActivityScenario
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerFactory
 import com.ivianuu.director.ControllerState
+import com.ivianuu.director.ControllerState.ATTACHED
+import com.ivianuu.director.ControllerState.CREATED
+import com.ivianuu.director.ControllerState.DESTROYED
+import com.ivianuu.director.ControllerState.INITIALIZED
+import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.Router
 import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.pop
@@ -58,12 +63,12 @@ class ControllerScenario<C : Controller> internal constructor(
                 args
             )
 
-            activity.router.setRoot(controller) { tag(CONTROLLER_TAG) }
+            activity.router.setRoot(controller, tag = CONTROLLER_TAG)
         }
     }
 
     fun moveToState(newState: ControllerState): ControllerScenario<C> {
-        if (newState == ControllerState.DESTROYED) {
+        if (newState == DESTROYED) {
             activityScenario.onActivity { activity ->
                 val controller = activity.router.findControllerByTag(CONTROLLER_TAG)
                 if (controller != null) {
@@ -96,11 +101,11 @@ class ControllerScenario<C : Controller> internal constructor(
     }
 
     private fun ControllerState.toLifecycleState(): Lifecycle.State = when (this) {
-        ControllerState.INITIALIZED -> Lifecycle.State.INITIALIZED
-        ControllerState.CREATED -> Lifecycle.State.CREATED
-        ControllerState.VIEW_BOUND -> Lifecycle.State.STARTED
-        ControllerState.ATTACHED -> Lifecycle.State.RESUMED
-        ControllerState.DESTROYED -> Lifecycle.State.DESTROYED
+        INITIALIZED -> Lifecycle.State.INITIALIZED
+        CREATED -> Lifecycle.State.CREATED
+        VIEW_BOUND -> Lifecycle.State.STARTED
+        ATTACHED -> Lifecycle.State.RESUMED
+        DESTROYED -> Lifecycle.State.DESTROYED
     }
 
     companion object {

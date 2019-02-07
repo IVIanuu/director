@@ -101,7 +101,7 @@ abstract class Controller {
     var retainView = false
         set(value) {
             field = value
-            if (!value && !state.isAtLeast(ATTACHED)) {
+            if (!value && !isAttached) {
                 unbindView()
             }
         }
@@ -236,7 +236,7 @@ abstract class Controller {
             .asSequence()
             .sortedByDescending { it.transactionIndex }
             .map { it.controller }
-            .any { state.isAtLeast(ATTACHED) && it.router.handleBack() }
+            .any { isAttached && it.router.handleBack() }
     }
 
     /**
@@ -280,7 +280,7 @@ abstract class Controller {
 
             _childRouters.add(childRouter)
 
-            if (state == ATTACHED) {
+            if (isAttached) {
                 childRouter.hostStarted()
             }
         }
@@ -437,7 +437,7 @@ abstract class Controller {
     private fun attach() {
         val view = view ?: return
 
-        if (state == ATTACHED) return
+        if (isAttached) return
 
         if (!viewIsAttached) return
 
@@ -471,7 +471,7 @@ abstract class Controller {
 
         if (attachedToUnownedParent) return
 
-        if (state == ATTACHED) {
+        if (isAttached) {
             _childRouters.forEach { it.hostStopped() }
 
             notifyLifecycleListeners { it.preDetach(this, view) }
@@ -523,7 +523,7 @@ abstract class Controller {
     }
 
     private fun create() {
-        if (!state.isAtLeast(CREATED)) {
+        if (!isCreated) {
             notifyLifecycleListeners { it.preCreate(this, instanceState) }
 
             state = CREATED
@@ -668,6 +668,31 @@ abstract class Controller {
         }
     }
 }
+
+/**
+ * Whether or not [Controller.state] is at least [CREATED]
+ */
+val Controller.isCreated: Boolean get() = state.isAtLeast(CREATED)
+
+/**
+ * Whether or not [Controller.state] is at least [VIEW_BOUND]
+ */
+val Controller.isViewBound: Boolean get() = state.isAtLeast(VIEW_BOUND)
+
+/**
+ * Whether or not [Controller.state] is at least [VIEW_BOUND]
+ */
+val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
+
+/**
+ * Whether or not [Controller.state] is [DESTROYED]
+ */
+val Controller.isDestroyed: Boolean get() = state == DESTROYED
+
+/**
+ * Whether or not this controller has a view
+ */
+val Controller.hasView: Boolean get() = view != null
 
 /**
  * The parent controller of this controller or null

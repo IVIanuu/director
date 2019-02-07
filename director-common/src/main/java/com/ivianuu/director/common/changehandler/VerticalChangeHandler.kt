@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.handler
 
 /**
  * An [AnimatorChangeHandler] that will slide either slide a new View up or slide an old View down,

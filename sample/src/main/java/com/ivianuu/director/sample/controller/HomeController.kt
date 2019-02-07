@@ -11,6 +11,7 @@ import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
 import com.ivianuu.director.common.changehandler.fade
+import com.ivianuu.director.handler
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -118,6 +119,7 @@ class HomeController : BaseController() {
                 }
             }
             HomeItem.DRAG_DISMISS -> {
+                router.push(DragDismissController())
                 router.push {
                     controller(DragDismissController())
                     fade(removesFromViewOnPush = false)

@@ -2,7 +2,6 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
@@ -117,7 +116,7 @@ open class Router internal constructor(
             .filter { old -> newBackstack.none { it.controller == old.controller } }
             // Inform the controller that it will be destroyed soon
             .onEach { it.controller.isBeingDestroyed = true }
-            .partition { it.controller.state == ATTACHED }
+            .partition { it.controller.isAttached }
 
         // to ensure the destruction lifecycle onDetach -> onUnbindView -> onDestroy
         // we have to await until the view gets detached
@@ -317,7 +316,7 @@ open class Router internal constructor(
     open fun rebind() {
         _backstack
             .filterVisible()
-            .filterNot { it.controller.state == ATTACHED }
+            .filterNot { it.controller.isAttached }
             .forEach {
                 performControllerChange(
                     it, null, true,

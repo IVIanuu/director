@@ -10,10 +10,9 @@ import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerState
 import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.doOnPostUnbindView
-import com.ivianuu.director.isAtLeast
+import com.ivianuu.director.hasView
 
 /**
  * A [LifecycleOwner] for [Controller]s views
@@ -56,10 +55,7 @@ private val viewLifecycleOwnersByController = mutableMapOf<Controller, Lifecycle
  */
 val Controller.viewLifecycleOwner: LifecycleOwner
     get() {
-        require(state.isAtLeast(ControllerState.VIEW_BOUND)) {
-            "Cannot access viewLifecycleOwner while view == null"
-        }
-
+        require(hasView) { "Cannot access viewLifecycleOwner while view == null" }
         return viewLifecycleOwnersByController.getOrPut(this) {
             ControllerViewLifecycleOwner(this)
                 .also {

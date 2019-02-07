@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.handler
 
 /**
  * A [AnimatorChangeHandler] that will perform a circular reveal

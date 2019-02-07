@@ -197,10 +197,10 @@ class ControllerTest {
 
         router.push(controller)
 
-        assertFalse(controller.state == ATTACHED)
+        assertFalse(controller.isAttached)
         controller.view!!.setParent(router.container)
         controller.view!!.reportAttached(true)
-        assertTrue(controller.state == ATTACHED)
+        assertTrue(controller.isAttached)
     }
 
     @Test
@@ -208,11 +208,11 @@ class ControllerTest {
         val controller = TestController()
         router.push(controller)
 
-        assertTrue(controller.state == ATTACHED)
+        assertTrue(controller.isAttached)
         router.hostStopped()
-        assertFalse(controller.state == ATTACHED)
+        assertFalse(controller.isAttached)
         router.hostStarted()
-        assertTrue(controller.state == ATTACHED)
+        assertTrue(controller.isAttached)
     }
 
     @Test

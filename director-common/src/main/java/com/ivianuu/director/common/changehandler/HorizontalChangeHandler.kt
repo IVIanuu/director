@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.handler
 
 /**
  * A [AnimatorChangeHandler] that will slide the views left or right, depending on if it's a push or pop.
