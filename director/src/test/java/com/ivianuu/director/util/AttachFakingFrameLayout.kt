@@ -60,9 +60,9 @@ class AttachFakingFrameLayout(context: Context) : FrameLayout(context) {
                 reportAttached(attached)
             }
 
-            for (i in 0 until childCount) {
-                getChildAt(i).reportAttached(attached)
-            }
+            (0 until childCount)
+                .map { getChildAt(it) }
+                .forEach { it.reportAttached(attached) }
         }
     }
 

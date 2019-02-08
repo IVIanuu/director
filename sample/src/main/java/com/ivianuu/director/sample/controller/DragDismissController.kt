@@ -15,7 +15,7 @@ class DragDismissController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_drag_dismiss
 
-    private val dragDismissListener = object : ElasticDragDismissCallback() {
+    private val dragDismissListener = object : ElasticDragDismissCallback {
         override fun onDragDismissed() {
             (view as ElasticDragDismissFrameLayout).removeListener(this)
             router.pop(this@DragDismissController, ScaleFadeChangeHandler())

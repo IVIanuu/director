@@ -36,10 +36,9 @@ fun View.reportAttached(attached: Boolean, applyOnChildren: Boolean = true) {
     }
 
     if (applyOnChildren && this is ViewGroup) {
-        val childCount = childCount
-        for (i in 0 until childCount) {
-            getChildAt(i).reportAttached(attached = attached, applyOnChildren = true)
-        }
+        (0 until childCount)
+            .map { getChildAt(it) }
+            .forEach { it.reportAttached(attached, true) }
     }
 }
 

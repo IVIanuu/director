@@ -24,7 +24,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.NestedScrollingParent
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import java.util.*
 
 /**
  * A [FrameLayout] which responds to nested scrolls to create drag-dismissable layouts.
@@ -38,42 +37,27 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), NestedScrollingParent {
 
     // configurable attribs
-    private var dragDismissDistance = java.lang.Float.MAX_VALUE
+    private var dragDismissDistance = Float.MAX_VALUE
     private var dragDismissFraction = -1f
     private var dragDismissScale = 1f
     private var shouldScale = false
     private val dragElacticity = 0.8f
 
     // state
-    private var totalDrag: Float = 0.toFloat()
+    private var totalDrag = 0f
     private var draggingDown = false
     private var draggingUp = false
 
-    private var callbacks: MutableList<ElasticDragDismissCallback>? = null
+    private val callbacks = mutableListOf<ElasticDragDismissCallback>()
 
-    abstract class ElasticDragDismissCallback {
-
-        /**
-         * Called for each drag event.
-         *
-         * @param elasticOffset       Indicating the drag offset with elasticity applied i.e. may
-         * exceed 1.
-         * @param elasticOffsetPixels The elastically scaled drag distance in pixels.
-         * @param rawOffset           Value from [0, 1] indicating the raw drag offset i.e.
-         * without elasticity applied. A value of 1 indicates that the
-         * dismiss distance has been reached.
-         * @param rawOffsetPixels     The raw distance the user has dragged
-         */
+    interface ElasticDragDismissCallback {
         fun onDrag(
             elasticOffset: Float, elasticOffsetPixels: Float,
             rawOffset: Float, rawOffsetPixels: Float
         ) {
         }
 
-        /**
-         * Called when dragging is released and has exceeded the threshold dismiss distance.
-         */
-        open fun onDragDismissed() {
+        fun onDragDismissed() {
         }
     }
 
@@ -110,7 +94,7 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
 
     override fun onStopNestedScroll(child: View) {
         if (Math.abs(totalDrag) >= dragDismissDistance) {
-            dispatchDismissCallback()
+            callbacks.toList().forEach { it.onDragDismissed() }
         } else { // settle back to natural position
             animate()
                 .translationY(0f)
@@ -155,16 +139,11 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
     }
 
     fun addListener(listener: ElasticDragDismissCallback) {
-        if (callbacks == null) {
-            callbacks = ArrayList()
-        }
-        callbacks!!.add(listener)
+        callbacks.add(listener)
     }
 
     fun removeListener(listener: ElasticDragDismissCallback) {
-        if (callbacks != null && callbacks!!.size > 0) {
-            callbacks!!.remove(listener)
-        }
+        callbacks.remove(listener)
     }
 
     private fun dragScale(scroll: Int) {
@@ -228,21 +207,9 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
         elasticOffset: Float, elasticOffsetPixels: Float,
         rawOffset: Float, rawOffsetPixels: Float
     ) {
-        if (callbacks != null && !callbacks!!.isEmpty()) {
-            for (callback in callbacks!!) {
-                callback.onDrag(
-                    elasticOffset, elasticOffsetPixels,
-                    rawOffset, rawOffsetPixels
-                )
-            }
+        callbacks.toList().forEach {
+            it.onDrag(elasticOffset, elasticOffsetPixels, rawOffset, rawOffsetPixels)
         }
     }
 
-    private fun dispatchDismissCallback() {
-        if (callbacks != null && !callbacks!!.isEmpty()) {
-            for (callback in callbacks!!) {
-                callback.onDragDismissed()
-            }
-        }
-    }
 }

@@ -23,48 +23,28 @@ import android.transition.Transition
 import android.transition.TransitionSet
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.stdlibx.firstNotNullResultOrNull
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 object TransitionUtils {
 
     fun findNamedViews(namedViews: MutableMap<String, View>, view: View) {
-        if (view.visibility == View.VISIBLE) {
-            val transitionName = view.transitionName
-            if (transitionName != null) {
-                namedViews[transitionName] = view
-            }
+        if (view.visibility != View.VISIBLE) return
 
-            if (view is ViewGroup) {
-                (0 until view.childCount)
-                    .map { view.getChildAt(it) }
-                    .forEach {
-                        findNamedViews(
-                            namedViews,
-                            it
-                        )
-                    }
-            }
+        view.transitionName?.let { namedViews[it] = view }
+
+        if (view is ViewGroup) {
+            (0 until view.childCount)
+                .map { view.getChildAt(it) }
+                .forEach { findNamedViews(namedViews, it) }
         }
     }
 
     fun findNamedView(view: View, transitionName: String): View? {
         if (transitionName == view.transitionName) return view
-
-        if (view is ViewGroup) {
-            val childCount = view.childCount
-            for (i in 0 until childCount) {
-                val viewWithTransitionName =
-                    findNamedView(
-                        view.getChildAt(i),
-                        transitionName
-                    )
-                if (viewWithTransitionName != null) {
-                    return viewWithTransitionName
-                }
-            }
-        }
-
-        return null
+        if (view !is ViewGroup) return null
+        return (0 until view.childCount)
+            .firstNotNullResultOrNull { findNamedView(view.getChildAt(it), transitionName) }
     }
 
     fun setEpicenter(transition: Transition, view: View) {

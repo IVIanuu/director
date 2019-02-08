@@ -116,9 +116,7 @@ abstract class AnimatorChangeHandler(
                 }
             }
             onReadyOrAbortedListener != null -> onReadyOrAbortedListener?.onReadyOrAborted()
-            changeData != null -> {
-                complete(null)
-            }
+            changeData != null -> complete(null)
         }
     }
 
