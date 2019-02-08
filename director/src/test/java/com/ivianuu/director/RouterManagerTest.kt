@@ -76,7 +76,7 @@ class RouterManagerTest {
         val transaction2 = TestController().toTransaction()
 
         var router = manager.getRouter(activityProxy.view1)
-            .popsLastView(true)
+            .apply { popsLastView = true }
 
         router.setRoot(transaction1)
         router.push(transaction2)

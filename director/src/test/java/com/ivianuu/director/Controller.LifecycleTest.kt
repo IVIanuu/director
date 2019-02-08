@@ -19,8 +19,6 @@ package com.ivianuu.director
 import android.os.Bundle
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.ControllerState.ATTACHED
-import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.CallState
 import com.ivianuu.director.util.MockChangeHandler
@@ -604,20 +602,20 @@ class ControllerLifecycleCallbacksTest {
             )
         }
 
-        assertTrue(parent.state == ATTACHED)
-        assertTrue(child.state == ATTACHED)
+        assertTrue(parent.isAttached)
+        assertTrue(child.isAttached)
 
         parent.view!!.reportAttached(attached = false, applyOnChildren = true)
-        assertFalse(parent.state == ATTACHED)
-        assertFalse(child.state == ATTACHED)
+        assertFalse(parent.isAttached)
+        assertFalse(child.isAttached)
 
         child.view!!.reportAttached(true)
-        assertFalse(parent.state == ATTACHED)
-        assertFalse(child.state == ATTACHED)
+        assertFalse(parent.isAttached)
+        assertFalse(child.isAttached)
 
         parent.view!!.reportAttached(true)
-        assertTrue(parent.state == ATTACHED)
-        assertTrue(child.state == ATTACHED)
+        assertTrue(parent.isAttached)
+        assertTrue(child.isAttached)
     }
 
     private fun getPushHandler(
@@ -789,32 +787,32 @@ class ControllerLifecycleCallbacksTest {
         override fun preAttach(controller: Controller, view: View) {
             super.preAttach(controller, view)
             when (controller) {
-                parent -> assertFalse(child.state == ATTACHED)
-                child -> assertTrue(parent.state == ATTACHED)
+                parent -> assertFalse(child.isAttached)
+                child -> assertTrue(parent.isAttached)
             }
         }
 
         override fun postAttach(controller: Controller, view: View) {
             super.postAttach(controller, view)
             when (controller) {
-                parent -> assertFalse(child.state == ATTACHED)
-                child -> assertTrue(parent.state == ATTACHED)
+                parent -> assertFalse(child.isAttached)
+                child -> assertTrue(parent.isAttached)
             }
         }
 
         override fun preDetach(controller: Controller, view: View) {
             super.preDetach(controller, view)
             when (controller) {
-                parent -> assertFalse(child.state == ATTACHED)
-                child -> assertTrue(parent.state == ATTACHED)
+                parent -> assertFalse(child.isAttached)
+                child -> assertTrue(parent.isAttached)
             }
         }
 
         override fun postDetach(controller: Controller, view: View) {
             super.postDetach(controller, view)
             when (controller) {
-                parent -> assertFalse(child.state == ATTACHED)
-                child -> assertTrue(parent.state == ATTACHED)
+                parent -> assertFalse(child.isAttached)
+                child -> assertTrue(parent.isAttached)
             }
         }
 
@@ -837,16 +835,16 @@ class ControllerLifecycleCallbacksTest {
         override fun preDestroy(controller: Controller) {
             super.preDestroy(controller)
             when (controller) {
-                parent -> assertTrue(child.state == DESTROYED)
-                child -> assertFalse(parent.state == DESTROYED)
+                parent -> assertTrue(child.isDestroyed)
+                child -> assertFalse(parent.isDestroyed)
             }
         }
 
         override fun postDestroy(controller: Controller) {
             super.postDestroy(controller)
             when (controller) {
-                parent -> assertTrue(child.state == DESTROYED)
-                child -> assertFalse(parent.state == DESTROYED)
+                parent -> assertTrue(child.isDestroyed)
+                child -> assertFalse(parent.isDestroyed)
             }
         }
 

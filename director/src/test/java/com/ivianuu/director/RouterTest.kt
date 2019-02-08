@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
 import com.ivianuu.director.util.EmptyLifecycleListener
@@ -254,8 +253,8 @@ class RouterTest {
         router.push(oldTopTransaction)
         assertEquals(2, router.backstack.size)
 
-        assertTrue(oldRootTransaction.controller.state == ATTACHED)
-        assertTrue(oldTopTransaction.controller.state == ATTACHED)
+        assertTrue(oldRootTransaction.controller.isAttached)
+        assertTrue(oldTopTransaction.controller.isAttached)
 
         val rootTransaction = TestController().toTransaction()
         val middleTransaction = TestController().toTransaction(
@@ -275,11 +274,11 @@ class RouterTest {
         assertEquals(middleTransaction, fetchedBackstack[1])
         assertEquals(topTransaction, fetchedBackstack[2])
 
-        assertFalse(oldRootTransaction.controller.state == ATTACHED)
-        assertFalse(oldTopTransaction.controller.state == ATTACHED)
-        assertTrue(rootTransaction.controller.state == ATTACHED)
-        assertTrue(middleTransaction.controller.state == ATTACHED)
-        assertTrue(topTransaction.controller.state == ATTACHED)
+        assertFalse(oldRootTransaction.controller.isAttached)
+        assertFalse(oldTopTransaction.controller.isAttached)
+        assertTrue(rootTransaction.controller.isAttached)
+        assertTrue(middleTransaction.controller.isAttached)
+        assertTrue(topTransaction.controller.isAttached)
     }
 
     @Test
@@ -299,9 +298,9 @@ class RouterTest {
         assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.state == ATTACHED)
-        assertFalse(transaction1.controller.state == ATTACHED)
-        assertFalse(transaction2.controller.state == ATTACHED)
+        assertTrue(rootTransaction.controller.isAttached)
+        assertFalse(transaction1.controller.isAttached)
+        assertFalse(transaction2.controller.isAttached)
     }
 
     @Test
@@ -327,9 +326,9 @@ class RouterTest {
         assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.state == ATTACHED)
-        assertFalse(transaction1.controller.state == ATTACHED)
-        assertFalse(transaction2.controller.state == ATTACHED)
+        assertTrue(rootTransaction.controller.isAttached)
+        assertFalse(transaction1.controller.isAttached)
+        assertFalse(transaction2.controller.isAttached)
     }
 
     @Test
@@ -358,38 +357,30 @@ class RouterTest {
 
     @Test
     fun testReplaceTopControllerWithNoRemoveViewOnPush() {
-        val rootTransaction = TestController().toTransaction()
-        val topTransaction = TestController().toTransaction(
+        val controllerA = TestController().toTransaction()
+        val controllerB = TestController().toTransaction(
             MockChangeHandler.noRemoveViewOnPushHandler()
         )
 
-        val backstack = listOf(rootTransaction, topTransaction)
+        val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack)
 
         assertEquals(2, router.backstack.size)
 
-        assertTrue(rootTransaction.controller.state == ATTACHED)
-        assertTrue(topTransaction.controller.state == ATTACHED)
+        assertTrue(controllerA.controller.isAttached)
+        assertTrue(controllerB.controller.isAttached)
 
-        var fetchedBackstack = router.backstack
-        assertEquals(rootTransaction, fetchedBackstack[0])
-        assertEquals(topTransaction, fetchedBackstack[1])
-
-        val newTopTransaction = TestController().toTransaction(
+        val controllerC = TestController().toTransaction(
             MockChangeHandler.noRemoveViewOnPushHandler()
         )
-        router.replaceTop(newTopTransaction)
-        newTopTransaction.pushChangeHandler!!.cancel(true)
+        router.replaceTop(controllerC)
+        controllerC.pushChangeHandler!!.cancel(true)
 
         assertEquals(2, router.backstack.size)
 
-        fetchedBackstack = router.backstack
-        assertEquals(rootTransaction, fetchedBackstack[0])
-        assertEquals(newTopTransaction, fetchedBackstack[1])
-
-        assertTrue(rootTransaction.controller.state == ATTACHED)
-        assertFalse(topTransaction.controller.state == ATTACHED)
-        assertTrue(newTopTransaction.controller.state == ATTACHED)
+        assertTrue(controllerA.controller.isAttached)
+        assertFalse(controllerB.controller.isAttached)
+        assertTrue(controllerC.controller.isAttached)
     }
 
     @Test

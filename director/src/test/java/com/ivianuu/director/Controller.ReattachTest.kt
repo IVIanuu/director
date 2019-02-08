@@ -18,7 +18,6 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.MockChangeHandler
 import com.ivianuu.director.util.TestController
@@ -50,13 +49,13 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertTrue(controllerA.state == ATTACHED)
-        assertFalse(controllerB.state == ATTACHED)
+        assertTrue(controllerA.isAttached)
+        assertFalse(controllerB.isAttached)
 
         sleepWakeDevice()
 
-        assertTrue(controllerA.state == ATTACHED)
-        assertFalse(controllerB.state == ATTACHED)
+        assertTrue(controllerA.isAttached)
+        assertFalse(controllerB.isAttached)
 
         router.push(
             controllerB,
@@ -64,8 +63,8 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertFalse(controllerA.state == ATTACHED)
-        assertTrue(controllerB.state == ATTACHED)
+        assertFalse(controllerA.isAttached)
+        assertTrue(controllerB.isAttached)
     }
 
     @Test
@@ -88,15 +87,15 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertTrue(controllerA.state == ATTACHED)
-        assertTrue(childController.state == ATTACHED)
-        assertFalse(controllerB.state == ATTACHED)
+        assertTrue(controllerA.isAttached)
+        assertTrue(childController.isAttached)
+        assertFalse(controllerB.isAttached)
 
         sleepWakeDevice()
 
-        assertTrue(controllerA.state == ATTACHED)
-        assertTrue(childController.state == ATTACHED)
-        assertFalse(controllerB.state == ATTACHED)
+        assertTrue(controllerA.isAttached)
+        assertTrue(childController.isAttached)
+        assertFalse(controllerB.isAttached)
 
         router.push(
             controllerB,
@@ -104,9 +103,9 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertFalse(controllerA.state == ATTACHED)
-        assertFalse(childController.state == ATTACHED)
-        assertTrue(controllerB.state == ATTACHED)
+        assertFalse(controllerA.isAttached)
+        assertFalse(childController.isAttached)
+        assertTrue(controllerB.isAttached)
     }
 
     @Test
@@ -121,9 +120,9 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertTrue(controllerA.state == ATTACHED)
-        assertFalse(controllerB.state == ATTACHED)
-        assertFalse(childController.state == ATTACHED)
+        assertTrue(controllerA.isAttached)
+        assertFalse(controllerB.isAttached)
+        assertFalse(childController.isAttached)
 
         router.push(
             controllerB,
@@ -133,7 +132,7 @@ class ReattachTest {
 
         val childRouter =
             controllerB.getChildRouter(controllerB.childContainer1!!)
-                .popsLastView(true)
+                .apply { popsLastView = true }
 
         childRouter.push(
             childController,
@@ -141,9 +140,9 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertFalse(controllerA.state == ATTACHED)
-        assertTrue(controllerB.state == ATTACHED)
-        assertTrue(childController.state == ATTACHED)
+        assertFalse(controllerA.isAttached)
+        assertTrue(controllerB.isAttached)
+        assertTrue(childController.isAttached)
     }
 
     // Attempt to test https://github.com/bluelinelabs/Conductor/issues/86#issuecomment-231381271
@@ -159,9 +158,9 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertTrue(controllerA.state == ATTACHED)
-        assertFalse(controllerB.state == ATTACHED)
-        assertFalse(childController.state == ATTACHED)
+        assertTrue(controllerA.isAttached)
+        assertFalse(controllerB.isAttached)
+        assertFalse(childController.isAttached)
 
         router.push(
             controllerB,
@@ -171,7 +170,7 @@ class ReattachTest {
 
         val childRouter =
             controllerB.getChildRouter(controllerB.childContainer1!!)
-                .popsLastView(true)
+                .apply { popsLastView = true }
 
         childRouter.push(
             childController,
@@ -179,15 +178,15 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertFalse(controllerA.state == ATTACHED)
-        assertTrue(controllerB.state == ATTACHED)
-        assertTrue(childController.state == ATTACHED)
+        assertFalse(controllerA.isAttached)
+        assertTrue(controllerB.isAttached)
+        assertTrue(childController.isAttached)
 
         router.handleBack()
 
-        assertFalse(controllerA.state == ATTACHED)
-        assertTrue(controllerB.state == ATTACHED)
-        assertFalse(childController.state == ATTACHED)
+        assertFalse(controllerA.isAttached)
+        assertTrue(controllerB.isAttached)
+        assertFalse(childController.isAttached)
 
         childController = TestController()
         childRouter.push(
@@ -196,9 +195,9 @@ class ReattachTest {
             MockChangeHandler.defaultHandler()
         )
 
-        assertFalse(controllerA.state == ATTACHED)
-        assertTrue(controllerB.state == ATTACHED)
-        assertTrue(childController.state == ATTACHED)
+        assertFalse(controllerA.isAttached)
+        assertTrue(controllerB.isAttached)
+        assertTrue(childController.isAttached)
     }
 
     @Test
@@ -212,9 +211,9 @@ class ReattachTest {
         router.push(controller3)
         router.pop(controller2)
 
-        assertFalse(controller1.state == ATTACHED)
-        assertFalse(controller2.state == ATTACHED)
-        assertTrue(controller3.state == ATTACHED)
+        assertFalse(controller1.isAttached)
+        assertFalse(controller2.isAttached)
+        assertTrue(controller3.isAttached)
 
         controller1 = TestController()
         controller2 = TestController()
@@ -225,9 +224,9 @@ class ReattachTest {
         router.push(controller3, MockChangeHandler.noRemoveViewOnPushHandler())
         router.pop(controller2)
 
-        assertTrue(controller1.state == ATTACHED)
-        assertFalse(controller2.state == ATTACHED)
-        assertTrue(controller3.state == ATTACHED)
+        assertTrue(controller1.isAttached)
+        assertFalse(controller2.isAttached)
+        assertTrue(controller3.isAttached)
     }
 
     private fun sleepWakeDevice() {
