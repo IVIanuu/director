@@ -375,7 +375,7 @@ open class Router internal constructor(
 
     fun setContainer(container: ViewGroup) {
         require(container.id == containerId) {
-            "container id must be matching the container id"
+            "container id of the container must match the container id of this router"
         }
 
         if (this.container != container) {
@@ -393,9 +393,7 @@ open class Router internal constructor(
 
             _backstack.reversed().forEach { it.controller.containerDetached() }
 
-            container?.let { container ->
-                (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
-            }
+            (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
             container = null
         }
     }
@@ -558,7 +556,7 @@ open class Router internal constructor(
     private fun List<RouterTransaction>.filterVisible(): List<RouterTransaction> =
         takeLastUntil {
             it.pushChangeHandler != null
-                    && !it.pushChangeHandler!!.removesFromViewOnPush
+                    && !it.pushChangeHandler.removesFromViewOnPush
         }
 
     private data class ChangeListenerEntry(
