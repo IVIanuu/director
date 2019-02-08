@@ -88,8 +88,14 @@ abstract class TransitionChangeHandler(
             transition,
             isPush
         ) {
-            TransitionManager.beginDelayedTransition(container, transition)
-            executePropertyChanges(container, from, to, transition, isPush)
+            // todo transition manager needs a fully attached container
+            if (container.isLaidOut) {
+                TransitionManager.beginDelayedTransition(container, transition)
+                executePropertyChanges(container, from, to, transition, isPush)
+            } else {
+                executePropertyChanges(container, from, to, transition, isPush)
+                onChangeComplete()
+            }
         }
     }
 
