@@ -201,24 +201,6 @@ class RouterTest {
 
     @Test
     fun testSetBackstack() {
-        val rootTransaction = TestController().toTransaction()
-        val middleTransaction = TestController().toTransaction()
-        val topTransaction = TestController().toTransaction()
-
-        val backstack =
-            listOf(rootTransaction, middleTransaction, topTransaction)
-        router.setBackstack(backstack)
-
-        assertEquals(3, router.backstack.size)
-
-        val fetchedBackstack = router.backstack
-        assertEquals(rootTransaction, fetchedBackstack[0])
-        assertEquals(middleTransaction, fetchedBackstack[1])
-        assertEquals(topTransaction, fetchedBackstack[2])
-    }
-
-    @Test
-    fun testNewSetBackstack() {
         router.setRoot(TestController())
 
         assertEquals(1, router.backstack.size)
@@ -244,7 +226,7 @@ class RouterTest {
     }
 
     @Test
-    fun testNewSetBackstackWithNoRemoveViewOnPush() {
+    fun testSetBackstackWithNoRemoveViewOnPush() {
         val oldRootTransaction = TestController().toTransaction()
         val oldTopTransaction = TestController()
             .toTransaction(MockChangeHandler.noRemoveViewOnPushHandler())
@@ -359,6 +341,7 @@ class RouterTest {
     fun testReplaceTopControllerWithNoRemoveViewOnPush() {
         val controllerA = TestController().toTransaction()
         val controllerB = TestController().toTransaction(
+            MockChangeHandler.noRemoveViewOnPushHandler(),
             MockChangeHandler.noRemoveViewOnPushHandler()
         )
 
@@ -371,6 +354,7 @@ class RouterTest {
         assertTrue(controllerB.controller.isAttached)
 
         val controllerC = TestController().toTransaction(
+            MockChangeHandler.noRemoveViewOnPushHandler(),
             MockChangeHandler.noRemoveViewOnPushHandler()
         )
         router.replaceTop(controllerC)
@@ -383,11 +367,35 @@ class RouterTest {
     }
 
     @Test
-    fun testReplaceTopControllerWithNoRemoveViewOnPush2() {
+    fun testReplaceTopControllerWithMixedRemoveViewOnPush1() {
         val controllerA = TestController().toTransaction()
         val controllerB = TestController().toTransaction(
-            MockChangeHandler.defaultHandler()
+            MockChangeHandler.noRemoveViewOnPushHandler(),
+            MockChangeHandler.noRemoveViewOnPushHandler()
         )
+
+        val backstack = listOf(controllerA, controllerB)
+        router.setBackstack(backstack)
+
+        assertEquals(2, router.backstack.size)
+
+        assertTrue(controllerA.controller.isAttached)
+        assertTrue(controllerB.controller.isAttached)
+
+        val controllerC = TestController().toTransaction()
+        router.replaceTop(controllerC)
+
+        assertEquals(2, router.backstack.size)
+
+        assertFalse(controllerA.controller.isAttached)
+        assertFalse(controllerB.controller.isAttached)
+        assertTrue(controllerC.controller.isAttached)
+    }
+
+    @Test
+    fun testReplaceTopControllerWithMixedRemoveViewOnPush2() {
+        val controllerA = TestController().toTransaction()
+        val controllerB = TestController().toTransaction()
 
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack)
@@ -398,6 +406,7 @@ class RouterTest {
         assertTrue(controllerB.controller.isAttached)
 
         val controllerC = TestController().toTransaction(
+            MockChangeHandler.noRemoveViewOnPushHandler(),
             MockChangeHandler.noRemoveViewOnPushHandler()
         )
         router.replaceTop(controllerC)
