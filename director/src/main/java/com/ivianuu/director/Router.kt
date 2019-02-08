@@ -482,35 +482,6 @@ open class Router internal constructor(
         _backstack.reversed().forEach { setControllerRouter(it.controller) }
     }
 
-    /**
-     * Saves the instance state of [controller] which can later be used in
-     * [Controller.setInitialSavedState]
-     */
-    fun saveControllerInstanceState(controller: Controller): Bundle {
-        require(backstack.any { it.controller == controller }) {
-            "controller is not attached to the router"
-        }
-
-        return controller.saveInstanceState()
-    }
-
-    /**
-     * Returns the hosted Controller with the given instance id or `null` if no such
-     * Controller exists in this Router.
-     */
-    fun findControllerByInstanceId(instanceId: String): Controller? {
-        return backstack
-            .mapNotNull { it.controller.findController(instanceId) }
-            .firstOrNull()
-    }
-
-    /**
-     * Returns the hosted Controller that was pushed with the given tag or `null` if no
-     * such Controller exists in this Router.
-     */
-    fun findControllerByTag(tag: String): Controller? =
-        backstack.firstOrNull { it.tag == tag }?.controller
-
     private fun performControllerChange(
         to: RouterTransaction?,
         from: RouterTransaction?,
@@ -631,6 +602,20 @@ fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
         ?: error("Trying to pop the current controller when there are none on the backstack.")
     pop(transaction.controller, handler)
 }
+
+/**
+ * Returns the hosted Controller with the given instance id or `null` if no such
+ * Controller exists in this Router.
+ */
+fun Router.findControllerByInstanceId(instanceId: String): Controller? =
+    backstack.firstOrNull { it.controller.instanceId == instanceId }?.controller
+
+/**
+ * Returns the hosted Controller that was pushed with the given tag or `null` if no
+ * such Controller exists in this Router.
+ */
+fun Router.findControllerByTag(tag: String): Controller? =
+    backstack.firstOrNull { it.tag == tag }?.controller
 
 /**
  * Pops the passed [Controller] from the backstack

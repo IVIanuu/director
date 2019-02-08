@@ -276,31 +276,6 @@ abstract class Controller {
         childRouterManager.removeRouter(childRouter)
     }
 
-    internal fun findController(instanceId: String): Controller? {
-        if (this.instanceId == instanceId) return this
-
-        return childRouters
-            .map { it.findControllerByInstanceId(instanceId) }
-            .firstOrNull()
-    }
-
-    /**
-     * Sets the initial state of this controller which was previously created by
-     * [Router.saveControllerInstanceState]
-     */
-    fun setInitialSavedState(initialState: Bundle?) {
-        check(!routerSet) { "controller already added" }
-
-        if (initialState != null) {
-            val className = initialState.getString(KEY_CLASS_NAME)
-            require(javaClass.name == className) {
-                "initial state of $className cannot be used for ${javaClass.name}"
-            }
-        }
-
-        allState = initialState
-    }
-
     internal fun setRouter(router: Router) {
         if (routerSet) return
         routerSet = true
