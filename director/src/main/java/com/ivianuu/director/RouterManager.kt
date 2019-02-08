@@ -94,12 +94,12 @@ class RouterManager(
     fun getRouter(containerId: Int, tag: String? = null): Router {
         var router = getRouterOrNull(containerId, tag)
         if (router == null) {
-            router = router {
-                containerId(containerId)
-                tag(tag)
-                host(this@RouterManager.host)
-                hostRouter(this@RouterManager.hostRouter)
-            }
+            router = Router(
+                containerId = containerId,
+                host = host,
+                tag = tag,
+                hostRouter = hostRouter
+            )
 
             _routers.add(router)
             if (hostStarted) {
@@ -143,12 +143,12 @@ class RouterManager(
                 val containerId = routerState.getInt("Router.containerId")
                 val tag = routerState.getString("Router.tag")
 
-                router {
-                    containerId(containerId)
-                    tag(tag)
-                    host(this@RouterManager.host)
-                    hostRouter(this@RouterManager.hostRouter)
-                } to routerState
+                Router(
+                    containerId = containerId,
+                    host = host,
+                    tag = tag,
+                    hostRouter = hostRouter
+                ) to routerState
             }
             .onEach { _routers.add(it.first) }
             .toMap()

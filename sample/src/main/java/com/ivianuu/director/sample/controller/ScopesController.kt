@@ -18,7 +18,8 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.common.changehandler.horizontal
+import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
@@ -56,27 +57,25 @@ class ScopesController : BaseController() {
         btn_next_release_view.setOnClickListener {
             retainView = false
 
-            router.push {
-                controller(
-                    TextController.newInstance(
-                        "Logcat should now report that the observables from onAttach() and onBindView() have been disposed of, while the onCreate() observable is still running."
-                    )
-                )
-                horizontal()
-            }
+            router.push(
+                TextController.newInstance(
+                    "Logcat should now report that the observables from onAttach() and onBindView() have been disposed of, while the onCreate() observable is still running."
+                ),
+                HorizontalChangeHandler(),
+                HorizontalChangeHandler()
+            )
         }
 
         btn_next_retain_view.setOnClickListener {
             retainView = true
 
-            router.push {
-                controller(
-                    TextController.newInstance(
-                        "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onBindView() observables are still running."
-                    )
-                )
-                horizontal()
-            }
+            router.push(
+                TextController.newInstance(
+                    "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onBindView() observables are still running."
+                ),
+                HorizontalChangeHandler(),
+                HorizontalChangeHandler()
+            )
         }
 
         Observable.interval(1, TimeUnit.SECONDS)

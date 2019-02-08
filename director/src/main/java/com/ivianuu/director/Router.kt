@@ -7,7 +7,6 @@ import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.stdlibx.takeLastUntil
-import kotlin.properties.Delegates
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's controllers
@@ -190,7 +189,8 @@ open class Router internal constructor(
                         .forEachIndexed { i, transaction ->
                             performControllerChange(
                                 transaction,
-                                newVisibleTransactions.getOrNull(i), true, localHandler!!.copy()
+                                newVisibleTransactions.getOrNull(i),
+                                true, localHandler!!.copy()
                             )
                         }
                 } else if (!oldHandlerRemovedViews && newHandlerRemovesViews) {
@@ -212,9 +212,10 @@ open class Router internal constructor(
 
                 // swap the top controllers
                 performControllerChange(
-                    newTopTransaction.also { it.pushChangeHandler = localHandler },
+                    newTopTransaction,
                     oldTopTransaction,
-                    true
+                    true,
+                    localHandler
                 )
             }
             // it's not a simple change so loop trough everything
@@ -580,69 +581,34 @@ open class Router internal constructor(
     }
 }
 
-class RouterBuilder {
-
-    var host by Delegates.notNull<Any>()
-        private set
-    var containerId = 0
-        private set
-    var tag: String? = null
-        private set
-    var hostRouter: Router? = null
-        private set
-    var savedInstanceState: Bundle? = null
-        private set
-
-    var container: ViewGroup? = null
-        private set
-
-    fun host(host: Any): RouterBuilder = apply {
-        this.host = host
-    }
-
-    fun containerId(containerId: Int): RouterBuilder = apply {
-        this.containerId = containerId
-    }
-
-    fun tag(tag: String?): RouterBuilder = apply {
-        this.tag = tag
-    }
-
-    fun hostRouter(hostRouter: Router?): RouterBuilder = apply {
-        this.hostRouter = hostRouter
-    }
-
-    fun savedInstanceState(savedInstanceState: Bundle?): RouterBuilder = apply {
-        this.savedInstanceState = savedInstanceState
-    }
-
-    fun container(container: ViewGroup?): RouterBuilder = apply {
-        this.container = container
-        container?.let { containerId(it.id) }
-    }
-
-    fun build(): Router {
-        val router = Router(containerId, tag, host, hostRouter)
-        savedInstanceState?.let { router.restoreInstanceState(it) }
-        container?.let {
-            router.setContainer(it)
-            router.rebind()
-        }
-
-        return router
-    }
-
+/**
+ * Returns a new router instance
+ */
+fun Router(
+    containerId: Int,
+    host: Any,
+    savedInstanceState: Bundle? = null,
+    tag: String? = null,
+    hostRouter: Router? = null
+): Router {
+    val router = Router(containerId, tag, host, hostRouter)
+    savedInstanceState?.let { router.restoreInstanceState(it) }
+    return router
 }
 
 /**
- * Returns a new [Router] instance build by [init]
+ * Returns a new router instance
  */
-inline fun router(init: RouterBuilder.() -> Unit): Router =
-    RouterBuilder().apply(init).build()
-
-// todo add simple router constructor
-
-// todo add after init function to router builder
+fun Router(
+    container: ViewGroup,
+    host: Any,
+    savedInstanceState: Bundle? = null,
+    tag: String? = null,
+    hostRouter: Router? = null
+): Router = Router(container.id, host, savedInstanceState, tag, hostRouter).apply {
+    setContainer(container)
+    rebind()
+}
 
 /**
  * Whether or not the router has currently a container attached to it
@@ -663,18 +629,6 @@ val Router.hasRootController: Boolean get() = backstackSize > 0
  * Fluent version of pops last view
  */
 fun Router.popsLastView(popsLastView: Boolean): Router = apply { this.popsLastView = popsLastView }
-
-/**
- * Applies the [mutation] to the current backstack and sets it afterwards
- */
-inline fun Router.setBackstack(
-    handler: ControllerChangeHandler? = null,
-    mutation: MutableList<RouterTransaction>.() -> Unit
-) {
-    val newBackstack = backstack.toMutableList()
-    mutation(newBackstack)
-    setBackstack(newBackstack, handler)
-}
 
 /**
  * Pops the top [Controller] from the backstack
@@ -734,29 +688,8 @@ fun Router.push(
     popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null,
     handler: ControllerChangeHandler? = null
-): RouterTransaction = transaction(controller, pushHandler, popHandler, tag)
+): RouterTransaction = RouterTransaction(controller, pushHandler, popHandler, tag)
     .also { push(it, handler) }
-
-inline fun <reified T : Controller> Router.push(
-    args: Bundle = Bundle(),
-    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
-    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
-    tag: String? = null,
-    handler: ControllerChangeHandler? = null
-): RouterTransaction = push(
-    controllerFactory!!.createController<T>(args),
-    pushHandler, popHandler, tag, handler
-)
-
-/**
- * Pushes a new [Controller] to the backstack
- */
-fun Router.push(
-    handler: ControllerChangeHandler? = null,
-    init: RouterTransactionBuilder.() -> Unit
-): RouterTransaction {
-    return transaction(init).also { push(it, handler) }
-}
 
 /**
  * Replaces this Router's top [Controller] with the [Controller] of the [transaction]
@@ -789,27 +722,7 @@ fun Router.replaceTop(
     tag: String? = null,
     handler: ControllerChangeHandler? = null
 ): RouterTransaction =
-    transaction(controller, pushHandler, popHandler, tag).also { replaceTop(it, handler) }
-
-inline fun <reified T : Controller> Router.replaceTop(
-    args: Bundle = Bundle(),
-    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
-    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
-    tag: String? = null,
-    handler: ControllerChangeHandler? = null
-): RouterTransaction = replaceTop(
-    controllerFactory!!.createController<T>(args),
-    pushHandler, popHandler, tag, handler
-)
-
-/**
- * Replaces this Router's top [Controller] with the [Controller] of the [transaction]
- */
-inline fun Router.replaceTop(
-    handler: ControllerChangeHandler? = null,
-    init: RouterTransactionBuilder.() -> Unit
-): RouterTransaction = transaction(init).also { replaceTop(it, handler) }
-
+    RouterTransaction(controller, pushHandler, popHandler, tag).also { replaceTop(it, handler) }
 
 /**
  * Pops all [Controller] until only the root is left
@@ -869,23 +782,4 @@ fun Router.setRoot(
     tag: String? = null,
     handler: ControllerChangeHandler? = null
 ): RouterTransaction =
-    transaction(controller, pushHandler, popHandler, tag).also { setRoot(it, handler) }
-
-inline fun <reified T : Controller> Router.setRoot(
-    args: Bundle = Bundle(),
-    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
-    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
-    tag: String? = null,
-    handler: ControllerChangeHandler? = null
-): RouterTransaction = setRoot(
-    controllerFactory!!.createController<T>(args),
-    pushHandler, popHandler, tag, handler
-)
-
-/**
- * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
- */
-inline fun Router.setRoot(
-    handler: ControllerChangeHandler? = null,
-    init: RouterTransactionBuilder.() -> Unit
-): RouterTransaction = transaction(init).also { setRoot(it, handler) }
+    RouterTransaction(controller, pushHandler, popHandler, tag).also { setRoot(it, handler) }

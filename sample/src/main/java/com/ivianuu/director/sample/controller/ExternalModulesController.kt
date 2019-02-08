@@ -26,7 +26,6 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
-import com.ivianuu.director.common.changehandler.fade
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
@@ -74,22 +73,13 @@ class ExternalModulesController : BaseController() {
     private fun onItemClicked(item: AdditionalModuleItem) {
         when (item) {
             AdditionalModuleItem.ARCH -> {
-                router.push {
-                    controller(ArchController())
-                    fade()
-                }
+                router.push(ArchController())
             }
             AdditionalModuleItem.SCOPES -> {
-                router.push {
-                    controller(ScopesController())
-                    fade()
-                }
+                router.push(ScopesController())
             }
             AdditionalModuleItem.TRAVELER -> {
-                router.push {
-                    controller(TravelerController())
-                    fade()
-                }
+                router.push(TravelerController())
             }
         }
     }

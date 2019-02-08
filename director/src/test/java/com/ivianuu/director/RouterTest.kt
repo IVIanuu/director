@@ -46,10 +46,7 @@ class RouterTest {
 
         assertFalse(router.hasRootController)
 
-        router.setRoot {
-            controller(rootController)
-            tag(rootTag)
-        }
+        router.setRoot(rootController, tag = rootTag)
 
         assertTrue(router.hasRootController)
 
@@ -64,15 +61,8 @@ class RouterTest {
         val oldRootController = TestController()
         val newRootController = TestController()
 
-        router.setRoot {
-            controller(oldRootController)
-            tag(oldRootTag)
-        }
-
-        router.setRoot {
-            controller(newRootController)
-            tag(newRootTag)
-        }
+        router.setRoot(oldRootController, tag = oldRootTag)
+        router.setRoot(newRootController, tag = newRootTag)
 
         assertNull(router.findControllerByTag(oldRootTag))
         assertEquals(newRootController, router.findControllerByTag(newRootTag))

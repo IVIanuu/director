@@ -26,11 +26,10 @@ import android.view.Window
 import android.view.WindowManager
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
+import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.activity
 import com.ivianuu.director.pop
 import com.ivianuu.director.push
-import com.ivianuu.director.simpleSwapPop
-import com.ivianuu.director.simpleSwapPush
 
 /**
  * A controller counterpart for dialog fragments
@@ -197,12 +196,12 @@ abstract class DialogController : Controller(),
      * Pushes this controller and shows the dialog
      */
     fun show(router: Router, tag: String? = null) {
-        router.push {
-            controller(this@DialogController)
-            tag(tag)
-            simpleSwapPush(removesFromViewOnPush = false)
-            simpleSwapPop()
-        }
+        router.push(
+            this,
+            SimpleSwapChangeHandler(removesFromViewOnPush = false),
+            SimpleSwapChangeHandler(),
+            tag
+        )
     }
 
     companion object {

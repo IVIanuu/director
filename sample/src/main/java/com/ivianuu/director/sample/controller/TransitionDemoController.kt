@@ -11,8 +11,9 @@ import com.ivianuu.director.activity
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
-import com.ivianuu.director.handler
+
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
@@ -141,9 +142,8 @@ class TransitionDemoController : BaseController() {
 
         fun getRouterTransaction(index: Int, fromController: Controller): RouterTransaction {
             val toController = newInstance(index)
-            return toController.toTransaction {
-                handler(toController.getChangeHandler(fromController))
-            }
+            val handler = toController.getChangeHandler(fromController)
+            return toController.toTransaction(handler, handler)
         }
     }
 }

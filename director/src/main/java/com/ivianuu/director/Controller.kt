@@ -692,17 +692,7 @@ fun Controller.toTransaction(
     pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
     popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
     tag: String? = null
-): RouterTransaction = transaction(this, pushHandler, popHandler, tag)
-
-/**
- * Returns a new router transaction
- */
-inline fun Controller.toTransaction(
-    init: RouterTransactionBuilder.() -> Unit
-): RouterTransaction = transaction {
-    controller(this@toTransaction)
-    init()
-}
+): RouterTransaction = RouterTransaction(this, pushHandler, popHandler, tag)
 
 /**
  * Returns the child router for [container] and [tag] or null

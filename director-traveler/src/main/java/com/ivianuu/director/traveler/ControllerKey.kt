@@ -17,7 +17,8 @@
 package com.ivianuu.director.traveler
 
 import com.ivianuu.director.Controller
-import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.RouterTransaction
+
 import com.ivianuu.traveler.Command
 
 /**
@@ -38,11 +39,10 @@ interface ControllerKey {
     /**
      * Sets up the transaction and adds change handlers
      */
-    fun setupTransaction(
+    fun createTransaction(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransactionBuilder
-    ) {
-    }
+        tag: String
+    ): RouterTransaction = RouterTransaction(nextController, tag = tag)
 }

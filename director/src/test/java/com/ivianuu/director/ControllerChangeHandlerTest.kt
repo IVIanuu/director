@@ -37,11 +37,9 @@ class ControllerChangeHandlerTest {
         val changeHandler1 = SimpleSwapChangeHandler(false)
         val changeHandler2 = SimpleSwapChangeHandler(true)
 
-        val transaction = transaction {
-            controller(TestController())
-            pushHandler(changeHandler1)
-            popHandler(changeHandler2)
-        }
+        val transaction = RouterTransaction(
+            TestController(), changeHandler1, changeHandler2
+        )
 
         router.push(transaction)
 

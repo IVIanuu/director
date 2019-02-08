@@ -18,7 +18,8 @@ package com.ivianuu.director.traveler
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterTransactionBuilder
+import com.ivianuu.director.RouterTransaction
+
 import com.ivianuu.director.backstackSize
 import com.ivianuu.director.pop
 import com.ivianuu.director.popCurrent
@@ -52,16 +53,14 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val tag = getControllerTag(command.key)
 
-        router.push {
-            controller(controller)
-            setupTransaction(
-                command,
-                router.backstack.lastOrNull()?.controller,
-                controller,
-                this
-            )
-            tag(tag)
-        }
+        val transaction = createTransaction(
+            command,
+            router.backstack.lastOrNull()?.controller,
+            controller,
+            tag
+        )
+
+        router.push(transaction)
 
         return true
     }
@@ -72,16 +71,14 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val tag = getControllerTag(command.key)
 
-        router.replaceTop {
-            controller(controller)
-            setupTransaction(
-                command,
-                router.backstack.lastOrNull()?.controller,
-                controller,
-                this
-            )
-            tag(tag)
-        }
+        val transaction = createTransaction(
+            command,
+            router.backstack.lastOrNull()?.controller,
+            controller,
+            tag
+        )
+
+        router.replaceTop(transaction)
 
         return true
     }
@@ -146,19 +143,19 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     /**
      * Add change handlers etc
      */
-    protected open fun setupTransaction(
+    protected open fun createTransaction(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransactionBuilder
-    ) {
+        tag: String
+    ): RouterTransaction {
         val key = when (command) {
             is Forward -> command.key
             is Replace -> command.key
             else -> null
-        } as? ControllerKey ?: return
+        } as? ControllerKey ?: return RouterTransaction(nextController, tag = tag)
 
-        key.setupTransaction(command, currentController, nextController, transaction)
+        return key.createTransaction(command, currentController, nextController, tag)
     }
 
     /**

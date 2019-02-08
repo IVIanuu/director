@@ -56,11 +56,11 @@ class ControllerLifecycleCallbacksTest {
         val expectedCallState = CallState()
         assertCalls(expectedCallState, controller)
 
-        router.push {
-            controller(controller)
-            pushHandler(getPushHandler(expectedCallState, controller))
-            popHandler(getPopHandler(expectedCallState, controller))
-        }
+        router.push(
+            controller,
+            getPushHandler(expectedCallState, controller),
+            getPopHandler(expectedCallState, controller)
+        )
 
         assertCalls(expectedCallState, controller)
 
@@ -79,10 +79,10 @@ class ControllerLifecycleCallbacksTest {
         val expectedCallState = CallState()
 
         assertCalls(expectedCallState, controller)
-        router.push {
-            controller(controller)
-            pushHandler(getPushHandler(expectedCallState, controller))
-        }
+        router.push(
+            controller,
+            getPushHandler(expectedCallState, controller)
+        )
 
         assertCalls(expectedCallState, controller)
 
@@ -111,10 +111,10 @@ class ControllerLifecycleCallbacksTest {
         val expectedCallState = CallState()
 
         assertCalls(expectedCallState, controller)
-        router.push {
-            controller(controller)
-            pushHandler(getPushHandler(expectedCallState, controller))
-        }
+        router.push(
+            controller,
+            getPushHandler(expectedCallState, controller)
+        )
 
         assertCalls(expectedCallState, controller)
 
@@ -143,10 +143,10 @@ class ControllerLifecycleCallbacksTest {
         val expectedCallState = CallState()
 
         assertCalls(expectedCallState, controller)
-        router.push {
-            controller(controller)
-            pushHandler(getPushHandler(expectedCallState, controller))
-        }
+        router.push(
+            controller,
+            getPushHandler(expectedCallState, controller)
+        )
 
         assertCalls(expectedCallState, controller)
 
@@ -512,10 +512,11 @@ class ControllerLifecycleCallbacksTest {
             }
         })
 
-        router.push {
-            controller(testController)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(
+            testController,
+            MockChangeHandler.defaultHandler(),
+            MockChangeHandler.defaultHandler()
+        )
 
         router.pop(testController)
 
@@ -531,10 +532,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testChildLifecycle1() {
         val parent = TestController()
-        router.push {
-            controller(parent)
-            pushHandler(MockChangeHandler.defaultHandler())
-        }
+        router.push(parent, MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler())
 
         val child = TestController()
         attachLifecycleListener(child)
@@ -545,11 +543,11 @@ class ControllerLifecycleCallbacksTest {
 
         val childRouter =
             parent.getChildRouter(parent.childContainer1!!).apply {
-                setRoot {
-                    controller(child)
-                    pushHandler(getPushHandler(expectedCallState, child))
-                    popHandler(getPopHandler(expectedCallState, child))
-                }
+                setRoot(
+                    child,
+                    getPushHandler(expectedCallState, child),
+                    getPopHandler(expectedCallState, child)
+                )
             }
 
         assertCalls(expectedCallState, child)
@@ -562,10 +560,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testChildLifecycle2() {
         val parent = TestController()
-        router.push {
-            controller(parent)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(parent, MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler())
 
         val child = TestController()
         attachLifecycleListener(child)
@@ -575,11 +570,11 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, child)
 
         parent.getChildRouter(parent.childContainer1!!).apply {
-            setRoot {
-                controller(child)
-                pushHandler(getPushHandler(expectedCallState, child))
-                popHandler(getPopHandler(expectedCallState, child))
-            }
+            setRoot(
+                child,
+                getPushHandler(expectedCallState, child),
+                getPopHandler(expectedCallState, child)
+            )
         }
 
         assertCalls(expectedCallState, child)
@@ -597,19 +592,16 @@ class ControllerLifecycleCallbacksTest {
     fun testChildLifecycleOrderingAfterUnexpectedAttach() {
         val parent = TestController()
         parent.retainView = true
-        router.push {
-            controller(parent)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(parent, MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler())
 
         val child = TestController()
         child.retainView = true
         parent.getChildRouter(parent.childContainer1!!).apply {
-            setRoot {
-                controller(child)
-                pushHandler(SimpleSwapChangeHandler())
-                popHandler(SimpleSwapChangeHandler())
-            }
+            setRoot(
+                child,
+                SimpleSwapChangeHandler(),
+                SimpleSwapChangeHandler()
+            )
         }
 
         assertTrue(parent.state == ATTACHED)

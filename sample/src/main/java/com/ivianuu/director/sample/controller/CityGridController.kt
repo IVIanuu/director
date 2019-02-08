@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.activity
-import com.ivianuu.director.handler
+
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -68,10 +68,11 @@ class CityGridController : BaseController() {
             resources.getString(R.string.transition_tag_title_named, city.title)
         )
 
-        router.push {
-            controller(CityDetailController.newInstance(city.drawableRes, city.title))
-            handler(CityGridSharedElementTransitionChangeHandler(names))
-        }
+        router.push(
+            CityDetailController.newInstance(city.drawableRes, city.title),
+            CityGridSharedElementTransitionChangeHandler(names),
+            CityGridSharedElementTransitionChangeHandler(names)
+        )
     }
 
     companion object {

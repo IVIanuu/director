@@ -10,8 +10,8 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
-import com.ivianuu.director.common.changehandler.fade
-import com.ivianuu.director.handler
+import com.ivianuu.director.common.changehandler.FadeChangeHandler
+
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -60,15 +60,13 @@ class HomeController : BaseController() {
     private fun onItemClicked(item: HomeItem, position: Int) {
         when (item) {
             HomeItem.NAVIGATION -> {
-                router.push {
-                    controller(
-                        NavigationController.newInstance(
-                            0,
-                            NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
-                        )
-                    )
-                    tag(NavigationController.TAG_UP_TRANSACTION)
-                }
+                router.push(
+                    NavigationController.newInstance(
+                        0,
+                        NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
+                    ),
+                    tag = NavigationController.TAG_UP_TRANSACTION
+                )
             }
             HomeItem.TRANSITIONS -> {
                 router.push(
@@ -77,19 +75,19 @@ class HomeController : BaseController() {
                 )
             }
             HomeItem.TARGET_CONTROLLER -> {
-                router.push<TargetDisplayController>()
+                router.push(TargetDisplayController())
             }
             HomeItem.VIEW_PAGER -> {
-                router.push<PagerController>()
+                router.push(PagerController())
             }
             HomeItem.VIEW_PAGER2 -> {
-                router.push<Pager2Controller>()
+                router.push(Pager2Controller())
             }
             HomeItem.BOTTOM_NAV -> {
-                router.push<BottomNavController>()
+                router.push(BottomNavController())
             }
             HomeItem.CHILD_CONTROLLERS -> {
-                router.push<ParentController>()
+                router.push(ParentController())
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
@@ -97,33 +95,36 @@ class HomeController : BaseController() {
                 val dotSharedElementName =
                     resources.getString(R.string.transition_tag_dot_indexed, position)
 
-                router.push {
-                    controller(CityGridController.newInstance(item.title, item.color, position))
-                    handler(
-                        ArcFadeMoveChangeHandler(
-                            titleSharedElementName,
-                            dotSharedElementName
-                        )
+                router.push(
+                    CityGridController.newInstance(item.title, item.color, position),
+                    ArcFadeMoveChangeHandler(
+                        titleSharedElementName,
+                        dotSharedElementName
+                    ),
+                    ArcFadeMoveChangeHandler(
+                        titleSharedElementName,
+                        dotSharedElementName
                     )
-                }
+                )
             }
             HomeItem.DRAG_DISMISS -> {
-                router.push {
-                    controller(DragDismissController())
-                    fade(removesFromViewOnPush = false)
-                }
+                router.push(
+                    DragDismissController(),
+                    FadeChangeHandler(removesFromViewOnPush = false),
+                    FadeChangeHandler(removesFromViewOnPush = false)
+                )
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
-                router.push<MultipleChildRouterController>()
+                router.push(MultipleChildRouterController())
             }
             HomeItem.MASTER_DETAIL -> {
-                router.push<MasterDetailListController>()
+                router.push(MasterDetailListController())
             }
             HomeItem.DIALOG -> {
                 SimpleDialogController().show(router)
             }
             HomeItem.EXTERNAL_MODULES -> {
-                router.push<ExternalModulesController>()
+                router.push(ExternalModulesController())
             }
         }
     }

@@ -30,5 +30,3 @@ enum class ControllerEvent {
     UNBIND_VIEW,
     DESTROY
 }
-
-// todo controller event lsitener

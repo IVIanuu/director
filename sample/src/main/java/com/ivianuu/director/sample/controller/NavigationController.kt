@@ -5,8 +5,10 @@ import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.RouterTransactionBuilder
-import com.ivianuu.director.common.changehandler.horizontal
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+
+
 import com.ivianuu.director.parentController
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
@@ -60,16 +62,15 @@ class NavigationController : BaseController() {
                     )
                 )
             } else {
-                router.push {
-                    controller(
-                        NavigationController.newInstance(
-                            index + 1,
-                            displayUpMode.displayUpModeForChild,
-                            useTraveler
-                        )
-                    )
-                    horizontal()
-                }
+                router.push(
+                    NavigationController.newInstance(
+                        index + 1,
+                        displayUpMode.displayUpModeForChild,
+                        useTraveler
+                    ),
+                    HorizontalChangeHandler(),
+                    HorizontalChangeHandler()
+                )
             }
         }
 
@@ -155,12 +156,15 @@ data class NavigationControllerKey(
         index, displayUpMode, useTraveler
     )
 
-    override fun setupTransaction(
+    override fun createTransaction(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransactionBuilder
-    ) {
-        transaction.horizontal()
+        tag: String
+    ): RouterTransaction {
+        return RouterTransaction(
+            nextController,
+            HorizontalChangeHandler(), HorizontalChangeHandler()
+        )
     }
 }

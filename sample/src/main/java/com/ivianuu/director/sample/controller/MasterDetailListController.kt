@@ -7,7 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.activity
-import com.ivianuu.director.common.changehandler.horizontal
+import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
@@ -72,10 +73,10 @@ class MasterDetailListController : BaseController() {
             @Suppress("PLUGIN_WARNING")
             getChildRouter(detail_container).setRoot(controller)
         } else {
-            router.push {
-                controller(controller)
-                horizontal()
-            }
+            router.push(
+                controller,
+                HorizontalChangeHandler(), HorizontalChangeHandler()
+            )
         }
     }
 

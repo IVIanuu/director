@@ -22,8 +22,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.DirectorPlugins
-import com.ivianuu.director.RouterTransactionBuilder
-import com.ivianuu.director.handler
+
 
 /**
  * A [AnimatorChangeHandler] that will slide the views left or right, depending on if it's a push or pop.
@@ -98,25 +97,4 @@ open class HorizontalChangeHandler(
             duration,
             removesFromViewOnPush
         )
-}
-
-fun RouterTransactionBuilder.horizontal(
-    duration: Long = DirectorPlugins.defaultAnimationDuration,
-    removesFromViewOnPush: Boolean = true
-): RouterTransactionBuilder = apply {
-    handler(HorizontalChangeHandler(duration, removesFromViewOnPush))
-}
-
-fun RouterTransactionBuilder.horizontalPush(
-    duration: Long = DirectorPlugins.defaultAnimationDuration,
-    removesFromViewOnPush: Boolean = true
-): RouterTransactionBuilder = apply {
-    pushHandler(HorizontalChangeHandler(duration, removesFromViewOnPush))
-}
-
-fun RouterTransactionBuilder.horizontalPop(
-    duration: Long = DirectorPlugins.defaultAnimationDuration,
-    removesFromViewOnPush: Boolean = true
-): RouterTransactionBuilder = apply {
-    popHandler(HorizontalChangeHandler(duration, removesFromViewOnPush))
 }

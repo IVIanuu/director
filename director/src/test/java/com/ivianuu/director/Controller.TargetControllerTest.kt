@@ -45,17 +45,18 @@ class TargetControllerTest {
         assertNull(controllerA.targetController)
         assertNull(controllerB.targetController)
 
-        router.push {
-            controller(controllerA)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(
+            controllerA,
+            MockChangeHandler.defaultHandler(),
+            MockChangeHandler.defaultHandler()
+        )
 
         controllerB.targetController = controllerA
 
-        router.push {
-            controller(controllerB)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(
+            controllerB,
+            MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler()
+        )
 
         assertNull(controllerA.targetController)
         assertEquals(controllerA, controllerB.targetController)
@@ -69,19 +70,20 @@ class TargetControllerTest {
         assertNull(controllerA.targetController)
         assertNull(controllerB.targetController)
 
-        router.push {
-            controller(controllerA)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(
+            controllerA,
+            MockChangeHandler.defaultHandler(),
+            MockChangeHandler.defaultHandler()
+        )
 
         controllerB.targetController = controllerA
 
         val childRouter =
             controllerA.getChildRouter(controllerA.childContainer1!!)
-        childRouter.push {
-            controller(controllerB)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        childRouter.push(
+            controllerB,
+            MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler()
+        )
 
         assertNull(controllerA.targetController)
         assertEquals(controllerA, controllerB.targetController)
@@ -95,10 +97,11 @@ class TargetControllerTest {
         assertNull(controllerA.targetController)
         assertNull(controllerB.targetController)
 
-        router.push {
-            controller(controllerA)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        router.push(
+            controllerA,
+            MockChangeHandler.defaultHandler(),
+            MockChangeHandler.defaultHandler()
+        )
 
         controllerA.targetController = controllerB
 
@@ -107,10 +110,11 @@ class TargetControllerTest {
                 controllerA.childContainer1!!
             )
 
-        childRouter.push {
-            controller(controllerB)
-            handler(MockChangeHandler.defaultHandler())
-        }
+        childRouter.push(
+            controllerB,
+            MockChangeHandler.defaultHandler(),
+            MockChangeHandler.defaultHandler()
+        )
 
         assertNull(controllerB.targetController)
         assertEquals(controllerB, controllerA.targetController)

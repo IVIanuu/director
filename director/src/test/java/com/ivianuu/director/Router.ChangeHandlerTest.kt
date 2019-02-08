@@ -59,11 +59,7 @@ class RouterChangeHandlerTest {
         val pushHandler = MockChangeHandler.taggedHandler("push", true)
         val popHandler = MockChangeHandler.taggedHandler("pop", true)
         val pushController = TestController()
-        router.push {
-            controller(pushController)
-            pushHandler(pushHandler)
-            popHandler(popHandler)
-        }
+        router.push(pushController, pushHandler, popHandler)
 
         assertTrue(rootController.changeHandlerHistory.isValidHistory)
         assertTrue(pushController.changeHandlerHistory.isValidHistory)
@@ -91,20 +87,12 @@ class RouterChangeHandlerTest {
         val initialController1 = TestController()
         val initialPushHandler1 = MockChangeHandler.taggedHandler("initialPush1", true)
         val initialPopHandler1 = MockChangeHandler.taggedHandler("initialPop1", true)
-        router.setRoot {
-            controller(initialController1)
-            pushHandler(initialPushHandler1)
-            popHandler(initialPopHandler1)
-        }
+        router.setRoot(initialController1, initialPushHandler1, initialPopHandler1)
 
         val initialController2 = TestController()
         val initialPushHandler2 = MockChangeHandler.taggedHandler("initialPush2", false)
         val initialPopHandler2 = MockChangeHandler.taggedHandler("initialPop2", false)
-        router.push {
-            controller(initialController2)
-            pushHandler(initialPushHandler2)
-            popHandler(initialPopHandler2)
-        }
+        router.push(initialController2, initialPushHandler2, initialPopHandler2)
 
         val initialView1 = initialController1.view
         val initialView2 = initialController2.view
