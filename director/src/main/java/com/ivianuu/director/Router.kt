@@ -626,11 +626,6 @@ val Router.backstackSize: Int get() = backstack.size
 val Router.hasRootController: Boolean get() = backstackSize > 0
 
 /**
- * Fluent version of pops last view
- */
-fun Router.popsLastView(popsLastView: Boolean): Router = apply { this.popsLastView = popsLastView }
-
-/**
  * Pops the top [Controller] from the backstack
  */
 fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
