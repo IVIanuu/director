@@ -309,12 +309,8 @@ abstract class Controller {
     }
 
     internal fun containerDetached() {
-        val view = view ?: return
-
         // decide whether or not our view should be retained
-        if (!isBeingDestroyed && retainView) {
-            (view.parent as? ViewGroup)?.removeView(view)
-        } else {
+        if (view != null && (isBeingDestroyed || !retainView)) {
             unbindView()
         }
     }

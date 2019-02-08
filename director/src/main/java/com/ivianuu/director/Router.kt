@@ -79,8 +79,6 @@ open class Router internal constructor(
 
     private val changeManager = ControllerChangeManager()
 
-    private var hasPreparedForContainerRemoval = false
-
     private var hostStarted = false
     private var hostDestroyed = false
 
@@ -383,6 +381,7 @@ open class Router internal constructor(
         if (this.container != container) {
             removeContainer()
             (container as? ControllerChangeListener)?.let { addChangeListener(it) }
+
             this.container = container
 
             _backstack.reversed().forEach { it.controller.containerAttached() }
@@ -390,20 +389,23 @@ open class Router internal constructor(
     }
 
     fun removeContainer() {
-        if (container != null) {
+        container?.let { container ->
             prepareForContainerRemoval()
 
-            _backstack.reversed().forEach { it.controller.containerDetached() }
-
             (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
-            container = null
+
+            _backstack.reversed().forEach {
+                it.controller.view?.let { container.removeView(it) }
+                it.controller.containerDetached()
+            }
         }
+
+        container = null
     }
 
     fun hostStarted() {
         if (!hostStarted) {
             hostStarted = true
-            hasPreparedForContainerRemoval = false
             _backstack.reversed().forEach { it.controller.hostStarted() }
         }
     }
@@ -420,16 +422,13 @@ open class Router internal constructor(
         if (!hostDestroyed) {
             hostDestroyed = true
             _backstack.reversed().forEach { it.controller.hostDestroyed() }
-            container = null
+            removeContainer()
         }
     }
 
     private fun prepareForContainerRemoval() {
-        if (!hasPreparedForContainerRemoval) {
-            hasPreparedForContainerRemoval = true
-            _backstack.reversed().forEach {
-                changeManager.cancelChange(it.controller.instanceId, true)
-            }
+        _backstack.reversed().forEach {
+            changeManager.cancelChange(it.controller.instanceId, true)
         }
     }
 
