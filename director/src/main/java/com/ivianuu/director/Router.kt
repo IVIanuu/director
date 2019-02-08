@@ -91,7 +91,8 @@ open class Router internal constructor(
      */
     open fun setBackstack(
         newBackstack: List<RouterTransaction>,
-        handler: ControllerChangeHandler? = null
+        handler: ControllerChangeHandler? = null,
+        isPush: Boolean? = null
     ) {
         val oldTransactions = _backstack.toList()
         val oldVisibleTransactions = oldTransactions.filterVisible()
@@ -189,8 +190,8 @@ open class Router internal constructor(
                         .forEachIndexed { i, transaction ->
                             performControllerChange(
                                 transaction,
-                                newVisibleTransactions.getOrNull(i),
-                                true, localHandler!!.copy()
+                                newVisibleTransactions.getOrNull(i - 1),
+                                true, localHandler?.copy()
                             )
                         }
                 } else if (!oldHandlerRemovedViews && newHandlerRemovesViews) {
@@ -220,9 +221,8 @@ open class Router internal constructor(
             }
             // it's not a simple change so loop trough everything
             newBackstack.isNotEmpty() -> {
-                val newRootRequiresPush =
-                    newVisibleTransactions.isEmpty() ||
-                            !oldTransactions.contains(newVisibleTransactions.first())
+                val newRootRequiresPush = isPush ?: newVisibleTransactions.isEmpty() ||
+                        !oldTransactions.contains(newVisibleTransactions.first())
 
                 if (newVisibleTransactions != oldVisibleTransactions) {
                     val oldRootTransaction = oldVisibleTransactions.firstOrNull()

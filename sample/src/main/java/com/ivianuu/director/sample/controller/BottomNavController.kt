@@ -115,7 +115,7 @@ class BottomNavController : BaseController() {
             )
         }
 
-        bottomNavRouter.setBackstack(newBackstack)
+        bottomNavRouter.setBackstack(newBackstack, isPush = true)
         currentIndex = index
     }
 

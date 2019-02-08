@@ -433,4 +433,42 @@ class RouterChangeHandlerTest {
         )
         assertFalse(initialController2.changeHandlerHistory.latestIsPush())
     }
+
+    @Test
+    fun testSetBackstackCustomIsPush() {
+        val pushHandler1 = MockChangeHandler.taggedHandler("pushHandler1", true)
+        val popHandler1 = MockChangeHandler.taggedHandler("popHandler1", true)
+        val pushHandler2 = MockChangeHandler.taggedHandler("pushHandler2", true)
+        val popHandler2 = MockChangeHandler.taggedHandler("popHandler2", true)
+
+        val controller1 = TestController()
+        val transaction1 = controller1.toTransaction(pushHandler1, popHandler1)
+
+        val controller2 = TestController()
+        val transaction2 = controller2.toTransaction(pushHandler2, popHandler2)
+
+        var backstack = listOf(transaction1, transaction2)
+
+        router.setBackstack(backstack)
+
+        assertTrue(controller1.changeHandlerHistory.isValidHistory)
+        assertTrue(controller2.changeHandlerHistory.isValidHistory)
+
+        assertEquals(0, controller1.changeHandlerHistory.size())
+        assertEquals(1, controller2.changeHandlerHistory.size())
+
+        assertEquals(pushHandler2, controller2.changeHandlerHistory.latestChangeHandler())
+
+        backstack = listOf(transaction2, transaction1)
+        router.setBackstack(backstack, isPush = true)
+
+        assertTrue(controller1.changeHandlerHistory.isValidHistory)
+        assertTrue(controller2.changeHandlerHistory.isValidHistory)
+
+        assertEquals(1, controller1.changeHandlerHistory.size())
+        assertEquals(2, controller2.changeHandlerHistory.size())
+
+        assertEquals(pushHandler1, controller1.changeHandlerHistory.latestChangeHandler())
+        assertEquals(pushHandler1, controller2.changeHandlerHistory.latestChangeHandler())
+    }
 }
