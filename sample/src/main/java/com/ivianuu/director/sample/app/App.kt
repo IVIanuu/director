@@ -36,8 +36,8 @@ class App : Application() {
         if (LeakCanary.isInAnalyzerProcess(this)) return
         //LeakCanary.get(this)
 
-        DirectorPlugins.defaultAnimationDuration = 180
-        DirectorPlugins.defaultTransitionDuration = 180
+        DirectorPlugins.defaultAnimationDuration = 220
+        DirectorPlugins.defaultTransitionDuration = 220
         DirectorPlugins.setDefaultHandler(FadeChangeHandler())
         DirectorPlugins.defaultControllerFactory = LoggingControllerFactory()
     }
