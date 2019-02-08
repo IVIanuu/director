@@ -13,13 +13,12 @@ import android.transition.Transition.TransitionListener
 import android.transition.TransitionSet
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.common.TransitionUtils
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
+import com.ivianuu.director.common.findNamedView
 import java.util.*
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class ArcFadeMoveChangeHandler :
-    SharedElementTransitionChangeHandler {
+class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
 
     private val sharedElementNames = mutableListOf<String>()
 
@@ -67,7 +66,7 @@ class ArcFadeMoveChangeHandler :
             override fun onTransitionStart(transition: Transition) {
                 if (from != null) {
                     sharedElementNames
-                        .mapNotNull { TransitionUtils.findNamedView(from, it) }
+                        .mapNotNull { from.findNamedView(it) }
                         .forEach { it.visibility = View.INVISIBLE }
                 }
             }
