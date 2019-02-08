@@ -395,7 +395,7 @@ open class Router internal constructor(
             (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
 
             _backstack.reversed().forEach {
-                it.controller.view?.let { container.removeView(it) }
+                it.controller.view?.let { v -> container.removeView(v) }
                 it.controller.containerDetached()
             }
         }
@@ -612,8 +612,8 @@ fun Router.findControllerByInstanceId(instanceId: String): Controller? =
         if (it.controller.instanceId == instanceId) {
             it.controller
         } else {
-            it.controller.childRouters.firstNotNullResultOrNull {
-                it.findControllerByInstanceId(instanceId)
+            it.controller.childRouters.firstNotNullResultOrNull { childRouter ->
+                childRouter.findControllerByInstanceId(instanceId)
             }
         }
     }

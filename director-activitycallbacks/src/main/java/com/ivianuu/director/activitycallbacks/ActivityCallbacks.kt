@@ -33,7 +33,7 @@ class ActivityCallbacks : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activities.put(this, requireActivity())
+        activities[this] = requireActivity()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
