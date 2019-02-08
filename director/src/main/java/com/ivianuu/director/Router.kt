@@ -6,6 +6,7 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
+import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.takeLastUntil
 
 /**
@@ -608,7 +609,15 @@ fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
  * Controller exists in this Router.
  */
 fun Router.findControllerByInstanceId(instanceId: String): Controller? =
-    backstack.firstOrNull { it.controller.instanceId == instanceId }?.controller
+    backstack.firstNotNullResultOrNull {
+        if (it.controller.instanceId == instanceId) {
+            it.controller
+        } else {
+            it.controller.childRouters.firstNotNullResultOrNull {
+                it.findControllerByInstanceId(instanceId)
+            }
+        }
+    }
 
 /**
  * Returns the hosted Controller that was pushed with the given tag or `null` if no
