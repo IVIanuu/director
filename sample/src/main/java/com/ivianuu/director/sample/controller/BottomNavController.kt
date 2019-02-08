@@ -3,6 +3,7 @@ package com.ivianuu.director.sample.controller
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.backstackSize
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
@@ -73,13 +74,13 @@ class BottomNavController : BaseController() {
         }
 
         return if (currentIndex != 0) {
-            val router = (bottomNavRouter.backstack
-                .first()
+            val childRouter = (bottomNavRouter.backstack
+                .last()
                 .controller as BottomNavChildController)
                 .childRouters
                 .first()
 
-            if (router.backstack.size == 1) {
+            if (childRouter.backstackSize == 1) {
                 swapTo(0)
                 bottom_nav_view.selectedItemId =
                         bottom_nav_view.menu.getItem(currentIndex).itemId
@@ -105,9 +106,17 @@ class BottomNavController : BaseController() {
         if (backstackIndex != -1) {
             Collections.swap(newBackstack, backstackIndex, newBackstack.lastIndex)
         } else {
+            val startIndex = when (index) {
+                0 -> 5
+                1 -> 4
+                2 -> 3
+                3 -> 2
+                4 -> 1
+                else -> error("should not happen")
+            }
             newBackstack.add(
                 RouterTransaction(
-                    BottomNavChildController(),
+                    BottomNavChildController.newInstance(startIndex),
                     FadeChangeHandler(),
                     FadeChangeHandler(),
                     index.toString()

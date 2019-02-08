@@ -50,8 +50,8 @@ class RouterManagerTest {
         assertEquals(2, manager.routers.size)
         assertEquals(router1, manager.routers[0])
         assertEquals(router2, manager.routers[1])
-        assertEquals(1, router1.backstack.size)
-        assertEquals(1, router2.backstack.size)
+        assertEquals(1, router1.backstackSize)
+        assertEquals(1, router2.backstackSize)
         assertEquals(controller1, router1.backstack.firstOrNull()?.controller)
         assertEquals(controller2, router2.backstack.firstOrNull()?.controller)
 
@@ -59,15 +59,15 @@ class RouterManagerTest {
 
         assertEquals(1, manager.routers.size)
         assertEquals(router1, manager.routers[0])
-        assertEquals(1, router1.backstack.size)
-        assertEquals(0, router2.backstack.size)
+        assertEquals(1, router1.backstackSize)
+        assertEquals(0, router2.backstackSize)
         assertEquals(controller1, router1.backstack.firstOrNull()?.controller)
 
         manager.removeRouter(router1)
 
         assertEquals(0, manager.routers.size)
-        assertEquals(0, router1.backstack.size)
-        assertEquals(0, router2.backstack.size)
+        assertEquals(0, router1.backstackSize)
+        assertEquals(0, router2.backstackSize)
     }
 
     @Test
@@ -85,12 +85,12 @@ class RouterManagerTest {
         manager.removeRouter(router)
 
         router = manager.getRouter(activityProxy.view1)
-        assertEquals(0, router.backstack.size)
+        assertEquals(0, router.backstackSize)
 
         router.restoreInstanceState(savedState)
         router.rebind()
 
-        assertEquals(2, router.backstack.size)
+        assertEquals(2, router.backstackSize)
 
         val restoredChildTransaction1 = router.backstack.first()
         val restoredChildTransaction2 = router.backstack[1]
@@ -114,11 +114,11 @@ class RouterManagerTest {
         )
 
         assertTrue(router.handleBack())
-        assertEquals(1, router.backstack.size)
+        assertEquals(1, router.backstackSize)
         assertEquals(restoredChildTransaction1, router.backstack[0])
 
         assertTrue(router.handleBack())
-        assertEquals(0, router.backstack.size)
+        assertEquals(0, router.backstackSize)
     }
 
 }

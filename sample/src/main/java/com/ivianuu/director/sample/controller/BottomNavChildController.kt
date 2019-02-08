@@ -18,6 +18,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import com.ivianuu.director.hasRootController
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 
@@ -34,10 +35,26 @@ class BottomNavChildController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!childRouter.hasRootController) {
-            childRouter.setRoot(
-                NavigationController
-                    .newInstance(1, NavigationController.DisplayUpMode.HIDE, false)
-            )
+            (1..args.getInt(KEY_START_INDEX))
+                .map {
+                    NavigationController.newInstance(
+                        it, NavigationController.DisplayUpMode.HIDE, false
+                    ) to it
+                }
+                .forEach { (controller, i) ->
+                    if (i == 1) {
+                        childRouter.setRoot(controller)
+                    } else {
+                        childRouter.push(controller)
+                    }
+                }
         }
+    }
+
+    companion object {
+        private const val KEY_START_INDEX = "start_index"
+
+        fun newInstance(startIndex: Int): BottomNavChildController = BottomNavChildController()
+            .apply { args.putInt(KEY_START_INDEX, startIndex) }
     }
 }
