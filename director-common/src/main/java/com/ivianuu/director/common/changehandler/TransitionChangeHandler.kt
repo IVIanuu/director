@@ -103,11 +103,10 @@ abstract class TransitionChangeHandler(
         duration = bundle.getLong(KEY_DURATION)
     }
 
-
     override fun cancel(immediate: Boolean) {
         super.cancel(immediate)
         canceled = true
-        needsImmediateCompletion
+        needsImmediateCompletion = immediate
     }
 
     /**
