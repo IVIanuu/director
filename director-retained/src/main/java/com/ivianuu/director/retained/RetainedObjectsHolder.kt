@@ -20,27 +20,28 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.activity
+import com.ivianuu.director.doOnPostDestroy
 
 /**
- * Holds retained objects of controller
+ * Holds retained objects of a [Controller]
  */
-internal class RetainedObjectsHolder : ViewModel(), ControllerLifecycleListener {
+internal class RetainedObjectsHolder : ViewModel() {
 
     private val retainedObjects =
         mutableMapOf<String, RetainedObjects>()
 
-    override fun postDestroy(controller: Controller) {
-        super.postDestroy(controller)
-        if (!controller.activity.isChangingConfigurations) {
-            retainedObjects.remove(controller.instanceId)
-        }
+    internal fun getRetainedObjects(controller: Controller): RetainedObjects {
+        controller.removeRetainedObjectsOnPostDestroy()
+        return retainedObjects.getOrPut(controller.instanceId) { RetainedObjects() }
     }
 
-    internal fun getRetainedObjects(controller: Controller): RetainedObjects {
-        controller.router.addLifecycleListener(this)
-        return retainedObjects.getOrPut(controller.instanceId) { RetainedObjects() }
+    private fun Controller.removeRetainedObjectsOnPostDestroy() {
+        doOnPostDestroy {
+            if (!activity.isChangingConfigurations) {
+                this@RetainedObjectsHolder.retainedObjects.remove(instanceId)
+            }
+        }
     }
 
     private object Factory : ViewModelProvider.Factory {

@@ -39,12 +39,11 @@ abstract class AnimatorChangeHandler(
 
     private var animator: Animator? = null
     private var onReadyOrAbortedListener: OnReadyOrAbortedListener? = null
+    private var changeData: ChangeData? = null
 
     private var canceled = false
     private var needsImmediateCompletion = false
     private var completed = false
-
-    private var changeData: ChangeData? = null
 
     init {
         this.duration = duration
@@ -71,17 +70,16 @@ abstract class AnimatorChangeHandler(
 
             if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
-                onReadyOrAbortedListener =
-                        OnReadyOrAbortedListener(to) {
-                            performAnimation(
-                                container,
-                                from,
-                                to,
-                                isPush,
-                                true,
-                                onChangeComplete
-                            )
-                        }
+                onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
+                    performAnimation(
+                        container,
+                        from,
+                        to,
+                        isPush,
+                        true,
+                        onChangeComplete
+                    )
+                }
             }
         }
 
