@@ -183,7 +183,6 @@ open class Router internal constructor(
                 val newHandlerRemovesViews = localHandler?.removesFromViewOnPush == true
 
                 if (oldHandlerRemovedViews && !newHandlerRemovesViews) {
-                    // re attach old views which will be visible now except the top one
                     newVisibleTransactions
                         .dropLast(1)
                         .forEachIndexed { i, transaction ->

@@ -374,7 +374,33 @@ class RouterTest {
             MockChangeHandler.noRemoveViewOnPushHandler()
         )
         router.replaceTop(controllerC)
-        controllerC.pushChangeHandler!!.cancel(true)
+
+        assertEquals(2, router.backstack.size)
+
+        assertTrue(controllerA.controller.isAttached)
+        assertFalse(controllerB.controller.isAttached)
+        assertTrue(controllerC.controller.isAttached)
+    }
+
+    @Test
+    fun testReplaceTopControllerWithNoRemoveViewOnPush2() {
+        val controllerA = TestController().toTransaction()
+        val controllerB = TestController().toTransaction(
+            MockChangeHandler.defaultHandler()
+        )
+
+        val backstack = listOf(controllerA, controllerB)
+        router.setBackstack(backstack)
+
+        assertEquals(2, router.backstack.size)
+
+        assertFalse(controllerA.controller.isAttached)
+        assertTrue(controllerB.controller.isAttached)
+
+        val controllerC = TestController().toTransaction(
+            MockChangeHandler.noRemoveViewOnPushHandler()
+        )
+        router.replaceTop(controllerC)
 
         assertEquals(2, router.backstack.size)
 
