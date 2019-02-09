@@ -211,7 +211,7 @@ class RouterTest {
 
         val backstack =
             listOf(rootTransaction, middleTransaction, topTransaction)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
 
@@ -247,7 +247,7 @@ class RouterTest {
         )
 
         val backstack = listOf(rootTransaction, middleTransaction, topTransaction)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
 
@@ -271,7 +271,7 @@ class RouterTest {
 
         val backstack =
             listOf(rootTransaction, transaction1, transaction2)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
 
@@ -299,7 +299,7 @@ class RouterTest {
 
         val backstack =
             listOf(rootTransaction, transaction1, transaction2)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
 
@@ -319,7 +319,7 @@ class RouterTest {
         val topTransaction = TestController().toTransaction()
 
         val backstack = listOf(rootTransaction, topTransaction)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(2, router.backstackSize)
 
@@ -346,7 +346,7 @@ class RouterTest {
         )
 
         val backstack = listOf(controllerA, controllerB)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(2, router.backstackSize)
 
@@ -375,7 +375,7 @@ class RouterTest {
         )
 
         val backstack = listOf(controllerA, controllerB)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(2, router.backstackSize)
 
@@ -398,7 +398,7 @@ class RouterTest {
         val controllerB = TestController().toTransaction()
 
         val backstack = listOf(controllerA, controllerB)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(2, router.backstackSize)
 
@@ -425,13 +425,13 @@ class RouterTest {
         val transaction2 = TestController().toTransaction()
 
         var backstack = listOf(transaction1, transaction2)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(1, transaction1.transactionIndex)
         assertEquals(2, transaction2.transactionIndex)
 
         backstack = listOf(transaction2, transaction1)
-        router.setBackstack(backstack)
+        router.setBackstack(backstack, true)
 
         assertEquals(1, transaction2.transactionIndex)
         assertEquals(2, transaction1.transactionIndex)
@@ -459,13 +459,13 @@ class RouterTest {
         val transaction2 = TestController().toTransaction()
 
         var backstack = listOf(transaction1, transaction2)
-        childRouter.setBackstack(backstack)
+        childRouter.setBackstack(backstack, true)
 
         assertEquals(2, transaction1.transactionIndex)
         assertEquals(3, transaction2.transactionIndex)
 
         backstack = listOf(transaction2, transaction1)
-        childRouter.setBackstack(backstack)
+        childRouter.setBackstack(backstack, true)
 
         assertEquals(2, transaction2.transactionIndex)
         assertEquals(3, transaction1.transactionIndex)

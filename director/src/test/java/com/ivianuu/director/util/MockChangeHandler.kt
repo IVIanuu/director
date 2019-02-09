@@ -65,7 +65,7 @@ class MockChangeHandler private constructor(
         listener!!.willStartChange()
 
         if (isPush) {
-            if (to != null) {
+            if (to != null && to.parent == null) {
                 container.addView(to)
                 listener.didAttachOrDetach()
             }

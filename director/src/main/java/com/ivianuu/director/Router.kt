@@ -90,12 +90,9 @@ open class Router internal constructor(
      */
     open fun setBackstack(
         newBackstack: List<RouterTransaction>,
-        handler: ControllerChangeHandler? = null,
-        isPush: Boolean? = null
+        isPush: Boolean,
+        handler: ControllerChangeHandler? = null
     ) {
-        val oldTransactions = _backstack.toList()
-        val oldVisibleTransactions = oldTransactions.filterVisible()
-
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
@@ -110,6 +107,9 @@ open class Router internal constructor(
         check(newBackstack.size == newBackstack.distinctBy { it.controller }.size) {
             "Trying to push the same controller to the backstack more than once."
         }
+
+        val oldTransactions = _backstack.toList()
+        val oldVisibleTransactions = oldTransactions.filterVisible()
 
         _backstack.clear()
         _backstack.addAll(newBackstack)
@@ -138,152 +138,59 @@ open class Router internal constructor(
 
         val newVisibleTransactions = newBackstack.filterVisible()
 
-        val isSinglePush =
-            newBackstack.isNotEmpty() && newBackstack.size - oldTransactions.size == 1
-                    && newBackstack.dropLast(1) == oldTransactions
+        val oldTopTransaction = oldVisibleTransactions.lastOrNull()
+        val newTopTransaction = newVisibleTransactions.lastOrNull()
 
-        val isSinglePop =
-            !isSinglePush && oldTransactions.isNotEmpty() && oldTransactions.size - newBackstack.size == 1
-                    && newBackstack == oldTransactions.dropLast(1)
+        // check if we should animate the top transactions
+        val replacingTopTransactions = newTopTransaction != null && (oldTopTransaction == null
+                || oldTopTransaction.controller != newTopTransaction.controller)
 
-        val isReplaceTop = !isSinglePush && !isSinglePop
-                && newBackstack.isNotEmpty() && oldTransactions.isNotEmpty()
-                && newBackstack.size == oldTransactions.size
-                && newBackstack.dropLast(1) == oldTransactions.dropLast(1)
-                && newBackstack.last() != oldTransactions.last()
-
-        when {
-            // just push the new top controller
-            isSinglePush -> {
+        // Remove all visible controllers that were previously on the backstack
+        oldVisibleTransactions
+            .dropLast(if (replacingTopTransactions) 1 else 0)
+            .reversed()
+            .filterNot { newVisibleTransactions.contains(it) }
+            .forEach {
+                changeManager.cancelChange(it.controller.instanceId, true)
+                val localHandler = handler?.copy() ?: it.popChangeHandler
+                ?: SimpleSwapChangeHandler()
+                localHandler.forceRemoveViewOnPush = true
                 performControllerChange(
-                    newBackstack.last(),
-                    oldTransactions.lastOrNull(),
-                    true,
-                    handler ?: newBackstack.last().pushChangeHandler
+                    null,
+                    it,
+                    isPush,
+                    localHandler
                 )
             }
-            // just pop the top controller
-            isSinglePop -> {
+
+        var visibleAdded = false
+
+        // Add any new controllers to the backstack
+        newVisibleTransactions
+            .dropLast(if (replacingTopTransactions) 1 else 0)
+            .filterNot { oldVisibleTransactions.contains(it) }
+            .forEachIndexed { i, transaction ->
+                visibleAdded = true
+                val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                 performControllerChange(
-                    newBackstack.lastOrNull(),
-                    oldTransactions.last(),
-                    false,
-                    handler ?: oldTransactions.last().popChangeHandler
-                )
-            }
-            // just swap the top controllers
-            isReplaceTop -> {
-                val newTopTransaction = newBackstack.last()
-                val oldTopTransaction = oldTransactions.last()
-
-                val localHandler = handler ?: newTopTransaction.pushChangeHandler
-
-                val oldHandlerRemovedViews =
-                    oldTopTransaction.pushChangeHandler?.removesFromViewOnPush ?: true
-
-                val newHandlerRemovesViews = localHandler?.removesFromViewOnPush ?: true
-
-                if (oldHandlerRemovedViews && !newHandlerRemovesViews) {
-                    newVisibleTransactions
-                        .dropLast(1)
-                        .forEachIndexed { i, transaction ->
-                            performControllerChange(
-                                transaction,
-                                newVisibleTransactions.getOrNull(i - 1),
-                                true, localHandler?.copy()
-                            )
-                        }
-                } else if (!oldHandlerRemovedViews && newHandlerRemovesViews) {
-                    oldVisibleTransactions
-                        .dropLast(1)
-                        .forEach {
-                            val handler =
-                                (localHandler?.copy() ?: SimpleSwapChangeHandler()).apply {
-                                    forceRemoveViewOnPush = true
-                                }
-                            performControllerChange(null, it, true, handler)
-                        }
-                }
-
-                // the view must be removed because its not the view we would expect
-                // in a simple push transaction
-                // the actual view below the new top is already pushed
-                localHandler?.forceRemoveViewOnPush = true
-
-                // swap the top controllers
-                performControllerChange(
-                    newTopTransaction,
-                    oldTopTransaction,
+                    transaction,
+                    newVisibleTransactions.getOrNull(i - 1),
                     true,
                     localHandler
                 )
             }
-            // it's not a simple change so loop trough everything
-            newBackstack.isNotEmpty() -> {
-                val newRootRequiresPush = isPush ?: newVisibleTransactions.isEmpty() ||
-                        !oldTransactions.contains(newVisibleTransactions.first())
 
-                if (newVisibleTransactions != oldVisibleTransactions) {
-                    val oldRootTransaction = oldVisibleTransactions.firstOrNull()
-                    val newRootTransaction = newVisibleTransactions.first()
-
-                    // Replace the old visible root with the new one
-                    if (oldRootTransaction == null || oldRootTransaction.controller != newRootTransaction.controller) {
-                        // Ensure the existing root controller is fully pushed to the view hierarchy
-                        if (oldRootTransaction != null) {
-                            changeManager.cancelChange(
-                                oldRootTransaction.controller.instanceId,
-                                true
-                            )
-                        }
-
-                        performControllerChange(
-                            newRootTransaction,
-                            oldRootTransaction,
-                            newRootRequiresPush,
-                            handler
-                        )
-                    }
-
-                    // Remove all visible controllers that were previously on the backstack
-                    oldVisibleTransactions
-                        .drop(1)
-                        .reversed()
-                        .filterNot { newVisibleTransactions.contains(it) }
-                        .forEach {
-                            val localHandler = handler?.copy() ?: SimpleSwapChangeHandler()
-                            localHandler.forceRemoveViewOnPush = true
-                            changeManager.cancelChange(it.controller.instanceId, true)
-                            performControllerChange(
-                                null,
-                                it,
-                                newRootRequiresPush,
-                                localHandler
-                            )
-                        }
-
-                    // Add any new controllers to the backstack
-                    newVisibleTransactions
-                        .drop(1)
-                        .filterNot { oldVisibleTransactions.contains(it) }
-                        .forEach {
-                            performControllerChange(
-                                it,
-                                newVisibleTransactions[newVisibleTransactions.indexOf(it) - 1],
-                                true,
-                                it.pushChangeHandler
-                            )
-                        }
-                }
-            }
-            // Remove all visible controllers that were previously on the backstack
-            else -> {
-                oldVisibleTransactions.reversed().forEach {
-                    val localHandler = handler?.copy() ?: SimpleSwapChangeHandler()
-                    changeManager.cancelChange(it.controller.instanceId, true)
-                    performControllerChange(null, it, false, localHandler)
-                }
-            }
+        // Replace the old visible root with the new one
+        if (replacingTopTransactions) {
+            val localHandler = handler?.copy() ?: SimpleSwapChangeHandler()
+            // force view removal if another controller has been pushed
+            localHandler.forceRemoveViewOnPush = visibleAdded
+            performControllerChange(
+                newTopTransaction,
+                oldTopTransaction,
+                isPush,
+                localHandler
+            )
         }
 
         // destroy all invisible transactions here
@@ -645,7 +552,7 @@ fun Router.pop(
         null
     }
 
-    setBackstack(newBackstack, handler)
+    setBackstack(newBackstack, false, handler)
 }
 
 /**
@@ -668,7 +575,7 @@ fun Router.pop(
         null
     }
 
-    setBackstack(newBackstack, handler)
+    setBackstack(newBackstack, false, handler)
 }
 
 /**
@@ -680,11 +587,7 @@ fun Router.push(
 ) {
     val newBackstack = backstack.toMutableList()
     newBackstack.add(transaction)
-    if (handler != null) {
-        setBackstack(newBackstack, handler)
-    } else {
-        setBackstack(newBackstack)
-    }
+    setBackstack(newBackstack, true, handler ?: transaction.pushChangeHandler)
 }
 
 /**
@@ -712,12 +615,7 @@ fun Router.replaceTop(
         newBackstack.removeAt(newBackstack.lastIndex)
     }
     newBackstack.add(transaction)
-
-    if (handler != null) {
-        setBackstack(newBackstack, handler)
-    } else {
-        setBackstack(newBackstack)
-    }
+    setBackstack(newBackstack, true, handler)
 }
 
 /**
@@ -769,7 +667,7 @@ fun Router.popTo(
     if (backstack.isNotEmpty()) {
         val topTransaction = backstack.lastOrNull()
         val newBackstack = backstack.dropLastWhile { it != transaction }
-        setBackstack(newBackstack, handler ?: topTransaction?.popChangeHandler)
+        setBackstack(newBackstack, false, handler ?: topTransaction?.popChangeHandler)
     }
 }
 
@@ -777,7 +675,8 @@ fun Router.popTo(
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
  */
 fun Router.setRoot(transaction: RouterTransaction, handler: ControllerChangeHandler? = null) {
-    setBackstack(listOf(transaction), handler ?: transaction.pushChangeHandler)
+    // todo check if we should always use isPush=true
+    setBackstack(listOf(transaction), true, handler ?: transaction.pushChangeHandler)
 }
 
 /**
