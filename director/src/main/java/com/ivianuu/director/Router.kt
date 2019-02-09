@@ -152,7 +152,7 @@ class Router internal constructor(
             .filterNot { newVisibleTransactions.contains(it) }
             .forEach {
                 changeManager.cancelChange(it.controller.instanceId, true)
-                val localHandler = handler?.copy() ?: it.popChangeHandler
+                val localHandler = handler?.copy() ?: it.popChangeHandler?.copy()
                 ?: SimpleSwapChangeHandler()
                 localHandler.forceRemoveViewOnPush = true
                 performControllerChange(
@@ -183,8 +183,8 @@ class Router internal constructor(
         // Replace the old visible root with the new one
         if (replacingTopTransactions) {
             val localHandler = handler?.copy()
-                ?: (if (isPush) newTopTransaction?.pushChangeHandler
-                else oldTopTransaction?.popChangeHandler)
+                ?: (if (isPush) newTopTransaction?.pushChangeHandler?.copy()
+                else oldTopTransaction?.popChangeHandler?.copy())
                 ?: SimpleSwapChangeHandler()
 
             // force view removal if another controller has been pushed
