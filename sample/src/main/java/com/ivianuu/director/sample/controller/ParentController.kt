@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.doOnChangeEnd
 import com.ivianuu.director.getChildRouter
@@ -14,6 +15,7 @@ import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 
 class ParentController : BaseController() {
 
@@ -75,7 +77,10 @@ class ParentController : BaseController() {
                     }
                 }
 
-                childRouter.setRoot(childController, FadeChangeHandler(), FadeChangeHandler())
+                childRouter.setRoot(
+                    childController.toTransaction()
+                        .changeHandler(FadeChangeHandler())
+                )
             }
         }
     }

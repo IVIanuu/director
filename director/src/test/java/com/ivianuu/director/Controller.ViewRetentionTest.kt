@@ -34,7 +34,7 @@ class ControllerViewRetentionTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRootController) {
-            setRoot(TestController())
+            setRoot(TestController().toTransaction())
         }
     }
 
@@ -46,7 +46,7 @@ class ControllerViewRetentionTest {
         // without retain view
         controller.retainView = false
         assertNull(controller.view)
-        router.push(controller)
+        router.push(controller.toTransaction())
         assertNotNull(controller.view)
         router.pop(controller)
         assertNull(controller.view)
@@ -56,9 +56,9 @@ class ControllerViewRetentionTest {
         onTopController = TestController()
         controller.retainView = true
         assertNull(controller.view)
-        router.push(controller)
+        router.push(controller.toTransaction())
         assertNotNull(controller.view)
-        router.push(onTopController)
+        router.push(onTopController.toTransaction())
         assertNotNull(controller.view)
 
         // disable retain should release the view
@@ -80,16 +80,16 @@ class ControllerViewRetentionTest {
         val child3 = TestController()
         child3.retainView = true
 
-        router.setRoot(parent)
+        router.setRoot(parent.toTransaction())
 
         parent.getChildRouter(parent.childContainer1!!)
-            .setRoot(child1)
+            .setRoot(child1.toTransaction())
 
         child1.getChildRouter(child1.childContainer1!!)
-            .setRoot(child2)
+            .setRoot(child2.toTransaction())
 
         child2.getChildRouter(child2.childContainer1!!)
-            .setRoot(child3)
+            .setRoot(child3.toTransaction())
 
         val parentView = parent.view
         val child1View = child1.view
@@ -98,7 +98,7 @@ class ControllerViewRetentionTest {
 
         val onTopController = TestController()
 
-        router.push(onTopController)
+        router.push(onTopController.toTransaction())
 
         assertNull(parent.view)
         assertNotNull(child1.view)
@@ -121,10 +121,10 @@ class ControllerViewRetentionTest {
         val child1 = TestController()
         child1.retainView = true
 
-        router.setRoot(parent)
+        router.setRoot(parent.toTransaction())
 
         parent.getChildRouter(parent.childContainer1!!)
-            .setRoot(child1)
+            .setRoot(child1.toTransaction())
 
         val parentView = parent.view
         val child1View = child1.view

@@ -21,6 +21,7 @@ import com.ivianuu.director.hasRootController
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -43,9 +44,9 @@ class BottomNavChildController : BaseController() {
                 }
                 .forEach { (controller, i) ->
                     if (i == 1) {
-                        childRouter.setRoot(controller)
+                        childRouter.setRoot(controller.toTransaction())
                     } else {
-                        childRouter.push(controller)
+                        childRouter.push(controller.toTransaction())
                     }
                 }
         }

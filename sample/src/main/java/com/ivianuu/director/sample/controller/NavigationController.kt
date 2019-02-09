@@ -6,6 +6,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 
 
@@ -17,6 +18,7 @@ import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.sample.util.bundleOf
+import com.ivianuu.director.toTransaction
 import com.ivianuu.director.traveler.ControllerKey
 import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
@@ -67,9 +69,8 @@ class NavigationController : BaseController() {
                         index + 1,
                         displayUpMode.displayUpModeForChild,
                         useTraveler
-                    ),
-                    HorizontalChangeHandler(),
-                    HorizontalChangeHandler()
+                    ).toTransaction()
+                        .changeHandler(HorizontalChangeHandler())
                 )
             }
         }
@@ -156,15 +157,13 @@ data class NavigationControllerKey(
         index, displayUpMode, useTraveler
     )
 
-    override fun createTransaction(
+    override fun setupTransaction(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        tag: String
-    ): RouterTransaction {
-        return RouterTransaction(
-            nextController,
-            HorizontalChangeHandler(), HorizontalChangeHandler()
-        )
+        transaction: RouterTransaction
+    ) {
+        transaction.changeHandler(HorizontalChangeHandler())
     }
+
 }

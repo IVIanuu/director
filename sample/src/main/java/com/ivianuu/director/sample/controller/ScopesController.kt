@@ -18,6 +18,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 
 import com.ivianuu.director.push
@@ -26,6 +27,7 @@ import com.ivianuu.director.sample.util.d
 import com.ivianuu.director.scopes.destroy
 import com.ivianuu.director.scopes.detach
 import com.ivianuu.director.scopes.unbindView
+import com.ivianuu.director.toTransaction
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_scopes.btn_next_release_view
@@ -60,9 +62,8 @@ class ScopesController : BaseController() {
             router.push(
                 TextController.newInstance(
                     "Logcat should now report that the observables from onAttach() and onBindView() have been disposed of, while the onCreate() observable is still running."
-                ),
-                HorizontalChangeHandler(),
-                HorizontalChangeHandler()
+                ).toTransaction()
+                    .changeHandler(HorizontalChangeHandler())
             )
         }
 
@@ -72,9 +73,8 @@ class ScopesController : BaseController() {
             router.push(
                 TextController.newInstance(
                     "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onBindView() observables are still running."
-                ),
-                HorizontalChangeHandler(),
-                HorizontalChangeHandler()
+                ).toTransaction()
+                    .changeHandler(HorizontalChangeHandler())
             )
         }
 

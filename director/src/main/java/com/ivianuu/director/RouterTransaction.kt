@@ -6,18 +6,73 @@ import com.ivianuu.director.internal.TransactionIndexer
 /**
  * Metadata used for adding [Controller]s to a [Router].
  */
-class RouterTransaction internal constructor(
-    val controller: Controller,
-    val tag: String?,
-    val pushChangeHandler: ControllerChangeHandler?,
-    val popChangeHandler: ControllerChangeHandler?,
-    internal var transactionIndex: Int = INVALID_INDEX,
+class RouterTransaction {
+
+    /**
+     * The controller of this transaction
+     */
+    val controller: Controller
+
+    /**
+     * The tag of this transaction
+     */
+    var tag: String? = null
+        set(value) {
+            checkModify()
+            field = value
+        }
+
+    /**
+     * The push change handler of this transaction
+     */
+    var pushChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler
+        set(value) {
+            checkModify()
+            field = value
+        }
+
+    /**
+     * The pop change handler of this transaction
+     */
+    var popChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler
+        set(value) {
+            checkModify()
+            field = value
+        }
+
+    internal var transactionIndex: Int = INVALID_INDEX
     internal var attachedToRouter: Boolean = false
-) {
+
+    constructor(controller: Controller) {
+        this.controller = controller
+    }
+
+    private constructor(
+        controller: Controller,
+        tag: String?,
+        pushChangeHandler: ControllerChangeHandler?,
+        popChangeHandler: ControllerChangeHandler?,
+        transactionIndex: Int,
+        attachedToRouter: Boolean
+    ) {
+        this.controller = controller
+        this.pushChangeHandler = pushChangeHandler
+        this.popChangeHandler = popChangeHandler
+        this.tag = tag
+        this.transactionIndex = transactionIndex
+        this.attachedToRouter = attachedToRouter
+    }
+
 
     internal fun ensureValidIndex(indexer: TransactionIndexer) {
         if (transactionIndex == INVALID_INDEX) {
             transactionIndex = indexer.nextIndex()
+        }
+    }
+
+    private fun checkModify() {
+        check(!attachedToRouter) {
+            "transactions cannot be modified after being added to a Router."
         }
     }
 
@@ -57,12 +112,31 @@ class RouterTransaction internal constructor(
     }
 }
 
-fun RouterTransaction(
-    controller: Controller,
-    pushHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler,
-    popHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler,
-    tag: String? = null
-): RouterTransaction = RouterTransaction(
-    controller, tag, pushHandler,
-    popHandler, RouterTransaction.INVALID_INDEX, false
-)
+/**
+ * Fluent version of push change handler
+ */
+fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction =
+    apply {
+        pushChangeHandler = changeHandler
+    }
+
+/**
+ * Fluent version of pop change handler
+ */
+fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction =
+    apply {
+        popChangeHandler = changeHandler
+    }
+
+/**
+ * Sets the [changeHandler] as both the [pushChangeHandler] and the [popChangeHandler]
+ */
+fun RouterTransaction.changeHandler(changeHandler: ControllerChangeHandler?) =
+    pushChangeHandler(changeHandler).popChangeHandler(changeHandler)
+
+/**
+ * Fluent version of tag
+ */
+fun RouterTransaction.tag(tag: String?): RouterTransaction = apply {
+    this.tag = tag
+}

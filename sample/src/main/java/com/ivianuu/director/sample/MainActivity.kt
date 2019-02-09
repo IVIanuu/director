@@ -7,6 +7,7 @@ import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.activity_main.controller_container
 import kotlinx.android.synthetic.main.activity_main.toolbar
 
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
 
         with(getRouter(controller_container)) {
             if (!hasRootController) {
-                setRoot(HomeController())
+                setRoot(HomeController().toTransaction())
             }
         }
     }

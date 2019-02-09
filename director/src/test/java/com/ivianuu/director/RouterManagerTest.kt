@@ -44,8 +44,8 @@ class RouterManagerTest {
         val router2 =
             manager.getRouter(activityProxy.view2)
 
-        router1.setRoot(controller1)
-        router2.setRoot(controller2)
+        router1.setRoot(controller1.toTransaction())
+        router2.setRoot(controller2.toTransaction())
 
         assertEquals(2, manager.routers.size)
         assertEquals(router1, manager.routers[0])

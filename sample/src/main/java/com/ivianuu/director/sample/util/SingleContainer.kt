@@ -47,7 +47,7 @@ class SingleContainer(val router: Router) {
     fun remove(controller: Controller) {
         val newBackstack = router.backstack.toMutableList()
         newBackstack.removeAll { it.controller == controller }
-        router.setBackstack(newBackstack)
+        router.setBackstack(newBackstack, false)
     }
 
     private fun ControllerChangeHandler?.check() {

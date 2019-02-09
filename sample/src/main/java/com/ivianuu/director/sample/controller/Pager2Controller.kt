@@ -22,6 +22,7 @@ import com.ivianuu.director.Router
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 import com.ivianuu.director.viewpager2.RouterAdapter
 import kotlinx.android.synthetic.main.controller_pager2.view_pager
 import java.util.*
@@ -42,7 +43,7 @@ class Pager2Controller : BaseController() {
                                 "Child #%d (Swipe to see more)",
                                 position
                             ), PAGE_COLORS[position], true
-                        )
+                        ).toTransaction()
                     )
                 }
             }

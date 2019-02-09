@@ -30,6 +30,7 @@ import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_external_modules.recycler_view
 import kotlinx.android.synthetic.main.row_home.home_image
@@ -73,13 +74,13 @@ class ExternalModulesController : BaseController() {
     private fun onItemClicked(item: AdditionalModuleItem) {
         when (item) {
             AdditionalModuleItem.ARCH -> {
-                router.push(ArchController())
+                router.push(ArchController().toTransaction())
             }
             AdditionalModuleItem.SCOPES -> {
-                router.push(ScopesController())
+                router.push(ScopesController().toTransaction())
             }
             AdditionalModuleItem.TRAVELER -> {
-                router.push(TravelerController())
+                router.push(TravelerController().toTransaction())
             }
         }
     }

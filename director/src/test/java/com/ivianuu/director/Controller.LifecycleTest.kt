@@ -40,7 +40,7 @@ class ControllerLifecycleCallbacksTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRootController) {
-            setRoot(TestController())
+            setRoot(TestController().toTransaction())
         }
     }
 
@@ -55,9 +55,9 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, controller)
 
         router.push(
-            controller,
-            getPushHandler(expectedCallState, controller),
-            getPopHandler(expectedCallState, controller)
+            controller.toTransaction()
+                .pushChangeHandler(getPushHandler(expectedCallState, controller))
+                .popChangeHandler(getPopHandler(expectedCallState, controller))
         )
 
         assertCalls(expectedCallState, controller)
@@ -78,8 +78,8 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, controller)
         router.push(
-            controller,
-            getPushHandler(expectedCallState, controller)
+            controller.toTransaction()
+                .pushChangeHandler(getPushHandler(expectedCallState, controller))
         )
 
         assertCalls(expectedCallState, controller)
@@ -110,8 +110,8 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, controller)
         router.push(
-            controller,
-            getPushHandler(expectedCallState, controller)
+            controller.toTransaction()
+                .pushChangeHandler(getPushHandler(expectedCallState, controller))
         )
 
         assertCalls(expectedCallState, controller)
@@ -142,8 +142,8 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, controller)
         router.push(
-            controller,
-            getPushHandler(expectedCallState, controller)
+            controller.toTransaction()
+                .pushChangeHandler(getPushHandler(expectedCallState, controller))
         )
 
         assertCalls(expectedCallState, controller)
@@ -511,9 +511,8 @@ class ControllerLifecycleCallbacksTest {
         })
 
         router.push(
-            testController,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            testController.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         router.pop(testController)
@@ -530,7 +529,10 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testChildLifecycle1() {
         val parent = TestController()
-        router.push(parent, MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler())
+        router.push(
+            parent.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
+        )
 
         val child = TestController()
         attachLifecycleListener(child)
@@ -542,9 +544,9 @@ class ControllerLifecycleCallbacksTest {
         val childRouter =
             parent.getChildRouter(parent.childContainer1!!).apply {
                 setRoot(
-                    child,
-                    getPushHandler(expectedCallState, child),
-                    getPopHandler(expectedCallState, child)
+                    child.toTransaction()
+                        .pushChangeHandler(getPushHandler(expectedCallState, child))
+                        .popChangeHandler(getPopHandler(expectedCallState, child))
                 )
             }
 
@@ -558,7 +560,10 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testChildLifecycle2() {
         val parent = TestController()
-        router.push(parent, MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler())
+        router.push(
+            parent.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
+        )
 
         val child = TestController()
         attachLifecycleListener(child)
@@ -569,9 +574,9 @@ class ControllerLifecycleCallbacksTest {
 
         parent.getChildRouter(parent.childContainer1!!).apply {
             setRoot(
-                child,
-                getPushHandler(expectedCallState, child),
-                getPopHandler(expectedCallState, child)
+                child.toTransaction()
+                    .pushChangeHandler(getPushHandler(expectedCallState, child))
+                    .popChangeHandler(getPopHandler(expectedCallState, child))
             )
         }
 
@@ -590,15 +595,17 @@ class ControllerLifecycleCallbacksTest {
     fun testChildLifecycleOrderingAfterUnexpectedAttach() {
         val parent = TestController()
         parent.retainView = true
-        router.push(parent, MockChangeHandler.defaultHandler(), MockChangeHandler.defaultHandler())
+        router.push(
+            parent.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
+        )
 
         val child = TestController()
         child.retainView = true
         parent.getChildRouter(parent.childContainer1!!).apply {
             setRoot(
-                child,
-                SimpleSwapChangeHandler(),
-                SimpleSwapChangeHandler()
+                child.toTransaction()
+                    .changeHandler(SimpleSwapChangeHandler())
             )
         }
 
@@ -755,12 +762,12 @@ class ControllerLifecycleCallbacksTest {
         parent.addLifecycleListener {
             preCreate { _, _ ->
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
-                    .push(child)
+                    .push(child.toTransaction())
             }
             postAttach { _, _ -> router.popCurrent() }
         }
 
-        router.push(parent)
+        router.push(parent.toTransaction())
     }
 
     private class LastInFirstOutListener(

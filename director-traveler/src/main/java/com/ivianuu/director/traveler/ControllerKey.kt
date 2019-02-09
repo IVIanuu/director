@@ -39,10 +39,11 @@ interface ControllerKey {
     /**
      * Sets up the transaction and adds change handlers
      */
-    fun createTransaction(
+    fun setupTransaction(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        tag: String
-    ): RouterTransaction = RouterTransaction(nextController, tag = tag)
+        transaction: RouterTransaction
+    ) {
+    }
 }

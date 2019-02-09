@@ -6,6 +6,7 @@ import com.ivianuu.director.Router
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 import com.ivianuu.director.viewpager.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_pager.tab_layout
 import kotlinx.android.synthetic.main.controller_pager.view_pager
@@ -27,7 +28,7 @@ class PagerController : BaseController() {
                                 "Child #%d (Swipe to see more)",
                                 position
                             ), PAGE_COLORS[position], true
-                        )
+                        ).toTransaction()
                     )
                 }
             }

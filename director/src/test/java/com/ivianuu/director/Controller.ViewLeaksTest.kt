@@ -34,14 +34,14 @@ class ViewLeakTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRootController) {
-            setRoot(TestController())
+            setRoot(TestController().toTransaction())
         }
     }
 
     @Test
     fun testPop() {
         val controller = TestController()
-        router.push(controller)
+        router.push(controller.toTransaction())
 
         assertNotNull(controller.view)
 
@@ -53,7 +53,10 @@ class ViewLeakTest {
     @Test
     fun testPopWhenPushNeverAdded() {
         val controller = TestController()
-        router.push(controller, NeverAddChangeHandler())
+        router.push(
+            controller.toTransaction()
+                .pushChangeHandler(NeverAddChangeHandler())
+        )
 
         assertNotNull(controller.view)
 
@@ -65,7 +68,10 @@ class ViewLeakTest {
     @Test
     fun testPopWhenPushNeverCompleted() {
         val controller = TestController()
-        router.push(controller, NeverCompleteChangeHandler())
+        router.push(
+            controller.toTransaction()
+                .pushChangeHandler(NeverCompleteChangeHandler())
+        )
 
         assertNotNull(controller.view)
 
@@ -77,7 +83,7 @@ class ViewLeakTest {
     @Test
     fun testActivityStop() {
         val controller = TestController()
-        router.push(controller)
+        router.push(controller.toTransaction())
 
         assertNotNull(controller.view)
 
@@ -89,7 +95,10 @@ class ViewLeakTest {
     @Test
     fun testActivityStopWhenPushNeverCompleted() {
         val controller = TestController()
-        router.push(controller, NeverCompleteChangeHandler())
+        router.push(
+            controller.toTransaction()
+                .pushChangeHandler(NeverCompleteChangeHandler())
+        )
 
         assertNotNull(controller.view)
 
@@ -101,7 +110,10 @@ class ViewLeakTest {
     @Test
     fun testActivityDestroyWhenPushNeverAdded() {
         val controller = TestController()
-        router.push(controller, NeverAddChangeHandler())
+        router.push(
+            controller.toTransaction()
+                .pushChangeHandler(NeverAddChangeHandler())
+        )
 
         assertNotNull(controller.view)
 

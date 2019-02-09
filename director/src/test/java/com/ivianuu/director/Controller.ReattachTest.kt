@@ -34,7 +34,7 @@ class ReattachTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRootController) {
-            setRoot(TestController())
+            setRoot(TestController().toTransaction())
         }
     }
 
@@ -44,9 +44,8 @@ class ReattachTest {
         val controllerB = TestController()
 
         router.push(
-            controllerA,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerA.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertTrue(controllerA.isAttached)
@@ -58,9 +57,8 @@ class ReattachTest {
         assertFalse(controllerB.isAttached)
 
         router.push(
-            controllerB,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerB.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertFalse(controllerA.isAttached)
@@ -74,17 +72,15 @@ class ReattachTest {
         val controllerB = TestController()
 
         router.push(
-            controllerA,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerA.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         val childRouter =
             controllerA.getChildRouter(controllerA.childContainer1!!)
         childRouter.push(
-            childController,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            childController.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertTrue(controllerA.isAttached)
@@ -98,9 +94,8 @@ class ReattachTest {
         assertFalse(controllerB.isAttached)
 
         router.push(
-            controllerB,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerB.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertFalse(controllerA.isAttached)
@@ -115,9 +110,8 @@ class ReattachTest {
         val childController = TestController()
 
         router.push(
-            controllerA,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerA.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertTrue(controllerA.isAttached)
@@ -125,9 +119,8 @@ class ReattachTest {
         assertFalse(childController.isAttached)
 
         router.push(
-            controllerB,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerB.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         val childRouter =
@@ -135,9 +128,8 @@ class ReattachTest {
                 .apply { popsLastView = true }
 
         childRouter.push(
-            childController,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            childController.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertFalse(controllerA.isAttached)
@@ -153,9 +145,8 @@ class ReattachTest {
         var childController = TestController()
 
         router.push(
-            controllerA,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerA.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertTrue(controllerA.isAttached)
@@ -163,9 +154,8 @@ class ReattachTest {
         assertFalse(childController.isAttached)
 
         router.push(
-            controllerB,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            controllerB.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         val childRouter =
@@ -173,9 +163,8 @@ class ReattachTest {
                 .apply { popsLastView = true }
 
         childRouter.push(
-            childController,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            childController.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertFalse(controllerA.isAttached)
@@ -190,9 +179,8 @@ class ReattachTest {
 
         childController = TestController()
         childRouter.push(
-            childController,
-            MockChangeHandler.defaultHandler(),
-            MockChangeHandler.defaultHandler()
+            childController.toTransaction()
+                .changeHandler(MockChangeHandler.defaultHandler())
         )
 
         assertFalse(controllerA.isAttached)
@@ -206,9 +194,9 @@ class ReattachTest {
         var controller2: Controller = TestController()
         var controller3: Controller = TestController()
 
-        router.setRoot(controller1)
-        router.push(controller2)
-        router.push(controller3)
+        router.setRoot(controller1.toTransaction())
+        router.push(controller2.toTransaction())
+        router.push(controller3.toTransaction())
         router.pop(controller2)
 
         assertFalse(controller1.isAttached)
@@ -219,9 +207,12 @@ class ReattachTest {
         controller2 = TestController()
         controller3 = TestController()
 
-        router.setRoot(controller1)
-        router.push(controller2)
-        router.push(controller3, MockChangeHandler.noRemoveViewOnPushHandler())
+        router.setRoot(controller1.toTransaction())
+        router.push(controller2.toTransaction())
+        router.push(
+            controller3.toTransaction()
+                .pushChangeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+        )
         router.pop(controller2)
 
         assertTrue(controller1.isAttached)

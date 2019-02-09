@@ -28,8 +28,11 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.activity
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.pop
 import com.ivianuu.director.push
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 
 /**
  * A controller counterpart for dialog fragments
@@ -197,10 +200,9 @@ abstract class DialogController : Controller(),
      */
     fun show(router: Router, tag: String? = null) {
         router.push(
-            this,
-            SimpleSwapChangeHandler(removesFromViewOnPush = false),
-            SimpleSwapChangeHandler(),
-            tag
+            toTransaction()
+                .changeHandler(SimpleSwapChangeHandler(removesFromViewOnPush = false))
+                .tag(tag)
         )
     }
 
