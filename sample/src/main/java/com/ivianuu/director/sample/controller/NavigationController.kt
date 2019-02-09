@@ -1,6 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
@@ -8,6 +9,7 @@ import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.RouterTransaction
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 
 
 import com.ivianuu.director.parentController
@@ -23,6 +25,7 @@ import com.ivianuu.director.traveler.ControllerKey
 import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
 import com.ivianuu.traveler.popToRoot
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.controller_navigation.btn_next
 import kotlinx.android.synthetic.main.controller_navigation.btn_pop_to_root
 import kotlinx.android.synthetic.main.controller_navigation.btn_up
@@ -34,8 +37,9 @@ class NavigationController : BaseController() {
     override val layoutRes get() = R.layout.controller_navigation
 
     private val index by lazy { args.getInt(KEY_INDEX) }
-    private val displayUpMode by lazy { DisplayUpMode.values()[args.getInt(KEY_DISPLAY_UP_MODE)] }
+    private val displayUpMode by lazy { args.getParcelable<DisplayUpMode>(KEY_DISPLAY_UP_MODE)!! }
     private val useTraveler by lazy { args.getBoolean(KEY_USE_TRAVELER) }
+    private val animMode by lazy { args.getParcelable<AnimMode>(KEY_ANIM_MODE)!! }
 
     private val travelerRouter get() = (parentController as TravelerController).travelerRouter
 
@@ -60,7 +64,8 @@ class NavigationController : BaseController() {
                     NavigationControllerKey(
                         index + 1,
                         displayUpMode.displayUpModeForChild,
-                        useTraveler
+                        useTraveler,
+                        animMode
                     )
                 )
             } else {
@@ -68,9 +73,10 @@ class NavigationController : BaseController() {
                     NavigationController.newInstance(
                         index + 1,
                         displayUpMode.displayUpModeForChild,
-                        useTraveler
+                        useTraveler,
+                        animMode
                     ).toTransaction()
-                        .changeHandler(HorizontalChangeHandler())
+                        .changeHandler(animMode.createHandler())
                 )
             }
         }
@@ -115,7 +121,8 @@ class NavigationController : BaseController() {
         btn_pop_to_root.isEnabled = enabled
     }
 
-    enum class DisplayUpMode {
+    @Parcelize
+    enum class DisplayUpMode : Parcelable {
         SHOW,
         SHOW_FOR_CHILDREN_ONLY,
         HIDE;
@@ -127,21 +134,38 @@ class NavigationController : BaseController() {
             }
     }
 
+    @Parcelize
+    enum class AnimMode : Parcelable {
+        HORIZONTAL {
+            override fun createHandler(): ControllerChangeHandler =
+                HorizontalChangeHandler()
+        },
+        VERTICAL {
+            override fun createHandler(): ControllerChangeHandler =
+                VerticalChangeHandler()
+        };
+
+        abstract fun createHandler(): ControllerChangeHandler
+    }
+
     companion object {
         const val TAG_UP_TRANSACTION = "NavigationController.up"
         private const val KEY_INDEX = "NavigationController.index"
         private const val KEY_DISPLAY_UP_MODE = "NavigationController.displayUpMode"
+        private const val KEY_ANIM_MODE = "NavigationController.animMode"
         private const val KEY_USE_TRAVELER = "NavigationController.useTraveler"
 
         fun newInstance(
             index: Int,
             displayUpMode: DisplayUpMode,
-            useTraveler: Boolean
+            useTraveler: Boolean = false,
+            animMode: AnimMode = AnimMode.HORIZONTAL
         ) = NavigationController().apply {
             args = bundleOf(
                 KEY_INDEX to index,
-                KEY_DISPLAY_UP_MODE to displayUpMode.ordinal,
-                KEY_USE_TRAVELER to useTraveler
+                KEY_DISPLAY_UP_MODE to displayUpMode,
+                KEY_USE_TRAVELER to useTraveler,
+                KEY_ANIM_MODE to animMode
             )
         }
     }
@@ -150,11 +174,12 @@ class NavigationController : BaseController() {
 data class NavigationControllerKey(
     val index: Int,
     val displayUpMode: NavigationController.DisplayUpMode,
-    val useTraveler: Boolean
+    val useTraveler: Boolean,
+    val animMode: NavigationController.AnimMode
 ) : ControllerKey {
 
     override fun createController(data: Any?) = NavigationController.newInstance(
-        index, displayUpMode, useTraveler
+        index, displayUpMode, useTraveler, animMode
     )
 
     override fun setupTransaction(
@@ -163,7 +188,7 @@ data class NavigationControllerKey(
         nextController: Controller,
         transaction: RouterTransaction
     ) {
-        transaction.changeHandler(HorizontalChangeHandler())
+        transaction.changeHandler(animMode.createHandler())
     }
 
 }

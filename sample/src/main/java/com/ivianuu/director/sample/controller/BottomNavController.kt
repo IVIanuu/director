@@ -53,7 +53,7 @@ class BottomNavController : BaseController() {
                 .map { bottom_nav_view.menu.getItem(it) }
                 .indexOfFirst { it == item }
 
-            // pop to root on reselections
+            // pop to root on re selections
             if (i != -1) {
                 bottomNavContainer.currentTransaction
                     ?.controller

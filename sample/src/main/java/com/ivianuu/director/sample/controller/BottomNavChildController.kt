@@ -39,7 +39,8 @@ class BottomNavChildController : BaseController() {
             (1..args.getInt(KEY_START_INDEX))
                 .map {
                     NavigationController.newInstance(
-                        it, NavigationController.DisplayUpMode.HIDE, false
+                        it, NavigationController.DisplayUpMode.HIDE, false,
+                        NavigationController.AnimMode.VERTICAL
                     ) to it
                 }
                 .forEach { (controller, i) ->
