@@ -17,6 +17,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.hasRootController
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
@@ -45,9 +46,15 @@ class BottomNavChildController : BaseController() {
                 }
                 .forEach { (controller, i) ->
                     if (i == 1) {
-                        childRouter.setRoot(controller.toTransaction())
+                        childRouter.setRoot(
+                            controller.toTransaction()
+                                .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
+                        )
                     } else {
-                        childRouter.push(controller.toTransaction())
+                        childRouter.push(
+                            controller.toTransaction()
+                                .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
+                        )
                     }
                 }
         }

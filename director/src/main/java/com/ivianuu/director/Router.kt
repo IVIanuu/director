@@ -584,17 +584,10 @@ fun Router.pop(
     val oldBackstack = backstack
     val newBackstack = oldBackstack.toMutableList()
     newBackstack.removeAll { it == transaction }
-
-    val topTransaction = oldBackstack.lastOrNull()
-    val poppingTop = topTransaction == transaction
-
-    val handler = handler ?: if (poppingTop) {
-        topTransaction!!.popChangeHandler
-    } else {
-        null
-    }
-
-    setBackstack(newBackstack, false, handler)
+    setBackstack(
+        newBackstack, false,
+        handler ?: oldBackstack.lastOrNull()?.popChangeHandler
+    )
 }
 
 /**
@@ -603,7 +596,7 @@ fun Router.pop(
 fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
     val transaction = backstack.lastOrNull()
         ?: error("Trying to pop the current controller when there are none on the backstack.")
-    pop(transaction, handler)
+    pop(transaction, handler ?: transaction.popChangeHandler)
 }
 
 /**
@@ -639,9 +632,7 @@ fun Router.popTo(
     transaction: RouterTransaction,
     handler: ControllerChangeHandler? = null
 ) {
-    if (backstack.isNotEmpty()) {
-        val topTransaction = backstack.lastOrNull()
-        val newBackstack = backstack.dropLastWhile { it != transaction }
-        setBackstack(newBackstack, false, handler ?: topTransaction?.popChangeHandler)
-    }
+    val topTransaction = backstack.lastOrNull()
+    val newBackstack = backstack.dropLastWhile { it != transaction }
+    setBackstack(newBackstack, false, handler ?: topTransaction?.popChangeHandler)
 }
