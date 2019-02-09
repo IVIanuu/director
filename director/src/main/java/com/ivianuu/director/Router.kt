@@ -12,7 +12,7 @@ import com.ivianuu.stdlibx.takeLastUntil
 /**
  * Handles the backstack and delegates the host lifecycle to it's controllers
  */
-open class Router internal constructor(
+class Router internal constructor(
     containerId: Int,
     tag: String? = null,
     val host: Any,
@@ -88,7 +88,7 @@ open class Router internal constructor(
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
      */
-    open fun setBackstack(
+    fun setBackstack(
         newBackstack: List<RouterTransaction>,
         isPush: Boolean,
         handler: ControllerChangeHandler? = null
@@ -224,7 +224,7 @@ open class Router internal constructor(
     /**
      * Attaches this Router's existing backstack to its container if one exists.
      */
-    open fun rebind() {
+    fun rebind() {
         _backstack
             .filterVisible()
             .filterNot { it.controller.isAttached }
@@ -252,7 +252,7 @@ open class Router internal constructor(
         changeListeners.removeAll { it.listener == listener }
     }
 
-    internal open fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
+    internal fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return changeListeners
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener } + (hostRouter?.getAllChangeListeners(true) ?: emptyList())
