@@ -217,7 +217,7 @@ class Router internal constructor(
         return if (currentTransaction != null) {
             if (currentTransaction.controller.handleBack()) {
                 true
-            } else if (backstackSize > 0 && (popsLastView || backstackSize > 1)) {
+            } else if (hasRoot && (popsLastView || backstackSize > 1)) {
                 popCurrent()
                 true
             } else {
