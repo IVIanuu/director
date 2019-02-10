@@ -560,7 +560,7 @@ fun Router.replaceTop(
         newBackstack.removeAt(newBackstack.lastIndex)
     }
     newBackstack.add(transaction)
-    setBackstack(newBackstack, true, handler)
+    setBackstack(newBackstack, true, handler ?: transaction.pushChangeHandler)
 }
 
 /**
