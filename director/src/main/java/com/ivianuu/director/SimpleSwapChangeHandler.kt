@@ -23,7 +23,11 @@ import android.view.ViewGroup
 /**
  * A [ControllerChangeHandler] that will instantly swap Views with no animations or transitions.
  */
-open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean = true) : ControllerChangeHandler() {
+open class SimpleSwapChangeHandler(removesFromViewOnPush: Boolean = true) :
+    ControllerChangeHandler() {
+
+    override val removesFromViewOnPush: Boolean get() = _removesFromViewOnPush
+    private var _removesFromViewOnPush = removesFromViewOnPush
 
     private var container: ViewGroup? = null
     private var onChangeComplete: (() -> Unit)? = null
@@ -43,12 +47,12 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
 
     override fun saveToBundle(bundle: Bundle) {
         super.saveToBundle(bundle)
-        bundle.putBoolean(KEY_REMOVES_FROM_ON_PUSH, removesFromViewOnPush)
+        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
     }
 
     override fun restoreFromBundle(bundle: Bundle) {
         super.restoreFromBundle(bundle)
-        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_ON_PUSH)
+        _removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     override fun cancel(immediate: Boolean) {
@@ -91,6 +95,7 @@ open class SimpleSwapChangeHandler(override var removesFromViewOnPush: Boolean =
     override fun copy(): SimpleSwapChangeHandler = SimpleSwapChangeHandler(removesFromViewOnPush)
 
     companion object {
-        private const val KEY_REMOVES_FROM_ON_PUSH = "SimpleSwapChangeHandler.removesFromViewOnPush"
+        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
+            "SimpleSwapChangeHandler.removesFromViewOnPush"
     }
 }
