@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.ivianuu.director.fragmenthost.getRouter
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
         setSupportActionBar(toolbar)
 
         with(getRouter(controller_container)) {
-            if (!hasRootController) {
+            if (!hasRoot) {
                 setRoot(HomeController().toTransaction())
             }
         }

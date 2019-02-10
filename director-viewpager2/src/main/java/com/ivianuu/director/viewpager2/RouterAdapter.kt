@@ -30,7 +30,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.hasContainer
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 
 /**
  * A [RecyclerView.Adapter] for [Controller]s which can be used with the [ViewPager2]
@@ -108,7 +108,7 @@ abstract class RouterAdapter(
     private fun getRouter(position: Int, containerId: Int): Router {
         val router = manager.getRouter(containerId)
 
-        if (!router.hasRootController) {
+        if (!router.hasRoot) {
             val routerSavedState = savedStates[position]
 
             if (routerSavedState != null) {
@@ -128,7 +128,7 @@ abstract class RouterAdapter(
     private fun removeRouter(holder: RouterViewHolder) {
         val router = holder.router ?: return
         val itemId = holder.itemId
-        if (router.hasRootController && containsItem(itemId)) {
+        if (router.hasRoot && containsItem(itemId)) {
             savedStates.put(itemCount, router.saveInstanceState())
         }
 

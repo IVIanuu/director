@@ -506,7 +506,7 @@ val Router.backstackSize: Int get() = backstack.size
 /**
  * Whether or not this router has a root [Controller]
  */
-val Router.hasRootController: Boolean get() = backstackSize > 0
+val Router.hasRoot: Boolean get() = backstackSize > 0
 
 /**
  * Returns the hosted Controller that was pushed with the given tag or `null` if no

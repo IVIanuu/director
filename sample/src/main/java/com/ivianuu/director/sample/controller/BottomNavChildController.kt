@@ -18,7 +18,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import com.ivianuu.director.changeHandler
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
@@ -36,7 +36,7 @@ class BottomNavChildController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!childRouter.hasRootController) {
+        if (!childRouter.hasRoot) {
             (1..args.getInt(KEY_START_INDEX))
                 .map {
                     NavigationController.newInstance(

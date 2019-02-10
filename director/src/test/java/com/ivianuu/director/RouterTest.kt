@@ -43,11 +43,11 @@ class RouterTest {
 
         val rootController = TestController()
 
-        assertFalse(router.hasRootController)
+        assertFalse(router.hasRoot)
 
         router.setRoot(rootController.toTransaction().tag(rootTag))
 
-        assertTrue(router.hasRootController)
+        assertTrue(router.hasRoot)
 
         assertEquals(rootController, router.findControllerByTag(rootTag))
     }

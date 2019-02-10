@@ -3,7 +3,7 @@ package com.ivianuu.director.sample.controller
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Router
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -20,7 +20,7 @@ class PagerController : BaseController() {
         object : RouterPagerAdapter(childRouterManager) {
 
             override fun configureRouter(router: Router, position: Int) {
-                if (!router.hasRootController) {
+                if (!router.hasRoot) {
                     router.setRoot(
                         ChildController.newInstance(
                             String.format(

@@ -20,11 +20,11 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 
 class SingleContainer(val router: Router) {
 
-    val isEmpty get() = router.hasRootController
+    val isEmpty get() = router.hasRoot
 
     val currentTransaction: RouterTransaction? get() = router.backstack.lastOrNull()
     val detachedTransactions: List<RouterTransaction>? get() = router.backstack.dropLast(1)

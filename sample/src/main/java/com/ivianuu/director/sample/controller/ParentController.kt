@@ -9,7 +9,7 @@ import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.doOnChangeEnd
 import com.ivianuu.director.getChildRouter
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.pop
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -52,7 +52,7 @@ class ParentController : BaseController() {
         getChildRouter(container).let { childRouter ->
             childRouter.popsLastView = true
 
-            if (!childRouter.hasRootController) {
+            if (!childRouter.hasRoot) {
                 val childController = ChildController.newInstance(
                     "Child Controller #$index",
                     ColorUtil.getMaterialColor(resources, index),
@@ -93,7 +93,7 @@ class ParentController : BaseController() {
     }
 
     override fun handleBack(): Boolean {
-        val childControllers = childRouters.count { it.hasRootController }
+        val childControllers = childRouters.count { it.hasRoot }
 
         return if (childControllers != NUMBER_OF_CHILDREN || finishing) {
             true

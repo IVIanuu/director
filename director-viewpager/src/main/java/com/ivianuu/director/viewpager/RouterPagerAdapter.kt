@@ -25,7 +25,7 @@ import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.getRouter
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 
 /**
  * An adapter for ViewPagers that uses Routers as pages
@@ -46,7 +46,7 @@ abstract class RouterPagerAdapter(
         val name = (container.id + position).toString()
 
         val router = manager.getRouter(container, name)
-        if (!router.hasRootController) {
+        if (!router.hasRoot) {
             val routerSavedState = savedStates.get(position)
 
             if (routerSavedState != null) {

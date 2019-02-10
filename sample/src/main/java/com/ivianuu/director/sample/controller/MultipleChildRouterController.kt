@@ -1,7 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -16,7 +16,7 @@ class MultipleChildRouterController : BaseController() {
 
         listOf(R.id.container_0, R.id.container_1, R.id.container_2)
             .map { getChildRouter(it) }
-            .filter { !it.hasRootController }
+            .filter { !it.hasRoot }
             .forEach {
                 it.setRoot(
                     NavigationController.newInstance(

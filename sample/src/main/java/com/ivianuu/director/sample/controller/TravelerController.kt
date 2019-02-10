@@ -17,7 +17,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import com.ivianuu.director.hasRootController
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
 import com.ivianuu.traveler.Router
@@ -44,7 +44,7 @@ class TravelerController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBarTitle = "Traveler Demo"
-        if (!childRouter.hasRootController) {
+        if (!childRouter.hasRoot) {
             travelerRouter.setRoot(
                 NavigationControllerKey(
                     0, NavigationController.DisplayUpMode.HIDE,

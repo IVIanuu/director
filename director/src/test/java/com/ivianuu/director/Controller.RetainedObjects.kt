@@ -24,7 +24,7 @@ class ControllerRetainedObjectsTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
 private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
-        if (!hasRootController) {
+if (!hasRoot) {
 setRoot(TestController().toTransaction())
         }
     }
