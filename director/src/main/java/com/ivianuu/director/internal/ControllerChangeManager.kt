@@ -7,7 +7,7 @@ import com.ivianuu.director.ControllerChangeListener
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.SimpleSwapChangeHandler
 
-internal class ControllerChangeManager {
+internal object ControllerChangeManager {
 
     private val inProgressChangeHandlers = mutableMapOf<String, ChangeHandlerData>()
 
@@ -19,22 +19,22 @@ internal class ControllerChangeManager {
         handler: ControllerChangeHandler?,
         listeners: List<ControllerChangeListener>
     ) {
-        val handler = when {
+        val handlerToUse = when {
             handler == null -> SimpleSwapChangeHandler()
             handler.hasBeenUsed -> handler.copy()
             else -> handler
         }
-        handler.hasBeenUsed = true
+        handlerToUse.hasBeenUsed = true
 
         if (from != null) {
             cancelChange(from.instanceId, isPush)
         }
 
         if (to != null) {
-            inProgressChangeHandlers[to.instanceId] = ChangeHandlerData(handler, isPush)
+            inProgressChangeHandlers[to.instanceId] = ChangeHandlerData(handlerToUse, isPush)
         }
 
-        listeners.forEach { it.onChangeStarted(to, from, isPush, container, handler) }
+        listeners.forEach { it.onChangeStarted(to, from, isPush, container, handlerToUse) }
 
         val toChangeType =
             if (isPush) ControllerChangeType.PUSH_ENTER else ControllerChangeType.POP_ENTER
@@ -43,27 +43,27 @@ internal class ControllerChangeManager {
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
         val toView = to?.inflate(container)
-        to?.changeStarted(handler, toChangeType)
+        to?.changeStarted(handlerToUse, toChangeType)
 
         val fromView = from?.view
-        from?.changeStarted(handler, fromChangeType)
+        from?.changeStarted(handlerToUse, fromChangeType)
 
-        handler.performChange(
+        handlerToUse.performChange(
             container,
             fromView,
             toView,
             isPush
         ) {
-            from?.changeEnded(handler, fromChangeType)
+            from?.changeEnded(handlerToUse, fromChangeType)
 
             if (to != null) {
                 inProgressChangeHandlers.remove(to.instanceId)
-                to.changeEnded(handler, toChangeType)
+                to.changeEnded(handlerToUse, toChangeType)
             }
 
-            listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handler) }
+            listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handlerToUse) }
 
-            if (handler.forceRemoveViewOnPush && fromView != null) {
+            if (handlerToUse.forceRemoveViewOnPush && fromView != null) {
                 val fromParent = fromView.parent
                 if (fromParent != null && fromParent is ViewGroup) {
                     fromParent.removeView(fromView)

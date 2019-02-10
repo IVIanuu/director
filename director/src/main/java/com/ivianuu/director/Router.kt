@@ -77,8 +77,6 @@ class Router internal constructor(
     private val changeListeners = mutableListOf<ChangeListenerEntry>()
     private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
 
-    private val changeManager = ControllerChangeManager()
-
     private var hostStarted = false
     private var hostDestroyed = false
 
@@ -154,7 +152,7 @@ class Router internal constructor(
                 .reversed()
                 .filterNot { newVisibleTransactions.contains(it) }
                 .forEachIndexed { i, transaction ->
-                    changeManager.cancelChange(transaction.controller.instanceId, true)
+                    ControllerChangeManager.cancelChange(transaction.controller.instanceId, true)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
                     ?: SimpleSwapChangeHandler()
                     localHandler.forceRemoveViewOnPush = true
@@ -342,7 +340,7 @@ class Router internal constructor(
 
     private fun prepareForContainerRemoval() {
         _backstack.reversed().forEach {
-            changeManager.cancelChange(it.controller.instanceId, true)
+            ControllerChangeManager.cancelChange(it.controller.instanceId, true)
         }
     }
 
@@ -414,7 +412,7 @@ class Router internal constructor(
             else -> null
         }
 
-        changeManager.executeChange(
+        ControllerChangeManager.executeChange(
             to?.controller,
             from?.controller,
             isPush,
