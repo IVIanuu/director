@@ -64,8 +64,8 @@ class RouterTransactionTest {
 class ChangeHandlerOne : ControllerChangeHandler() {
     override fun performChange(
         container: ViewGroup,
-        from: View?,
         to: View?,
+        from: View?,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
@@ -75,8 +75,8 @@ class ChangeHandlerOne : ControllerChangeHandler() {
 class ChangeHandlerTwo : ControllerChangeHandler() {
     override fun performChange(
         container: ViewGroup,
-        from: View?,
         to: View?,
+        from: View?,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {

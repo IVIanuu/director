@@ -67,8 +67,8 @@ open class SimpleSwapChangeHandler(removesFromViewOnPush: Boolean = true) :
 
     override fun performChange(
         container: ViewGroup,
-        from: View?,
         to: View?,
+        from: View?,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {

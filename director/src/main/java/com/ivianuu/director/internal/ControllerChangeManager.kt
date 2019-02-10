@@ -50,8 +50,8 @@ internal object ControllerChangeManager {
 
         handlerToUse.performChange(
             container,
-            fromView,
             toView,
+            fromView,
             isPush
         ) {
             from?.changeEnded(handlerToUse, fromChangeType)

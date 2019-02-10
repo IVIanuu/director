@@ -51,8 +51,8 @@ abstract class AnimatorChangeHandler(
 
     override fun performChange(
         container: ViewGroup,
-        from: View?,
         to: View?,
+        from: View?,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
