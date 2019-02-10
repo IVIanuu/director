@@ -411,6 +411,47 @@ class RouterTest {
     }
 
     @Test
+    fun testSettingSameBackstackNoOps() {
+        var changeCalls = 0
+        router.doOnChangeStarted { to, from, isPush, container, handler ->
+            changeCalls++
+        }
+
+        val backstack = listOf(
+            TestController().toTransaction(),
+            TestController().toTransaction(),
+            TestController().toTransaction()
+        )
+
+        router.setBackstack(backstack, true)
+        assertEquals(1, changeCalls)
+
+        router.setBackstack(backstack, true)
+        assertEquals(1, changeCalls)
+    }
+
+    @Test
+    fun testSettingSameVisibleControllersNoOps() {
+        var changeCalls = 0
+        router.doOnChangeStarted { to, from, isPush, container, handler ->
+            changeCalls++
+        }
+
+        val backstack = listOf(
+            TestController().toTransaction(),
+            TestController().toTransaction(),
+            TestController().toTransaction()
+                .changeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+        )
+
+        router.setBackstack(backstack, true)
+        assertEquals(2, changeCalls)
+
+        router.setBackstack(backstack.toMutableList().apply { removeAt(0) }, true)
+        assertEquals(2, changeCalls)
+    }
+
+    @Test
     fun testRearrangeTransactionBackstack() {
         router.popsLastView = true
         val transaction1 = TestController().toTransaction()
