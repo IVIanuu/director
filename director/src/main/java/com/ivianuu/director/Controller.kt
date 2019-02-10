@@ -433,7 +433,7 @@ abstract class Controller {
             saveViewState()
         }
 
-        childRouterManager.routers.forEach { it.removeContainer() }
+        childRouterManager.removeContainers()
 
         notifyLifecycleListeners { it.preUnbindView(this, view) }
 
@@ -454,15 +454,8 @@ abstract class Controller {
         // because call child router methods in onBindView
         // would cause the child controller view to be fully created
         // before our view is fully created
-        if (view != null && viewFullyCreated) {
-            childRouterManager.routers
-                .filterNot { it.hasContainer }
-                .forEach {
-                    val containerView =
-                        view.findViewById<ViewGroup>(it.containerId) ?: return@forEach
-                    it.setContainer(containerView)
-                    it.rebind()
-                }
+        if (view is ViewGroup && viewFullyCreated) {
+            childRouterManager.setContainers(view)
         }
     }
 

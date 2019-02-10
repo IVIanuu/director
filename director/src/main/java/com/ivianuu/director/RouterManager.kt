@@ -48,9 +48,24 @@ class RouterManager(
         _routers.forEach { it.hostStarted() }
     }
 
+    fun setContainers(rootView: ViewGroup) {
+        _routers
+            .filterNot { it.hasContainer }
+            .forEach { router ->
+                rootView.findViewById<ViewGroup>(router.containerId)?.let {
+                    router.setContainer(it)
+                    router.rebind()
+                }
+            }
+    }
+
     fun hostStopped() {
         hostStarted = false
         _routers.forEach { it.hostStopped() }
+    }
+
+    fun removeContainers() {
+        _routers.forEach { it.removeContainer() }
     }
 
     fun hostIsBeingDestroyed() {
