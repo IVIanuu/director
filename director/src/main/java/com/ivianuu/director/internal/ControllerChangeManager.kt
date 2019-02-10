@@ -12,8 +12,8 @@ internal object ControllerChangeManager {
     private val inProgressChangeHandlers = mutableMapOf<String, ChangeHandlerData>()
 
     fun executeChange(
-        to: Controller?,
         from: Controller?,
+        to: Controller?,
         isPush: Boolean,
         container: ViewGroup,
         handler: ControllerChangeHandler?,
@@ -50,8 +50,8 @@ internal object ControllerChangeManager {
 
         handlerToUse.performChange(
             container,
-            toView,
             fromView,
+            toView,
             isPush
         ) {
             from?.changeEnded(handlerToUse, fromChangeType)

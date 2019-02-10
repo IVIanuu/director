@@ -24,8 +24,8 @@ abstract class ControllerChangeHandler {
      */
     abstract fun performChange(
         container: ViewGroup,
-        to: View?,
         from: View?,
+        to: View?,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     )

@@ -125,8 +125,8 @@ class ViewLeakTest {
     class NeverAddChangeHandler : ControllerChangeHandler() {
         override fun performChange(
             container: ViewGroup,
-            to: View?,
             from: View?,
+            to: View?,
             isPush: Boolean,
             onChangeComplete: () -> Unit
         ) {
@@ -140,8 +140,8 @@ class ViewLeakTest {
     class NeverCompleteChangeHandler : ControllerChangeHandler() {
         override fun performChange(
             container: ViewGroup,
-            to: View?,
             from: View?,
+            to: View?,
             isPush: Boolean,
             onChangeComplete: () -> Unit
         ) {

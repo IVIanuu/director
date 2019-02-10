@@ -54,8 +54,8 @@ class MockChangeHandler internal constructor(
 
     override fun performChange(
         container: ViewGroup,
-        to: View?,
         from: View?,
+        to: View?,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {

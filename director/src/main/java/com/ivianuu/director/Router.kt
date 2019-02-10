@@ -157,8 +157,8 @@ class Router internal constructor(
                     ?: SimpleSwapChangeHandler()
                     localHandler.forceRemoveViewOnPush = true
                     performControllerChange(
-                        null,
                         transaction,
+                        null,
                         isPush,
                         localHandler
                     )
@@ -171,8 +171,8 @@ class Router internal constructor(
                 .forEachIndexed { i, transaction ->
                     val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                     performControllerChange(
-                        transaction,
                         newVisibleTransactions.getOrNull(i - 1),
+                        transaction,
                         true,
                         localHandler
                     )
@@ -189,8 +189,8 @@ class Router internal constructor(
                     !newVisibleTransactions.contains(oldTopTransaction)
 
                 performControllerChange(
-                    newTopTransaction,
                     oldTopTransaction,
+                    newTopTransaction,
                     isPush,
                     localHandler
                 )
@@ -235,7 +235,7 @@ class Router internal constructor(
             .filterNot { it.controller.isAttached }
             .forEach {
                 performControllerChange(
-                    it, null, true,
+                    null, it, true,
                     SimpleSwapChangeHandler(false)
                 )
             }
@@ -395,8 +395,8 @@ class Router internal constructor(
     }
 
     private fun performControllerChange(
-        to: RouterTransaction?,
         from: RouterTransaction?,
+        to: RouterTransaction?,
         isPush: Boolean,
         handler: ControllerChangeHandler? = null
     ) {
@@ -413,8 +413,8 @@ class Router internal constructor(
         }
 
         ControllerChangeManager.executeChange(
-            to?.controller,
             from?.controller,
+            to?.controller,
             isPush,
             container,
             handlerToUse,
