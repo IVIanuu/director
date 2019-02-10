@@ -18,8 +18,8 @@ package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.MockChangeHandler
 import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.defaultHandler
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -47,14 +47,14 @@ class TargetControllerTest {
 
         router.push(
             controllerA.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         controllerB.targetController = controllerA
 
         router.push(
             controllerB.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         assertNull(controllerA.targetController)
@@ -71,7 +71,7 @@ class TargetControllerTest {
 
         router.push(
             controllerA.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         controllerB.targetController = controllerA
@@ -80,7 +80,7 @@ class TargetControllerTest {
             controllerA.getChildRouter(controllerA.childContainer1!!)
         childRouter.push(
             controllerB.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         assertNull(controllerA.targetController)
@@ -97,7 +97,7 @@ class TargetControllerTest {
 
         router.push(
             controllerA.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         controllerA.targetController = controllerB
@@ -109,7 +109,7 @@ class TargetControllerTest {
 
         childRouter.push(
             controllerB.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         assertNull(controllerB.targetController)

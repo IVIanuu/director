@@ -20,8 +20,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
 import com.ivianuu.director.util.EmptyLifecycleListener
-import com.ivianuu.director.util.MockChangeHandler
 import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.noRemoveViewOnPushHandler
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -229,7 +229,7 @@ class RouterTest {
     fun testSetBackstackWithNoRemoveViewOnPush() {
         val oldRootTransaction = TestController().toTransaction()
         val oldTopTransaction = TestController().toTransaction()
-            .pushChangeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .pushChangeHandler(noRemoveViewOnPushHandler())
 
         router.setRoot(oldRootTransaction)
         router.push(oldTopTransaction)
@@ -240,9 +240,9 @@ class RouterTest {
 
         val rootTransaction = TestController().toTransaction()
         val middleTransaction = TestController().toTransaction()
-            .pushChangeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .pushChangeHandler(noRemoveViewOnPushHandler())
         val topTransaction = TestController().toTransaction()
-            .pushChangeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .pushChangeHandler(noRemoveViewOnPushHandler())
 
         val backstack = listOf(rootTransaction, middleTransaction, topTransaction)
         router.setBackstack(backstack, true)
@@ -336,7 +336,7 @@ class RouterTest {
     fun testReplaceTopControllerWithNoRemoveViewOnPush() {
         val controllerA = TestController().toTransaction()
         val controllerB = TestController().toTransaction()
-            .changeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .changeHandler(noRemoveViewOnPushHandler())
 
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack, true)
@@ -347,7 +347,7 @@ class RouterTest {
         assertTrue(controllerB.controller.isAttached)
 
         val controllerC = TestController().toTransaction()
-            .changeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .changeHandler(noRemoveViewOnPushHandler())
         router.replaceTop(controllerC)
 
         assertEquals(2, router.backstackSize)
@@ -361,7 +361,7 @@ class RouterTest {
     fun testReplaceTopControllerWithMixedRemoveViewOnPush1() {
         val controllerA = TestController().toTransaction()
         val controllerB = TestController().toTransaction()
-            .changeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .changeHandler(noRemoveViewOnPushHandler())
 
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack, true)
@@ -395,7 +395,7 @@ class RouterTest {
         assertTrue(controllerB.controller.isAttached)
 
         val controllerC = TestController().toTransaction()
-            .changeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+            .changeHandler(noRemoveViewOnPushHandler())
         router.replaceTop(controllerC)
 
         assertEquals(2, router.backstackSize)
@@ -441,7 +441,7 @@ class RouterTest {
             TestController().toTransaction(),
             TestController().toTransaction(),
             TestController().toTransaction()
-                .changeHandler(MockChangeHandler.noRemoveViewOnPushHandler())
+                .changeHandler(noRemoveViewOnPushHandler())
         )
 
         router.setBackstack(backstack, true)

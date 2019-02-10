@@ -23,6 +23,8 @@ import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.CallState
 import com.ivianuu.director.util.MockChangeHandler
 import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.defaultHandler
+import com.ivianuu.director.util.listeningChangeHandler
 import com.ivianuu.director.util.reportAttached
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -512,7 +514,7 @@ class ControllerLifecycleCallbacksTest {
 
         router.push(
             testController.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         router.pop(testController)
@@ -531,7 +533,7 @@ class ControllerLifecycleCallbacksTest {
         val parent = TestController()
         router.push(
             parent.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         val child = TestController()
@@ -562,7 +564,7 @@ class ControllerLifecycleCallbacksTest {
         val parent = TestController()
         router.push(
             parent.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         val child = TestController()
@@ -597,7 +599,7 @@ class ControllerLifecycleCallbacksTest {
         parent.retainView = true
         router.push(
             parent.toTransaction()
-                .changeHandler(MockChangeHandler.defaultHandler())
+                .changeHandler(defaultHandler())
         )
 
         val child = TestController()
@@ -629,7 +631,7 @@ class ControllerLifecycleCallbacksTest {
         expectedCallState: CallState,
         controller: TestController
     ): MockChangeHandler {
-        return MockChangeHandler.listeningChangeHandler(object : MockChangeHandler.Listener {
+        return listeningChangeHandler(object : MockChangeHandler.Listener {
             override fun willStartChange() {
                 expectedCallState.createCalls++
                 expectedCallState.changeStartCalls++
@@ -654,7 +656,7 @@ class ControllerLifecycleCallbacksTest {
         expectedCallState: CallState,
         controller: TestController
     ): MockChangeHandler {
-        return MockChangeHandler.listeningChangeHandler(object : MockChangeHandler.Listener {
+        return listeningChangeHandler(object : MockChangeHandler.Listener {
             override fun willStartChange() {
                 expectedCallState.changeStartCalls++
                 assertCalls(expectedCallState, controller)

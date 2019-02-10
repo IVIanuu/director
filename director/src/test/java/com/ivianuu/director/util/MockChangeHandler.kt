@@ -21,7 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
 
-class MockChangeHandler private constructor(
+class MockChangeHandler internal constructor(
     override var removesFromViewOnPush: Boolean,
     var tag: String?,
     listener: Listener?
@@ -102,20 +102,20 @@ class MockChangeHandler private constructor(
         MockChangeHandler(removesFromViewOnPush, tag, listener)
 
     companion object {
-        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "MockChangeHandler.removesFromViewOnPush"
-        private const val KEY_TAG = "MockChangeHandler.tag"
-
-        fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null, null)
-
-        fun noRemoveViewOnPushHandler(): MockChangeHandler = MockChangeHandler(false, null, null)
-
-        fun noRemoveViewOnPushHandler(tag: String): MockChangeHandler =
-            MockChangeHandler(false, tag, null)
-
-        fun listeningChangeHandler(listener: Listener): MockChangeHandler =
-            MockChangeHandler(true, null, listener)
-
-        fun taggedHandler(tag: String, removeViewOnPush: Boolean): MockChangeHandler =
-            MockChangeHandler(removeViewOnPush, tag, null)
+        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "removesFromViewOnPush"
+        private const val KEY_TAG = "tag"
     }
 }
+
+fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null, null)
+
+fun noRemoveViewOnPushHandler(): MockChangeHandler = MockChangeHandler(false, null, null)
+
+fun noRemoveViewOnPushHandler(tag: String): MockChangeHandler =
+    MockChangeHandler(false, tag, null)
+
+fun listeningChangeHandler(listener: MockChangeHandler.Listener): MockChangeHandler =
+    MockChangeHandler(true, null, listener)
+
+fun taggedHandler(tag: String, removeViewOnPush: Boolean): MockChangeHandler =
+    MockChangeHandler(removeViewOnPush, tag, null)
