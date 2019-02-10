@@ -163,14 +163,11 @@ class Router internal constructor(
                 )
             }
 
-        var visibleAdded = false
-
         // Add any new controllers to the backstack
         newVisibleTransactions
             .dropLast(if (replacingTopTransactions) 1 else 0)
             .filterNot { oldVisibleTransactions.contains(it) }
             .forEachIndexed { i, transaction ->
-                visibleAdded = true
                 val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                 performControllerChange(
                     transaction,
@@ -187,8 +184,9 @@ class Router internal constructor(
                 else oldTopTransaction?.popChangeHandler?.copy())
                 ?: SimpleSwapChangeHandler()
 
-            // force view removal if another controller has been pushed
-            localHandler.forceRemoveViewOnPush = visibleAdded
+            localHandler.forceRemoveViewOnPush =
+                !newVisibleTransactions.contains(oldTopTransaction)
+
             performControllerChange(
                 newTopTransaction,
                 oldTopTransaction,
