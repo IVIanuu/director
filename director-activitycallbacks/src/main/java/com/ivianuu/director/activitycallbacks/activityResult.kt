@@ -53,7 +53,7 @@ fun Controller.addActivityResultListener(
 }
 
 /**
- * Invokes [onActivityResult] on activity results for [requestCode]
+ * Notifies [onActivityResult] on activity results for [requestCode]
  */
 fun Controller.addActivityResultListener(
     requestCode: Int,

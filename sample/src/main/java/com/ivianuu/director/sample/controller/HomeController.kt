@@ -119,6 +119,9 @@ class HomeController : BaseController() {
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
                 router.push(MultipleChildRouterController().toTransaction())
             }
+            HomeItem.PERMISSION -> {
+                router.push(PermissionController().toTransaction())
+            }
             HomeItem.MASTER_DETAIL -> {
                 router.push(MasterDetailListController().toTransaction())
             }
@@ -169,6 +172,7 @@ enum class HomeItem(val title: String, val color: Int) {
     BOTTOM_NAV("Bottom Nav", R.color.blue_300),
     TARGET_CONTROLLER("Target Controller", R.color.pink_300),
     MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),
+    PERMISSION("Permission", R.color.indigo_300),
     MASTER_DETAIL("Master Detail", R.color.grey_300),
     DRAG_DISMISS("Drag Dismiss", R.color.lime_300),
     DIALOG("Dialog", R.color.blue_300),

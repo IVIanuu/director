@@ -51,6 +51,28 @@ fun Controller.addPermissionResultListener(
 }
 
 /**
+ * Notifies [onRequestPermissionsResult] on permission results for [requestCode]
+ */
+fun Controller.addPermissionResultListener(
+    requestCode: Int,
+    onRequestPermissionsResult: (requestCode: Int, permissions: Array<out String>, grantResults: IntArray) -> Unit
+): PermissionListener {
+    val listener = object : PermissionListener {
+        override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ) {
+            onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    addPermissionResultListener(requestCode, listener)
+
+    return listener
+}
+
+/**
  * Removes the previously added [listener]
  */
 fun Controller.removePermissionResultListener(
