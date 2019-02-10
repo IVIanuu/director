@@ -458,7 +458,8 @@ abstract class Controller {
             childRouterManager.routers
                 .filterNot { it.hasContainer }
                 .forEach {
-                    val containerView = view.findViewById<ViewGroup>(it.containerId)
+                    val containerView =
+                        view.findViewById<ViewGroup>(it.containerId) ?: return@forEach
                     it.setContainer(containerView)
                     it.rebind()
                 }
