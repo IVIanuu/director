@@ -57,6 +57,10 @@ class SingleContainer(val router: Router) {
     }
 }
 
+inline fun SingleContainer.setIfEmpty(create: () -> RouterTransaction) {
+    if (isEmpty) set(create())
+}
+
 inline fun SingleContainer.setByTag(tag: String, create: () -> RouterTransaction) {
     set(router.backstack.firstOrNull { it.tag == tag } ?: create())
 }

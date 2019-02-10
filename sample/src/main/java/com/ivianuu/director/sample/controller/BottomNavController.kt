@@ -59,7 +59,7 @@ class BottomNavController : BaseController() {
                     ?.controller
                     ?.childRouters
                     ?.first()
-                    ?.popToRoot(FadeChangeHandler())
+                    ?.popToRoot()
             }
         }
 
