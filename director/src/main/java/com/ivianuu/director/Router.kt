@@ -408,7 +408,7 @@ class Router internal constructor(
 
         val container = container ?: return
 
-        val handler = handler ?: when {
+        val handlerToUse = handler ?: when {
             isPush -> to?.pushChangeHandler
             from != null -> from.popChangeHandler
             else -> null
@@ -419,7 +419,7 @@ class Router internal constructor(
             from?.controller,
             isPush,
             container,
-            handler,
+            handlerToUse,
             getAllChangeListeners(false)
         )
     }
