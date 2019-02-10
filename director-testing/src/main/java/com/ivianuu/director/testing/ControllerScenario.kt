@@ -31,11 +31,14 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.Router
+import com.ivianuu.director.findControllerByTag
 import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.fragmenthost.postponeFullRestore
 import com.ivianuu.director.fragmenthost.startPostponedFullRestore
 import com.ivianuu.director.pop
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 import kotlin.reflect.KClass
 
 class ControllerScenario<C : Controller> internal constructor(
@@ -65,7 +68,7 @@ class ControllerScenario<C : Controller> internal constructor(
                 args
             )
 
-            activity.router.setRoot(controller, tag = CONTROLLER_TAG)
+            activity.router.setRoot(controller.toTransaction().tag(CONTROLLER_TAG))
         }
     }
 

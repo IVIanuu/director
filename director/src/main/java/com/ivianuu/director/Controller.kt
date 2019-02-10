@@ -452,8 +452,8 @@ abstract class Controller {
 
         // we check here if were in a fully created view state
         // because call child router methods in onBindView
-        // would cause the child controller view to be fully created
-        // before our view is fully created
+        // would cause the child controller view to be created
+        // before our view is created
         if (view is ViewGroup && viewFullyCreated) {
             childRouterManager.setContainers(view)
         }
