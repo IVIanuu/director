@@ -533,7 +533,7 @@ fun Router.findControllerByInstanceId(instanceId: String): Controller? =
  */
 fun Router.setRoot(transaction: RouterTransaction, handler: ControllerChangeHandler? = null) {
     // todo check if we should always use isPush=true
-    setBackstack(listOf(transaction), true, handler ?: transaction.pushChangeHandler)
+    setBackstack(listOf(transaction), true, handler)
 }
 
 /**
@@ -545,7 +545,7 @@ fun Router.push(
 ) {
     val newBackstack = backstack.toMutableList()
     newBackstack.add(transaction)
-    setBackstack(newBackstack, true, handler ?: transaction.pushChangeHandler)
+    setBackstack(newBackstack, true, handler)
 }
 
 /**
@@ -561,7 +561,7 @@ fun Router.replaceTop(
         newBackstack.removeAt(newBackstack.lastIndex)
     }
     newBackstack.add(transaction)
-    setBackstack(newBackstack, true, handler ?: transaction.pushChangeHandler)
+    setBackstack(newBackstack, true, handler)
 }
 
 /**
@@ -585,10 +585,7 @@ fun Router.pop(
     val oldBackstack = backstack
     val newBackstack = oldBackstack.toMutableList()
     newBackstack.removeAll { it == transaction }
-    setBackstack(
-        newBackstack, false,
-        handler ?: oldBackstack.lastOrNull()?.popChangeHandler
-    )
+    setBackstack(newBackstack, false, handler)
 }
 
 /**
@@ -597,7 +594,7 @@ fun Router.pop(
 fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
     val transaction = backstack.lastOrNull()
         ?: error("Trying to pop the current controller when there are none on the backstack.")
-    pop(transaction, handler ?: transaction.popChangeHandler)
+    pop(transaction, handler)
 }
 
 /**
@@ -633,7 +630,6 @@ fun Router.popTo(
     transaction: RouterTransaction,
     handler: ControllerChangeHandler? = null
 ) {
-    val topTransaction = backstack.lastOrNull()
     val newBackstack = backstack.dropLastWhile { it != transaction }
-    setBackstack(newBackstack, false, handler ?: topTransaction?.popChangeHandler)
+    setBackstack(newBackstack, false, handler)
 }
