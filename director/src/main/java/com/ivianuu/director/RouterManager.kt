@@ -36,8 +36,9 @@ class RouterManager(
     private val _routers = mutableListOf<Router>()
 
     private var hostStarted = false
-
     private var routerStates: Map<Router, Bundle>? = null
+
+    private var rootView: ViewGroup? = null
 
     init {
         restoreInstanceState(savedInstanceState)
@@ -49,14 +50,10 @@ class RouterManager(
     }
 
     fun setContainers(rootView: ViewGroup) {
-        _routers
-            .filterNot { it.hasContainer }
-            .forEach { router ->
-                rootView.findViewById<ViewGroup>(router.containerId)?.let {
-                    router.setContainer(it)
-                    router.rebind()
-                }
-            }
+        if (this.rootView != rootView) {
+            this.rootView = rootView
+            _routers.forEach { it.restoreContainer() }
+        }
     }
 
     fun hostStopped() {
@@ -65,7 +62,10 @@ class RouterManager(
     }
 
     fun removeContainers() {
-        _routers.forEach { it.removeContainer() }
+        if (rootView != null) {
+            _routers.forEach { it.removeContainer() }
+            rootView = null
+        }
     }
 
     fun hostIsBeingDestroyed() {
@@ -121,6 +121,8 @@ class RouterManager(
                 router.hostStarted()
             }
         }
+
+        router.restoreContainer()
 
         return router
     }
@@ -179,6 +181,15 @@ class RouterManager(
         routerStates = null
     }
 
+    private fun Router.restoreContainer() {
+        if (!hasContainer) {
+            rootView?.findViewById<ViewGroup>(containerId)?.let {
+                setContainer(it)
+                rebind()
+            }
+        }
+    }
+
     private companion object {
         private const val KEY_ROUTER_STATES = "RouterManager.routerState"
     }
@@ -186,12 +197,16 @@ class RouterManager(
 
 fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
     getRouterOrNull(container.id, tag)?.also {
-        it.setContainer(container)
-        it.rebind()
+        if (!it.hasContainer) {
+            it.setContainer(container)
+            it.rebind()
+        }
     }
 
 fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
     getRouter(container.id, tag).also {
-        it.setContainer(container)
-        it.rebind()
+        if (!it.hasContainer) {
+            it.setContainer(container)
+            it.rebind()
+        }
     }
