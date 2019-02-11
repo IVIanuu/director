@@ -195,17 +195,6 @@ abstract class DialogController : Controller(),
         router.pop(this)
     }
 
-    /**
-     * Pushes this controller and shows the dialog
-     */
-    fun show(router: Router, tag: String? = null) {
-        router.push(
-            toTransaction()
-                .changeHandler(SimpleSwapChangeHandler(removesFromViewOnPush = false))
-                .tag(tag)
-        )
-    }
-
     companion object {
         const val STYLE_NORMAL = 0
         const val STYLE_NO_TITLE = 1
@@ -218,4 +207,15 @@ abstract class DialogController : Controller(),
         private const val KEY_CANCELABLE = "DialogController.cancelable"
         private const val KEY_DISMISSED = "DialogController.dismissed"
     }
+}
+
+/**
+ * Pushes this controller and shows the dialog
+ */
+fun DialogController.show(router: Router, tag: String? = null) {
+    router.push(
+        toTransaction()
+            .changeHandler(SimpleSwapChangeHandler(removesFromViewOnPush = false))
+            .tag(tag)
+    )
 }

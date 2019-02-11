@@ -24,7 +24,7 @@ private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
 
 /**
  * Objects which are retained trough config changes
- * So every [Controller] will get the same instance back
+ * So every [Controller] will get the same instance back trough its lifetime
  */
 class RetainedObjects {
 

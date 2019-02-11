@@ -12,6 +12,7 @@ import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.dialog.show
 
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
