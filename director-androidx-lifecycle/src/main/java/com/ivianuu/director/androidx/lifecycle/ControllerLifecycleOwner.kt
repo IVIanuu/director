@@ -26,6 +26,7 @@ import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerState
 import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.doOnPostDestroy
 
@@ -45,6 +46,14 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
                 preDetach { _, _ -> handleLifecycleEvent(ON_PAUSE) }
                 preUnbindView { _, _ -> handleLifecycleEvent(ON_STOP) }
                 preDestroy { handleLifecycleEvent(ON_DESTROY) }
+            }
+
+            when (controller.state) {
+                ControllerState.DESTROYED -> markState(Lifecycle.State.DESTROYED)
+                ControllerState.INITIALIZED -> markState(Lifecycle.State.INITIALIZED)
+                ControllerState.CREATED -> markState(Lifecycle.State.CREATED)
+                ControllerState.VIEW_BOUND -> markState(Lifecycle.State.STARTED)
+                ControllerState.ATTACHED -> markState(Lifecycle.State.RESUMED)
             }
         }
     }

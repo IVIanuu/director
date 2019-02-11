@@ -17,6 +17,7 @@
 package com.ivianuu.director.scopes
 
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerState
 import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.common.ControllerEvent
 import com.ivianuu.director.common.ControllerEvent.ATTACH
@@ -42,6 +43,13 @@ class ControllerLifecycle(
             postAttach { _, _ -> onEvent(DETACH) }
             postUnbindView { onEvent(UNBIND_VIEW) }
             postDestroy { onEvent(DESTROY) }
+        }
+
+        when (controller.state) {
+            ControllerState.DESTROYED -> onEvent(DESTROY)
+            ControllerState.CREATED -> onEvent(CREATE)
+            ControllerState.VIEW_BOUND -> onEvent(BIND_VIEW)
+            ControllerState.ATTACHED -> onEvent(ATTACH)
         }
     }
 }
