@@ -2,6 +2,7 @@ package com.ivianuu.director
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
@@ -596,33 +597,39 @@ val Controller.parentController: Controller?
     get() = host as? Controller
 
 /**
- * The activity of this controller if any of the hosts is one
+ * The context of this controller if any of this or parent controllers is attached to one
+ */
+val Controller.context: Context
+    get() {
+        return if (host is Context) {
+            host as Context
+        } else {
+            (host as? Controller)?.context
+        } ?: error("no context found")
+    }
+
+/**
+ * The context of this controller if any of this or parent controllers is attached to one
  */
 val Controller.activity: Activity
-    get() {
-        return if (host is Activity) {
-            host as Activity
-        } else {
-            (host as? Controller)?.activity
-        } ?: error("no activity found")
-    }
+    get() = context as? Activity ?: error("no activity found")
 
 /**
  * The application of the attached activity
  */
 val Controller.application: Application
-    get() = activity.application
+    get() = context.applicationContext as Application
 
 /**
  * The resources of the attached activity
  */
-val Controller.resources: Resources get() = activity.resources
+val Controller.resources: Resources get() = context.resources
 
 /**
  * Starts the [intent]
  */
 fun Controller.startActivity(intent: Intent) {
-    activity.startActivity(intent)
+    context.startActivity(intent)
 }
 
 /**
