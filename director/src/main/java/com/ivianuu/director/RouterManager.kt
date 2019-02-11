@@ -44,16 +44,16 @@ class RouterManager(
         restoreInstanceState(savedInstanceState)
     }
 
-    fun hostStarted() {
-        hostStarted = true
-        _routers.forEach { it.hostStarted() }
-    }
-
     fun setContainers(rootView: ViewGroup) {
         if (this.rootView != rootView) {
             this.rootView = rootView
             _routers.forEach { it.restoreContainer() }
         }
+    }
+
+    fun hostStarted() {
+        hostStarted = true
+        _routers.forEach { it.hostStarted() }
     }
 
     fun hostStopped() {

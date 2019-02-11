@@ -17,6 +17,7 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.internal.ViewAttachHandler
+import com.ivianuu.stdlibx.safeAs
 import java.util.*
 
 /**
@@ -88,7 +89,6 @@ abstract class Controller {
     private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
 
-    private var viewFullyCreated = false
     private var hasSavedViewState = false
     private var viewIsAttached = false
     private var attachedToUnownedParent = false
@@ -252,10 +252,7 @@ abstract class Controller {
     fun getChildRouterOrNull(
         containerId: Int,
         tag: String?
-    ): Router? {
-        return childRouterManager.getRouterOrNull(containerId, tag)
-            ?.also { restoreChildControllerContainers() }
-    }
+    ): Router? = childRouterManager.getRouterOrNull(containerId, tag)
 
     /**
      * Returns the child router for [containerId] and [tag]
@@ -263,10 +260,7 @@ abstract class Controller {
     fun getChildRouter(
         containerId: Int,
         tag: String? = null
-    ): Router {
-        return childRouterManager.getRouter(containerId, tag)
-            .also { restoreChildControllerContainers() }
-    }
+    ): Router = childRouterManager.getRouter(containerId, tag)
 
     /**
      * Removes the [childRouter]. All Controllers currently managed by
@@ -286,7 +280,17 @@ abstract class Controller {
         allState = null
 
         // create
-        create()
+        if (!isCreated) {
+            notifyLifecycleListeners { it.preCreate(this, instanceState) }
+
+            state = CREATED
+
+            requireSuperCalled { onCreate(instanceState) }
+
+            notifyLifecycleListeners { it.postCreate(this, instanceState) }
+
+            instanceState = null
+        }
     }
 
     internal fun containerAttached() {
@@ -365,13 +369,11 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.postBindView(this, view, viewState) }
 
-            viewFullyCreated = true
-
             attachHandler.takeView(view)
 
-            restoreChildControllerContainers()
+            view.safeAs<ViewGroup>()?.let { childRouterManager.setContainers(it) }
         } else if (retainView) {
-            restoreChildControllerContainers()
+            view.safeAs<ViewGroup>()?.let { childRouterManager.setContainers(it) }
         }
 
         return view
@@ -442,35 +444,8 @@ abstract class Controller {
         attachHandler.dropView(view)
 
         this.view = null
-        viewFullyCreated = false
 
         notifyLifecycleListeners { it.postUnbindView(this) }
-    }
-
-    private fun restoreChildControllerContainers() {
-        val view = view
-
-        // we check here if were in a fully created view state
-        // because call child router methods in onBindView
-        // would cause the child controller view to be created
-        // before our view is created
-        if (view is ViewGroup && viewFullyCreated) {
-            childRouterManager.setContainers(view)
-        }
-    }
-
-    private fun create() {
-        if (!isCreated) {
-            notifyLifecycleListeners { it.preCreate(this, instanceState) }
-
-            state = CREATED
-
-            requireSuperCalled { onCreate(instanceState) }
-
-            notifyLifecycleListeners { it.postCreate(this, instanceState) }
-
-            instanceState = null
-        }
     }
 
     internal fun saveInstanceState(): Bundle {
