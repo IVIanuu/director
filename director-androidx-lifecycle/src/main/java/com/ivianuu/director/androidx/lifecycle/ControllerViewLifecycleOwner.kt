@@ -48,13 +48,11 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
         controller.addLifecycleListener(listener)
 
         if (controller.state.isAtLeast(ControllerState.VIEW_BOUND)) {
-            println("bring into bound state")
             listener.postInflateView(controller, controller.view!!, null)
             listener.postBindView(controller, controller.view!!, null)
         }
 
         if (controller.state.isAtLeast(ControllerState.ATTACHED)) {
-            println("bring into attached state")
             listener.postAttach(controller, controller.view!!)
         }
     }
