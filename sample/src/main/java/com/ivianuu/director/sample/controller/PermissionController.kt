@@ -38,6 +38,7 @@ class PermissionController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        toolbarTitle = "Permission"
         addPermissionResultListener(REQUEST_CODE_PERMISSION) { _, _, _ -> updateState() }
     }
 
