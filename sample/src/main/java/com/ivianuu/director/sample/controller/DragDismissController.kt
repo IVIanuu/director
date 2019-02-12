@@ -3,9 +3,7 @@ package com.ivianuu.director.sample.controller
 import android.annotation.TargetApi
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.ivianuu.director.pop
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ScaleFadeChangeHandler
@@ -27,16 +25,6 @@ class DragDismissController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBarTitle = "Drag to Dismiss"
-    }
-
-    override fun onInflateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onInflateView(inflater, container, savedViewState).apply {
-            translationY = 1000f
-        }
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
