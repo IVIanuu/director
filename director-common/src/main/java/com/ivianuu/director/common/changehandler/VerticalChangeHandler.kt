@@ -37,6 +37,7 @@ open class VerticalChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         toAddedToContainer: Boolean
     ): Animator {

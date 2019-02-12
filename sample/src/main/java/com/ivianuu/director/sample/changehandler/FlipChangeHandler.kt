@@ -30,6 +30,7 @@ class FlipChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         toAddedToContainer: Boolean
     ): Animator {

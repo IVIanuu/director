@@ -46,18 +46,19 @@ abstract class TransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
         if (canceled) {
             if (needsImmediateCompletion) {
-                executePropertyChanges(container, from, to, null, isPush)
+                executePropertyChanges(container, from, to, toIndex, null, isPush)
             }
             onChangeComplete()
             return
         }
 
-        val transition = getTransition(container, from, to, isPush)
+        val transition = getTransition(container, from, to, toIndex, isPush)
         if (duration != NO_DURATION) {
             transition.duration = duration
         }
@@ -85,15 +86,16 @@ abstract class TransitionChangeHandler(
             container,
             from,
             to,
+            toIndex,
             transition,
             isPush
         ) {
             // todo transition manager needs a fully attached container
             if (container.isLaidOut) {
                 TransitionManager.beginDelayedTransition(container, transition)
-                executePropertyChanges(container, from, to, transition, isPush)
+                executePropertyChanges(container, from, to, toIndex, transition, isPush)
             } else {
-                executePropertyChanges(container, from, to, transition, isPush)
+                executePropertyChanges(container, from, to, toIndex, transition, isPush)
                 onChangeComplete()
             }
         }
@@ -122,6 +124,7 @@ abstract class TransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition
 
@@ -133,6 +136,7 @@ abstract class TransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         transition: Transition,
         isPush: Boolean,
         onTransitionPrepared: () -> Unit
@@ -148,6 +152,7 @@ abstract class TransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         transition: Transition?,
         isPush: Boolean
     ) {
@@ -155,7 +160,7 @@ abstract class TransitionChangeHandler(
             container.removeView(from)
         }
         if (to != null && to.parent == null) {
-            container.addView(to)
+            container.addView(to, toIndex)
         }
     }
 

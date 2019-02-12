@@ -20,6 +20,7 @@ open class AutoTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition = AutoTransition()
 

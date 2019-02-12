@@ -127,6 +127,7 @@ class ViewLeakTest {
             container: ViewGroup,
             from: View?,
             to: View?,
+            toIndex: Int,
             isPush: Boolean,
             onChangeComplete: () -> Unit
         ) {
@@ -142,6 +143,7 @@ class ViewLeakTest {
             container: ViewGroup,
             from: View?,
             to: View?,
+            toIndex: Int,
             isPush: Boolean,
             onChangeComplete: () -> Unit
         ) {

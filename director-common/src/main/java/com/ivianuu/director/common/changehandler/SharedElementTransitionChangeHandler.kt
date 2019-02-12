@@ -61,13 +61,14 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition {
-        exitTransition = getExitTransition(container, from, to, isPush)
-        enterTransition = getEnterTransition(container, from, to, isPush)
-        sharedElementTransition = getSharedElementTransition(container, from, to, isPush)
-        exitTransitionCallback = getExitTransitionCallback(container, from, to, isPush)
-        enterTransitionCallback = getEnterTransitionCallback(container, from, to, isPush)
+        exitTransition = getExitTransition(container, from, to, toIndex, isPush)
+        enterTransition = getEnterTransition(container, from, to, toIndex, isPush)
+        sharedElementTransition = getSharedElementTransition(container, from, to, toIndex, isPush)
+        exitTransitionCallback = getExitTransitionCallback(container, from, to, toIndex, isPush)
+        enterTransitionCallback = getEnterTransitionCallback(container, from, to, toIndex, isPush)
 
         check(enterTransition != null || sharedElementTransition != null || exitTransition != null) {
             "SharedElementTransitionChangeHandler must have at least one transaction."
@@ -80,6 +81,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         transition: Transition,
         isPush: Boolean,
         onTransitionPrepared: () -> Unit
@@ -89,11 +91,11 @@ abstract class SharedElementTransitionChangeHandler(
             onTransitionPrepared()
         }
 
-        configureSharedElements(container, from, to, isPush)
+        configureSharedElements(container, from, to, toIndex, isPush)
 
         if (to != null && to.parent == null && waitForTransitionNames.isNotEmpty()) {
             waitOnAllTransitionNames(to, listener)
-            container.addView(to)
+            container.addView(to, toIndex)
         } else {
             listener()
         }
@@ -103,6 +105,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         transition: Transition?,
         isPush: Boolean
     ) {
@@ -112,7 +115,7 @@ abstract class SharedElementTransitionChangeHandler(
             removedViews.clear()
         }
 
-        super.executePropertyChanges(container, from, to, transition, isPush)
+        super.executePropertyChanges(container, from, to, toIndex, transition, isPush)
     }
 
     private fun configureTransition(
@@ -583,6 +586,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     )
 
@@ -593,6 +597,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition?
 
@@ -603,6 +608,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition?
 
@@ -613,6 +619,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition?
 
@@ -623,6 +630,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): SharedElementCallback? = null
 
@@ -633,6 +641,7 @@ abstract class SharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): SharedElementCallback? = null
 

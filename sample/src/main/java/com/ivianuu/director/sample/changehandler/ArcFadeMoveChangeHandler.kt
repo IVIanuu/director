@@ -43,6 +43,7 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition? {
         return Fade(Fade.OUT)
@@ -52,6 +53,7 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition? {
         val transition =
@@ -91,6 +93,7 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition? {
         return Fade(Fade.IN)
@@ -100,6 +103,7 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ) {
         sharedElementNames.forEach { addSharedElement(it) }

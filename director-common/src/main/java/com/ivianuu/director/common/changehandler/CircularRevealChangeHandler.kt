@@ -54,6 +54,7 @@ open class CircularRevealChangeHandler :
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         toAddedToContainer: Boolean
     ): Animator {

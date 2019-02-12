@@ -10,6 +10,7 @@ data class ChangeData(
     val container: ViewGroup,
     val from: View?,
     val to: View?,
+    val toIndex: Int,
     val isPush: Boolean,
     val onChangeComplete: () -> Unit
 )

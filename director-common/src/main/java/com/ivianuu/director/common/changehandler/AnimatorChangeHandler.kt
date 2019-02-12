@@ -53,21 +53,17 @@ abstract class AnimatorChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
-        changeData = ChangeData(container, from, to, isPush, onChangeComplete)
+        changeData = ChangeData(container, from, to, toIndex, isPush, onChangeComplete)
 
         var readyToAnimate = true
         val addingToView = to != null && to.parent == null
 
         if (addingToView) {
-            if (isPush || from == null) {
-                container.addView(to)
-            } else if (to?.parent == null) {
-                container.addView(to, container.indexOfChild(from))
-            }
-
+            container.addView(to, toIndex)
             if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
                 onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
@@ -75,6 +71,7 @@ abstract class AnimatorChangeHandler(
                         container,
                         from,
                         to,
+                        toIndex,
                         isPush,
                         true,
                         onChangeComplete
@@ -84,7 +81,7 @@ abstract class AnimatorChangeHandler(
         }
 
         if (readyToAnimate) {
-            performAnimation(container, from, to, isPush, addingToView, onChangeComplete)
+            performAnimation(container, from, to, toIndex, isPush, addingToView, onChangeComplete)
         }
     }
 
@@ -125,6 +122,7 @@ abstract class AnimatorChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         toAddedToContainer: Boolean
     ): Animator
@@ -138,6 +136,7 @@ abstract class AnimatorChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         toAddedToContainer: Boolean,
         onChangeComplete: () -> Unit
@@ -147,7 +146,7 @@ abstract class AnimatorChangeHandler(
             return
         }
 
-        animator = getAnimator(container, from, to, isPush, toAddedToContainer).apply {
+        animator = getAnimator(container, from, to, toIndex, isPush, toAddedToContainer).apply {
             if (this@AnimatorChangeHandler.duration != NO_DURATION) {
                 duration = this@AnimatorChangeHandler.duration
             }
@@ -166,7 +165,7 @@ abstract class AnimatorChangeHandler(
         if (completed) return
         completed = true
 
-        val (container, from, to, isPush, onChangeComplete) = changeData!!
+        val (container, from, to, _, isPush, onChangeComplete) = changeData!!
 
         if (canceled && !needsImmediateCompletion) {
             if (from != null) {

@@ -69,6 +69,7 @@ open class SimpleSwapChangeHandler(removesFromViewOnPush: Boolean = true) :
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     ) {
@@ -80,7 +81,7 @@ open class SimpleSwapChangeHandler(removesFromViewOnPush: Boolean = true) :
         }
 
         if (to != null && to.parent == null) {
-            container.addView(to)
+            container.addView(to, toIndex)
         }
 
         if (container.windowToken != null) {

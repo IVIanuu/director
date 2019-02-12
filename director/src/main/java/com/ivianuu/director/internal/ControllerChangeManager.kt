@@ -1,10 +1,12 @@
 package com.ivianuu.director.internal
 
+import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeListener
 import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.Router
 import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal object ControllerChangeManager {
@@ -12,6 +14,7 @@ internal object ControllerChangeManager {
     private val handlers = mutableMapOf<String, ChangeHandlerData>()
 
     fun executeChange(
+        router: Router,
         from: Controller?,
         to: Controller?,
         isPush: Boolean,
@@ -44,16 +47,23 @@ internal object ControllerChangeManager {
         val fromChangeType =
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
+
         val toView = to?.inflate(container)
         to?.changeStarted(handlerToUse, toChangeType)
 
         val fromView = from?.view
         from?.changeStarted(handlerToUse, fromChangeType)
 
+        println(
+            "perform change from $from to $to\n" +
+                    "to index is ${getToIndex(router, container, toView, fromView, isPush)}"
+        )
+
         handlerToUse.performChange(
             container,
             fromView,
             toView,
+            getToIndex(router, container, toView, fromView, isPush),
             isPush
         ) {
             if (from != null) {
@@ -92,6 +102,37 @@ internal object ControllerChangeManager {
             }
 
             handlers.remove(instanceId)
+        }
+    }
+
+    private fun getToIndex(
+        router: Router,
+        container: ViewGroup,
+        to: View?,
+        from: View?,
+        isPush: Boolean
+    ): Int {
+        if (isPush || from == null) {
+            if (to == null) return -1
+            val backstackIndex = router.backstack.indexOfFirst { it.controller.view == to }
+            if (container.childCount == 0) return -1
+            return (0 until container.childCount)
+                .map { container.getChildAt(it) }
+                .indexOfFirst { v ->
+                    router.backstack.indexOfFirst {
+                        it.controller.view == v
+                    } > backstackIndex
+                }
+        } else {
+            if (to == null) return -1
+            if (container.childCount == 0) return -1
+            return (0 until container.childCount)
+                .map { container.getChildAt(it) }
+                .indexOfFirst { v ->
+                    router.backstack.firstOrNull {
+                        it.controller.view == from
+                    } != null
+                }
         }
     }
 

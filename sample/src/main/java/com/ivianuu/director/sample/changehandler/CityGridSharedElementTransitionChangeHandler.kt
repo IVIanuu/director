@@ -42,6 +42,7 @@ class CityGridSharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition? = if (isPush) {
         Explode()
@@ -53,6 +54,7 @@ class CityGridSharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition? = TransitionSet()
         .addTransition(ChangeBounds())
@@ -63,6 +65,7 @@ class CityGridSharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ): Transition? = if (isPush) {
         Slide(Gravity.BOTTOM)
@@ -74,6 +77,7 @@ class CityGridSharedElementTransitionChangeHandler(
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean
     ) {
         names.forEach {

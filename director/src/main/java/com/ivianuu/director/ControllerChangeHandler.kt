@@ -26,6 +26,7 @@ abstract class ControllerChangeHandler {
         container: ViewGroup,
         from: View?,
         to: View?,
+        toIndex: Int,
         isPush: Boolean,
         onChangeComplete: () -> Unit
     )
