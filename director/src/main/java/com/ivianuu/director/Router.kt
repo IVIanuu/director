@@ -164,11 +164,16 @@ class Router internal constructor(
                     )
                 }
 
+            var addedAboveActualTop = false
+
             // Add any new controllers to the backstack
             newVisibleTransactions
                 .dropLast(if (replacingTopTransactions) 1 else 0)
                 .filterNot { oldVisibleTransactions.contains(it) }
                 .forEachIndexed { i, transaction ->
+                    if (i != newVisibleTransactions.lastIndex) {
+                        addedAboveActualTop = true
+                    }
                     val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                     performControllerChange(
                         newVisibleTransactions.getOrNull(i - 1),
@@ -194,8 +199,20 @@ class Router internal constructor(
                     isPush,
                     localHandler
                 )
+            } else if (addedAboveActualTop && newTopTransaction != null) {
+                // this is a ugly manual workaround to fix
+                // the wrong order of views while changing visible views
+                // which are not at the top
+                // it would be nice to fix this on the change handler level
+                // but i don't know how yet
+                container?.let {
+                    val cachedView = newTopTransaction.controller.view
+                    newTopTransaction.controller.view = null
+                    it.removeView(cachedView)
+                    it.addView(cachedView)
+                    newTopTransaction.controller.view = cachedView
+                }
             }
-
         }
 
         // destroy all invisible transactions here

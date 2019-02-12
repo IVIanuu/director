@@ -9,7 +9,7 @@ import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal object ControllerChangeManager {
 
-    private val inProgressChangeHandlers = mutableMapOf<String, ChangeHandlerData>()
+    private val handlers = mutableMapOf<String, ChangeHandlerData>()
 
     fun executeChange(
         from: Controller?,
@@ -28,10 +28,12 @@ internal object ControllerChangeManager {
 
         if (from != null) {
             cancelChange(from.instanceId, isPush)
+            handlers[from.instanceId] = ChangeHandlerData(handlerToUse, isPush)
         }
 
         if (to != null) {
-            inProgressChangeHandlers[to.instanceId] = ChangeHandlerData(handlerToUse, isPush)
+            cancelChange(to.instanceId, isPush)
+            handlers[to.instanceId] = ChangeHandlerData(handlerToUse, isPush)
         }
 
         listeners.forEach { it.onChangeStarted(to, from, isPush, container, handlerToUse) }
@@ -54,10 +56,13 @@ internal object ControllerChangeManager {
             toView,
             isPush
         ) {
-            from?.changeEnded(handlerToUse, fromChangeType)
+            if (from != null) {
+                handlers.remove(from.instanceId)
+                from.changeEnded(handlerToUse, fromChangeType)
+            }
 
             if (to != null) {
-                inProgressChangeHandlers.remove(to.instanceId)
+                handlers.remove(to.instanceId)
                 to.changeEnded(handlerToUse, toChangeType)
             }
 
@@ -73,7 +78,7 @@ internal object ControllerChangeManager {
     }
 
     fun cancelChange(instanceId: String, immediate: Boolean) {
-        val changeHandlerData = inProgressChangeHandlers[instanceId]
+        val changeHandlerData = handlers[instanceId]
 
         if (changeHandlerData != null) {
             if (immediate) {
@@ -86,7 +91,7 @@ internal object ControllerChangeManager {
                 }
             }
 
-            inProgressChangeHandlers.remove(instanceId)
+            handlers.remove(instanceId)
         }
     }
 

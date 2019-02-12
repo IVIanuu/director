@@ -53,7 +53,7 @@ abstract class Controller {
      * The view of this controller or null
      */
     var view: View? = null
-        private set
+        internal set
 
     /**
      * The instance id of this controller
