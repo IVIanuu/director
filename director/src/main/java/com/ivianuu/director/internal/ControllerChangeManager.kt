@@ -118,14 +118,7 @@ internal object ControllerChangeManager {
                 }
         } else {
             if (to == null) return -1
-            if (container.childCount == 0) return -1
-            return (0 until container.childCount)
-                .map { container.getChildAt(it) }
-                .indexOfFirst { v ->
-                    router.backstack.firstOrNull {
-                        it.controller.view == from
-                    } != null
-                }
+            return container.indexOfChild(from)
         }
     }
 

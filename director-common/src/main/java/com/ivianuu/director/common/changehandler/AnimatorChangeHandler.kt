@@ -73,15 +73,14 @@ abstract class AnimatorChangeHandler(
                         to,
                         toIndex,
                         isPush,
-                        true,
-                        onChangeComplete
+                        true
                     )
                 }
             }
         }
 
         if (readyToAnimate) {
-            performAnimation(container, from, to, toIndex, isPush, addingToView, onChangeComplete)
+            performAnimation(container, from, to, toIndex, isPush, addingToView)
         }
     }
 
@@ -138,8 +137,7 @@ abstract class AnimatorChangeHandler(
         to: View?,
         toIndex: Int,
         isPush: Boolean,
-        toAddedToContainer: Boolean,
-        onChangeComplete: () -> Unit
+        toAddedToContainer: Boolean
     ) {
         if (canceled) {
             complete(null)
