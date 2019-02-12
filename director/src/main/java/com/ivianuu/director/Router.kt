@@ -151,7 +151,7 @@ class Router internal constructor(
                 .dropLast(if (replacingTopTransactions) 1 else 0)
                 .reversed()
                 // do not detach controllers which should be still visible
-                .filterNot { o -> newVisibleTransactions.any { it.controller == o.controller } }
+                .filterNot { old -> newVisibleTransactions.any { it.controller == old.controller } }
                 .forEachIndexed { i, transaction ->
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId, true)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
