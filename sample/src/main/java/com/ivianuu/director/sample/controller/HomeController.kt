@@ -9,9 +9,9 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.context
 import com.ivianuu.director.dialog.show
 
 import com.ivianuu.director.push
@@ -39,7 +39,7 @@ class HomeController : BaseController() {
     override fun onBindView(view: View, savedViewState: Bundle?) {
         super.onBindView(view, savedViewState)
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(context)
         recycler_view.buildModels {
             HomeItem.values().forEachIndexed { index, item ->
                 homeItem {

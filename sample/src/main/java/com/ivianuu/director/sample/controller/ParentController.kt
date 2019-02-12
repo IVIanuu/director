@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.context
 import com.ivianuu.director.doOnChangeEnd
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
@@ -45,7 +45,7 @@ class ParentController : BaseController() {
         val frameId = resources.getIdentifier(
             "child_content_" + (index + 1),
             "id",
-            activity.packageName
+            context.packageName
         )
 
         val container = view!!.findViewById<ViewGroup>(frameId)

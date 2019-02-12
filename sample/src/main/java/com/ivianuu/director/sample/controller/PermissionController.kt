@@ -21,9 +21,9 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.ivianuu.director.activity
 import com.ivianuu.director.activitycallbacks.addPermissionResultListener
 import com.ivianuu.director.activitycallbacks.requestPermissions
+import com.ivianuu.director.context
 import com.ivianuu.director.hasView
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_permission.grant
@@ -56,7 +56,7 @@ class PermissionController : BaseController() {
     private fun updateState() {
         if (!hasView) return
         val hasPermissions = ContextCompat.checkSelfPermission(
-            activity,
+            context,
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
         msg.text = if (hasPermissions) {

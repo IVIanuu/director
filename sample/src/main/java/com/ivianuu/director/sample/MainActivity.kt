@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.activity_main.toolbar
 
 class MainActivity : AppCompatActivity(), ActionBarProvider {
 
-    override val providedActionBar: ActionBar
-        get() = supportActionBar!!
+    override val providedActionBar: ActionBar?
+        get() = supportActionBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), ActionBarProvider {
                 setRoot(HomeController().toTransaction())
             }
         }
+
     }
 
 }

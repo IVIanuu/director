@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.Controller
-import com.ivianuu.director.activity
 import com.ivianuu.director.parentController
 import com.ivianuu.director.sample.ActionBarProvider
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
@@ -22,7 +21,7 @@ abstract class BaseController : Controller(), LayoutContainer {
     var actionBarTitle: String? = null
 
     private val actionBar: ActionBar?
-        get() = (activity as? ActionBarProvider)?.providedActionBar
+        get() = (host as? ActionBarProvider)?.providedActionBar
 
     init {
         addLifecycleListener(LoggingLifecycleListener())

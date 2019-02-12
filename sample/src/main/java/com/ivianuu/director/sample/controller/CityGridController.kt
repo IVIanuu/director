@@ -7,8 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
+import com.ivianuu.director.context
 
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
@@ -42,7 +42,7 @@ class CityGridController : BaseController() {
 
         tv_title.text = actionBarTitle
         img_dot.drawable.setColorFilter(
-            ContextCompat.getColor(activity, dotColor),
+            ContextCompat.getColor(context, dotColor),
             Mode.SRC_ATOP
         )
 
@@ -52,7 +52,7 @@ class CityGridController : BaseController() {
         img_dot.transitionName =
                 resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
 
-        recycler_view.layoutManager = GridLayoutManager(activity, 2)
+        recycler_view.layoutManager = GridLayoutManager(context, 2)
         recycler_view.buildModels {
             CITIES.forEach { city ->
                 city {

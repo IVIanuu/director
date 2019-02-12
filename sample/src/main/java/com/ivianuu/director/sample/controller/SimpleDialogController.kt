@@ -20,7 +20,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.ivianuu.director.activity
+import com.ivianuu.director.context
 import com.ivianuu.director.dialog.DialogController
 
 
@@ -29,12 +29,12 @@ import com.ivianuu.director.dialog.DialogController
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog = AlertDialog.Builder(activity)
+    override fun onCreateDialog(savedViewState: Bundle?): Dialog = AlertDialog.Builder(context)
         .setTitle("Hello")
         .setMessage("This is a simple dialog controller.")
         .setCancelable(isCancelable)
         .setPositiveButton("OK") { _, _ ->
-            Toast.makeText(activity, "Ok clicked!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Ok clicked!", Toast.LENGTH_SHORT).show()
         }
         .setNegativeButton("Cancel") { _, _  -> dismiss() }
         .create()

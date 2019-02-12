@@ -7,13 +7,13 @@ import androidx.core.content.ContextCompat
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.RouterTransaction
-import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
+import com.ivianuu.director.context
 
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.push
@@ -46,7 +46,7 @@ class TransitionDemoController : BaseController() {
         if (transitionDemo.colorId != 0 && bg_view != null) {
             bg_view.setBackgroundColor(
                 ContextCompat.getColor(
-                    activity,
+                    context,
                     transitionDemo.colorId
                 )
             )
@@ -62,7 +62,7 @@ class TransitionDemoController : BaseController() {
         }
 
         btn_next.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(activity, buttonColor))
+            ColorStateList.valueOf(ContextCompat.getColor(context, buttonColor))
         tv_title.text = transitionDemo.title
 
         btn_next.setOnClickListener {

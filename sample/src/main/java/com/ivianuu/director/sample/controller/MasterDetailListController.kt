@@ -6,9 +6,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.context
 
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.push
@@ -41,7 +41,7 @@ class MasterDetailListController : BaseController() {
     override fun onBindView(view: View, savedViewState: Bundle?) {
         super.onBindView(view, savedViewState)
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(context)
         recycler_view.buildModels {
             DetailItem.values().forEachIndexed { index, item ->
                 detailItem {
