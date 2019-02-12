@@ -204,8 +204,9 @@ class Router internal constructor(
                 // the wrong order of views while changing visible views
                 // which are not at the top
                 // it would be nice to fix this on the change handler level
-                // but i don't know how yet
+                // but i didn't find a good way to do it yet
                 container?.let {
+                    // cache the view to avoid a onDetach call in the controller
                     val cachedView = newTopTransaction.controller.view
                     newTopTransaction.controller.view = null
                     it.removeView(cachedView)
