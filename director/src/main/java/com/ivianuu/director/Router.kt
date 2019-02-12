@@ -150,7 +150,8 @@ class Router internal constructor(
             oldVisibleTransactions
                 .dropLast(if (replacingTopTransactions) 1 else 0)
                 .reversed()
-                .filterNot { newVisibleTransactions.contains(it) }
+                // do not detach controllers which should be still visible
+                .filterNot { o -> newVisibleTransactions.any { it.controller == o.controller } }
                 .forEachIndexed { i, transaction ->
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId, true)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
@@ -167,7 +168,7 @@ class Router internal constructor(
             // Add any new controllers to the backstack
             newVisibleTransactions
                 .dropLast(if (replacingTopTransactions) 1 else 0)
-                .filterNot { oldVisibleTransactions.contains(it) }
+                .filterNot { it.controller.isAttached }
                 .forEachIndexed { i, transaction ->
                     val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                     performControllerChange(

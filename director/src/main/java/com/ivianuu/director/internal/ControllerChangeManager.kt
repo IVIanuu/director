@@ -54,11 +54,6 @@ internal object ControllerChangeManager {
         val fromView = from?.view
         from?.changeStarted(handlerToUse, fromChangeType)
 
-        println(
-            "perform change from $from to $to\n" +
-                    "to index is ${getToIndex(router, container, toView, fromView, isPush)}"
-        )
-
         handlerToUse.performChange(
             container,
             fromView,
