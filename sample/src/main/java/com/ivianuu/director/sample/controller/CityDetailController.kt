@@ -27,7 +27,7 @@ class CityDetailController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = title
+        toolbarTitle = title
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

@@ -37,7 +37,7 @@ class TransitionDemoController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Transition Demos"
+        toolbarTitle = "Transition Demos"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

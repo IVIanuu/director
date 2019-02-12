@@ -24,7 +24,7 @@ class DragDismissController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Drag to Dismiss"
+        toolbarTitle = "Drag to Dismiss"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

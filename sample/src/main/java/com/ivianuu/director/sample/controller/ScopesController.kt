@@ -42,7 +42,7 @@ class ScopesController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        actionBarTitle = "Scopes Demo"
+        toolbarTitle = "Scopes Demo"
 
         Observable.interval(1, TimeUnit.SECONDS)
             .doOnDispose { d { "Disposing from onCreate()" } }

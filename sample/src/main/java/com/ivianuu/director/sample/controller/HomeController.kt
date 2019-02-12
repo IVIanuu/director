@@ -33,7 +33,7 @@ class HomeController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Director Sample"
+        toolbarTitle = "Director Sample"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

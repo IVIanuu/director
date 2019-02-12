@@ -29,7 +29,7 @@ class TargetDisplayController : BaseController(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Target Controller Demo"
+        toolbarTitle = "Target Controller Demo"
 
         if (savedInstanceState != null) {
             selectedText = savedInstanceState.getString(KEY_SELECTED_TEXT)

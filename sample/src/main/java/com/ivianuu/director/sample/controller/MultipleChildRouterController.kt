@@ -13,7 +13,7 @@ class MultipleChildRouterController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Child Router Demo"
+        toolbarTitle = "Child Router Demo"
 
         listOf(R.id.container_0, R.id.container_1, R.id.container_2)
             .map { getChildRouter(it) }

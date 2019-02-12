@@ -34,13 +34,13 @@ class CityGridController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = args.getString(KEY_TITLE)
+        toolbarTitle = args.getString(KEY_TITLE)
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
         super.onBindView(view, savedViewState)
 
-        tv_title.text = actionBarTitle
+        tv_title.text = toolbarTitle
         img_dot.drawable.setColorFilter(
             ContextCompat.getColor(context, dotColor),
             Mode.SRC_ATOP

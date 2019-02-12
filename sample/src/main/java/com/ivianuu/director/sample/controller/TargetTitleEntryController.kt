@@ -16,7 +16,7 @@ class TargetTitleEntryController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Target Controller Demo"
+        toolbarTitle = "Target Controller Demo"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

@@ -32,7 +32,7 @@ class MasterDetailListController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Master/Detail Flow"
+        toolbarTitle = "Master/Detail Flow"
         if (savedInstanceState != null) {
             selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
         }

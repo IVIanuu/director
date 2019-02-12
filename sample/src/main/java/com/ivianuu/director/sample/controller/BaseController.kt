@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.ActionBar
 import com.ivianuu.director.Controller
+import com.ivianuu.director.activity
 import com.ivianuu.director.parentController
-import com.ivianuu.director.sample.ActionBarProvider
+import com.ivianuu.director.sample.ToolbarProvider
 import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
@@ -18,10 +18,7 @@ abstract class BaseController : Controller(), LayoutContainer {
         get() = view
 
     protected open val layoutRes = 0
-    var actionBarTitle: String? = null
-
-    private val actionBar: ActionBar?
-        get() = (host as? ActionBarProvider)?.providedActionBar
+    var toolbarTitle: String? = null
 
     init {
         addLifecycleListener(LoggingLifecycleListener())
@@ -49,17 +46,13 @@ abstract class BaseController : Controller(), LayoutContainer {
     protected fun setTitle() {
         var parentController = parentController
         while (parentController != null) {
-            if (parentController is BaseController && parentController.actionBarTitle != null) {
+            if (parentController is BaseController && parentController.toolbarTitle != null) {
                 return
             }
             parentController = parentController.parentController
         }
 
-        val title = actionBarTitle
-        val actionBar = actionBar
-        if (title != null && actionBar != null) {
-            actionBar.title = title
-        }
+        (activity as? ToolbarProvider)?.toolbar?.title = toolbarTitle
     }
 
     override fun toString(): String {

@@ -43,7 +43,7 @@ class ExternalModulesController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "External Module Demo"
+        toolbarTitle = "External Module Demo"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

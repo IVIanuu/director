@@ -57,7 +57,7 @@ class Pager2Controller : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "ViewPager 2 Demo"
+        toolbarTitle = "ViewPager 2 Demo"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {

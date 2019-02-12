@@ -27,7 +27,7 @@ class ParentController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Parent/Child Demo"
+        toolbarTitle = "Parent/Child Demo"
     }
 
     override fun onChangeEnded(

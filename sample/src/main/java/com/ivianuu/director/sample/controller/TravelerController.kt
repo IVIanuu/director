@@ -44,7 +44,7 @@ class TravelerController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Traveler Demo"
+        toolbarTitle = "Traveler Demo"
         if (!childRouter.hasRoot) {
             travelerRouter.setRoot(
                 NavigationControllerKey(

@@ -29,7 +29,7 @@ class BottomNavController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Bottom Nav Demo"
+        toolbarTitle = "Bottom Nav Demo"
 
         if (savedInstanceState != null) {
             currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)

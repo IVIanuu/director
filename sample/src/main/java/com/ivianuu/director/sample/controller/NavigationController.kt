@@ -45,7 +45,7 @@ class NavigationController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        actionBarTitle = "Navigation Demos"
+        toolbarTitle = "Navigation Demos"
     }
 
     override fun onBindView(view: View, savedViewState: Bundle?) {
