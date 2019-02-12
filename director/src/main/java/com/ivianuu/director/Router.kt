@@ -74,8 +74,8 @@ class Router internal constructor(
         hostRouter?.transactionIndexer ?: TransactionIndexer()
     }
 
-    private val changeListeners = mutableListOf<ChangeListenerEntry>()
-    private val lifecycleListeners = mutableListOf<LifecycleListenerEntry>()
+    private val changeListeners = mutableListOf<ListenerEntry<ControllerChangeListener>>()
+    private val lifecycleListeners = mutableListOf<ListenerEntry<ControllerLifecycleListener>>()
 
     private var hostStarted = false
     private var hostDestroyed = false
@@ -246,7 +246,7 @@ class Router internal constructor(
      */
     fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
         if (!getAllChangeListeners(false).contains(listener)) {
-            changeListeners.add(ChangeListenerEntry(listener, recursive))
+            changeListeners.add(ListenerEntry(listener, recursive))
         }
     }
 
@@ -268,7 +268,7 @@ class Router internal constructor(
      */
     fun addLifecycleListener(listener: ControllerLifecycleListener, recursive: Boolean = false) {
         if (!getAllLifecycleListeners(false).contains(listener)) {
-            lifecycleListeners.add(LifecycleListenerEntry(listener, recursive))
+            lifecycleListeners.add(ListenerEntry(listener, recursive))
         }
     }
 
@@ -444,13 +444,8 @@ class Router internal constructor(
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
 
-    private data class ChangeListenerEntry(
-        val listener: ControllerChangeListener,
-        val recursive: Boolean
-    )
-
-    private data class LifecycleListenerEntry(
-        val listener: ControllerLifecycleListener,
+    private data class ListenerEntry<T>(
+        val listener: T,
         val recursive: Boolean
     )
 
