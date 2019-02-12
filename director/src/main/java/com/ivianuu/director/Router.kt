@@ -91,7 +91,7 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ControllerChangeHandler? = null
     ) {
-        if (newBackstack == backstack) return
+        if (newBackstack == _backstack) return
 
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
@@ -207,7 +207,7 @@ class Router internal constructor(
 
     /**
      * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
-     * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
+     * to its top [Controll-er]. If that controller doesn't handle it, then it will be popped.
      */
     fun handleBack(): Boolean {
         val currentTransaction = backstack.lastOrNull()

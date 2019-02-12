@@ -60,11 +60,17 @@ abstract class AnimatorChangeHandler(
         changeData = ChangeData(container, from, to, toIndex, isPush, onChangeComplete)
 
         var readyToAnimate = true
-        val addingToView = to != null && to.parent == null
+        val addingToView = to != null && (to.parent == null
+                || container.indexOfChild(to) != toIndex)
 
         if (addingToView) {
-            container.addView(to, toIndex)
-            if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
+            if (to!!.parent == null) {
+                container.addView(to, toIndex)
+            } else if (container.indexOfChild(to) != toIndex) {
+                container.removeView(to)
+                container.addView(to, toIndex)
+            }
+            if (!canceled && !completed && to.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
                 onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
                     performAnimation(
