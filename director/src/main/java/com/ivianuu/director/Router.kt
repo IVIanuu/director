@@ -426,11 +426,11 @@ class Router internal constructor(
         if (!controller.routerSet) {
             controller.setRouter(this)
 
+            // bring them in the correct state
             if (hasContainer) {
                 controller.containerAttached()
             }
 
-            // bring them in the correct state
             if (hostStarted) {
                 controller.hostStarted()
             }
@@ -533,7 +533,7 @@ fun Router.findControllerByInstanceId(instanceId: String): Controller? =
  */
 fun Router.setRoot(transaction: RouterTransaction, handler: ControllerChangeHandler? = null) {
     // todo check if we should always use isPush=true
-    setBackstack(listOf(transaction), true, handler)
+    setBackstack(listOf(transaction), true, handler ?: transaction.pushChangeHandler)
 }
 
 /**

@@ -247,30 +247,6 @@ abstract class Controller {
         lifecycleListeners.remove(listener)
     }
 
-    /**
-     * Returns the child router for [containerId] and [tag] or null
-     */
-    fun getChildRouterOrNull(
-        containerId: Int,
-        tag: String?
-    ): Router? = childRouterManager.getRouterOrNull(containerId, tag)
-
-    /**
-     * Returns the child router for [containerId] and [tag]
-     */
-    fun getChildRouter(
-        containerId: Int,
-        tag: String? = null
-    ): Router = childRouterManager.getRouter(containerId, tag)
-
-    /**
-     * Removes the [childRouter]. All Controllers currently managed by
-     * the [childRouter] will be destroyed.
-     */
-    fun removeChildRouter(childRouter: Router) {
-        childRouterManager.removeRouter(childRouter)
-    }
-
     internal fun setRouter(router: Router) {
         if (routerSet) return
         routerSet = true
@@ -636,6 +612,30 @@ fun Controller.startActivity(intent: Intent) {
  * Returns a new router transaction
  */
 fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
+
+/**
+ * Returns the child router for [containerId] and [tag] or null
+ */
+fun Controller.getChildRouterOrNull(
+    containerId: Int,
+    tag: String?
+): Router? = childRouterManager.getRouterOrNull(containerId, tag)
+
+/**
+ * Returns the child router for [containerId] and [tag]
+ */
+fun Controller.getChildRouter(
+    containerId: Int,
+    tag: String? = null
+): Router = childRouterManager.getRouter(containerId, tag)
+
+/**
+ * Removes the [childRouter]. All Controllers currently managed by
+ * the [childRouter] will be destroyed.
+ */
+fun Controller.removeChildRouter(childRouter: Router) {
+    childRouterManager.removeRouter(childRouter)
+}
 
 /**
  * Returns the child router for [container] and [tag] or null

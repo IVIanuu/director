@@ -36,6 +36,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
         if (postponedActivities.contains(requireActivity())) {
             manager.postponeRestore()
             postponedActivities.remove(requireActivity())

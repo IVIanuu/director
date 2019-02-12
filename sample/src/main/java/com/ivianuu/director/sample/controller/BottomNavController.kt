@@ -5,6 +5,7 @@ import android.view.View
 import com.ivianuu.director.backstackSize
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.SingleContainer

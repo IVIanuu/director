@@ -11,6 +11,7 @@ import com.ivianuu.director.doOnChangeEnd
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.pop
+import com.ivianuu.director.removeChildRouter
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
