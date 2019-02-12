@@ -31,11 +31,9 @@ internal object ControllerChangeManager {
 
         if (from != null) {
             cancelChange(from.instanceId, isPush)
-            handlers[from.instanceId] = ChangeHandlerData(handlerToUse, isPush)
         }
 
         if (to != null) {
-            cancelChange(to.instanceId, isPush)
             handlers[to.instanceId] = ChangeHandlerData(handlerToUse, isPush)
         }
 
