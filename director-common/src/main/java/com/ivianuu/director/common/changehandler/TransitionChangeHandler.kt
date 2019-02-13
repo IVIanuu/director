@@ -166,7 +166,7 @@ abstract class TransitionChangeHandler(
             }
         }
 
-        if (from != null && (removesFromViewOnPush || !isPush) && from.parent == container) {
+        if (from != null && (removesFromViewOnPush || !isPush)) {
             container.removeView(from)
         }
     }
