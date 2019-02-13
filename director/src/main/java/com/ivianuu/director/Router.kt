@@ -505,7 +505,15 @@ val Router.hasRoot: Boolean get() = backstackSize > 0
  * Returns the controller with [tag] or null
  */
 fun Router.getControllerByTagOrNull(tag: String): Controller? =
-    backstack.firstOrNull { it.tag == tag }?.controller
+    backstack.firstNotNullResultOrNull {
+        if (it.tag == tag) {
+            it.controller
+        } else {
+            it.controller.childRouters.firstNotNullResultOrNull { childRouter ->
+                childRouter.getControllerByInstanceIdOrNull(tag)
+            }
+        }
+    }
 
 /**
  * Returns the controller for with [tag] or throws
