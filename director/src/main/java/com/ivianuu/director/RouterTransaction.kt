@@ -4,7 +4,7 @@ import android.os.Bundle
 import com.ivianuu.director.internal.TransactionIndexer
 
 /**
- * Metadata used for adding [Controller]s to a [Router].
+ * Describes a transaction in a [Router]
  */
 class RouterTransaction {
 

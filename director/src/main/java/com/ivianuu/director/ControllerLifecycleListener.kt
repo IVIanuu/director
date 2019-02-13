@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.view.View
 
 /**
- * Allows external classes to listen for lifecycle events of a [Controller]
+ * Lifecycle listener for [Controller]s
  */
 interface ControllerLifecycleListener {
 

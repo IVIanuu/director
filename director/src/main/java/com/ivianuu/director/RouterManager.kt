@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 
 /**
- * Hosts a group of routers
+ * Hosts a group of [Router]s
  */
 class RouterManager(
     private val host: Any,

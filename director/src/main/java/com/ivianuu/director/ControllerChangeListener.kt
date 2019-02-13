@@ -19,7 +19,7 @@ package com.ivianuu.director
 import android.view.ViewGroup
 
 /**
- * A listener interface useful for allowing external classes to be notified of change events.
+ * Listener for controller changes
  */
 interface ControllerChangeListener {
     /**

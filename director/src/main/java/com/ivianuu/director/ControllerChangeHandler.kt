@@ -50,9 +50,7 @@ abstract class ControllerChangeHandler {
     }
 
     /**
-     * Returns a copy of this ControllerChangeHandler. This method is internally used by the library, so
-     * ensure it will return an exact copy of your changeHandler if overriding. If not overriding, the changeHandler
-     * will be saved and restored from the Bundle format.
+     * Returns a exact copy of this change handler
      */
     open fun copy(): ControllerChangeHandler = fromBundle(toBundle())
 

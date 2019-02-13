@@ -22,10 +22,7 @@ import com.ivianuu.stdlibx.safeAs
 import java.util.*
 
 /**
- * A Controller manages portions of the UI. It is similar to an Activity or Fragment in that it manages its
- * own lifecycle and controls interactions between the UI and whatever logic is required. It is, however,
- * a much lighter weight component than either Activities or Fragments. While it offers several lifecycle
- * methods, they are much simpler and more predictable than those of Activities and Fragments.
+ * Lightweight view controller with a lifecycle
  */
 abstract class Controller {
 

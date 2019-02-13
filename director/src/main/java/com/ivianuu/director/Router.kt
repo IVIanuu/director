@@ -10,7 +10,7 @@ import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.takeLastUntil
 
 /**
- * Handles the backstack and delegates the host lifecycle to it's controllers
+ * Handles the backstack and delegates the host lifecycle to it's [Controller]s
  */
 class Router internal constructor(
     containerId: Int,
