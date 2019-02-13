@@ -43,8 +43,9 @@ import com.ivianuu.director.common.transitionSetOf
 // Much of this class is based on FragmentTransition.java and FragmentTransitionCompat21.java from the Android support library
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 abstract class SharedElementTransitionChangeHandler(
-    duration: Long = DirectorPlugins.defaultTransitionDuration
-) : TransitionChangeHandler(duration) {
+    duration: Long = DirectorPlugins.defaultTransitionDuration,
+    removesFromViewOnPush: Boolean = true
+) : TransitionChangeHandler(duration, removesFromViewOnPush) {
 
     // A map of from -> to names. Generally these will be the same.
     private val sharedElementNames = mutableMapOf<String, String>()
