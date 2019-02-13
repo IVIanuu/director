@@ -21,8 +21,6 @@ import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.defaultAnimationDuration
 import com.ivianuu.director.common.changehandler.defaultTransitionDuration
-import com.ivianuu.director.defaultBlockBackClicksOnTransactions
-import com.ivianuu.director.defaultBlockTouchesOnTransactions
 import com.ivianuu.director.defaultControllerFactory
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.setDefaultHandler
@@ -40,8 +38,6 @@ class App : Application() {
 
         // apply global config
         DirectorPlugins.defaultControllerFactory = LoggingControllerFactory()
-        DirectorPlugins.defaultBlockBackClicksOnTransactions = true
-        DirectorPlugins.defaultBlockTouchesOnTransactions = true
         DirectorPlugins.defaultAnimationDuration = 220
         DirectorPlugins.defaultTransitionDuration = 220
         DirectorPlugins.setDefaultHandler(FadeChangeHandler())

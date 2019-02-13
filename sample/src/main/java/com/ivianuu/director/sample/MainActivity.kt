@@ -21,9 +21,6 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         setContentView(R.layout.activity_main)
 
         with(getRouter(controller_container)) {
-            blockBackClicksOnTransactions = true
-            blockTouchesOnTransactions = true
-
             if (!hasRoot) {
                 setRoot(HomeController().toTransaction())
             }
