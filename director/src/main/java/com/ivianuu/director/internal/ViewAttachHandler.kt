@@ -16,8 +16,6 @@ internal class ViewAttachHandler(
     private var childOnAttachStateChangeListener: OnAttachStateChangeListener? = null
 
     override fun onViewAttachedToWindow(v: View) {
-        // explicitly check the container
-        // we could get attached to another container while transitioning
         if (!rootAttached) {
             rootAttached = true
 
