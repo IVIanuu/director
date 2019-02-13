@@ -28,12 +28,12 @@ class Router internal constructor(
     /**
      * Whether or not the last view should be popped
      */
-    var popsLastView = false
+    var popsLastView = DirectorPlugins.defaultPopsLastView
 
     /**
      * Whether or not touch events should be blocked while changing controllers
      */
-    var blockTouchesOnTransactions = true
+    var blockTouchesOnTransactions = DirectorPlugins.defaultBlockTouchesOnTransactions
         set(value) {
             field = value
             if (!value) container?.ignoreTouchEvents = false
@@ -42,7 +42,7 @@ class Router internal constructor(
     /**
      * Whether or not back presses should be blocked while changing controllers
      */
-    var blockBackClicksOnTransactions = false
+    var blockBackClicksOnTransactions = DirectorPlugins.defaultBlockBlackClicksOnTransactions
 
     /**
      * The tag of this router
@@ -171,6 +171,13 @@ class Router internal constructor(
         }
 
         val newVisibleTransactions = newBackstack.filterVisible()
+
+        println(
+            "set backstack $newBackstack\n" +
+                    "old backstack $oldTransactions\n" +
+                    "old visible $oldVisibleTransactions\n" +
+                    "new visible $newVisibleTransactions"
+        )
 
         if (oldVisibleTransactions != newVisibleTransactions) {
             val oldTopTransaction = oldVisibleTransactions.lastOrNull()

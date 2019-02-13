@@ -94,7 +94,7 @@ abstract class Controller {
     /**
      * Whether or not the view should be retained while being detached
      */
-    var retainView = false
+    var retainView = DirectorPlugins.defaultRetainView
         set(value) {
             field = value
             if (!value && !isAttached) {

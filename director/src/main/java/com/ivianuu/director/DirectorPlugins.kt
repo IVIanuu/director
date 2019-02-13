@@ -21,6 +21,51 @@ package com.ivianuu.director
  */
 object DirectorPlugins
 
+private var _defaultControllerFactory: ControllerFactory? = null
+
+/** Default controller factory to use */
+var DirectorPlugins.defaultControllerFactory: ControllerFactory?
+    get() = _defaultControllerFactory
+    set(value) {
+        _defaultControllerFactory = value
+    }
+
+private var _defaultPopsLastView = false
+
+/** Default pops last view */
+var DirectorPlugins.defaultPopsLastView: Boolean
+    get() = _defaultPopsLastView
+    set(value) {
+        _defaultPopsLastView = value
+    }
+
+private var _defaultBlockTouchesOnTransactions = true
+
+/** Default block touches on transactions */
+var DirectorPlugins.defaultBlockTouchesOnTransactions: Boolean
+    get() = _defaultBlockTouchesOnTransactions
+    set(value) {
+        _defaultBlockTouchesOnTransactions = value
+    }
+
+private var _defaultBlockBackClicksOnTransactions = true
+
+/** Default block back clicks on transactions */
+var DirectorPlugins.defaultBlockBlackClicksOnTransactions: Boolean
+    get() = _defaultBlockBackClicksOnTransactions
+    set(value) {
+        _defaultBlockBackClicksOnTransactions = value
+    }
+
+private var _defaultRetainView = false
+
+/** Default retain view */
+var DirectorPlugins.defaultRetainView: Boolean
+    get() = _defaultRetainView
+    set(value) {
+        _defaultRetainView = value
+    }
+
 private var _defaultPushHandler: ControllerChangeHandler? = null
 
 /** The default push handler to use in all transactions */
@@ -45,19 +90,11 @@ fun DirectorPlugins.setDefaultHandler(handler: ControllerChangeHandler?) {
     defaultPopHandler = handler
 }
 
-private var _defaultControllerFactory: ControllerFactory? = null
+private var _defaultRemovesFromViewOnPush = true
 
-/**
- * Default controller factory to use
- */
-var DirectorPlugins.defaultControllerFactory: ControllerFactory?
-    get() = _defaultControllerFactory
+/** Default removes from view on push */
+var DirectorPlugins.defaultRemovesFromViewOnPush: Boolean
+    get() = _defaultRemovesFromViewOnPush
     set(value) {
-        _defaultControllerFactory = value
+        _defaultRemovesFromViewOnPush = value
     }
-
-// todo default removes from view on push
-// todo default pops last view
-// todo default retain view
-// todo block touches on transactions
-// todo block back clicks on transactions

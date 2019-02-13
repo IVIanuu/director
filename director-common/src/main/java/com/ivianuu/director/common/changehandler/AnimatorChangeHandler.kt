@@ -25,6 +25,7 @@ import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
+import com.ivianuu.director.defaultRemovesFromViewOnPush
 import com.ivianuu.director.internal.moveView
 
 /**
@@ -32,7 +33,7 @@ import com.ivianuu.director.internal.moveView
  */
 abstract class AnimatorChangeHandler(
     duration: Long = DirectorPlugins.defaultAnimationDuration,
-    override var removesFromViewOnPush: Boolean = true
+    override var removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : ControllerChangeHandler() {
 
     var duration = duration

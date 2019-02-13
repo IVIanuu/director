@@ -22,6 +22,7 @@ import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.DirectorPlugins
+import com.ivianuu.director.defaultRemovesFromViewOnPush
 
 
 /**
@@ -29,7 +30,7 @@ import com.ivianuu.director.DirectorPlugins
  */
 open class FadeChangeHandler(
     duration: Long = DirectorPlugins.defaultAnimationDuration,
-    removesFromViewOnPush: Boolean = true
+    removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
     override fun getAnimator(

@@ -35,6 +35,7 @@ import com.ivianuu.director.common.replaceTargets
 import com.ivianuu.director.common.setEpicenter
 import com.ivianuu.director.common.setTargets
 import com.ivianuu.director.common.transitionSetOf
+import com.ivianuu.director.defaultRemovesFromViewOnPush
 
 /**
  * [TransitionChangeHandler] which does shared element transitions
@@ -42,7 +43,7 @@ import com.ivianuu.director.common.transitionSetOf
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 abstract class SharedElementTransitionChangeHandler(
     duration: Long = DirectorPlugins.defaultTransitionDuration,
-    removesFromViewOnPush: Boolean = true
+    removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : TransitionChangeHandler(duration, removesFromViewOnPush) {
 
     private val sharedElementNames = mutableMapOf<String, String>()

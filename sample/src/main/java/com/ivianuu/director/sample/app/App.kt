@@ -21,7 +21,11 @@ import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.defaultAnimationDuration
 import com.ivianuu.director.common.changehandler.defaultTransitionDuration
+import com.ivianuu.director.defaultBlockBlackClicksOnTransactions
+import com.ivianuu.director.defaultBlockTouchesOnTransactions
 import com.ivianuu.director.defaultControllerFactory
+import com.ivianuu.director.defaultRemovesFromViewOnPush
+import com.ivianuu.director.defaultRetainView
 import com.ivianuu.director.sample.util.LoggingControllerFactory
 import com.ivianuu.director.setDefaultHandler
 import com.squareup.leakcanary.LeakCanary
@@ -36,10 +40,14 @@ class App : Application() {
         if (LeakCanary.isInAnalyzerProcess(this)) return
         //LeakCanary.get(this)
 
-        DirectorPlugins.defaultAnimationDuration = 500
-        DirectorPlugins.defaultTransitionDuration = 500
-        DirectorPlugins.setDefaultHandler(FadeChangeHandler())
         DirectorPlugins.defaultControllerFactory = LoggingControllerFactory()
+        DirectorPlugins.defaultRemovesFromViewOnPush = false
+        DirectorPlugins.defaultBlockBlackClicksOnTransactions = true
+        DirectorPlugins.defaultBlockTouchesOnTransactions = true
+        DirectorPlugins.defaultAnimationDuration = 220
+        DirectorPlugins.defaultTransitionDuration = 220
+        DirectorPlugins.setDefaultHandler(FadeChangeHandler())
+        DirectorPlugins.defaultRetainView = true
     }
 
 }

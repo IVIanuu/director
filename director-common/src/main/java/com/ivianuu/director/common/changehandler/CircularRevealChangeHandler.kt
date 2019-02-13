@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import com.ivianuu.director.DirectorPlugins
+import com.ivianuu.director.defaultRemovesFromViewOnPush
 
 /**
  * A [AnimatorChangeHandler] that will perform a circular reveal
@@ -25,7 +26,7 @@ open class CircularRevealChangeHandler :
         fromView: View,
         containerView: View,
         duration: Long = DirectorPlugins.defaultAnimationDuration,
-        removesFromViewOnPush: Boolean = true
+        removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
     ) : super(duration, removesFromViewOnPush) {
         val fromLocation = IntArray(2)
         fromView.getLocationInWindow(fromLocation)
@@ -44,7 +45,7 @@ open class CircularRevealChangeHandler :
         cx: Int,
         cy: Int,
         duration: Long = NO_DURATION,
-        removesFromViewOnPush: Boolean = true
+        removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
     ) : super(duration, removesFromViewOnPush) {
         this.cx = cx
         this.cy = cy

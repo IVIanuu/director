@@ -25,6 +25,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.DirectorPlugins
+import com.ivianuu.director.defaultRemovesFromViewOnPush
 import com.ivianuu.director.internal.moveView
 
 /**
@@ -33,7 +34,7 @@ import com.ivianuu.director.internal.moveView
 @TargetApi(Build.VERSION_CODES.KITKAT)
 abstract class TransitionChangeHandler(
     duration: Long = DirectorPlugins.defaultTransitionDuration,
-    override var removesFromViewOnPush: Boolean = true
+    override var removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : ControllerChangeHandler() {
 
     var duration = duration
