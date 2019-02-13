@@ -172,13 +172,6 @@ class Router internal constructor(
 
         val newVisibleTransactions = newBackstack.filterVisible()
 
-        println(
-            "set backstack $newBackstack\n" +
-                    "old backstack $oldTransactions\n" +
-                    "old visible $oldVisibleTransactions\n" +
-                    "new visible $newVisibleTransactions"
-        )
-
         if (oldVisibleTransactions != newVisibleTransactions) {
             val oldTopTransaction = oldVisibleTransactions.lastOrNull()
             val newTopTransaction = newVisibleTransactions.lastOrNull()
