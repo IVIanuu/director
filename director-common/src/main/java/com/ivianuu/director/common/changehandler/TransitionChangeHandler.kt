@@ -32,7 +32,8 @@ import com.ivianuu.director.internal.moveView
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 abstract class TransitionChangeHandler(
-    duration: Long = DirectorPlugins.defaultTransitionDuration
+    duration: Long = DirectorPlugins.defaultTransitionDuration,
+    override var removesFromViewOnPush: Boolean = true
 ) : ControllerChangeHandler() {
 
     var duration = duration
@@ -40,8 +41,6 @@ abstract class TransitionChangeHandler(
 
     private var canceled = false
     private var needsImmediateCompletion = false
-
-    override val removesFromViewOnPush: Boolean get() = true
 
     override fun performChange(
         container: ViewGroup,
@@ -105,11 +104,13 @@ abstract class TransitionChangeHandler(
     override fun saveToBundle(bundle: Bundle) {
         super.saveToBundle(bundle)
         bundle.putLong(KEY_DURATION, duration)
+        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
     }
 
     override fun restoreFromBundle(bundle: Bundle) {
         super.restoreFromBundle(bundle)
         duration = bundle.getLong(KEY_DURATION)
+        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     override fun cancel(immediate: Boolean) {
@@ -172,6 +173,8 @@ abstract class TransitionChangeHandler(
 
     companion object {
         private const val KEY_DURATION = "TransitionChangeHandler.duration"
+        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
+            "TransitionChangeHandler.removesFromViewOnPush"
         const val NO_DURATION = -1L
     }
 }
