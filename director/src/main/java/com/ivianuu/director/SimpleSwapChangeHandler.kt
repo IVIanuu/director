@@ -19,6 +19,7 @@ package com.ivianuu.director
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.internal.moveView
 
 /**
  * A [ControllerChangeHandler] that will instantly swap Views with no animations or transitions.
@@ -76,17 +77,16 @@ open class SimpleSwapChangeHandler(removesFromViewOnPush: Boolean = true) :
         this.onChangeComplete = onChangeComplete
         this.container = container
 
-        if (from != null && (!isPush || removesFromViewOnPush)) {
-            container.removeView(from)
-        }
-
         if (to != null) {
             if (to.parent == null) {
                 container.addView(to, toIndex)
             } else if (container.indexOfChild(to) != toIndex) {
-                container.removeView(to)
-                container.addView(to, toIndex)
+                container.moveView(to, toIndex)
             }
+        }
+
+        if (from != null && (!isPush || removesFromViewOnPush)) {
+            container.removeView(from)
         }
 
         if (container.windowToken != null) {

@@ -25,6 +25,7 @@ import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
+import com.ivianuu.director.internal.moveView
 
 /**
  * A base [ControllerChangeHandler] that uses [android.animation.Animator]s to replace Controller Views
@@ -60,17 +61,17 @@ abstract class AnimatorChangeHandler(
         changeData = ChangeData(container, from, to, toIndex, isPush, onChangeComplete)
 
         var readyToAnimate = true
-        val addingToView = to != null && (to.parent == null
-                || container.indexOfChild(to) != toIndex)
+        val addingToView = to != null && to.parent == null
+        val movingToView = to != null && container.indexOfChild(to) != toIndex
 
-        if (addingToView) {
-            if (to!!.parent == null) {
+        if (addingToView || movingToView) {
+            if (addingToView) {
                 container.addView(to, toIndex)
-            } else if (container.indexOfChild(to) != toIndex) {
-                container.removeView(to)
-                container.addView(to, toIndex)
+            } else if (movingToView) {
+                container.moveView(to!!, toIndex)
             }
-            if (!canceled && !completed && to.width <= 0 && to.height <= 0) {
+
+            if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
                 onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
                     performAnimation(
@@ -79,7 +80,7 @@ abstract class AnimatorChangeHandler(
                         to,
                         toIndex,
                         isPush,
-                        true
+                        addingToView
                     )
                 }
             }
