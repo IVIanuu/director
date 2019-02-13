@@ -2,9 +2,10 @@ package com.ivianuu.director.common
 
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.ControllerChangeHandler
 
 /**
- * Simple helper class to wrap all params of a [com.ivianuu.director.ControllerChangeHandler.performChange] call
+ * Simple helper class to wrap all params of a [ControllerChangeHandler.performChange] call
  */
 data class ChangeData(
     val container: ViewGroup,
