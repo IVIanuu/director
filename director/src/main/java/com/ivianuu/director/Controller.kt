@@ -65,7 +65,7 @@ abstract class Controller {
      * The target controller of this controller
      */
     var targetController: Controller?
-        get() = targetInstanceId?.let { _router.rootRouter.findControllerByInstanceId(it) }
+        get() = targetInstanceId?.let { _router.rootRouter.getControllerByInstanceIdOrNull(it) }
         set(value) {
             check(targetInstanceId == null) {
                 "the target controller can only be set once"

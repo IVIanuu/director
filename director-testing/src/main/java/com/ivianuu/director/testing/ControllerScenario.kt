@@ -31,10 +31,10 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.Router
-import com.ivianuu.director.findControllerByTag
 import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.fragmenthost.postponeFullRestore
 import com.ivianuu.director.fragmenthost.startPostponedFullRestore
+import com.ivianuu.director.getControllerByTagOrNull
 import com.ivianuu.director.pop
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.tag
@@ -75,7 +75,7 @@ class ControllerScenario<C : Controller> internal constructor(
     fun moveToState(newState: ControllerState): ControllerScenario<C> {
         if (newState == DESTROYED) {
             activityScenario.onActivity { activity ->
-                val controller = activity.router.findControllerByTag(CONTROLLER_TAG)
+                val controller = activity.router.getControllerByTagOrNull(CONTROLLER_TAG)
                 if (controller != null) {
                     activity.router.pop(controller)
                 }
@@ -83,7 +83,7 @@ class ControllerScenario<C : Controller> internal constructor(
         } else {
             activityScenario.onActivity { activity ->
                 activityScenario.moveToState(newState.toLifecycleState())
-                activity.router.findControllerByTag(CONTROLLER_TAG)
+                activity.router.getControllerByTagOrNull(CONTROLLER_TAG)
                     ?: error("The controller already has been popped from the router.")
 
             }
@@ -98,7 +98,7 @@ class ControllerScenario<C : Controller> internal constructor(
 
     fun onController(block: (C) -> Unit): ControllerScenario<C> {
         activityScenario.onActivity { activity ->
-            val controller = activity.router.findControllerByTag(CONTROLLER_TAG)
+            val controller = activity.router.getControllerByTagOrNull(CONTROLLER_TAG)
                 ?: error("The controller already has been popped from the router.")
             block(controller as C)
         }

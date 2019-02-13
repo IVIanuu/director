@@ -21,7 +21,7 @@ import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
 
 import com.ivianuu.director.backstackSize
-import com.ivianuu.director.findControllerByTag
+import com.ivianuu.director.getControllerByTagOrNull
 import com.ivianuu.director.pop
 import com.ivianuu.director.popCurrent
 import com.ivianuu.director.popToRoot
@@ -107,7 +107,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         val key = command.key
 
         return if (key != null) {
-            val controller = router.findControllerByTag(getControllerTag(key))
+            val controller = router.getControllerByTagOrNull(getControllerTag(key))
             if (controller != null) {
                 router.pop(controller)
                 true

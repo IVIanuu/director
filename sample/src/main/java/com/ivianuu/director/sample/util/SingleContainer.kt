@@ -57,6 +57,19 @@ class SingleContainer(val router: Router) {
     }
 }
 
+inline fun Router.moveToTop(tag: String, create: () -> RouterTransaction) {
+    val backstack = backstack.toMutableList()
+    var transaction = backstack.firstOrNull { it.tag == tag }
+    if (transaction != null) {
+        backstack.remove(transaction)
+    } else {
+        transaction = create()
+    }
+
+    backstack.add(transaction)
+    setBackstack(backstack, true)
+}
+
 inline fun SingleContainer.setIfEmpty(create: () -> RouterTransaction) {
     if (isEmpty) set(create())
 }
