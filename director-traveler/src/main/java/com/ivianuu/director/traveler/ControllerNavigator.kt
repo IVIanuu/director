@@ -38,7 +38,7 @@ import com.ivianuu.traveler.Replace
 import com.ivianuu.traveler.common.ResultNavigator
 
 /**
- * A [Navigator] for director [Controller]s
+ * A [Navigator] for [Controller]s
  */
 open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 

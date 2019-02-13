@@ -20,8 +20,6 @@ import com.ivianuu.director.Controller
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
-
 /**
  * Objects which are retained trough config changes
  * So every [Controller] will get the same instance back trough its lifetime
@@ -96,6 +94,8 @@ fun <T> RetainedObjects.getOrDefault(key: String, defaultValue: () -> T): T {
  */
 val Controller.retainedObjects: RetainedObjects
     get() = RetainedObjectsHolder.get(this)
+
+private const val USE_PROPERTY_NAME = "RetainedObjects.usePropertyName"
 
 fun <T> Controller.retained(
     key: String = USE_PROPERTY_NAME,
