@@ -120,7 +120,7 @@ internal object ControllerChangeManager {
             val currentToIndex = container.indexOfChild(to)
             val currentFromIndex = container.indexOfChild(from)
 
-            if (currentToIndex > currentFromIndex) {
+            if (currentToIndex == -1 || currentToIndex > currentFromIndex) {
                 container.indexOfChild(from)
             } else {
                 currentToIndex
