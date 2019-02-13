@@ -179,8 +179,8 @@ abstract class SharedElementTransitionChangeHandler(
             exitingViews.toMutableList()
         )
 
-        setNameOverrides(container, toSharedElements)
-        scheduleNameReset(container, toSharedElements)
+        container.setNameOverrides(toSharedElements)
+        container.scheduleNameReset(toSharedElements)
     }
 
     private fun waitOnAllTransitionNames(
@@ -272,20 +272,19 @@ abstract class SharedElementTransitionChangeHandler(
         val overlap =
             enterTransition == null || exitTransition == null || allowTransitionOverlap(isPush)
 
-        if (overlap) {
-            return transitionSetOf(
+        return if (overlap) {
+            transitionSetOf(
                 TransitionSet.ORDERING_TOGETHER,
                 exitTransition, enterTransition, sharedElementTransition
             )
         } else {
-            val staggered = transitionSetOf(
-                TransitionSet.ORDERING_SEQUENTIAL,
-                exitTransition,
-                enterTransition
-            )
-            return transitionSetOf(
+            transitionSetOf(
                 TransitionSet.ORDERING_TOGETHER,
-                staggered,
+                transitionSetOf(
+                    TransitionSet.ORDERING_SEQUENTIAL,
+                    exitTransition,
+                    enterTransition
+                ),
                 sharedElementTransition
             )
         }
@@ -297,16 +296,14 @@ abstract class SharedElementTransitionChangeHandler(
         sharedElements: List<View>,
         nonExistentView: View
     ): List<View> {
-        val viewList = mutableListOf<View>()
-        if (view != null) {
-            captureTransitioningViews(viewList, view)
+        val views = mutableListOf<View>()
+        view?.captureTransitioningViews(views)
+        views.removeAll(sharedElements)
+        if (views.isNotEmpty()) {
+            views.add(nonExistentView)
+            transition.addTargets(views)
         }
-        viewList.removeAll(sharedElements)
-        if (!viewList.isEmpty()) {
-            viewList.add(nonExistentView)
-            transition.addTargets(viewList)
-        }
-        return viewList
+        return views
     }
 
     private fun configureSharedElements(
@@ -420,35 +417,32 @@ abstract class SharedElementTransitionChangeHandler(
         if (enterTransitionCallback != null) {
             enterTransitionCallback.onMapSharedElements(names, toSharedElements)
 
-            for (i in names.indices.reversed()) {
-                val name = names[i]
-                val view = toSharedElements[name]
-                if (view == null) {
-                    val key = findKeyForValue(sharedElementNames, name)
-                    if (key != null) {
-                        sharedElementNames.remove(key)
-                    }
-                } else if (name != view.transitionName) {
-                    val key = findKeyForValue(sharedElementNames, name)
-                    if (key != null) {
-                        sharedElementNames[key] = view.transitionName
+            names.reversed()
+                .map { it to toSharedElements[it] }
+                .forEach { (name, view) ->
+                    if (view == null) {
+                        val key = sharedElementNames.findKeyForValue(name)
+                        if (key != null) {
+                            sharedElementNames.remove(key)
+                        }
+                    } else if (name != view.transitionName) {
+                        val key = sharedElementNames.findKeyForValue(name)
+                        if (key != null) {
+                            sharedElementNames[key] = view.transitionName
+                        }
                     }
                 }
-            }
         } else {
-            for (i in sharedElementNames.size - 1 downTo 0) {
-                val targetName = sharedElementNames.values.elementAt(i)
-                if (!toSharedElements.containsKey(targetName)) {
-                    sharedElementNames.remove(sharedElementNames.keys.elementAt(i))
-                }
-            }
+            sharedElementNames.toList()
+                .reversed()
+                .filterNot { toSharedElements.contains(it.second) }
+                .forEach { sharedElementNames.remove(it.first) }
         }
         return toSharedElements
     }
 
-    private fun findKeyForValue(map: MutableMap<String, String>, value: String): String? {
-        return map
-            .filterValues { it == value }
+    private fun <K, V> Map<K, V>.findKeyForValue(value: V): K? {
+        return filterValues { it == value }
             .keys
             .firstOrNull()
     }
@@ -471,16 +465,18 @@ abstract class SharedElementTransitionChangeHandler(
         val exitTransitionCallback = exitTransitionCallback
         if (exitTransitionCallback != null) {
             exitTransitionCallback.onMapSharedElements(names, fromSharedElements)
-            for (i in names.indices.reversed()) {
-                val name = names[i]
-                val view = fromSharedElements[name]
-                if (view == null) {
-                    sharedElementNames.remove(name)
-                } else if (name != view.transitionName) {
-                    val targetValue = sharedElementNames.remove(name)!!
-                    sharedElementNames[view.transitionName] = targetValue
+
+            names
+                .reversed()
+                .map { it to fromSharedElements[it] }
+                .forEach { (name, view) ->
+                    if (view == null) {
+                        sharedElementNames.remove(name)
+                    } else if (name != view.transitionName) {
+                        val targetValue = sharedElementNames.remove(name)!!
+                        sharedElementNames[view.transitionName] = targetValue
+                    }
                 }
-            }
         } else {
             sharedElementNames
                 .filterKeys { !fromSharedElements.contains(it) }
@@ -509,18 +505,18 @@ abstract class SharedElementTransitionChangeHandler(
         }
     }
 
-    private fun captureTransitioningViews(transitioningViews: MutableList<View>, view: View) {
-        if (view.visibility == View.VISIBLE) {
-            if (view is ViewGroup) {
-                if (view.isTransitionGroup) {
-                    transitioningViews.add(view)
+    private fun View.captureTransitioningViews(transitioningViews: MutableList<View>) {
+        if (visibility == View.VISIBLE) {
+            if (this is ViewGroup) {
+                if (isTransitionGroup) {
+                    transitioningViews.add(this)
                 } else {
-                    (0 until view.childCount)
-                        .map { view.getChildAt(it) }
-                        .forEach { captureTransitioningViews(transitioningViews, it) }
+                    (0 until childCount)
+                        .map { getChildAt(it) }
+                        .forEach { it.captureTransitioningViews(transitioningViews) }
                 }
             } else {
-                transitioningViews.add(view)
+                transitioningViews.add(this)
             }
         }
     }
@@ -555,20 +551,19 @@ abstract class SharedElementTransitionChangeHandler(
         })
     }
 
-    private fun setNameOverrides(container: View, toSharedElements: List<View>) {
-        OneShotPreDrawListener(true, container) {
+    private fun ViewGroup.setNameOverrides(toSharedElements: List<View>) {
+        OneShotPreDrawListener(true, this) {
             toSharedElements.forEach {
                 val name = it.transitionName
                 if (name != null) {
-                    val inName = findKeyForValue(sharedElementNames, name)
-                    it.transitionName = inName
+                    it.transitionName = sharedElementNames.findKeyForValue(name)
                 }
             }
         }
     }
 
-    private fun scheduleNameReset(container: ViewGroup, toSharedElements: List<View>) {
-        OneShotPreDrawListener(true, container) {
+    private fun ViewGroup.scheduleNameReset(toSharedElements: List<View>) {
+        OneShotPreDrawListener(true, this) {
             toSharedElements.forEach {
                 val name = it.transitionName
                 val inName = sharedElementNames[name]
@@ -582,7 +577,7 @@ abstract class SharedElementTransitionChangeHandler(
      * should be called for each shared element that will be used. If one or more of these shared elements will not instantly be available in
      * the incoming view (for ex, in a RecyclerView), waitOnSharedElementNamed can be called to delay the transition until everything is available.
      */
-    abstract fun configureSharedElements(
+    protected abstract fun configureSharedElements(
         container: ViewGroup,
         from: View?,
         to: View?,
@@ -593,40 +588,40 @@ abstract class SharedElementTransitionChangeHandler(
     /**
      * Should return the transition that will be used on the exiting ("from") view, if one is desired.
      */
-    abstract fun getExitTransition(
+    protected open fun getExitTransition(
         container: ViewGroup,
         from: View?,
         to: View?,
         toIndex: Int,
         isPush: Boolean
-    ): Transition?
+    ): Transition? = null
 
     /**
      * Should return the transition that will be used on shared elements between the from and to views.
      */
-    abstract fun getSharedElementTransition(
+    protected open fun getSharedElementTransition(
         container: ViewGroup,
         from: View?,
         to: View?,
         toIndex: Int,
         isPush: Boolean
-    ): Transition?
+    ): Transition? = null
 
     /**
      * Should return the transition that will be used on the entering ("to") view, if one is desired.
      */
-    abstract fun getEnterTransition(
+    protected open fun getEnterTransition(
         container: ViewGroup,
         from: View?,
         to: View?,
         toIndex: Int,
         isPush: Boolean
-    ): Transition?
+    ): Transition? = null
 
     /**
      * Should return a callback that can be used to customize transition behavior of the shared element transition for the "from" view.
      */
-    open fun getExitTransitionCallback(
+    protected open fun getExitTransitionCallback(
         container: ViewGroup,
         from: View?,
         to: View?,
@@ -637,7 +632,7 @@ abstract class SharedElementTransitionChangeHandler(
     /**
      * Should return a callback that can be used to customize transition behavior of the shared element transition for the "to" view.
      */
-    open fun getEnterTransitionCallback(
+    protected open fun getEnterTransitionCallback(
         container: ViewGroup,
         from: View?,
         to: View?,

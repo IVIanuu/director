@@ -119,7 +119,7 @@ abstract class TransitionChangeHandler(
     }
 
     /**
-     * Should be overridden to return the Transition to use while replacing Views.
+     * Returns the [Transition] to use to swap views
      */
     protected abstract fun getTransition(
         container: ViewGroup,
@@ -130,8 +130,7 @@ abstract class TransitionChangeHandler(
     ): Transition
 
     /**
-     * Called before a transition occurs. This can be used to reorder views, set their transition names, etc. The transition will begin
-     * when `onTransitionPreparedListener` is called.
+     * Called before starting the [transition]
      */
     protected open fun prepareForTransition(
         container: ViewGroup,
@@ -146,8 +145,9 @@ abstract class TransitionChangeHandler(
     }
 
     /**
-     * This should set all view properties needed for the transition to work properly. By default it removes the "from" view
-     * and adds the "to" view.
+     * This should set all view properties needed for the transition to work properly.
+     * By default it removes the [from] view
+     * and adds the [to] view.
      */
     protected open fun executePropertyChanges(
         container: ViewGroup,
