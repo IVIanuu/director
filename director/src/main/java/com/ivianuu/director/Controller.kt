@@ -154,7 +154,7 @@ abstract class Controller {
     ): View
 
     /**
-     * Called after the of this controller was created
+     * Called after the view was build and the view state restored
      */
     protected open fun onBindView(view: View, savedViewState: Bundle?) {
         superCalled = true
