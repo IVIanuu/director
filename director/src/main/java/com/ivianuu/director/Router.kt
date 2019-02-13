@@ -357,7 +357,6 @@ class Router internal constructor(
             }
 
             _backstack.reversed().forEach {
-                it.controller.view?.let { v -> container.removeView(v) }
                 it.controller.containerDetached()
             }
         }

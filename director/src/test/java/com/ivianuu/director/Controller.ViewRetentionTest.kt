@@ -105,6 +105,10 @@ class ControllerViewRetentionTest {
         assertNull(child2.view)
         assertNotNull(child3.view)
 
+        // retained views should remove their views from parents
+        assertNull(child1View!!.parent)
+        assertNull(child3View!!.parent)
+
         router.popCurrent()
 
         assertNotEquals(parentView, parent.view)

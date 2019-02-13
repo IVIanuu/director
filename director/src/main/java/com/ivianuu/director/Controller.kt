@@ -123,8 +123,12 @@ abstract class Controller {
             detach()
 
             // this means that a controller was pushed on top of us
-            if (!attachedToUnownedParent && !isBeingDestroyed && !retainView) {
-                unbindView()
+            if (!attachedToUnownedParent && !isBeingDestroyed) {
+                if (!retainView) {
+                    unbindView()
+                } else {
+                    view?.let { (it.parent as? ViewGroup)?.removeView(it) }
+                }
             }
         }
     }
@@ -288,8 +292,13 @@ abstract class Controller {
 
     internal fun containerDetached() {
         // decide whether or not our view should be retained
-        if (view != null && (isBeingDestroyed || !retainView)) {
-            unbindView()
+        val view = view
+        if (view != null) {
+            if (isBeingDestroyed || !retainView) {
+                unbindView()
+            } else if (retainView) {
+                view.parent.safeAs<ViewGroup>()?.removeView(view)
+            }
         }
     }
 
