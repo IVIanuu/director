@@ -26,14 +26,14 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
         controller.d { "post create" }
     }
 
-    override fun preInflateView(controller: Controller, savedViewState: Bundle?) {
-        super.preInflateView(controller, savedViewState)
-        controller.d { "pre inflate view" }
+    override fun preBuildView(controller: Controller, savedViewState: Bundle?) {
+        super.preBuildView(controller, savedViewState)
+        controller.d { "pre build view" }
     }
 
-    override fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
-        super.postInflateView(controller, view, savedViewState)
-        controller.d { "post inflate view" }
+    override fun postBuildView(controller: Controller, view: View, savedViewState: Bundle?) {
+        super.postBuildView(controller, view, savedViewState)
+        controller.d { "post build view" }
     }
 
     override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {

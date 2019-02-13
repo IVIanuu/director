@@ -30,10 +30,10 @@ interface ControllerLifecycleListener {
     fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
     }
 
-    fun preInflateView(controller: Controller, savedViewState: Bundle?) {
+    fun preBuildView(controller: Controller, savedViewState: Bundle?) {
     }
 
-    fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
+    fun postBuildView(controller: Controller, view: View, savedViewState: Bundle?) {
     }
 
     fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
@@ -91,8 +91,8 @@ class ControllerLifecycleListenerBuilder internal constructor() {
 
     private var preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null
     private var postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null
-    private var preInflateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null
-    private var postInflateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? =
+    private var preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null
+    private var postBuildView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? =
         null
     private var preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? =
         null
@@ -123,14 +123,14 @@ class ControllerLifecycleListenerBuilder internal constructor() {
             this.postCreate = block
         }
 
-    fun preInflateView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerLifecycleListenerBuilder =
+    fun preBuildView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerLifecycleListenerBuilder =
         apply {
-            this.preInflateView = block
+            this.preBuildView = block
         }
 
-    fun postInflateView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListenerBuilder =
+    fun postBuildView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListenerBuilder =
         apply {
-            this.postInflateView = block
+            this.postBuildView = block
         }
 
     fun preBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListenerBuilder =
@@ -205,7 +205,7 @@ class ControllerLifecycleListenerBuilder internal constructor() {
 
     fun build(): ControllerLifecycleListener = LambdaLifecycleListener(
         preCreate = preCreate, postCreate = postCreate,
-        preInflateView = preInflateView, postInflateView = postInflateView,
+        preBuildView = preBuildView, postBuildView = postBuildView,
         preBindView = preBindView, postBindView = postBindView,
         preAttach = preAttach, postAttach = postAttach,
         preDetach = preDetach, postDetach = postDetach,
@@ -229,11 +229,11 @@ fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState:
 fun Controller.doOnPostCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerLifecycleListener =
     addLifecycleListener { postCreate(block) }
 
-fun Controller.doOnPreInflateView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener { preInflateView(block) }
+fun Controller.doOnPreBuildView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
+    addLifecycleListener { preBuildView(block) }
 
-fun Controller.doOnPostInflateView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener { postInflateView(block) }
+fun Controller.doOnPostBuildView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
+    addLifecycleListener { postBuildView(block) }
 
 fun Controller.doOnPreBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
     addLifecycleListener { preBindView(block) }
@@ -293,17 +293,17 @@ fun Router.doOnControllerPostCreate(
 ): ControllerLifecycleListener =
     addLifecycleListener(recursive) { postCreate(block) }
 
-fun Router.doOnControllerPreInflateView(
+fun Router.doOnControllerPreBuildView(
     recursive: Boolean = false,
     block: (controller: Controller, savedViewState: Bundle?) -> Unit
 ): ControllerLifecycleListener =
-    addLifecycleListener(recursive) { preInflateView(block) }
+    addLifecycleListener(recursive) { preBuildView(block) }
 
-fun Router.doOnControllerPostInflateView(
+fun Router.doOnControllerPostBuildView(
     recursive: Boolean = false,
     block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit
 ): ControllerLifecycleListener =
-    addLifecycleListener(recursive) { postInflateView(block) }
+    addLifecycleListener(recursive) { postBuildView(block) }
 
 fun Router.doOnControllerPreBindView(
     recursive: Boolean = false,
@@ -399,8 +399,8 @@ fun Router.addLifecycleListener(
 private class LambdaLifecycleListener(
     private val preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     private val postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    private val preInflateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    private val postInflateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    private val preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    private val postBuildView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     private val preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     private val postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     private val preAttach: ((controller: Controller, view: View) -> Unit)? = null,
@@ -424,12 +424,12 @@ private class LambdaLifecycleListener(
         postCreate?.invoke(controller, savedInstanceState)
     }
 
-    override fun preInflateView(controller: Controller, savedViewState: Bundle?) {
-        preInflateView?.invoke(controller, savedViewState)
+    override fun preBuildView(controller: Controller, savedViewState: Bundle?) {
+        preBuildView?.invoke(controller, savedViewState)
     }
 
-    override fun postInflateView(controller: Controller, view: View, savedViewState: Bundle?) {
-        postInflateView?.invoke(controller, view, savedViewState)
+    override fun postBuildView(controller: Controller, view: View, savedViewState: Bundle?) {
+        postBuildView?.invoke(controller, view, savedViewState)
     }
 
     override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {

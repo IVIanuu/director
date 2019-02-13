@@ -147,7 +147,7 @@ abstract class Controller {
     /**
      * Returns the view for this controller
      */
-    protected abstract fun onInflateView(
+    protected abstract fun onBuildView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
@@ -307,19 +307,19 @@ abstract class Controller {
         notifyLifecycleListeners { it.postDestroy(this) }
     }
 
-    internal fun inflate(parent: ViewGroup): View {
+    internal fun getView(container: ViewGroup): View {
         var view = view
 
         if (view == null) {
-            notifyLifecycleListeners { it.preInflateView(this, viewState) }
+            notifyLifecycleListeners { it.preBuildView(this, viewState) }
 
-            view = onInflateView(
-                LayoutInflater.from(parent.context),
-                parent,
+            view = onBuildView(
+                LayoutInflater.from(container.context),
+                container,
                 viewState
             ).also { this.view = it }
 
-            notifyLifecycleListeners { it.postInflateView(this, view, viewState) }
+            notifyLifecycleListeners { it.postBuildView(this, view, viewState) }
 
             val viewState = viewState
 

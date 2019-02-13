@@ -24,7 +24,7 @@ abstract class BaseController : Controller(), LayoutContainer {
         addLifecycleListener(LoggingLifecycleListener())
     }
 
-    override fun onInflateView(
+    override fun onBuildView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?

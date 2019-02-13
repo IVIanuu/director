@@ -26,7 +26,7 @@ import android.widget.FrameLayout
  * To enforce [Router.blockTouchesOnTransactions] policy
  * You can pass this layout directly in [Router.setContainer]
  */
-class ControllerContainer @JvmOverloads constructor(
+open class ControllerContainer @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {

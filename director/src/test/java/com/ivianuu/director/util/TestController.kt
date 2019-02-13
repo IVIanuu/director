@@ -40,20 +40,20 @@ class TestController : Controller() {
         currentCallState.createCalls++
     }
 
-    override fun onInflateView(
+    override fun onBuildView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        currentCallState.inflateViewCalls++
-        val view = AttachFakingFrameLayout(inflater.context)
+        currentCallState.buildViewCalls++
+        val view = AttachFakingControllerContainer(inflater.context)
         view.id = VIEW_ID
 
-        val childContainer1 = AttachFakingFrameLayout(inflater.context)
+        val childContainer1 = AttachFakingControllerContainer(inflater.context)
         childContainer1.id = CHILD_VIEW_ID_1
         view.addView(childContainer1)
 
-        val childContainer2 = AttachFakingFrameLayout(inflater.context)
+        val childContainer2 = AttachFakingControllerContainer(inflater.context)
         childContainer2.id = CHILD_VIEW_ID_2
         view.addView(childContainer2)
 

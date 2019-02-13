@@ -23,7 +23,7 @@ import android.view.ViewParent
 import org.robolectric.util.ReflectionHelpers
 
 fun View.reportAttached(attached: Boolean, applyOnChildren: Boolean = true) {
-    if (this is AttachFakingFrameLayout) {
+    if (this is AttachFakingControllerContainer) {
         setAttached(attached, false)
     }
 

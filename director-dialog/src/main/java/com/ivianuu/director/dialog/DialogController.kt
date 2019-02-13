@@ -80,14 +80,14 @@ abstract class DialogController : Controller(),
         }
     }
 
-    override fun onInflateView(
+    override fun onBuildView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
         val view = View(inflater.context)
 
-        val dialog = onCreateDialog(savedViewState).also { this.dialog = it }
+        val dialog = onBuildDialog(savedViewState).also { this.dialog = it }
 
         isDismissed = false
 
@@ -102,7 +102,7 @@ abstract class DialogController : Controller(),
             STYLE_NO_FRAME, STYLE_NO_TITLE -> dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
-        val dialogView = onCreateDialogView(
+        val dialogView = onBuildDialogView(
             LayoutInflater.from(dialog.context),
             savedViewState
         ).also { this.dialogView = it }
@@ -120,9 +120,9 @@ abstract class DialogController : Controller(),
         return view
     }
 
-    protected open fun onCreateDialog(savedViewState: Bundle?): Dialog = Dialog(activity, theme)
+    protected open fun onBuildDialog(savedViewState: Bundle?): Dialog = Dialog(activity, theme)
 
-    protected open fun onCreateDialogView(
+    protected open fun onBuildDialogView(
         inflater: LayoutInflater,
         savedViewState: Bundle?
     ): View? = null

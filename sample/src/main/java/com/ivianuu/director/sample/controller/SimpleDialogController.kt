@@ -29,7 +29,7 @@ import com.ivianuu.director.dialog.DialogController
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog = AlertDialog.Builder(context)
+    override fun onBuildDialog(savedViewState: Bundle?): Dialog = AlertDialog.Builder(context)
         .setTitle("Hello")
         .setMessage("This is a simple dialog controller.")
         .setCancelable(isCancelable)

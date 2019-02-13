@@ -24,7 +24,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     private var lifecycleRegistry: LifecycleRegistry? = null
 
     private val listener = controllerLifecycleListener {
-        postInflateView { _, _, _ ->
+        postBuildView { _, _, _ ->
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
         }
         postBindView { _, _, _ ->
@@ -48,7 +48,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
         controller.addLifecycleListener(listener)
 
         if (controller.state.isAtLeast(ControllerState.VIEW_BOUND)) {
-            listener.postInflateView(controller, controller.view!!, null)
+            listener.postBuildView(controller, controller.view!!, null)
             listener.postBindView(controller, controller.view!!, null)
         }
 

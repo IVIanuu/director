@@ -27,7 +27,7 @@ data class CallState(
     var createCalls: Int = 0,
     var destroyCalls: Int = 0,
 
-    var inflateViewCalls: Int = 0,
+    var buildViewCalls: Int = 0,
     var bindViewCalls: Int = 0,
     var unbindViewCalls: Int = 0,
 

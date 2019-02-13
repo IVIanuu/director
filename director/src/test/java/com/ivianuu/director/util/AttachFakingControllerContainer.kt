@@ -21,10 +21,10 @@ import android.os.IBinder
 import android.os.IInterface
 import android.os.Parcel
 import android.view.View
-import android.widget.FrameLayout
+import com.ivianuu.director.ControllerContainer
 import java.io.FileDescriptor
 
-class AttachFakingFrameLayout(context: Context) : FrameLayout(context) {
+class AttachFakingControllerContainer(context: Context) : ControllerContainer(context) {
 
     private val fakeWindowToken: IBinder = object : IBinder {
         override fun getInterfaceDescriptor(): String? = null
