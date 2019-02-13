@@ -72,9 +72,8 @@ abstract class RouterPagerAdapter(
         visibleRouters.remove(position)
     }
 
-    override fun isViewFromObject(view: View, `object`: Any) =
-        (`object` as Router).backstack
-            .any { it.controller.view == view }
+    override fun isViewFromObject(view: View, `object`: Any): Boolean =
+        (`object` as Router).container == view
 
     override fun saveState(): Parcelable {
         val bundle = Bundle()

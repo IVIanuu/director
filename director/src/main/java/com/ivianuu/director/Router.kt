@@ -31,6 +31,20 @@ class Router internal constructor(
     var popsLastView = false
 
     /**
+     * Whether or not touch events should be blocked while changing controllers
+     */
+    var blockTouchesOnTransactions = true
+        set(value) {
+            field = value
+            if (!value) container?.ignoreTouchEvents = false
+        }
+
+    /**
+     * Whether or not back presses should be blocked while changing controllers
+     */
+    var blockBackClicksOnTransactions = false
+
+    /**
      * The tag of this router
      */
     var tag: String? = tag
@@ -45,8 +59,9 @@ class Router internal constructor(
     /**
      * The container of this router
      */
-    var container: ViewGroup? = null
+    var container: ControllerContainer? = null
         private set
+    private var realContainer: ViewGroup? = null
 
     var isBeingDestroyed: Boolean = false
         internal set(value) {
@@ -81,6 +96,25 @@ class Router internal constructor(
     private var hostDestroyed = false
 
     private val isRootRouter get() = hostRouter == null
+
+    private var inProgressTransactions = 0
+        set(value) {
+            field = value
+            container?.ignoreTouchEvents = blockTouchesOnTransactions && value > 0
+        }
+
+    private val internalChangeListener = controllerChangeListener {
+        onChangeStarted { _, _, _, _, _ ->
+            inProgressTransactions++
+        }
+        onChangeEnded { _, _, _, _, _ ->
+            inProgressTransactions--
+        }
+    }
+
+    init {
+        addChangeListener(internalChangeListener)
+    }
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -206,9 +240,12 @@ class Router internal constructor(
 
     /**
      * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
-     * to its top [Controll-er]. If that controller doesn't handle it, then it will be popped.
+     * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
      */
     fun handleBack(): Boolean {
+        // ignore back clicks while transacting
+        if (blockBackClicksOnTransactions && inProgressTransactions > 0) return true
+
         val currentTransaction = backstack.lastOrNull()
 
         return if (currentTransaction != null) {
@@ -289,11 +326,23 @@ class Router internal constructor(
             "container id of the container must match the container id of this router"
         }
 
-        if (this.container != container) {
+        if (this.realContainer != container) {
             removeContainer()
-            (container as? ControllerChangeListener)?.let { addChangeListener(it) }
 
-            this.container = container
+            this.realContainer = container
+            this.container = if (container is ControllerContainer) {
+                container
+            } else {
+                ControllerContainer(container.context)
+                    .also {
+                        container.addView(
+                            it, ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                            )
+                        )
+                    }
+            }
 
             _backstack.reversed().forEach { it.controller.containerAttached() }
         }
@@ -303,7 +352,9 @@ class Router internal constructor(
         container?.let { container ->
             prepareForContainerRemoval()
 
-            (container as? ControllerChangeListener)?.let { removeChangeListener(it) }
+            if (realContainer != container) {
+                realContainer!!.removeView(container)
+            }
 
             _backstack.reversed().forEach {
                 it.controller.view?.let { v -> container.removeView(v) }
@@ -311,6 +362,7 @@ class Router internal constructor(
             }
         }
 
+        realContainer = null
         container = null
     }
 
@@ -351,6 +403,8 @@ class Router internal constructor(
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
+            putBoolean(KEY_BLOCK_TOUCHES_ON_TRANSACTIONS, blockTouchesOnTransactions)
+            putBoolean(KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS, blockBackClicksOnTransactions)
             putString(KEY_TAG, tag)
             if (isRootRouter) {
                 putBundle(
@@ -383,6 +437,13 @@ class Router internal constructor(
         )
 
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
+
+        blockTouchesOnTransactions = savedInstanceState.getBoolean(
+            KEY_BLOCK_TOUCHES_ON_TRANSACTIONS
+        )
+        blockBackClicksOnTransactions = savedInstanceState.getBoolean(
+            KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS
+        )
 
         if (isRootRouter) {
             transactionIndexer.restoreInstanceState(
@@ -451,6 +512,9 @@ class Router internal constructor(
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
         private const val KEY_CONTAINER_ID = "Router.containerId"
+        private const val KEY_BLOCK_TOUCHES_ON_TRANSACTIONS = "Router.blockTouchesOnTransactions"
+        private const val KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS =
+            "Router.blockBackClicksOnTransactions"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
         private const val KEY_TAG = "Router.tag"
         private const val KEY_TRANSACTION_INDEXER = "Router.transactionIndexer"

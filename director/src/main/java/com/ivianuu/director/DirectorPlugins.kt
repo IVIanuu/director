@@ -59,3 +59,5 @@ var DirectorPlugins.defaultControllerFactory: ControllerFactory?
 // todo default removes from view on push
 // todo default pops last view
 // todo default retain view
+// todo block touches on transactions
+// todo block back clicks on transactions
