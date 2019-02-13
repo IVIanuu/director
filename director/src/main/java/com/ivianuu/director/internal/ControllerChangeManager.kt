@@ -106,10 +106,10 @@ internal object ControllerChangeManager {
         isPush: Boolean
     ): Int {
         if (to == null) return -1
-        if (isPush || from == null) {
+        return if (isPush || from == null) {
             if (container.childCount == 0) return -1
             val backstackIndex = router.backstack.indexOfFirst { it.controller.view == to }
-            return (0 until container.childCount)
+            (0 until container.childCount)
                 .map { container.getChildAt(it) }
                 .indexOfFirst { v ->
                     router.backstack.indexOfFirst {
@@ -117,7 +117,14 @@ internal object ControllerChangeManager {
                     } > backstackIndex
                 }
         } else {
-            return container.indexOfChild(from)
+            val currentToIndex = container.indexOfChild(to)
+            val currentFromIndex = container.indexOfChild(from)
+
+            if (currentToIndex > currentFromIndex) {
+                container.indexOfChild(from)
+            } else {
+                currentToIndex
+            }
         }
     }
 
