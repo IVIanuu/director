@@ -51,7 +51,7 @@ var DirectorPlugins.defaultBlockTouchesOnTransactions: Boolean
 private var _defaultBlockBackClicksOnTransactions = true
 
 /** Default block back clicks on transactions */
-var DirectorPlugins.defaultBlockBlackClicksOnTransactions: Boolean
+var DirectorPlugins.defaultBlockBackClicksOnTransactions: Boolean
     get() = _defaultBlockBackClicksOnTransactions
     set(value) {
         _defaultBlockBackClicksOnTransactions = value

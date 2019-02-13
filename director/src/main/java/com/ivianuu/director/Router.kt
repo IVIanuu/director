@@ -42,7 +42,7 @@ class Router internal constructor(
     /**
      * Whether or not back presses should be blocked while changing controllers
      */
-    var blockBackClicksOnTransactions = DirectorPlugins.defaultBlockBlackClicksOnTransactions
+    var blockBackClicksOnTransactions = DirectorPlugins.defaultBlockBackClicksOnTransactions
 
     /**
      * The tag of this router
