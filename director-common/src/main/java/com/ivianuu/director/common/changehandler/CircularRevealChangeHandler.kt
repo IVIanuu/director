@@ -44,7 +44,7 @@ open class CircularRevealChangeHandler :
     constructor(
         cx: Int,
         cy: Int,
-        duration: Long = NO_DURATION,
+        duration: Long = DirectorPlugins.defaultAnimationDuration,
         removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
     ) : super(duration, removesFromViewOnPush) {
         this.cx = cx
