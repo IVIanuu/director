@@ -19,16 +19,17 @@ package com.ivianuu.director.sample.util
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyController
 
-fun RecyclerView.buildModels(block: EpoxyController.() -> Unit): EpoxyController {
-    val epoxyController = object : EpoxyController() {
+fun simpleController(block: EpoxyController.() -> Unit): EpoxyController {
+    return object : EpoxyController() {
         override fun buildModels() {
             block()
         }
     }
+}
 
+fun RecyclerView.buildModels(block: EpoxyController.() -> Unit): EpoxyController {
+    val epoxyController = simpleController(block)
     adapter = epoxyController.adapter
-
     epoxyController.requestModelBuild()
-
     return epoxyController
 }

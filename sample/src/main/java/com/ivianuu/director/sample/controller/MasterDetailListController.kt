@@ -1,34 +1,47 @@
 package com.ivianuu.director.sample.controller
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.context
-
 import com.ivianuu.director.getChildRouter
-import com.ivianuu.director.push
+import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
-import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.sample.util.simpleController
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_master_detail_list.detail_container
 import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
 import kotlinx.android.synthetic.main.row_detail_item.item_title
-import kotlinx.android.synthetic.main.row_detail_item.row_root
 
 class MasterDetailListController : BaseController() {
 
     private var selectedIndex = 0
-    private var twoPaneView = false
+    private var isTwoPane = false
 
     override val layoutRes get() = R.layout.controller_master_detail_list
+
+    private val epoxyController = simpleController {
+        DetailItem.values().forEachIndexed { index, item ->
+            detailItem {
+                id(index)
+                item(item)
+                index(index)
+                selectedIndex(selectedIndex)
+                twoPane(isTwoPane)
+                onClick { onItemClicked(item, index) }
+            }
+        }
+    }
+
+    private val childRouter by lazy {
+        getChildRouter(R.id.detail_container).apply { popsLastView = true }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,21 +55,13 @@ class MasterDetailListController : BaseController() {
         super.onBindView(view, savedViewState)
 
         recycler_view.layoutManager = LinearLayoutManager(context)
-        recycler_view.buildModels {
-            DetailItem.values().forEachIndexed { index, item ->
-                detailItem {
-                    id(index)
-                    item(item)
-                    index(index)
-                    selectedIndex(selectedIndex)
-                    onClick { onItemClicked(item, index) }
-                }
-            }
-        }
+        recycler_view.adapter = epoxyController.adapter
+        isTwoPane = context.resources.configuration.orientation ==
+                Configuration.ORIENTATION_LANDSCAPE
 
-        twoPaneView = detail_container != null
+        epoxyController.requestModelBuild()
 
-        if (twoPaneView) {
+        if (isTwoPane && !childRouter.hasRoot) {
             onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
         }
     }
@@ -69,16 +74,12 @@ class MasterDetailListController : BaseController() {
     private fun onItemClicked(item: DetailItem, index: Int) {
         selectedIndex = index
 
-        val transaction = ChildController.newInstance(item.detail, item.backgroundColor, true)
-            .toTransaction()
+        val transaction = ChildController.newInstance(
+            item.detail, item.backgroundColor, true
+        ).toTransaction()
 
-        if (twoPaneView) {
-            @Suppress("PLUGIN_WARNING")
-            getChildRouter(detail_container).setRoot(transaction)
-        } else {
-            transaction.changeHandler(HorizontalChangeHandler())
-            router.push(transaction)
-        }
+        childRouter.setRoot(transaction)
+        epoxyController.requestModelBuild()
     }
 
     companion object {
@@ -105,27 +106,22 @@ abstract class DetailItemModel : BaseEpoxyModel() {
 
     @EpoxyAttribute lateinit var item: DetailItem
     @EpoxyAttribute var index: Int = 0
-    @EpoxyAttribute var twoPaneView: Boolean = false
+    @EpoxyAttribute var twoPane: Boolean = false
     @EpoxyAttribute var selectedIndex: Int = 0
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)
         with(holder) {
             item_title.text = item.title
-            if (twoPaneView && index == selectedIndex) {
-                row_root.setBackgroundColor(
+            if (twoPane && index == selectedIndex) {
+                containerView.setBackgroundColor(
                     ContextCompat.getColor(
-                        row_root.context,
+                        containerView.context,
                         R.color.grey_400
                     )
                 )
             } else {
-                row_root.setBackgroundColor(
-                    ContextCompat.getColor(
-                        row_root.context,
-                        android.R.color.transparent
-                    )
-                )
+                containerView.setBackgroundColor(0)
             }
         }
     }
