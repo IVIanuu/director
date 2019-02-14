@@ -112,7 +112,8 @@ abstract class Controller {
         RouterManager(this, router, postponeFullRestore = true)
     }
 
-    private val lifecycleListeners = mutableListOf<ControllerLifecycleListener>()
+    private val lifecycleListeners =
+        mutableSetOf<ControllerLifecycleListener>()
 
     private val attachHandler = ViewAttachHandler { attached ->
         viewIsAttached = attached
@@ -232,9 +233,7 @@ abstract class Controller {
      * Adds a listener for all of this Controller's lifecycle events
      */
     fun addLifecycleListener(listener: ControllerLifecycleListener) {
-        if (!lifecycleListeners.contains(listener)) {
-            lifecycleListeners.add(listener)
-        }
+        lifecycleListeners.add(listener)
     }
 
     /**

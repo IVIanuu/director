@@ -281,7 +281,7 @@ class Router internal constructor(
      * Adds a listener for all controller change events
      */
     fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
-        if (!getAllChangeListeners(false).contains(listener)) {
+        if (changeListeners.none { it.listener == listener }) {
             changeListeners.add(ListenerEntry(listener, recursive))
         }
     }
@@ -303,7 +303,7 @@ class Router internal constructor(
      * Adds a lifecycle listener for all controllers
      */
     fun addLifecycleListener(listener: ControllerLifecycleListener, recursive: Boolean = false) {
-        if (!getAllLifecycleListeners(false).contains(listener)) {
+        if (lifecycleListeners.none { it.listener == listener }) {
             lifecycleListeners.add(ListenerEntry(listener, recursive))
         }
     }

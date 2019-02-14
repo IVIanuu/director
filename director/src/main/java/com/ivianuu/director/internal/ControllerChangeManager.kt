@@ -45,7 +45,6 @@ internal object ControllerChangeManager {
         val fromChangeType =
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
-
         val toView = to?.inflate(container)
         to?.changeStarted(handlerToUse, toChangeType)
 
