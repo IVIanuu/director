@@ -124,7 +124,6 @@ abstract class Controller {
 
             // this means that a controller was pushed on top of us
             if (!attachedToUnownedParent && !isBeingDestroyed && !retainView) {
-                println("remove view from detach")
                 unbindView()
             }
         }
@@ -296,7 +295,6 @@ abstract class Controller {
         val view = view
         if (view != null) {
             if (isBeingDestroyed || !retainView) {
-                println("remove view from container removed")
                 unbindView()
             } else if (retainView) {
                 // remove containers to let children
