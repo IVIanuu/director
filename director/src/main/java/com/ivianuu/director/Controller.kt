@@ -123,12 +123,9 @@ abstract class Controller {
             detach()
 
             // this means that a controller was pushed on top of us
-            if (!attachedToUnownedParent && !isBeingDestroyed) {
-                if (!retainView) {
-                    unbindView()
-                } else {
-                    view?.let { (it.parent as? ViewGroup)?.removeView(it) }
-                }
+            if (!attachedToUnownedParent && !isBeingDestroyed && !retainView) {
+                println("remove view from detach")
+                unbindView()
             }
         }
     }
@@ -271,32 +268,41 @@ abstract class Controller {
         }
     }
 
-    internal fun containerAttached() {
+    internal fun containerSet() {
     }
 
     internal fun hostStarted() {
-        hostStarted = true
-        attach()
-    }
-
-    internal fun hostStopped() {
-        hostStarted = false
-
-        detach()
-
-        // cancel any pending input event
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            view?.cancelPendingInputEvents()
+        if (!hostStarted) {
+            hostStarted = true
+            attach()
         }
     }
 
-    internal fun containerDetached() {
+    internal fun hostStopped() {
+        if (hostStarted) {
+            hostStarted = false
+
+            detach()
+
+            // cancel any pending input event
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                view?.cancelPendingInputEvents()
+            }
+        }
+    }
+
+    internal fun containerRemoved() {
         // decide whether or not our view should be retained
         val view = view
         if (view != null) {
             if (isBeingDestroyed || !retainView) {
+                println("remove view from container removed")
                 unbindView()
             } else if (retainView) {
+                // remove containers to let children
+                // decide whether they wanna keep their view or not
+                childRouterManager.removeContainers()
+                // remove our retained view from the parent
                 view.parent.safeAs<ViewGroup>()?.removeView(view)
             }
         }

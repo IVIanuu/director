@@ -159,7 +159,7 @@ class Router internal constructor(
         // we have to await until the view gets detached
         destroyedVisibleTransactions.forEach {
             it.controller.doOnPostDetach { _, _ ->
-                it.controller.containerDetached()
+                it.controller.containerRemoved()
                 it.controller.hostDestroyed()
             }
         }
@@ -233,7 +233,7 @@ class Router internal constructor(
 
         // destroy all invisible transactions here
         destroyedInvisibleTransactions.forEach {
-            it.controller.containerDetached()
+            it.controller.containerRemoved()
             it.controller.hostDestroyed()
         }
     }
@@ -344,7 +344,7 @@ class Router internal constructor(
                     }
             }
 
-            _backstack.reversed().forEach { it.controller.containerAttached() }
+            _backstack.reversed().forEach { it.controller.containerSet() }
         }
     }
 
@@ -352,12 +352,12 @@ class Router internal constructor(
         container?.let { container ->
             prepareForContainerRemoval()
 
-            if (realContainer != container) {
-                realContainer!!.removeView(container)
+            _backstack.reversed().forEach {
+                it.controller.containerRemoved()
             }
 
-            _backstack.reversed().forEach {
-                it.controller.containerDetached()
+            if (realContainer != container) {
+                realContainer!!.removeView(container)
             }
         }
 
@@ -488,7 +488,7 @@ class Router internal constructor(
 
             // bring them in the correct state
             if (hasContainer) {
-                controller.containerAttached()
+                controller.containerSet()
             }
 
             if (hostStarted) {

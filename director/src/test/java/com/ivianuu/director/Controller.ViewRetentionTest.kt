@@ -20,9 +20,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -91,6 +93,11 @@ class ControllerViewRetentionTest {
         child2.getChildRouter(child2.childContainer1!!)
             .setRoot(child3.toTransaction())
 
+        assertTrue(parent.isAttached)
+        assertTrue(child1.isAttached)
+        assertTrue(child2.isAttached)
+        assertTrue(child3.isAttached)
+
         val parentView = parent.view
         val child1View = child1.view
         val child2View = child2.view
@@ -105,6 +112,11 @@ class ControllerViewRetentionTest {
         assertNull(child2.view)
         assertNotNull(child3.view)
 
+        assertFalse(parent.isAttached)
+        assertFalse(child1.isAttached)
+        assertFalse(child2.isAttached)
+        assertFalse(child3.isAttached)
+
         // retained views should remove their views from parents
         assertNull(child1View!!.parent)
         assertNull(child3View!!.parent)
@@ -115,32 +127,11 @@ class ControllerViewRetentionTest {
         assertEquals(child1View, child1.view)
         assertNotEquals(child2View, child2.view)
         assertEquals(child3View, child3.view)
+
+        assertTrue(parent.isAttached)
+        assertTrue(child1.isAttached)
+        assertTrue(child2.isAttached)
+        assertTrue(child3.isAttached)
     }
 
-    @Test
-    fun testChildViewRetentionOnDetach() {
-        val parent = TestController()
-        parent.retainView = false
-
-        val child1 = TestController()
-        child1.retainView = true
-
-        router.setRoot(parent.toTransaction())
-
-        parent.getChildRouter(parent.childContainer1!!)
-            .setRoot(child1.toTransaction())
-
-        val parentView = parent.view
-        val child1View = child1.view
-
-        activityProxy.stop(true)
-
-        assertNull(parent.view)
-        assertNotNull(child1.view)
-
-        activityProxy.resume()
-
-        assertNotEquals(parentView, parent.view)
-        assertEquals(child1View, child1.view)
-    }
 }

@@ -90,7 +90,7 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, controller)
 
-        activityProxy.stop(false)
+        activityProxy.stop()
 
         expectedCallState.detachCalls++
         assertCalls(expectedCallState, controller)
@@ -122,15 +122,14 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, controller)
 
-        activityProxy.stop(true)
+        activityProxy.stop()
 
-        expectedCallState.saveViewStateCalls++
         expectedCallState.detachCalls++
-        expectedCallState.unbindViewCalls++
         assertCalls(expectedCallState, controller)
 
         activityProxy.destroy()
 
+        expectedCallState.unbindViewCalls++
         expectedCallState.destroyCalls++
         assertCalls(expectedCallState, controller)
     }

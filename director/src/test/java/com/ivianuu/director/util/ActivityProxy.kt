@@ -36,12 +36,12 @@ class ActivityProxy {
 
     fun create(savedInstanceState: Bundle?): ActivityProxy = apply {
         activityController.create(savedInstanceState)
+        view1.setAttached(true)
+        view2.setAttached(true)
     }
 
     fun start(): ActivityProxy = apply {
         activityController.start()
-        view1.setAttached(true)
-        view2.setAttached(true)
     }
 
     fun resume(): ActivityProxy = apply {
@@ -56,13 +56,8 @@ class ActivityProxy {
         activityController.saveInstanceState(outState)
     }
 
-    fun stop(detachView: Boolean): ActivityProxy = apply {
+    fun stop(): ActivityProxy = apply {
         activityController.stop()
-
-        if (detachView) {
-            view1.setAttached(false)
-            view2.setAttached(false)
-        }
     }
 
     fun destroy(): ActivityProxy = apply {
@@ -71,8 +66,4 @@ class ActivityProxy {
         view2.setAttached(false)
     }
 
-    fun rotate(): ActivityProxy = apply {
-        activity.changingConfigurations = true
-        activity.recreate()
-    }
 }
