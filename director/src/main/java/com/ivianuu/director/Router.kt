@@ -16,7 +16,7 @@ class Router internal constructor(
     containerId: Int,
     tag: String? = null,
     val host: Any,
-    private val hostRouter: Router?
+    val hostRouter: Router?
 ) {
 
     /**
