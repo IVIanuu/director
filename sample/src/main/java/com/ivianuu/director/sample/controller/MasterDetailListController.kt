@@ -44,8 +44,6 @@ class MasterDetailListController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        childRouter.popsLastView = true
-
         toolbarTitle = "Master/Detail Flow"
         if (savedInstanceState != null) {
             selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
@@ -59,6 +57,8 @@ class MasterDetailListController : BaseController() {
         recycler_view.adapter = epoxyController.adapter
         isTwoPane = context.resources.configuration.orientation ==
                 Configuration.ORIENTATION_LANDSCAPE
+
+        childRouter.popsLastView = !isTwoPane
 
         epoxyController.requestModelBuild()
 
