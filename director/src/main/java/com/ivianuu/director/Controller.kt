@@ -661,3 +661,11 @@ fun Controller.getChildRouter(
     container: ViewGroup,
     tag: String? = null
 ): Router = getChildRouter(container.id, tag)
+
+/**
+ * Returns a lazy for the child router for [containerId] and [tag]
+ */
+fun Controller.childRouter(
+    containerId: Int,
+    tag: String? = null
+): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }

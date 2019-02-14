@@ -37,6 +37,9 @@ fun FragmentActivity.removeRouter(router: Router) {
     RouterHostFragment.removeRouter(this, router)
 }
 
+fun FragmentActivity.router(containerId: Int, tag: String? = null): Lazy<Router> =
+    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
+
 fun FragmentActivity.postponeFullRestore() {
     RouterHostFragment.postponeFullRestore(this)
 }

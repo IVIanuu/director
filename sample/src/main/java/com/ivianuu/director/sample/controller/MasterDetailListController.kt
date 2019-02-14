@@ -7,8 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
+import com.ivianuu.director.childRouter
 import com.ivianuu.director.context
-import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
@@ -39,12 +39,13 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    private val childRouter by lazy {
-        getChildRouter(R.id.detail_container).apply { popsLastView = true }
-    }
+    private val childRouter by childRouter(R.id.detail_container)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        childRouter.popsLastView = true
+
         toolbarTitle = "Master/Detail Flow"
         if (savedInstanceState != null) {
             selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)

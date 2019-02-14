@@ -18,7 +18,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import com.ivianuu.director.changeHandler
-import com.ivianuu.director.getChildRouter
+import com.ivianuu.director.childRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
@@ -33,7 +33,7 @@ class BottomNavChildController : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_bottom_nav_child
 
-    private val childRouter by lazy { getChildRouter(R.id.bottom_nav_child_container) }
+    private val childRouter by childRouter(R.id.bottom_nav_child_container)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

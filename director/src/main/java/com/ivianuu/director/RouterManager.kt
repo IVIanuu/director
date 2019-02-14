@@ -195,6 +195,9 @@ class RouterManager(
     }
 }
 
+/**
+ * Returns the router for [container] and [tag] or null
+ */
 fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
     getRouterOrNull(container.id, tag)?.also {
         if (!it.hasContainer) {
@@ -203,6 +206,9 @@ fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Ro
         }
     }
 
+/**
+ * Returns the router for [container] and [tag] or creates a new instance
+ */
 fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
     getRouter(container.id, tag).also {
         if (!it.hasContainer) {
@@ -210,3 +216,9 @@ fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
             it.rebind()
         }
     }
+
+/**
+ * Returns a lazy for the router for [containerId] and [tag]
+ */
+fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
+    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
