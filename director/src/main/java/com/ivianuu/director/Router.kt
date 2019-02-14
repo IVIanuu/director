@@ -252,7 +252,7 @@ class Router internal constructor(
             if (currentTransaction.controller.handleBack()) {
                 true
             } else if (hasRoot && (popsLastView || backstackSize > 1)) {
-                popCurrent()
+                popTop()
                 true
             } else {
                 false
@@ -668,7 +668,7 @@ fun Router.pop(
 /**
  * Pops the top [Controller] from the backstack
  */
-fun Router.popCurrent(handler: ControllerChangeHandler? = null) {
+fun Router.popTop(handler: ControllerChangeHandler? = null) {
     val transaction = backstack.lastOrNull()
         ?: error("Trying to pop the current controller when there are none on the backstack.")
     pop(transaction, handler)

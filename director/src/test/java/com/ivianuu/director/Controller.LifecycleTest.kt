@@ -64,7 +64,7 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, controller)
 
-        router.popCurrent()
+        router.popTop()
 
         assertNull(controller.view)
 
@@ -583,7 +583,7 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, child)
 
-        router.popCurrent()
+        router.popTop()
 
         expectedCallState.detachCalls++
         expectedCallState.unbindViewCalls++
@@ -765,7 +765,7 @@ class ControllerLifecycleCallbacksTest {
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child.toTransaction())
             }
-            postAttach { _, _ -> router.popCurrent() }
+            postAttach { _, _ -> router.popTop() }
         }
 
         router.push(parent.toTransaction())

@@ -45,7 +45,7 @@ class ViewLeakTest {
 
         assertNotNull(controller.view)
 
-        router.popCurrent()
+        router.popTop()
 
         assertNull(controller.view)
     }
@@ -60,7 +60,7 @@ class ViewLeakTest {
 
         assertNotNull(controller.view)
 
-        router.popCurrent()
+        router.popTop()
 
         assertNull(controller.view)
     }
@@ -75,7 +75,7 @@ class ViewLeakTest {
 
         assertNotNull(controller.view)
 
-        router.popCurrent()
+        router.popTop()
 
         assertNull(controller.view)
     }

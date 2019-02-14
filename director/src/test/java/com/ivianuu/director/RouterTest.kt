@@ -108,14 +108,14 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        router.popCurrent()
+        router.popTop()
 
         assertEquals(1, router.backstackSize)
 
         assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
         assertNull(router.getControllerByTagOrNull(controller2Tag))
 
-        router.popCurrent()
+        router.popTop()
 
         assertEquals(0, router.backstackSize)
 
@@ -527,7 +527,7 @@ class RouterTest {
         assertFalse(controller1.isBeingDestroyed)
         assertFalse(controller2.isBeingDestroyed)
 
-        router.popCurrent()
+        router.popTop()
         assertFalse(controller1.isBeingDestroyed)
         assertTrue(controller2.isBeingDestroyed)
 

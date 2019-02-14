@@ -121,7 +121,7 @@ class ControllerViewRetentionTest {
         assertNull(child1View!!.parent)
         assertNull(child3View!!.parent)
 
-        router.popCurrent()
+        router.popTop()
 
         assertNotEquals(parentView, parent.view)
         assertEquals(child1View, child1.view)
