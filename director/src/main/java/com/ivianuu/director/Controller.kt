@@ -322,7 +322,7 @@ abstract class Controller {
         notifyLifecycleListeners { it.postDestroy(this) }
     }
 
-    internal fun getView(container: ViewGroup): View {
+    internal fun inflate(container: ViewGroup): View {
         var view = view
 
         if (view == null) {
