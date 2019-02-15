@@ -44,6 +44,9 @@ class RouterManager(
         restoreInstanceState(savedInstanceState)
     }
 
+    /**
+     * Sets the root view for all routers
+     */
     fun setContainers(rootView: ViewGroup) {
         if (this.rootView != rootView) {
             this.rootView = rootView
@@ -51,16 +54,25 @@ class RouterManager(
         }
     }
 
+    /**
+     * Notifies that the host was started
+     */
     fun hostStarted() {
         hostStarted = true
         _routers.forEach { it.hostStarted() }
     }
 
+    /**
+     * Notifies that the host was stopped
+     */
     fun hostStopped() {
         hostStarted = false
         _routers.forEach { it.hostStopped() }
     }
 
+    /**
+     * Removes the previously added [rootView]
+     */
     fun removeContainers() {
         if (rootView != null) {
             _routers.forEach { it.removeContainer() }
@@ -68,10 +80,16 @@ class RouterManager(
         }
     }
 
+    /**
+     * Notifies that the host is going to be destroyed
+     */
     fun hostIsBeingDestroyed() {
         _routers.forEach { it.isBeingDestroyed = true }
     }
 
+    /**
+     * Notifies that the host was destroyed
+     */
     fun hostDestroyed() {
         _routers.forEach {
             it.isBeingDestroyed = true
@@ -80,6 +98,9 @@ class RouterManager(
         }
     }
 
+    /**
+     * Restores the instance state of all routers
+     */
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         savedInstanceState?.let {
             restoreBasicState(it)
@@ -89,11 +110,17 @@ class RouterManager(
         }
     }
 
+    /**
+     * Saves the instance state of all containing routers
+     */
     fun saveInstanceState(): Bundle = Bundle().apply {
         val routerStates = _routers.map { it.saveInstanceState() }
         putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
+    /**
+     * Let routers handle the back
+     */
     fun handleBack(): Boolean {
         return _routers
             .flatMap { it.backstack }
@@ -103,9 +130,15 @@ class RouterManager(
             .any { it.isAttached && it.router.handleBack() }
     }
 
+    /**
+     * Returns the router for [containerId] and [tag] or null
+     */
     fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
         _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
 
+    /**
+     * Returns the router for [containerId] and [tag] or creates a new one
+     */
     fun getRouter(containerId: Int, tag: String? = null): Router {
         var router = getRouterOrNull(containerId, tag)
         if (router == null) {
@@ -127,6 +160,9 @@ class RouterManager(
         return router
     }
 
+    /**
+     * Removes the previously added [router]
+     */
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
             router.setBackstack(emptyList(), false)
@@ -137,10 +173,16 @@ class RouterManager(
         }
     }
 
+    /**
+     * Postpones the restore until [startPostponedFullRestore] was called
+     */
     fun postponeRestore() {
         postponeFullRestore = true
     }
 
+    /**
+     * Starts a previously [postponeRestore] restore
+     */
     fun startPostponedFullRestore() {
         if (postponeFullRestore) {
             postponeFullRestore = false

@@ -63,6 +63,9 @@ class Router internal constructor(
         private set
     private var realContainer: ViewGroup? = null
 
+    /**
+     * Whether or not this router is going to be destroyed
+     */
     var isBeingDestroyed: Boolean = false
         internal set(value) {
             _backstack.reversed().forEach { it.controller.isBeingDestroyed = true }
@@ -239,8 +242,8 @@ class Router internal constructor(
     }
 
     /**
-     * This should be called by the host Activity when its onBackPressed method is called. The call will be forwarded
-     * to its top [Controller]. If that controller doesn't handle it, then it will be popped.
+     * Let the current controller handles back click or pops the top controller if possible
+     * Returns whether or not the back click was handled
      */
     fun handleBack(): Boolean {
         // ignore back clicks while transacting
@@ -263,9 +266,11 @@ class Router internal constructor(
     }
 
     /**
-     * Attaches this Router's existing backstack to its container if one exists.
+     * Attaches this Routers [backstack] to its [container] if one exists.
      */
     fun rebind() {
+        if (container == null) return
+
         _backstack
             .filterVisible()
             .filterNot { it.controller.isAttached }
@@ -278,7 +283,7 @@ class Router internal constructor(
     }
 
     /**
-     * Adds a listener for all controller change events
+     * Notifies the [listener] on controller changes
      */
     fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
         if (changeListeners.none { it.listener == listener }) {
@@ -321,6 +326,9 @@ class Router internal constructor(
             .map { it.listener } + (hostRouter?.getAllLifecycleListeners(true) ?: emptyList())
     }
 
+    /**
+     * Sets the container of this router
+     */
     fun setContainer(container: ViewGroup) {
         require(container.id == containerId) {
             "container id of the container must match the container id of this router"
@@ -348,6 +356,9 @@ class Router internal constructor(
         }
     }
 
+    /**
+     * Removes the current container if set
+     */
     fun removeContainer() {
         container?.let { container ->
             prepareForContainerRemoval()
@@ -365,6 +376,9 @@ class Router internal constructor(
         container = null
     }
 
+    /**
+     * Notifies that the host of this router was started
+     */
     fun hostStarted() {
         if (!hostStarted) {
             hostStarted = true
@@ -372,6 +386,9 @@ class Router internal constructor(
         }
     }
 
+    /**
+     * Notifies that the host of this router was stopped
+     */
     fun hostStopped() {
         if (hostStarted) {
             hostStarted = false
@@ -380,6 +397,9 @@ class Router internal constructor(
         }
     }
 
+    /**
+     * Notifies that the host of this router was destroyed
+     */
     fun hostDestroyed() {
         if (!hostDestroyed) {
             hostDestroyed = true
@@ -394,6 +414,9 @@ class Router internal constructor(
         }
     }
 
+    /**
+     * Saves the state of this router
+     */
     fun saveInstanceState(): Bundle {
         prepareForContainerRemoval()
 
@@ -414,6 +437,9 @@ class Router internal constructor(
         }
     }
 
+    /**
+     * Restores the previously saved state state
+     */
     fun restoreInstanceState(savedInstanceState: Bundle) {
         val oldContainerId = containerId
         containerId = savedInstanceState.getInt(KEY_CONTAINER_ID)
