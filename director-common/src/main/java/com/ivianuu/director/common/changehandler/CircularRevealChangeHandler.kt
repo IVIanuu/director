@@ -14,8 +14,7 @@ import com.ivianuu.director.defaultRemovesFromViewOnPush
  * A [AnimatorChangeHandler] that will perform a circular reveal
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-open class CircularRevealChangeHandler :
-    AnimatorChangeHandler {
+open class CircularRevealChangeHandler : AnimatorChangeHandler {
 
     private var cx = 0
     private var cy = 0

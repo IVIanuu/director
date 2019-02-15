@@ -91,20 +91,20 @@ class ControllerTest {
 
         assertEquals(INITIALIZED, controller.state)
 
-        controller.addLifecycleListener {
-            preCreate { _, _ -> assertEquals(INITIALIZED, controller.state) }
-            postCreate { _, _ -> assertEquals(CREATED, controller.state) }
-            preBindView { _, _, _ -> assertEquals(CREATED, controller.state) }
-            postBindView { _, _, _ -> assertEquals(VIEW_BOUND, controller.state) }
-            preAttach { _, _ -> assertEquals(VIEW_BOUND, controller.state) }
-            postAttach { _, _ -> assertEquals(ATTACHED, controller.state) }
-            preDetach { _, _ -> assertEquals(ATTACHED, controller.state) }
-            postDetach { _, _ -> assertEquals(VIEW_BOUND, controller.state) }
-            preUnbindView { _, _ -> assertEquals(VIEW_BOUND, controller.state) }
-            postUnbindView { assertEquals(CREATED, controller.state) }
-            preDestroy { assertEquals(CREATED, controller.state) }
-            postDestroy { assertEquals(DESTROYED, controller.state) }
-        }
+        controller.addLifecycleListener(
+            preCreate = { _, _ -> assertEquals(INITIALIZED, controller.state) },
+            postCreate = { _, _ -> assertEquals(CREATED, controller.state) },
+            preBindView = { _, _, _ -> assertEquals(CREATED, controller.state) },
+            postBindView = { _, _, _ -> assertEquals(VIEW_BOUND, controller.state) },
+            preAttach = { _, _ -> assertEquals(VIEW_BOUND, controller.state) },
+            postAttach = { _, _ -> assertEquals(ATTACHED, controller.state) },
+            preDetach = { _, _ -> assertEquals(ATTACHED, controller.state) },
+            postDetach = { _, _ -> assertEquals(VIEW_BOUND, controller.state) },
+            preUnbindView = { _, _ -> assertEquals(VIEW_BOUND, controller.state) },
+            postUnbindView = { assertEquals(CREATED, controller.state) },
+            preDestroy = { assertEquals(CREATED, controller.state) },
+            postDestroy = { assertEquals(DESTROYED, controller.state) }
+        )
 
         router.push(controller.toTransaction())
         controller.doOnPostAttach { _, _ -> router.popTop() }

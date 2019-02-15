@@ -36,14 +36,14 @@ class ControllerLifecycle(
 ) : AbstractLifecycle<ControllerEvent>() {
 
     init {
-        controller.addLifecycleListener {
-            preCreate { _, _ -> onEvent(CREATE) }
-            preBindView { _, _, _ -> onEvent(BIND_VIEW) }
-            preAttach { _, _ -> onEvent(ATTACH) }
-            postAttach { _, _ -> onEvent(DETACH) }
-            postUnbindView { onEvent(UNBIND_VIEW) }
-            postDestroy { onEvent(DESTROY) }
-        }
+        controller.addLifecycleListener(
+            preCreate = { _, _ -> onEvent(CREATE) },
+            preBindView = { _, _, _ -> onEvent(BIND_VIEW) },
+            preAttach = { _, _ -> onEvent(ATTACH) },
+            postAttach = { _, _ -> onEvent(DETACH) },
+            postUnbindView = { onEvent(UNBIND_VIEW) },
+            postDestroy = { onEvent(DESTROY) }
+        )
 
         when (controller.state) {
             ControllerState.DESTROYED -> onEvent(DESTROY)

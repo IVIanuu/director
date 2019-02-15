@@ -10,8 +10,8 @@ import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerLifecycleListener
 import com.ivianuu.director.ControllerState
-import com.ivianuu.director.controllerLifecycleListener
 import com.ivianuu.director.doOnPostUnbindView
 import com.ivianuu.director.hasView
 import com.ivianuu.director.isAtLeast
@@ -23,26 +23,26 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private var lifecycleRegistry: LifecycleRegistry? = null
 
-    private val listener = controllerLifecycleListener {
-        postBuildView { _, _, _ ->
+    private val listener = ControllerLifecycleListener(
+        postBuildView = { _, _, _ ->
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
-        }
-        postBindView { _, _, _ ->
+        },
+        postBindView = { _, _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_CREATE)
             lifecycleRegistry?.handleLifecycleEvent(ON_START)
-        }
-        postAttach { _, _ ->
+        },
+        postAttach = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_RESUME)
-        }
-        preDetach { _, _ ->
+        },
+        preDetach = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_PAUSE)
-        }
-        preUnbindView { _, _ ->
+        },
+        preUnbindView = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_STOP)
             lifecycleRegistry?.handleLifecycleEvent(ON_DESTROY)
-        }
-        postUnbindView { lifecycleRegistry = null }
-    }
+        },
+        postUnbindView = { lifecycleRegistry = null }
+    )
 
     init {
         controller.addLifecycleListener(listener)

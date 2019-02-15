@@ -47,52 +47,38 @@ interface ControllerChangeListener {
     }
 }
 
-class ControllerChangeListenerBuilder internal constructor() {
-
-    private var onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? =
-        null
-    private var onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? =
-        null
-
-    fun onChangeStarted(block: (to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit): ControllerChangeListenerBuilder =
-        apply {
-            this.onChangeStarted = block
-        }
-
-    fun onChangeEnded(block: (to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit): ControllerChangeListenerBuilder =
-        apply {
-            this.onChangeEnded = block
-        }
-
-    fun build(): ControllerChangeListener = LambdaControllerChangeListener(
-        onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
-    )
-
-}
-
 /**
- * Returns a [controllerChangeListener] build by [init]
+ * Returns a [ControllerChangeListener]
  */
-fun controllerChangeListener(init: ControllerChangeListenerBuilder.() -> Unit): ControllerChangeListener =
-    ControllerChangeListenerBuilder().apply(init).build()
+fun ControllerChangeListener(
+    onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
+): ControllerChangeListener =
+    LambdaControllerChangeListener(onChangeStarted, onChangeEnded)
 
 fun Router.doOnChangeStarted(
     recursive: Boolean = false,
     block: (to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
 ): ControllerChangeListener =
-    addChangeListener(recursive) { onChangeStarted(block) }
+    addChangeListener(recursive = recursive, onChangeStarted = block)
 
 fun Router.doOnChangeEnded(
     recursive: Boolean = false,
     block: (to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
 ): ControllerChangeListener =
-    addChangeListener(recursive) { onChangeEnded(block) }
+    addChangeListener(recursive = recursive, onChangeEnded = block)
 
 fun Router.addChangeListener(
     recursive: Boolean = false,
-    init: ControllerChangeListenerBuilder.() -> Unit
+    onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    onChangeEnded: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
 ): ControllerChangeListener =
-    controllerChangeListener(init).also { addChangeListener(it, recursive) }
+    ControllerChangeListener(onChangeStarted, onChangeEnded).also {
+        addChangeListener(
+            it,
+            recursive
+        )
+    }
 
 private class LambdaControllerChangeListener(
     private val onChangeStarted: ((to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,

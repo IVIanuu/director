@@ -103,14 +103,14 @@ class Router internal constructor(
             container?.ignoreTouchEvents = blockTouchesOnTransactions && value > 0
         }
 
-    private val internalChangeListener = controllerChangeListener {
-        onChangeStarted { _, _, _, _, _ ->
+    private val internalChangeListener = ControllerChangeListener(
+        onChangeStarted = { _, _, _, _, _ ->
             inProgressTransactions++
-        }
-        onChangeEnded { _, _, _, _, _ ->
+        },
+        onChangeEnded = { _, _, _, _, _ ->
             inProgressTransactions--
         }
-    }
+    )
 
     init {
         addChangeListener(internalChangeListener)

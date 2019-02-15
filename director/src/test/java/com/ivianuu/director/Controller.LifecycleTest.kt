@@ -760,13 +760,13 @@ class ControllerLifecycleCallbacksTest {
         parent.addLifecycleListener(listener)
         child.addLifecycleListener(listener)
 
-        parent.addLifecycleListener {
-            preCreate { _, _ ->
+        parent.addLifecycleListener(
+            preCreate = { _, _ ->
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child.toTransaction())
-            }
-            postAttach { _, _ -> router.popTop() }
-        }
+            },
+            postAttach = { _, _ -> router.popTop() }
+        )
 
         router.push(parent.toTransaction())
     }

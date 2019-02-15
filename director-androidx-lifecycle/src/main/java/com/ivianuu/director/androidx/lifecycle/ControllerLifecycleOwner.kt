@@ -39,14 +39,14 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     init {
         with(lifecycleRegistry) {
-            controller.addLifecycleListener {
-                postCreate { _, _ -> handleLifecycleEvent(ON_CREATE) }
-                postBindView { _, _, _ -> handleLifecycleEvent(ON_START) }
-                postAttach { _, _ -> handleLifecycleEvent(ON_RESUME) }
-                preDetach { _, _ -> handleLifecycleEvent(ON_PAUSE) }
-                preUnbindView { _, _ -> handleLifecycleEvent(ON_STOP) }
-                preDestroy { handleLifecycleEvent(ON_DESTROY) }
-            }
+            controller.addLifecycleListener(
+                postCreate = { _, _ -> handleLifecycleEvent(ON_CREATE) },
+                postBindView = { _, _, _ -> handleLifecycleEvent(ON_START) },
+                postAttach = { _, _ -> handleLifecycleEvent(ON_RESUME) },
+                preDetach = { _, _ -> handleLifecycleEvent(ON_PAUSE) },
+                preUnbindView = { _, _ -> handleLifecycleEvent(ON_STOP) },
+                preDestroy = { handleLifecycleEvent(ON_DESTROY) }
+            )
 
             when (controller.state) {
                 ControllerState.DESTROYED -> markState(Lifecycle.State.DESTROYED)
