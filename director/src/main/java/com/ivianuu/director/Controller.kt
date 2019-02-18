@@ -18,6 +18,7 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.internal.ViewAttachHandler
+import com.ivianuu.director.internal.classForNameOrThrow
 import com.ivianuu.stdlibx.safeAs
 import java.util.*
 
@@ -141,7 +142,6 @@ abstract class Controller {
     protected open fun onCreate(savedInstanceState: Bundle?) {
         // restore the full instance state of child routers
         childRouterManager.startPostponedFullRestore()
-
         superCalled = true
     }
 
@@ -540,9 +540,15 @@ abstract class Controller {
 
         internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
-            val args = bundle.getBundle(KEY_ARGS)
+
+            val cls = classForNameOrThrow(className)
+
+            val args = bundle.getBundle(KEY_ARGS).apply {
+                classLoader = cls.classLoader
+            }
+
             return factory.createController(
-                Controller::class.java.classLoader!!, className, args!!
+                cls.classLoader!!, className, args!!
             ).apply {
                 allState = bundle
             }
