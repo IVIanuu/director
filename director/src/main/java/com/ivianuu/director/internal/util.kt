@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import java.util.*
 
 fun <T : Any> newInstanceOrThrow(className: String): T = try {
-    classForNameOrThrow<T>(className).newInstance() as T
+    classForNameOrThrow(className).newInstance() as T
 } catch (e: Exception) {
     throw RuntimeException("could not instantiate $className, $e")
 }
 
-fun <T> classForNameOrThrow(className: String): Class<out T> = try {
-    Class.forName(className) as Class<out T>
+fun classForNameOrThrow(className: String): Class<*> = try {
+    Class.forName(className)
 } catch (e: Exception) {
     throw RuntimeException("couldn't find class $className")
 }

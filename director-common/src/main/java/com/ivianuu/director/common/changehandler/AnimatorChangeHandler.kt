@@ -135,9 +135,11 @@ abstract class AnimatorChangeHandler(
     ): Animator
 
     /**
-     * Will be called after the animation is complete to reset the View that was removed to its pre-animation state.
+     * Resets the from view of an animation to the pre animation state
+     * This will be called after a animation was finished
      */
-    protected abstract fun resetFromView(from: View)
+    protected open fun resetFromView(from: View) {
+    }
 
     private fun performAnimation(
         container: ViewGroup,
