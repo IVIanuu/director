@@ -26,7 +26,7 @@ import com.ivianuu.director.common.ControllerEvent.CREATE
 import com.ivianuu.director.common.ControllerEvent.DESTROY
 import com.ivianuu.director.common.ControllerEvent.DETACH
 import com.ivianuu.director.common.ControllerEvent.UNBIND_VIEW
-import com.ivianuu.scopes.lifecycle.AbstractLifecycle
+import com.ivianuu.lifecycle.AbstractLifecycle
 
 /**
  * A [com.ivianuu.scopes.lifecycle.Lifecycle] for [Controller]s
