@@ -67,7 +67,7 @@ class RouterManager(
      */
     fun hostStopped() {
         hostStarted = false
-        _routers.forEach { it.hostStopped() }
+        _routers.reversed().forEach { it.hostStopped() }
     }
 
     /**
@@ -75,7 +75,7 @@ class RouterManager(
      */
     fun removeContainers() {
         if (rootView != null) {
-            _routers.forEach { it.removeContainer() }
+            _routers.reversed().forEach { it.removeContainer() }
             rootView = null
         }
     }
@@ -84,14 +84,14 @@ class RouterManager(
      * Notifies that the host is going to be destroyed
      */
     fun hostIsBeingDestroyed() {
-        _routers.forEach { it.isBeingDestroyed = true }
+        _routers.reversed().forEach { it.isBeingDestroyed = true }
     }
 
     /**
      * Notifies that the host was destroyed
      */
     fun hostDestroyed() {
-        _routers.forEach {
+        _routers.reversed().forEach {
             it.isBeingDestroyed = true
             it.removeContainer()
             it.hostDestroyed()
