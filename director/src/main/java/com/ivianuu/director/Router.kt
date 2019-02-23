@@ -160,7 +160,7 @@ class Router internal constructor(
 
         // to ensure the destruction lifecycle onDetach -> onUnbindView -> onDestroy
         // we have to await until the view gets detached
-        destroyedVisibleTransactions.forEach {
+        destroyedVisibleTransactions.reversed().forEach {
             it.controller.doOnPostDetach { _, _ ->
                 it.controller.containerRemoved()
                 it.controller.hostDestroyed()
@@ -235,7 +235,7 @@ class Router internal constructor(
         }
 
         // destroy all invisible transactions here
-        destroyedInvisibleTransactions.forEach {
+        destroyedInvisibleTransactions.reversed().forEach {
             it.controller.containerRemoved()
             it.controller.hostDestroyed()
         }
@@ -352,7 +352,7 @@ class Router internal constructor(
                     }
             }
 
-            _backstack.reversed().forEach { it.controller.containerSet() }
+            _backstack.forEach { it.controller.containerSet() }
         }
     }
 
@@ -382,7 +382,7 @@ class Router internal constructor(
     fun hostStarted() {
         if (!hostStarted) {
             hostStarted = true
-            _backstack.reversed().forEach { it.controller.hostStarted() }
+            _backstack.forEach { it.controller.hostStarted() }
         }
     }
 
@@ -476,7 +476,7 @@ class Router internal constructor(
             )
         }
 
-        _backstack.reversed().forEach { setControllerRouter(it.controller) }
+        _backstack.forEach { setControllerRouter(it.controller) }
     }
 
     private fun performControllerChange(
