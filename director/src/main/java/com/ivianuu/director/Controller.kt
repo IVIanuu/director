@@ -209,11 +209,24 @@ abstract class Controller {
         superCalled = true
     }
 
+    /**
+     * Will be called when the view state gets restored
+     */
+    protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        superCalled = true
+    }
 
     /**
      * Called to save the view state of this controller
      */
     protected open fun onSaveViewState(view: View, outState: Bundle) {
+        superCalled = true
+    }
+
+    /**
+     * Will be called when the instance state gets restores
+     */
+    protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
         superCalled = true
     }
 
@@ -261,9 +274,15 @@ abstract class Controller {
             requireSuperCalled { onCreate(instanceState) }
 
             notifyLifecycleListeners { it.postCreate(this, instanceState) }
-
-            instanceState = null
         }
+
+        // restore the instance state
+        instanceState?.let { instanceState ->
+            requireSuperCalled { onRestoreInstanceState(instanceState) }
+            notifyLifecycleListeners { it.onRestoreInstanceState(this, instanceState) }
+        }
+
+        instanceState = null
     }
 
     internal fun containerSet() {
@@ -337,16 +356,6 @@ abstract class Controller {
 
             notifyLifecycleListeners { it.postBuildView(this, view, savedViewState) }
 
-            if (viewState != null) {
-                view.restoreHierarchyState(
-                    viewState.getSparseParcelableArray(
-                        KEY_VIEW_STATE_HIERARCHY
-                    )
-                )
-            }
-
-            this.viewState = null
-
             notifyLifecycleListeners { it.preBindView(this, view, savedViewState) }
 
             state = VIEW_BOUND
@@ -354,6 +363,21 @@ abstract class Controller {
             requireSuperCalled { onBindView(view, savedViewState) }
 
             notifyLifecycleListeners { it.postBindView(this, view, savedViewState) }
+
+            if (viewState != null) {
+                view.restoreHierarchyState(
+                    viewState.getSparseParcelableArray(
+                        KEY_VIEW_STATE_HIERARCHY
+                    )
+                )
+
+                if (savedViewState != null) {
+                    requireSuperCalled { onRestoreViewState(view, savedViewState) }
+                    notifyLifecycleListeners { it.onRestoreViewState(this, view, viewState) }
+                }
+            }
+
+            this.viewState = null
 
             attachHandler.takeView(view)
 
@@ -496,7 +520,7 @@ abstract class Controller {
         requireSuperCalled { onSaveViewState(view, stateBundle) }
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
-        notifyLifecycleListeners { it.onSaveViewState(this, viewState) }
+        notifyLifecycleListeners { it.onSaveViewState(this, view, viewState) }
     }
 
     internal fun changeStarted(

@@ -739,11 +739,28 @@ class ControllerLifecycleCallbacksTest {
                 currentCallState.destroyCalls++
             }
 
+            override fun onRestoreInstanceState(
+                controller: Controller,
+                savedInstanceState: Bundle
+            ) {
+                super.onRestoreInstanceState(controller, savedInstanceState)
+                currentCallState.restoreInstanceStateCalls++
+            }
+
             override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
                 currentCallState.saveInstanceStateCalls++
             }
 
-            override fun onSaveViewState(controller: Controller, outState: Bundle) {
+            override fun onRestoreViewState(
+                controller: Controller,
+                view: View,
+                savedViewState: Bundle
+            ) {
+                super.onRestoreViewState(controller, view, savedViewState)
+                currentCallState.restoreViewStateCalls++
+            }
+
+            override fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
                 currentCallState.saveViewStateCalls++
             }
 
