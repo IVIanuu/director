@@ -18,13 +18,15 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
+import com.ivianuu.director.internal.TransactionIndexer
+import com.ivianuu.stdlibx.firstNotNullResultOrNull
 
 /**
  * Hosts a group of [Router]s
  */
 class RouterManager(
-    private val host: Any,
-    private val hostRouter: Router? = null,
+    val host: Any,
+    val hostRouter: Router? = null,
     savedInstanceState: Bundle? = null,
     private var postponeFullRestore: Boolean = false
 ) {
@@ -39,6 +41,10 @@ class RouterManager(
     private var routerStates: Map<Router, Bundle>? = null
 
     private var rootView: ViewGroup? = null
+
+    internal val transactionIndexer: TransactionIndexer by lazy(LazyThreadSafetyMode.NONE) {
+        hostRouter?.routerManager?.transactionIndexer ?: TransactionIndexer()
+    }
 
     init {
         restoreInstanceState(savedInstanceState)
@@ -104,6 +110,13 @@ class RouterManager(
     fun restoreInstanceState(savedInstanceState: Bundle?) {
         savedInstanceState?.let {
             restoreBasicState(it)
+
+            if (hostRouter == null) {
+                transactionIndexer.restoreInstanceState(
+                    it.getBundle(KEY_TRANSACTION_INDEXER)!!
+                )
+            }
+
             if (!postponeFullRestore) {
                 restoreFullState()
             }
@@ -114,6 +127,12 @@ class RouterManager(
      * Saves the instance state of all containing routers
      */
     fun saveInstanceState(): Bundle = Bundle().apply {
+        if (hostRouter == null) {
+            putBundle(
+                KEY_TRANSACTION_INDEXER,
+                transactionIndexer.saveInstanceState()
+            )
+        }
         val routerStates = _routers.map { it.saveInstanceState() }
         putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
@@ -144,9 +163,8 @@ class RouterManager(
         if (router == null) {
             router = Router(
                 containerId = containerId,
-                host = host,
                 tag = tag,
-                hostRouter = hostRouter
+                routerManager = this
             )
 
             _routers.add(router)
@@ -204,9 +222,8 @@ class RouterManager(
 
                 Router(
                     containerId = containerId,
-                    host = host,
                     tag = tag,
-                    hostRouter = hostRouter
+                    routerManager = this
                 ) to routerState
             }
             .onEach { _routers.add(it.first) }
@@ -234,8 +251,12 @@ class RouterManager(
 
     private companion object {
         private const val KEY_ROUTER_STATES = "RouterManager.routerState"
+        private const val KEY_TRANSACTION_INDEXER = "Router.transactionIndexer"
     }
 }
+
+internal val RouterManager.rootRouterManager: RouterManager
+    get() = hostRouter?.routerManager ?: this
 
 /**
  * Returns the router for [container] and [tag] or null
@@ -264,3 +285,28 @@ fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
  */
 fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
     lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
+
+/**
+ * Returns the controller with [tag] or null
+ */
+fun RouterManager.getControllerByTagOrNull(tag: String): Controller? =
+    routers.firstNotNullResultOrNull { it.getControllerByTagOrNull(tag) }
+
+/**
+ * Returns the controller for with [tag] or throws
+ */
+fun RouterManager.getControllerByTag(tag: String): Controller =
+    getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
+
+/**
+ * Returns the controller with [instanceId] or null
+ */
+fun RouterManager.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
+    routers.firstNotNullResultOrNull { it.getControllerByInstanceIdOrNull(instanceId) }
+
+/**
+ * Returns the controller for with [instanceId] or throws
+ */
+fun RouterManager.getControllerByInstanceId(instanceId: String): Controller =
+    getControllerByInstanceIdOrNull(instanceId)
+        ?: error("couldn't find controller with instanceId: $instanceId")

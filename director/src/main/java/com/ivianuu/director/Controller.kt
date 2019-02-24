@@ -42,12 +42,6 @@ abstract class Controller {
     internal var routerSet = false
 
     /**
-     * The host of the router this controller lives in
-     */
-    val host: Any
-        get() = if (routerSet) router.host else error("host is only available after onCreate")
-
-    /**
      * The view of this controller or null
      */
     var view: View? = null
@@ -63,7 +57,11 @@ abstract class Controller {
      * The target controller of this controller
      */
     var targetController: Controller?
-        get() = targetInstanceId?.let { _router.rootRouter.getControllerByInstanceIdOrNull(it) }
+        get() = targetInstanceId?.let {
+            routerManager.rootRouterManager.getControllerByInstanceIdOrNull(
+                it
+            )
+        }
         set(value) {
             check(targetInstanceId == null) {
                 "the target controller can only be set once"
@@ -104,12 +102,9 @@ abstract class Controller {
         }
 
     /**
-     * All child routers of this controller
+     * The child router manager of this controller
      */
-    val childRouters: List<Router>
-        get() = childRouterManager.routers
     val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
-        check(routerSet) { "Cannot access child routers before onCreate" }
         RouterManager(this, router, postponeFullRestore = true)
     }
 
@@ -606,6 +601,18 @@ val Controller.isDestroyed: Boolean get() = state == DESTROYED
 val Controller.hasView: Boolean get() = view != null
 
 /**
+ * The router manager this controller lives in
+ */
+val Controller.routerManager: RouterManager
+    get() = router.routerManager
+
+/**
+ * The host of the router this controller lives in
+ */
+val Controller.host: Any
+    get() = routerManager.host
+
+/**
  * The parent controller of this controller or null
  */
 val Controller.parentController: Controller?
@@ -648,9 +655,9 @@ fun Controller.startActivity(intent: Intent) {
 }
 
 /**
- * Returns a new router transaction
+ * All child routers of this controller
  */
-fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
+val Controller.childRouters: List<Router> get() = childRouterManager.routers
 
 /**
  * Returns the child router for [containerId] and [tag] or null
@@ -699,3 +706,8 @@ fun Controller.childRouter(
     containerId: Int,
     tag: String? = null
 ): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }
+
+/**
+ * Returns a new router transaction
+ */
+fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)

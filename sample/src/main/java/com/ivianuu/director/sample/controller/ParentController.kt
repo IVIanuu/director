@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
+import com.ivianuu.director.childRouters
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.context
 import com.ivianuu.director.doOnChangeEnd
@@ -87,7 +88,7 @@ class ParentController : BaseController() {
     }
 
     private fun removeChild(index: Int) {
-        val childRouters = childRouters
+        val childRouters = childRouters.toList()
         if (index < childRouters.size) {
             removeChildRouter(childRouters[index])
         }

@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.director.internal.DefaultControllerFactory
-import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.takeLastUntil
 
@@ -15,8 +14,7 @@ import com.ivianuu.stdlibx.takeLastUntil
 class Router internal constructor(
     containerId: Int,
     tag: String? = null,
-    val host: Any,
-    val hostRouter: Router?
+    val routerManager: RouterManager
 ) {
 
     /**
@@ -86,19 +84,13 @@ class Router internal constructor(
     private var _controllerFactory: ControllerFactory =
         DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
 
-    internal val rootRouter: Router get() = hostRouter?.rootRouter ?: this
 
-    private val transactionIndexer: TransactionIndexer by lazy(LazyThreadSafetyMode.NONE) {
-        hostRouter?.transactionIndexer ?: TransactionIndexer()
-    }
 
     private val changeListeners = mutableListOf<ListenerEntry<ControllerChangeListener>>()
     private val lifecycleListeners = mutableListOf<ListenerEntry<ControllerLifecycleListener>>()
 
     private var hostStarted = false
     private var hostDestroyed = false
-
-    private val isRootRouter get() = hostRouter == null
 
     private var inProgressTransactions = 0
         set(value) {
@@ -133,7 +125,7 @@ class Router internal constructor(
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
-            .onEach { it.ensureValidIndex(transactionIndexer) }
+            .onEach { it.ensureValidIndex(routerManager.transactionIndexer) }
             .map { it.transactionIndex }
             .sorted()
 
@@ -301,7 +293,8 @@ class Router internal constructor(
     internal fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return changeListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (hostRouter?.getAllChangeListeners(true) ?: emptyList())
+            .map { it.listener } + (routerManager.hostRouter?.getAllChangeListeners(true)
+            ?: emptyList())
     }
 
     /**
@@ -323,7 +316,8 @@ class Router internal constructor(
     internal fun getAllLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
         return lifecycleListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (hostRouter?.getAllLifecycleListeners(true) ?: emptyList())
+            .map { it.listener } + (routerManager.hostRouter?.getAllLifecycleListeners(true)
+            ?: emptyList())
     }
 
     /**
@@ -428,12 +422,6 @@ class Router internal constructor(
             putBoolean(KEY_BLOCK_TOUCHES_ON_TRANSACTIONS, blockTouchesOnTransactions)
             putBoolean(KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS, blockBackClicksOnTransactions)
             putString(KEY_TAG, tag)
-            if (isRootRouter) {
-                putBundle(
-                    KEY_TRANSACTION_INDEXER,
-                    transactionIndexer.saveInstanceState()
-                )
-            }
         }
     }
 
@@ -469,12 +457,6 @@ class Router internal constructor(
         blockBackClicksOnTransactions = savedInstanceState.getBoolean(
             KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS
         )
-
-        if (isRootRouter) {
-            transactionIndexer.restoreInstanceState(
-                savedInstanceState.getBundle(KEY_TRANSACTION_INDEXER)!!
-            )
-        }
 
         _backstack.forEach { setControllerRouter(it.controller) }
     }
@@ -542,38 +524,13 @@ class Router internal constructor(
             "Router.blockBackClicksOnTransactions"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
         private const val KEY_TAG = "Router.tag"
-        private const val KEY_TRANSACTION_INDEXER = "Router.transactionIndexer"
     }
 }
 
 /**
- * Returns a new router instance
+ * The component this router lives in
  */
-fun Router(
-    containerId: Int,
-    host: Any,
-    savedInstanceState: Bundle? = null,
-    tag: String? = null,
-    hostRouter: Router? = null
-): Router {
-    val router = Router(containerId, tag, host, hostRouter)
-    savedInstanceState?.let { router.restoreInstanceState(it) }
-    return router
-}
-
-/**
- * Returns a new router instance
- */
-fun Router(
-    container: ViewGroup,
-    host: Any,
-    savedInstanceState: Bundle? = null,
-    tag: String? = null,
-    hostRouter: Router? = null
-): Router = Router(container.id, host, savedInstanceState, tag, hostRouter).apply {
-    setContainer(container)
-    rebind()
-}
+val Router.host: Any get() = routerManager.host
 
 /**
  * Whether or not the router has currently a container attached to it
@@ -598,9 +555,8 @@ fun Router.getControllerByTagOrNull(tag: String): Controller? =
         if (it.tag == tag) {
             it.controller
         } else {
-            it.controller.childRouters.firstNotNullResultOrNull { childRouter ->
-                childRouter.getControllerByInstanceIdOrNull(tag)
-            }
+            it.controller.childRouterManager
+                .getControllerByTagOrNull(tag)
         }
     }
 
@@ -618,9 +574,8 @@ fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
         if (it.controller.instanceId == instanceId) {
             it.controller
         } else {
-            it.controller.childRouters.firstNotNullResultOrNull { childRouter ->
-                childRouter.getControllerByInstanceIdOrNull(instanceId)
-            }
+            it.controller.childRouterManager
+                .getControllerByInstanceIdOrNull(instanceId)
         }
     }
 
