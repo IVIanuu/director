@@ -84,7 +84,7 @@ class Router internal constructor(
     private var _controllerFactory: ControllerFactory =
         DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
 
-    private val changeListeners = mutableListOf<ListenerEntry<ControllerChangeListener>>()
+    private val listeners = mutableListOf<ListenerEntry<RouterListener>>()
     private val controllerListeners = mutableListOf<ListenerEntry<ControllerListener>>()
 
     private var hostStarted = false
@@ -98,13 +98,13 @@ class Router internal constructor(
             container?.ignoreTouchEvents = blockTouchesOnTransactions && value > 0
         }
 
-    private val internalChangeListener = ControllerChangeListener(
-        onChangeStarted = { _, _, _, _, _ -> inProgressTransactions++ },
-        onChangeEnded = { _, _, _, _, _ -> inProgressTransactions-- }
+    private val internalChangeListener = RouterListener(
+        onChangeStarted = { _, _, _, _, _, _ -> inProgressTransactions++ },
+        onChangeEnded = { _, _, _, _, _, _ -> inProgressTransactions-- }
     )
 
     init {
-        addChangeListener(internalChangeListener)
+        addListener(internalChangeListener)
     }
 
     /**
@@ -273,23 +273,23 @@ class Router internal constructor(
     /**
      * Notifies the [listener] on controller changes
      */
-    fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
-        if (changeListeners.none { it.listener == listener }) {
-            changeListeners.add(ListenerEntry(listener, recursive))
+    fun addListener(listener: RouterListener, recursive: Boolean = false) {
+        if (listeners.none { it.listener == listener }) {
+            listeners.add(ListenerEntry(listener, recursive))
         }
     }
 
     /**
      * Removes the previously added [listener]
      */
-    fun removeChangeListener(listener: ControllerChangeListener) {
-        changeListeners.removeAll { it.listener == listener }
+    fun removeListener(listener: RouterListener) {
+        listeners.removeAll { it.listener == listener }
     }
 
-    internal fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
-        return changeListeners
+    internal fun getAllRouterListeners(recursiveOnly: Boolean = false): List<RouterListener> {
+        return listeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (hostRouter?.getAllChangeListeners(true)
+            .map { it.listener } + (hostRouter?.getAllRouterListeners(true)
             ?: emptyList())
     }
 
@@ -482,7 +482,7 @@ class Router internal constructor(
             isPush,
             container,
             handlerToUse,
-            getAllChangeListeners(false)
+            getAllRouterListeners(false)
         )
     }
 

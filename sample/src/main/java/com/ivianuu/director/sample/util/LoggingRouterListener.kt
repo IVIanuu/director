@@ -19,13 +19,15 @@ package com.ivianuu.director.sample.util
 import android.view.ViewGroup
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeListener
+import com.ivianuu.director.Router
+import com.ivianuu.director.RouterListener
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class LoggingChangeListener : ControllerChangeListener {
+class LoggingRouterListener : RouterListener {
     override fun onChangeStarted(
+        router: Router,
         to: Controller?,
         from: Controller?,
         isPush: Boolean,
@@ -36,6 +38,7 @@ class LoggingChangeListener : ControllerChangeListener {
     }
 
     override fun onChangeCompleted(
+        router: Router,
         to: Controller?,
         from: Controller?,
         isPush: Boolean,

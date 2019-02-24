@@ -4,9 +4,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeListener
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.Router
+import com.ivianuu.director.RouterListener
 import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal object ControllerChangeManager {
@@ -20,7 +20,7 @@ internal object ControllerChangeManager {
         isPush: Boolean,
         container: ViewGroup,
         handler: ChangeHandler?,
-        listeners: List<ControllerChangeListener>
+        listeners: List<RouterListener>
     ) {
         val handlerToUse = when {
             handler == null -> SimpleSwapChangeHandler()
@@ -37,7 +37,7 @@ internal object ControllerChangeManager {
             handlers[to.instanceId] = ChangeHandlerData(handlerToUse, isPush)
         }
 
-        listeners.forEach { it.onChangeStarted(to, from, isPush, container, handlerToUse) }
+        listeners.forEach { it.onChangeStarted(router, to, from, isPush, container, handlerToUse) }
 
         val toChangeType =
             if (isPush) ControllerChangeType.PUSH_ENTER else ControllerChangeType.POP_ENTER
@@ -68,7 +68,16 @@ internal object ControllerChangeManager {
                 to.changeEnded(handlerToUse, toChangeType)
             }
 
-            listeners.forEach { it.onChangeCompleted(to, from, isPush, container, handlerToUse) }
+            listeners.forEach {
+                it.onChangeCompleted(
+                    router,
+                    to,
+                    from,
+                    isPush,
+                    container,
+                    handlerToUse
+                )
+            }
 
             if (handlerToUse.forceRemoveViewOnPush && fromView != null) {
                 val fromParent = fromView.parent

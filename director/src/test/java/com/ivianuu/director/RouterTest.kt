@@ -548,8 +548,8 @@ class RouterTest {
         val routerNonRecursiveListener = EmptyChangeListener()
 
         val controller1 = TestController()
-        router.addChangeListener(routerRecursiveListener, true)
-        router.addChangeListener(routerNonRecursiveListener)
+        router.addListener(routerRecursiveListener, true)
+        router.addListener(routerNonRecursiveListener)
         router.setRoot(controller1.toTransaction())
 
         val childRouterRecursiveListener = EmptyChangeListener()
@@ -557,22 +557,22 @@ class RouterTest {
 
         val childRouter =
             controller1.getChildRouter(controller1.childContainer1!!)
-        assertTrue(childRouter.getAllChangeListeners(false).contains(routerRecursiveListener))
-        assertFalse(childRouter.getAllChangeListeners(false).contains(routerNonRecursiveListener))
+        assertTrue(childRouter.getAllRouterListeners(false).contains(routerRecursiveListener))
+        assertFalse(childRouter.getAllRouterListeners(false).contains(routerNonRecursiveListener))
 
         val controller2 = TestController()
-        childRouter.addChangeListener(childRouterRecursiveListener, true)
-        childRouter.addChangeListener(childRouterNonRecursiveListener)
+        childRouter.addListener(childRouterRecursiveListener, true)
+        childRouter.addListener(childRouterNonRecursiveListener)
         childRouter.setRoot(controller2.toTransaction())
 
         val childRouter2 =
             controller2.getChildRouter(controller2.childContainer2!!)
         val controller3 = TestController()
         childRouter2.push(controller3.toTransaction())
-        assertTrue(childRouter2.getAllChangeListeners(false).contains(routerRecursiveListener))
-        assertTrue(childRouter2.getAllChangeListeners(false).contains(childRouterRecursiveListener))
+        assertTrue(childRouter2.getAllRouterListeners(false).contains(routerRecursiveListener))
+        assertTrue(childRouter2.getAllRouterListeners(false).contains(childRouterRecursiveListener))
         assertFalse(
-            childRouter2.getAllChangeListeners(false).contains(
+            childRouter2.getAllRouterListeners(false).contains(
                 childRouterNonRecursiveListener
             )
         )
