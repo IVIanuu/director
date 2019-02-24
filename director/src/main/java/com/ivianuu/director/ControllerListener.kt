@@ -131,66 +131,66 @@ fun ControllerListener(
 )
 
 fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerListener =
-    addControllerListener(preCreate = block)
+    addListener(preCreate = block)
 
 fun Controller.doOnPostCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerListener =
-    addControllerListener(postCreate = block)
+    addListener(postCreate = block)
 
 fun Controller.doOnPreBuildView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addControllerListener(preBuildView = block)
+    addListener(preBuildView = block)
 
 fun Controller.doOnPostBuildView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addControllerListener(postBuildView = block)
+    addListener(postBuildView = block)
 
 fun Controller.doOnPreBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addControllerListener(preBindView = block)
+    addListener(preBindView = block)
 
 fun Controller.doOnPostBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addControllerListener(postBindView = block)
+    addListener(postBindView = block)
 
 fun Controller.doOnPreAttach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
-    addControllerListener(preAttach = block)
+    addListener(preAttach = block)
 
 fun Controller.doOnPostAttach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
-    addControllerListener(postAttach = block)
+    addListener(postAttach = block)
 
 fun Controller.doOnPreDetach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
-    addControllerListener(preDetach = block)
+    addListener(preDetach = block)
 
 fun Controller.doOnPostDetach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
-    addControllerListener(postDetach = block)
+    addListener(postDetach = block)
 
 fun Controller.doOnPreUnbindView(block: (controller: Controller, view: View) -> Unit): ControllerListener =
-    addControllerListener(preUnbindView = block)
+    addListener(preUnbindView = block)
 
 fun Controller.doOnPostUnbindView(block: (controller: Controller) -> Unit): ControllerListener =
-    addControllerListener(postUnbindView = block)
+    addListener(postUnbindView = block)
 
 fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit): ControllerListener =
-    addControllerListener(preDestroy = block)
+    addListener(preDestroy = block)
 
 fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit): ControllerListener =
-    addControllerListener(postDestroy = block)
+    addListener(postDestroy = block)
 
 fun Controller.doOnRestoreInstanceState(block: (controller: Controller, savedInstanceState: Bundle) -> Unit): ControllerListener =
-    addControllerListener(onRestoreInstanceState = block)
+    addListener(onRestoreInstanceState = block)
 
 fun Controller.doOnSaveInstanceState(block: (controller: Controller, outState: Bundle) -> Unit): ControllerListener =
-    addControllerListener(onSaveInstanceState = block)
+    addListener(onSaveInstanceState = block)
 
 fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, savedViewState: Bundle) -> Unit): ControllerListener =
-    addControllerListener(onRestoreViewState = block)
+    addListener(onRestoreViewState = block)
 
 fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit): ControllerListener =
-    addControllerListener(onSaveViewState = block)
+    addListener(onSaveViewState = block)
 
 fun Controller.doOnChangeStart(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerListener =
-    addControllerListener(onChangeStart = block)
+    addListener(onChangeStart = block)
 
 fun Controller.doOnChangeEnd(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerListener =
-    addControllerListener(onChangeEnd = block)
+    addListener(onChangeEnd = block)
 
-fun Controller.addControllerListener(
+fun Controller.addListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,

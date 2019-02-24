@@ -27,7 +27,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerState
-import com.ivianuu.director.addControllerListener
+import com.ivianuu.director.addListener
 import com.ivianuu.director.doOnPostDestroy
 
 /**
@@ -39,7 +39,7 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     init {
         with(lifecycleRegistry) {
-            controller.addControllerListener(
+            controller.addListener(
                 postCreate = { _, _ -> handleLifecycleEvent(ON_CREATE) },
                 postBindView = { _, _, _ -> handleLifecycleEvent(ON_START) },
                 postAttach = { _, _ -> handleLifecycleEvent(ON_RESUME) },

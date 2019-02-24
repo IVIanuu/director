@@ -91,7 +91,7 @@ class ControllerTest {
 
         assertEquals(INITIALIZED, controller.state)
 
-        controller.addControllerListener(
+        controller.addListener(
             preCreate = { _, _ -> assertEquals(INITIALIZED, controller.state) },
             postCreate = { _, _ -> assertEquals(CREATED, controller.state) },
             preBindView = { _, _, _ -> assertEquals(CREATED, controller.state) },

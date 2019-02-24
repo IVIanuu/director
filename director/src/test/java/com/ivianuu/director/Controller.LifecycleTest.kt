@@ -777,7 +777,7 @@ class ControllerLifecycleCallbacksTest {
         parent.addListener(listener)
         child.addListener(listener)
 
-        parent.addControllerListener(
+        parent.addListener(
             preCreate = { _, _ ->
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child.toTransaction())
