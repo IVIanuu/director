@@ -161,12 +161,7 @@ class RouterManager(
     fun getRouter(containerId: Int, tag: String? = null): Router {
         var router = getRouterOrNull(containerId, tag)
         if (router == null) {
-            router = Router(
-                containerId = containerId,
-                tag = tag,
-                routerManager = this
-            )
-
+            router = Router(containerId, tag, this)
             _routers.add(router)
             if (hostStarted) {
                 router.hostStarted()
@@ -216,10 +211,7 @@ class RouterManager(
 
         this.routerStates = routerStates
             .map { routerState ->
-                Router(
-                    savedInstanceState = routerState,
-                    routerManager = this
-                ) to routerState
+                Router.fromBundle(routerState, this) to routerState
             }
             .onEach { _routers.add(it.first) }
             .toMap()

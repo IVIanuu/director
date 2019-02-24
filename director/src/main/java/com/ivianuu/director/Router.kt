@@ -113,15 +113,6 @@ class Router internal constructor(
         addChangeListener(internalChangeListener)
     }
 
-    internal constructor(
-        savedInstanceState: Bundle,
-        routerManager: RouterManager
-    ) : this(
-        savedInstanceState.getInt(KEY_CONTAINER_ID),
-        savedInstanceState.getString(KEY_TAG),
-        routerManager
-    )
-
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
@@ -535,6 +526,15 @@ class Router internal constructor(
             "Router.blockBackClicksOnTransactions"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
         private const val KEY_TAG = "Router.tag"
+
+        fun fromBundle(
+            bundle: Bundle,
+            routerManager: RouterManager
+        ): Router = Router(
+            bundle.getInt(KEY_CONTAINER_ID),
+            bundle.getString(KEY_TAG),
+            routerManager
+        )
     }
 }
 
