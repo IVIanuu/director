@@ -71,9 +71,6 @@ abstract class Controller {
 
     private var targetInstanceId: String? = null
 
-    /**
-     * The current state of this controller
-     */
     var state: ControllerState = INITIALIZED
 
     var isBeingDestroyed = false
@@ -101,9 +98,6 @@ abstract class Controller {
             }
         }
 
-    /**
-     * The child router manager of this controller
-     */
     val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
         RouterManager(this, routerManager, postponeFullRestore = true)
     }
@@ -245,7 +239,7 @@ abstract class Controller {
     }
 
     /**
-     * Removes a previously added lifecycle listener
+     * Removes the previously added [listener]
      */
     fun removeLifecycleListener(listener: ControllerLifecycleListener) {
         lifecycleListeners.remove(listener)
@@ -562,12 +556,12 @@ abstract class Controller {
 
             val cls = classForNameOrThrow(className)
 
-            val args = bundle.getBundle(KEY_ARGS).apply {
+            val args = bundle.getBundle(KEY_ARGS)!!.apply {
                 classLoader = cls.classLoader
             }
 
             return factory.createController(
-                cls.classLoader!!, className, args!!
+                cls.classLoader!!, className, args
             ).apply {
                 allState = bundle
             }
@@ -575,52 +569,25 @@ abstract class Controller {
     }
 }
 
-/**
- * Whether or not [Controller.state] is at least [CREATED]
- */
 val Controller.isCreated: Boolean get() = state.isAtLeast(CREATED)
 
-/**
- * Whether or not [Controller.state] is at least [VIEW_BOUND]
- */
 val Controller.isViewBound: Boolean get() = state.isAtLeast(VIEW_BOUND)
 
-/**
- * Whether or not [Controller.state] is at least [VIEW_BOUND]
- */
 val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
 
-/**
- * Whether or not [Controller.state] is [DESTROYED]
- */
 val Controller.isDestroyed: Boolean get() = state == DESTROYED
 
-/**
- * Whether or not this controller has a view
- */
 val Controller.hasView: Boolean get() = view != null
 
-/**
- * The router manager this controller lives in
- */
 val Controller.routerManager: RouterManager
     get() = router.routerManager
 
-/**
- * The host of the router this controller lives in
- */
 val Controller.host: Any
     get() = routerManager.host
 
-/**
- * The parent controller of this controller or null
- */
 val Controller.parentController: Controller?
     get() = host as? Controller
 
-/**
- * The context of this controller if any of this or parent controllers is attached to one
- */
 val Controller.context: Context
     get() {
         return if (host is Context) {
@@ -630,84 +597,47 @@ val Controller.context: Context
         } ?: error("no context found")
     }
 
-/**
- * The context of this controller if any of this or parent controllers is attached to one
- */
 val Controller.activity: Activity
     get() = context as? Activity ?: error("no activity found")
 
-/**
- * The application of the attached activity
- */
 val Controller.application: Application
     get() = context.applicationContext as Application
 
-/**
- * The resources of the attached activity
- */
 val Controller.resources: Resources get() = context.resources
 
-/**
- * Starts the [intent]
- */
 fun Controller.startActivity(intent: Intent) {
     context.startActivity(intent)
 }
 
-/**
- * All child routers of this controller
- */
 val Controller.childRouters: List<Router> get() = childRouterManager.routers
 
-/**
- * Returns the child router for [containerId] and [tag] or null
- */
 fun Controller.getChildRouterOrNull(
     containerId: Int,
     tag: String?
 ): Router? = childRouterManager.getRouterOrNull(containerId, tag)
 
-/**
- * Returns the child router for [containerId] and [tag]
- */
 fun Controller.getChildRouter(
     containerId: Int,
     tag: String? = null
 ): Router = childRouterManager.getRouter(containerId, tag)
 
-/**
- * Removes the [childRouter]. All Controllers currently managed by
- * the [childRouter] will be destroyed.
- */
 fun Controller.removeChildRouter(childRouter: Router) {
     childRouterManager.removeRouter(childRouter)
 }
 
-/**
- * Returns the child router for [container] and [tag] or null
- */
 fun Controller.getChildRouterOrNull(
     container: ViewGroup,
     tag: String? = null
 ): Router? = getChildRouterOrNull(container.id, tag)
 
-/**
- * Returns the child router for [container] and [tag] or creates a new instance
- */
 fun Controller.getChildRouter(
     container: ViewGroup,
     tag: String? = null
 ): Router = getChildRouter(container.id, tag)
 
-/**
- * Returns a lazy for the child router for [containerId] and [tag]
- */
 fun Controller.childRouter(
     containerId: Int,
     tag: String? = null
 ): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }
 
-/**
- * Returns a new router transaction
- */
 fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
