@@ -26,7 +26,7 @@ import com.ivianuu.stdlibx.firstNotNullResultOrNull
  */
 class RouterManager(
     val host: Any,
-    val hostRouter: Router? = null,
+    val hostRouterManager: RouterManager?,
     savedInstanceState: Bundle? = null,
     private var postponeFullRestore: Boolean = false
 ) {
@@ -43,7 +43,7 @@ class RouterManager(
     private var rootView: ViewGroup? = null
 
     internal val transactionIndexer: TransactionIndexer by lazy(LazyThreadSafetyMode.NONE) {
-        hostRouter?.routerManager?.transactionIndexer ?: TransactionIndexer()
+        hostRouterManager?.transactionIndexer ?: TransactionIndexer()
     }
 
     init {
@@ -111,7 +111,7 @@ class RouterManager(
         savedInstanceState?.let {
             restoreBasicState(it)
 
-            if (hostRouter == null) {
+            if (hostRouterManager == null) {
                 transactionIndexer.restoreInstanceState(
                     it.getBundle(KEY_TRANSACTION_INDEXER)!!
                 )
@@ -127,7 +127,7 @@ class RouterManager(
      * Saves the instance state of all containing routers
      */
     fun saveInstanceState(): Bundle = Bundle().apply {
-        if (hostRouter == null) {
+        if (hostRouterManager == null) {
             putBundle(
                 KEY_TRANSACTION_INDEXER,
                 transactionIndexer.saveInstanceState()
@@ -256,7 +256,7 @@ class RouterManager(
 }
 
 internal val RouterManager.rootRouterManager: RouterManager
-    get() = hostRouter?.routerManager ?: this
+    get() = hostRouterManager?.rootRouterManager ?: this
 
 /**
  * Returns the router for [container] and [tag] or null

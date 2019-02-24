@@ -293,8 +293,8 @@ class Router internal constructor(
     internal fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return changeListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (routerManager.hostRouter?.getAllChangeListeners(true)
-            ?: emptyList())
+            .map { it.listener } /*+ (routerManager.hostRouter?.getAllChangeListeners(true)
+            ?: emptyList())*/
     }
 
     /**
@@ -316,8 +316,8 @@ class Router internal constructor(
     internal fun getAllLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
         return lifecycleListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (routerManager.hostRouter?.getAllLifecycleListeners(true)
-            ?: emptyList())
+            .map { it.listener } /*+ (routerManager.hostRouter?.getAllLifecycleListeners(true)
+            ?: emptyList())*/
     }
 
     /**
