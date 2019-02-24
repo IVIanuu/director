@@ -11,7 +11,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerListener
-import com.ivianuu.director.ControllerState
+import com.ivianuu.director.ControllerState.ATTACHED
+import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.doOnPostUnbindView
 import com.ivianuu.director.hasView
 import com.ivianuu.director.isAtLeast
@@ -47,12 +48,12 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     init {
         controller.addListener(listener)
 
-        if (controller.state.isAtLeast(ControllerState.VIEW_BOUND)) {
+        if (controller.state.isAtLeast(VIEW_BOUND)) {
             listener.postBuildView(controller, controller.view!!, null)
             listener.postBindView(controller, controller.view!!, null)
         }
 
-        if (controller.state.isAtLeast(ControllerState.ATTACHED)) {
+        if (controller.state.isAtLeast(ATTACHED)) {
             listener.postAttach(controller, controller.view!!)
         }
     }
