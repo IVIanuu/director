@@ -10,7 +10,7 @@ import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.ControllerListener
 import com.ivianuu.director.ControllerState
 import com.ivianuu.director.doOnPostUnbindView
 import com.ivianuu.director.hasView
@@ -23,7 +23,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
     private var lifecycleRegistry: LifecycleRegistry? = null
 
-    private val listener = ControllerLifecycleListener(
+    private val listener = ControllerListener(
         postBuildView = { _, _, _ ->
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
         },
@@ -45,7 +45,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     )
 
     init {
-        controller.addLifecycleListener(listener)
+        controller.addListener(listener)
 
         if (controller.state.isAtLeast(ControllerState.VIEW_BOUND)) {
             listener.postBuildView(controller, controller.view!!, null)

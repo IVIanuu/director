@@ -16,6 +16,6 @@
 
 package com.ivianuu.director.util
 
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.ControllerListener
 
-class EmptyLifecycleListener : ControllerLifecycleListener
+class EmptyControllerListener : ControllerListener

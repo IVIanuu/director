@@ -8,7 +8,7 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.activity
 import com.ivianuu.director.parentController
 import com.ivianuu.director.sample.ToolbarProvider
-import com.ivianuu.director.sample.util.LoggingLifecycleListener
+import com.ivianuu.director.sample.util.LoggingControllerListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -21,7 +21,7 @@ abstract class BaseController : Controller(), LayoutContainer {
     var toolbarTitle: String? = null
 
     init {
-        addLifecycleListener(LoggingLifecycleListener())
+        addListener(LoggingControllerListener())
     }
 
     override fun onBuildView(

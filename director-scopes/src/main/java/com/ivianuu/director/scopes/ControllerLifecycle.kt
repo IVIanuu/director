@@ -18,7 +18,7 @@ package com.ivianuu.director.scopes
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerState
-import com.ivianuu.director.addLifecycleListener
+import com.ivianuu.director.addControllerListener
 import com.ivianuu.director.common.ControllerEvent
 import com.ivianuu.director.common.ControllerEvent.ATTACH
 import com.ivianuu.director.common.ControllerEvent.BIND_VIEW
@@ -36,7 +36,7 @@ class ControllerLifecycle(
 ) : AbstractLifecycle<ControllerEvent>() {
 
     init {
-        controller.addLifecycleListener(
+        controller.addControllerListener(
             preCreate = { _, _ -> onEvent(CREATE) },
             preBindView = { _, _, _ -> onEvent(BIND_VIEW) },
             preAttach = { _, _ -> onEvent(ATTACH) },

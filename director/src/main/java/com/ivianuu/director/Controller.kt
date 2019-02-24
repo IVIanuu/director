@@ -102,8 +102,8 @@ abstract class Controller {
         RouterManager(this, routerManager, postponeFullRestore = true)
     }
 
-    private val lifecycleListeners =
-        mutableSetOf<ControllerLifecycleListener>()
+    private val listeners =
+        mutableSetOf<ControllerListener>()
 
     private val attachHandler = ViewAttachHandler { attached ->
         viewIsAttached = attached
@@ -234,15 +234,15 @@ abstract class Controller {
     /**
      * Adds a listener for all of this Controller's lifecycle events
      */
-    fun addLifecycleListener(listener: ControllerLifecycleListener) {
-        lifecycleListeners.add(listener)
+    fun addListener(listener: ControllerListener) {
+        listeners.add(listener)
     }
 
     /**
      * Removes the previously added [listener]
      */
-    fun removeLifecycleListener(listener: ControllerLifecycleListener) {
-        lifecycleListeners.remove(listener)
+    fun removeListener(listener: ControllerListener) {
+        listeners.remove(listener)
     }
 
     internal fun setRouter(router: Router) {
@@ -256,19 +256,19 @@ abstract class Controller {
 
         // create
         if (!isCreated) {
-            notifyLifecycleListeners { it.preCreate(this, instanceState) }
+            notifyListeners { it.preCreate(this, instanceState) }
 
             state = CREATED
 
             requireSuperCalled { onCreate(instanceState) }
 
-            notifyLifecycleListeners { it.postCreate(this, instanceState) }
+            notifyListeners { it.postCreate(this, instanceState) }
         }
 
         // restore the instance state
         instanceState?.let { instanceState ->
             requireSuperCalled { onRestoreInstanceState(instanceState) }
-            notifyLifecycleListeners { it.onRestoreInstanceState(this, instanceState) }
+            notifyListeners { it.onRestoreInstanceState(this, instanceState) }
         }
 
         instanceState = null
@@ -318,13 +318,13 @@ abstract class Controller {
 
         childRouterManager.hostDestroyed()
 
-        notifyLifecycleListeners { it.preDestroy(this) }
+        notifyListeners { it.preDestroy(this) }
 
         state = DESTROYED
 
         requireSuperCalled { onDestroy() }
 
-        notifyLifecycleListeners { it.postDestroy(this) }
+        notifyListeners { it.postDestroy(this) }
     }
 
     internal fun inflate(container: ViewGroup): View {
@@ -335,7 +335,7 @@ abstract class Controller {
             val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
             savedViewState?.classLoader = javaClass.classLoader
 
-            notifyLifecycleListeners { it.preBuildView(this, savedViewState) }
+            notifyListeners { it.preBuildView(this, savedViewState) }
 
             view = onBuildView(
                 LayoutInflater.from(container.context),
@@ -343,15 +343,15 @@ abstract class Controller {
                 savedViewState
             ).also { this.view = it }
 
-            notifyLifecycleListeners { it.postBuildView(this, view, savedViewState) }
+            notifyListeners { it.postBuildView(this, view, savedViewState) }
 
-            notifyLifecycleListeners { it.preBindView(this, view, savedViewState) }
+            notifyListeners { it.preBindView(this, view, savedViewState) }
 
             state = VIEW_BOUND
 
             requireSuperCalled { onBindView(view, savedViewState) }
 
-            notifyLifecycleListeners { it.postBindView(this, view, savedViewState) }
+            notifyListeners { it.postBindView(this, view, savedViewState) }
 
             if (viewState != null) {
                 view.restoreHierarchyState(
@@ -362,7 +362,7 @@ abstract class Controller {
 
                 if (savedViewState != null) {
                     requireSuperCalled { onRestoreViewState(view, savedViewState) }
-                    notifyLifecycleListeners { it.onRestoreViewState(this, view, viewState) }
+                    notifyListeners { it.onRestoreViewState(this, view, viewState) }
                 }
             }
 
@@ -397,13 +397,13 @@ abstract class Controller {
             awaitingHostStart = false
         }
 
-        notifyLifecycleListeners { it.preAttach(this, view) }
+        notifyListeners { it.preAttach(this, view) }
 
         state = ATTACHED
 
         requireSuperCalled { onAttach(view) }
 
-        notifyLifecycleListeners { it.postAttach(this, view) }
+        notifyListeners { it.postAttach(this, view) }
 
         hasSavedViewState = false
 
@@ -418,13 +418,13 @@ abstract class Controller {
         if (isAttached) {
             childRouterManager.hostStopped()
 
-            notifyLifecycleListeners { it.preDetach(this, view) }
+            notifyListeners { it.preDetach(this, view) }
 
             state = VIEW_BOUND
 
             requireSuperCalled { onDetach(view) }
 
-            notifyLifecycleListeners { it.postDetach(this, view) }
+            notifyListeners { it.postDetach(this, view) }
         }
     }
 
@@ -436,7 +436,7 @@ abstract class Controller {
 
         childRouterManager.removeContainers()
 
-        notifyLifecycleListeners { it.preUnbindView(this, view) }
+        notifyListeners { it.preUnbindView(this, view) }
 
         requireSuperCalled { onUnbindView(view) }
 
@@ -444,7 +444,7 @@ abstract class Controller {
 
         this.view = null
 
-        notifyLifecycleListeners { it.postUnbindView(this) }
+        notifyListeners { it.postUnbindView(this) }
     }
 
     internal fun saveInstanceState(): Bundle {
@@ -464,7 +464,7 @@ abstract class Controller {
         val savedState = Bundle(javaClass.classLoader)
         requireSuperCalled { onSaveInstanceState(savedState) }
 
-        notifyLifecycleListeners { it.onSaveInstanceState(this, savedState) }
+        notifyListeners { it.onSaveInstanceState(this, savedState) }
 
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
@@ -509,7 +509,7 @@ abstract class Controller {
         requireSuperCalled { onSaveViewState(view, stateBundle) }
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
-        notifyLifecycleListeners { it.onSaveViewState(this, view, viewState) }
+        notifyListeners { it.onSaveViewState(this, view, viewState) }
     }
 
     internal fun changeStarted(
@@ -517,7 +517,7 @@ abstract class Controller {
         changeType: ControllerChangeType
     ) {
         onChangeStarted(changeHandler, changeType)
-        notifyLifecycleListeners { it.onChangeStart(this, changeHandler, changeType) }
+        notifyListeners { it.onChangeStart(this, changeHandler, changeType) }
     }
 
     internal fun changeEnded(
@@ -525,11 +525,11 @@ abstract class Controller {
         changeType: ControllerChangeType
     ) {
         onChangeEnded(changeHandler, changeType)
-        notifyLifecycleListeners { it.onChangeEnd(this, changeHandler, changeType) }
+        notifyListeners { it.onChangeEnd(this, changeHandler, changeType) }
     }
 
-    private inline fun notifyLifecycleListeners(block: (ControllerLifecycleListener) -> Unit) {
-        val listeners = lifecycleListeners + router.getAllLifecycleListeners()
+    private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
+        val listeners = listeners + router.getAllControllerListeners()
         listeners.forEach(block)
     }
 

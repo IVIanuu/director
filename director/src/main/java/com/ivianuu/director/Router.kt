@@ -84,10 +84,8 @@ class Router internal constructor(
     private var _controllerFactory: ControllerFactory =
         DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
 
-
-
     private val changeListeners = mutableListOf<ListenerEntry<ControllerChangeListener>>()
-    private val lifecycleListeners = mutableListOf<ListenerEntry<ControllerLifecycleListener>>()
+    private val controllerListeners = mutableListOf<ListenerEntry<ControllerListener>>()
 
     private var hostStarted = false
     private var hostDestroyed = false
@@ -101,12 +99,8 @@ class Router internal constructor(
         }
 
     private val internalChangeListener = ControllerChangeListener(
-        onChangeStarted = { _, _, _, _, _ ->
-            inProgressTransactions++
-        },
-        onChangeEnded = { _, _, _, _, _ ->
-            inProgressTransactions--
-        }
+        onChangeStarted = { _, _, _, _, _ -> inProgressTransactions++ },
+        onChangeEnded = { _, _, _, _, _ -> inProgressTransactions-- }
     )
 
     init {
@@ -300,25 +294,25 @@ class Router internal constructor(
     }
 
     /**
-     * Adds a lifecycle listener for all controllers
+     * Adds a listener for all controllers
      */
-    fun addLifecycleListener(listener: ControllerLifecycleListener, recursive: Boolean = false) {
-        if (lifecycleListeners.none { it.listener == listener }) {
-            lifecycleListeners.add(ListenerEntry(listener, recursive))
+    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false) {
+        if (controllerListeners.none { it.listener == listener }) {
+            controllerListeners.add(ListenerEntry(listener, recursive))
         }
     }
 
     /**
      * Removes the previously added [listener]
      */
-    fun removeLifecycleListener(listener: ControllerLifecycleListener) {
-        lifecycleListeners.removeAll { it.listener == listener }
+    fun removeControllerListener(listener: ControllerListener) {
+        controllerListeners.removeAll { it.listener == listener }
     }
 
-    internal fun getAllLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
-        return lifecycleListeners
+    internal fun getAllControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
+        return controllerListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (hostRouter?.getAllLifecycleListeners(true)
+            .map { it.listener } + (hostRouter?.getAllControllerListeners(true)
             ?: emptyList())
     }
 

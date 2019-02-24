@@ -19,7 +19,7 @@ package com.ivianuu.director
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
-import com.ivianuu.director.util.EmptyLifecycleListener
+import com.ivianuu.director.util.EmptyControllerListener
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.noRemoveViewOnPushHandler
 import org.junit.Assert.assertEquals
@@ -514,13 +514,13 @@ class RouterTest {
 
     @Test
     fun testIsBeingDestroyed() {
-        val lifecycleListener = ControllerLifecycleListener(
+        val listener = ControllerListener(
             preUnbindView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }
         )
 
         val controller1 = TestController()
         val controller2 = TestController()
-        controller2.addLifecycleListener(lifecycleListener)
+        controller2.addListener(listener)
 
         router.setRoot(controller1.toTransaction())
         router.push(controller2.toTransaction())
@@ -532,7 +532,7 @@ class RouterTest {
         assertTrue(controller2.isBeingDestroyed)
 
         val controller3 = TestController()
-        controller3.addLifecycleListener(lifecycleListener)
+        controller3.addListener(listener)
         router.push(controller3.toTransaction())
         assertFalse(controller1.isBeingDestroyed)
         assertFalse(controller3.isBeingDestroyed)
@@ -580,39 +580,39 @@ class RouterTest {
 
     @Test
     fun testRecursivelySettingLifecycleListener() {
-        val routerRecursiveListener = EmptyLifecycleListener()
-        val routerNonRecursiveListener = EmptyLifecycleListener()
+        val routerRecursiveListener = EmptyControllerListener()
+        val routerNonRecursiveListener = EmptyControllerListener()
 
         val controller1 = TestController()
-        router.addLifecycleListener(routerRecursiveListener, true)
-        router.addLifecycleListener(routerNonRecursiveListener)
+        router.addControllerListener(routerRecursiveListener, true)
+        router.addControllerListener(routerNonRecursiveListener)
         router.setRoot(controller1.toTransaction())
 
-        val childRouterRecursiveListener = EmptyLifecycleListener()
-        val childRouterNonRecursiveListener = EmptyLifecycleListener()
+        val childRouterRecursiveListener = EmptyControllerListener()
+        val childRouterNonRecursiveListener = EmptyControllerListener()
 
         val childRouter =
             controller1.getChildRouter(controller1.childContainer1!!)
-        assertTrue(childRouter.getAllLifecycleListeners(false).contains(routerRecursiveListener))
-        assertFalse(childRouter.getAllLifecycleListeners(false).contains(routerNonRecursiveListener))
+        assertTrue(childRouter.getAllControllerListeners(false).contains(routerRecursiveListener))
+        assertFalse(childRouter.getAllControllerListeners(false).contains(routerNonRecursiveListener))
 
         val controller2 = TestController()
-        childRouter.addLifecycleListener(childRouterRecursiveListener, true)
-        childRouter.addLifecycleListener(childRouterNonRecursiveListener)
+        childRouter.addControllerListener(childRouterRecursiveListener, true)
+        childRouter.addControllerListener(childRouterNonRecursiveListener)
         childRouter.setRoot(controller2.toTransaction())
 
         val childRouter2 =
             controller2.getChildRouter(controller2.childContainer2!!)
         val controller3 = TestController()
         childRouter2.push(controller3.toTransaction())
-        assertTrue(childRouter2.getAllLifecycleListeners(false).contains(routerRecursiveListener))
+        assertTrue(childRouter2.getAllControllerListeners(false).contains(routerRecursiveListener))
         assertTrue(
-            childRouter2.getAllLifecycleListeners(false).contains(
+            childRouter2.getAllControllerListeners(false).contains(
                 childRouterRecursiveListener
             )
         )
         assertFalse(
-            childRouter2.getAllLifecycleListeners(false).contains(
+            childRouter2.getAllControllerListeners(false).contains(
                 childRouterNonRecursiveListener
             )
         )

@@ -51,7 +51,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testNormalLifecycle() {
         val controller = TestController()
-        attachLifecycleListener(controller)
+        attachControllerListener(controller)
 
         val expectedCallState = CallState()
         assertCalls(expectedCallState, controller)
@@ -74,7 +74,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testLifecycleWithActivityStop() {
         val controller = TestController()
-        attachLifecycleListener(controller)
+        attachControllerListener(controller)
 
         val expectedCallState = CallState()
 
@@ -106,7 +106,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testLifecycleWithActivityDestroy() {
         val controller = TestController()
-        attachLifecycleListener(controller)
+        attachControllerListener(controller)
 
         val expectedCallState = CallState()
 
@@ -137,7 +137,7 @@ class ControllerLifecycleCallbacksTest {
     @Test
     fun testLifecycleWithActivityBackground() {
         val controller = TestController()
-        attachLifecycleListener(controller)
+        attachControllerListener(controller)
 
         val expectedCallState = CallState()
 
@@ -168,7 +168,7 @@ class ControllerLifecycleCallbacksTest {
         val testController = TestController()
         val callState = CallState()
 
-        testController.addLifecycleListener(object : ControllerLifecycleListener {
+        testController.addListener(object : ControllerListener {
 
             override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
                 callState.createCalls++
@@ -536,7 +536,7 @@ class ControllerLifecycleCallbacksTest {
         )
 
         val child = TestController()
-        attachLifecycleListener(child)
+        attachControllerListener(child)
 
         val expectedCallState = CallState()
 
@@ -567,7 +567,7 @@ class ControllerLifecycleCallbacksTest {
         )
 
         val child = TestController()
-        attachLifecycleListener(child)
+        attachControllerListener(child)
 
         val expectedCallState = CallState()
 
@@ -688,8 +688,8 @@ class ControllerLifecycleCallbacksTest {
         )
     }
 
-    private fun attachLifecycleListener(controller: Controller) {
-        controller.addLifecycleListener(object : ControllerLifecycleListener {
+    private fun attachControllerListener(controller: Controller) {
+        controller.addListener(object : ControllerListener {
             override fun onChangeStart(
                 controller: Controller,
                 changeHandler: ChangeHandler,
@@ -772,12 +772,12 @@ class ControllerLifecycleCallbacksTest {
         val parent = TestController()
         val child = TestController()
 
-        val listener = LastInFirstOutListener(parent, child)
+        val listener = LastInFirstOutControllerListener(parent, child)
 
-        parent.addLifecycleListener(listener)
-        child.addLifecycleListener(listener)
+        parent.addListener(listener)
+        child.addListener(listener)
 
-        parent.addLifecycleListener(
+        parent.addControllerListener(
             preCreate = { _, _ ->
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child.toTransaction())
@@ -788,10 +788,10 @@ class ControllerLifecycleCallbacksTest {
         router.push(parent.toTransaction())
     }
 
-    private class LastInFirstOutListener(
+    private class LastInFirstOutControllerListener(
         private val parent: Controller,
         private val child: Controller
-    ) : ControllerLifecycleListener {
+    ) : ControllerListener {
 
         override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
             super.preBindView(controller, view, savedViewState)

@@ -20,9 +20,9 @@ import android.os.Bundle
 import android.view.View
 
 /**
- * Lifecycle listener for [Controller]s
+ * Listener for [Controller]s
  */
-interface ControllerLifecycleListener {
+interface ControllerListener {
 
     fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
     }
@@ -94,9 +94,9 @@ interface ControllerLifecycleListener {
 }
 
 /**
- * Returns a new [ControllerLifecycleListener]
+ * Returns a new [ControllerListener]
  */
-fun ControllerLifecycleListener(
+fun ControllerListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
@@ -117,7 +117,7 @@ fun ControllerLifecycleListener(
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
-): ControllerLifecycleListener = LambdaLifecycleListener(
+): ControllerListener = LambdaControllerListener(
     preCreate = preCreate, postCreate = postCreate,
     preBuildView = preBuildView, postBuildView = postBuildView,
     preBindView = preBindView, postBindView = postBindView,
@@ -130,67 +130,67 @@ fun ControllerLifecycleListener(
     onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
 )
 
-fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preCreate = block)
+fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerListener =
+    addControllerListener(preCreate = block)
 
-fun Controller.doOnPostCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postCreate = block)
+fun Controller.doOnPostCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerListener =
+    addControllerListener(postCreate = block)
 
-fun Controller.doOnPreBuildView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preBuildView = block)
+fun Controller.doOnPreBuildView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerListener =
+    addControllerListener(preBuildView = block)
 
-fun Controller.doOnPostBuildView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postBuildView = block)
+fun Controller.doOnPostBuildView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
+    addControllerListener(postBuildView = block)
 
-fun Controller.doOnPreBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preBindView = block)
+fun Controller.doOnPreBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
+    addControllerListener(preBindView = block)
 
-fun Controller.doOnPostBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postBindView = block)
+fun Controller.doOnPostBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
+    addControllerListener(postBindView = block)
 
-fun Controller.doOnPreAttach(block: (controller: Controller, view: View) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preAttach = block)
+fun Controller.doOnPreAttach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
+    addControllerListener(preAttach = block)
 
-fun Controller.doOnPostAttach(block: (controller: Controller, view: View) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postAttach = block)
+fun Controller.doOnPostAttach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
+    addControllerListener(postAttach = block)
 
-fun Controller.doOnPreDetach(block: (controller: Controller, view: View) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preDetach = block)
+fun Controller.doOnPreDetach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
+    addControllerListener(preDetach = block)
 
-fun Controller.doOnPostDetach(block: (controller: Controller, view: View) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postDetach = block)
+fun Controller.doOnPostDetach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
+    addControllerListener(postDetach = block)
 
-fun Controller.doOnPreUnbindView(block: (controller: Controller, view: View) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preUnbindView = block)
+fun Controller.doOnPreUnbindView(block: (controller: Controller, view: View) -> Unit): ControllerListener =
+    addControllerListener(preUnbindView = block)
 
-fun Controller.doOnPostUnbindView(block: (controller: Controller) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postUnbindView = block)
+fun Controller.doOnPostUnbindView(block: (controller: Controller) -> Unit): ControllerListener =
+    addControllerListener(postUnbindView = block)
 
-fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(preDestroy = block)
+fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit): ControllerListener =
+    addControllerListener(preDestroy = block)
 
-fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(postDestroy = block)
+fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit): ControllerListener =
+    addControllerListener(postDestroy = block)
 
-fun Controller.doOnRestoreInstanceState(block: (controller: Controller, savedInstanceState: Bundle) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onRestoreInstanceState = block)
+fun Controller.doOnRestoreInstanceState(block: (controller: Controller, savedInstanceState: Bundle) -> Unit): ControllerListener =
+    addControllerListener(onRestoreInstanceState = block)
 
-fun Controller.doOnSaveInstanceState(block: (controller: Controller, outState: Bundle) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onSaveInstanceState = block)
+fun Controller.doOnSaveInstanceState(block: (controller: Controller, outState: Bundle) -> Unit): ControllerListener =
+    addControllerListener(onSaveInstanceState = block)
 
-fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, savedViewState: Bundle) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onRestoreViewState = block)
+fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, savedViewState: Bundle) -> Unit): ControllerListener =
+    addControllerListener(onRestoreViewState = block)
 
-fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onSaveViewState = block)
+fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit): ControllerListener =
+    addControllerListener(onSaveViewState = block)
 
-fun Controller.doOnChangeStart(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onChangeStart = block)
+fun Controller.doOnChangeStart(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerListener =
+    addControllerListener(onChangeStart = block)
 
-fun Controller.doOnChangeEnd(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
-    addLifecycleListener(onChangeEnd = block)
+fun Controller.doOnChangeEnd(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerListener =
+    addControllerListener(onChangeEnd = block)
 
-fun Controller.addLifecycleListener(
+fun Controller.addControllerListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
@@ -211,7 +211,7 @@ fun Controller.addLifecycleListener(
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
-): ControllerLifecycleListener = ControllerLifecycleListener(
+): ControllerListener = ControllerListener(
     preCreate = preCreate, postCreate = postCreate,
     preBuildView = preBuildView, postBuildView = postBuildView,
     preBindView = preBindView, postBindView = postBindView,
@@ -222,129 +222,129 @@ fun Controller.addLifecycleListener(
     onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
     onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
     onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
-).also { addLifecycleListener(it) }
+).also { addListener(it) }
 
 fun Router.doOnControllerPreCreate(
     recursive: Boolean = false,
     block: (controller: Controller, savedInstanceState: Bundle?) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preCreate = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preCreate = block)
 
 fun Router.doOnControllerPostCreate(
     recursive: Boolean = false,
     block: (controller: Controller, savedInstanceState: Bundle?) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postCreate = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postCreate = block)
 
 fun Router.doOnControllerPreBuildView(
     recursive: Boolean = false,
     block: (controller: Controller, savedViewState: Bundle?) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preBuildView = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preBuildView = block)
 
 fun Router.doOnControllerPostBuildView(
     recursive: Boolean = false,
     block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postBuildView = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postBuildView = block)
 
 fun Router.doOnControllerPreBindView(
     recursive: Boolean = false,
     block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preBindView = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preBindView = block)
 
 fun Router.doOnControllerPostBindView(
     recursive: Boolean = false,
     block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postBindView = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postBindView = block)
 
 fun Router.doOnControllerPreAttach(
     recursive: Boolean = false,
     block: (controller: Controller, view: View) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preAttach = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preAttach = block)
 
 fun Router.doOnControllerPostAttach(
     recursive: Boolean = false,
     block: (controller: Controller, view: View) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postAttach = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postAttach = block)
 
 fun Router.doOnControllerPreDetach(
     recursive: Boolean = false,
     block: (controller: Controller, view: View) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preDetach = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preDetach = block)
 
 fun Router.doOnControllerPostDetach(
     recursive: Boolean = false,
     block: (controller: Controller, view: View) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postDetach = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postDetach = block)
 
 fun Router.doOnControllerPreUnbindView(
     recursive: Boolean = false,
     block: (controller: Controller, view: View) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preUnbindView = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preUnbindView = block)
 
 fun Router.doOnControllerPostUnbindView(
     recursive: Boolean = false,
     block: (controller: Controller) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postUnbindView = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postUnbindView = block)
 
 fun Router.doOnControllerPreDestroy(
     recursive: Boolean = false,
     block: (controller: Controller) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, preDestroy = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, preDestroy = block)
 
 fun Router.doOnControllerPostDestroy(
     recursive: Boolean = false,
     block: (controller: Controller) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, postDestroy = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, postDestroy = block)
 
 fun Router.doOnControllerRestoreInstanceState(
     recursive: Boolean = false,
     block: (controller: Controller, savedInstanceState: Bundle) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onRestoreInstanceState = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, onRestoreInstanceState = block)
 
 fun Router.doOnControllerSaveInstanceState(
     recursive: Boolean = false,
     block: (controller: Controller, outState: Bundle) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onSaveInstanceState = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, onSaveInstanceState = block)
 
 fun Router.doOnControllerRestoreViewState(
     recursive: Boolean = false,
     block: (controller: Controller, view: View, savedViewState: Bundle) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onRestoreViewState = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, onRestoreViewState = block)
 
 fun Router.doOnControllerSaveViewState(
     recursive: Boolean = false,
     block: (controller: Controller, view: View, outState: Bundle) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onSaveViewState = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, onSaveViewState = block)
 
 fun Router.doOnControllerChangeStart(
     recursive: Boolean = false,
     block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onChangeStart = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, onChangeStart = block)
 
 fun Router.doOnControllerChangeEnd(
     recursive: Boolean = false,
     block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit
-): ControllerLifecycleListener =
-    addLifecycleListener(recursive = recursive, onChangeEnd = block)
+): ControllerListener =
+    addControllerListener(recursive = recursive, onChangeEnd = block)
 
-fun Router.addLifecycleListener(
+fun Router.addControllerListener(
     recursive: Boolean = false,
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
@@ -366,8 +366,8 @@ fun Router.addLifecycleListener(
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
-): ControllerLifecycleListener {
-    return ControllerLifecycleListener(
+): ControllerListener {
+    return ControllerListener(
         preCreate = preCreate, postCreate = postCreate,
         preBuildView = preBuildView, postBuildView = postBuildView,
         preBindView = preBindView, postBindView = postBindView,
@@ -378,10 +378,10 @@ fun Router.addLifecycleListener(
         onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
         onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
         onChangeStart = onChangeStart, onChangeEnd = onChangeEnd
-    ).also { addLifecycleListener(it, recursive) }
+    ).also { addControllerListener(it, recursive) }
 }
 
-private class LambdaLifecycleListener(
+private class LambdaControllerListener(
     private val preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     private val postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     private val preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
@@ -402,7 +402,7 @@ private class LambdaLifecycleListener(
     private val onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     private val onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     private val onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
-) : ControllerLifecycleListener {
+) : ControllerListener {
     override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
         preCreate?.invoke(controller, savedInstanceState)
     }

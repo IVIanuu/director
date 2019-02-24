@@ -5,12 +5,12 @@ import android.view.View
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.ControllerLifecycleListener
+import com.ivianuu.director.ControllerListener
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class LoggingLifecycleListener : ControllerLifecycleListener {
+class LoggingControllerListener : ControllerListener {
 
     private fun Controller.d(m: () -> String) {
         (this as Any).d { "Lifecycle: ${m.invoke()}" }
