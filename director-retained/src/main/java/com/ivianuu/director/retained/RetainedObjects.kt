@@ -29,8 +29,8 @@ class RetainedObjects {
     /**
      * All entries
      */
-    val entries: Map<String, Any> get() = _entries.toMap()
-    private val _entries = mutableMapOf<String, Any>()
+    val entries: Map<String, Any?> get() = _entries.toMap()
+    private val _entries = mutableMapOf<String, Any?>()
 
     /**
      * Returns the value for [key] or null
@@ -41,7 +41,7 @@ class RetainedObjects {
      * Sets the value for [key] to [value]
      */
     operator fun <T> set(key: String, value: T) {
-        _entries[key] = value as Any
+        _entries[key] = value
     }
 
     /**

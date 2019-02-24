@@ -22,6 +22,7 @@ import android.view.ViewGroup
  * Listener for controller changes
  */
 interface ControllerChangeListener {
+
     /**
      * Called when a [ControllerChangeHandler] has started changing [Controller]s
      */
@@ -45,6 +46,7 @@ interface ControllerChangeListener {
         handler: ControllerChangeHandler
     ) {
     }
+
 }
 
 /**

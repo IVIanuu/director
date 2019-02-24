@@ -76,7 +76,7 @@ abstract class Controller {
      */
     var state: ControllerState = INITIALIZED
 
-    var isBeingDestroyed: Boolean = false
+    var isBeingDestroyed = false
         internal set(value) {
             if (value) childRouterManager.hostIsBeingDestroyed()
             field = value

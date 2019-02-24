@@ -40,8 +40,8 @@ class RouterTransaction {
             field = value
         }
 
-    internal var transactionIndex: Int = INVALID_INDEX
-    internal var attachedToRouter: Boolean = false
+    internal var transactionIndex = INVALID_INDEX
+    internal var attachedToRouter = false
 
     constructor(controller: Controller) {
         this.controller = controller
@@ -76,9 +76,6 @@ class RouterTransaction {
         }
     }
 
-    /**
-     * Used to serialize this transaction into a Bundle
-     */
     internal fun saveInstanceState() = Bundle().apply {
         putBundle(KEY_CONTROLLER_BUNDLE, controller.saveInstanceState())
         pushChangeHandler?.let { putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }

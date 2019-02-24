@@ -209,9 +209,6 @@ abstract class DialogController : Controller(),
     }
 }
 
-/**
- * Pushes this controller and shows the dialog
- */
 fun DialogController.show(router: Router, tag: String? = null) {
     router.push(
         toTransaction()
