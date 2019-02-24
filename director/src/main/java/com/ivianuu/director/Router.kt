@@ -538,29 +538,14 @@ class Router internal constructor(
     }
 }
 
-/**
- * The component this router lives in
- */
 val Router.host: Any get() = routerManager.host
 
-/**
- * Whether or not the router has currently a container attached to it
- */
 val Router.hasContainer: Boolean get() = container != null
 
-/**
- * The current size of the backstack
- */
 val Router.backstackSize: Int get() = backstack.size
 
-/**
- * Whether or not this router has a root [Controller]
- */
 val Router.hasRoot: Boolean get() = backstackSize > 0
 
-/**
- * Returns the controller with [tag] or null
- */
 fun Router.getControllerByTagOrNull(tag: String): Controller? =
     backstack.firstNotNullResultOrNull {
         if (it.tag == tag) {
@@ -571,15 +556,9 @@ fun Router.getControllerByTagOrNull(tag: String): Controller? =
         }
     }
 
-/**
- * Returns the controller for with [tag] or throws
- */
 fun Router.getControllerByTag(tag: String): Controller =
     getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
 
-/**
- * Returns the controller with [instanceId] or null
- */
 fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
     backstack.firstNotNullResultOrNull {
         if (it.controller.instanceId == instanceId) {
@@ -590,9 +569,6 @@ fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
         }
     }
 
-/**
- * Returns the controller for with [instanceId] or throws
- */
 fun Router.getControllerByInstanceId(instanceId: String): Controller =
     getControllerByInstanceIdOrNull(instanceId)
         ?: error("couldn't find controller with instanceId: $instanceId")

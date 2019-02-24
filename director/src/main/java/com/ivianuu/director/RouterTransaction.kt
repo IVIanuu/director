@@ -8,14 +8,8 @@ import com.ivianuu.director.internal.TransactionIndexer
  */
 class RouterTransaction {
 
-    /**
-     * The controller of this transaction
-     */
     val controller: Controller
 
-    /**
-     * The tag of this transaction
-     */
     var tag: String? = null
         set(value) {
             checkModify()
@@ -23,7 +17,7 @@ class RouterTransaction {
         }
 
     /**
-     * The push change handler of this transaction
+     * Will be used when this transaction gets pushed
      */
     var pushChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler
         set(value) {
@@ -32,7 +26,7 @@ class RouterTransaction {
         }
 
     /**
-     * The pop change handler of this transaction
+     * Will be called when this transaction gets popped
      */
     var popChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler
         set(value) {
@@ -109,31 +103,19 @@ class RouterTransaction {
     }
 }
 
-/**
- * Fluent version of push change handler
- */
 fun RouterTransaction.pushChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction =
     apply {
         pushChangeHandler = changeHandler
     }
 
-/**
- * Fluent version of pop change handler
- */
 fun RouterTransaction.popChangeHandler(changeHandler: ControllerChangeHandler?): RouterTransaction =
     apply {
         popChangeHandler = changeHandler
     }
 
-/**
- * Sets the [changeHandler] as both the [pushChangeHandler] and the [popChangeHandler]
- */
 fun RouterTransaction.changeHandler(changeHandler: ControllerChangeHandler?) =
     pushChangeHandler(changeHandler).popChangeHandler(changeHandler)
 
-/**
- * Fluent version of tag
- */
 fun RouterTransaction.tag(tag: String?): RouterTransaction = apply {
     this.tag = tag
 }

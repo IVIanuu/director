@@ -579,6 +579,9 @@ val Controller.isDestroyed: Boolean get() = state == DESTROYED
 
 val Controller.hasView: Boolean get() = view != null
 
+val Controller.transaction: RouterTransaction
+    get() = router.backstack.first { it.controller == this }
+
 val Controller.routerManager: RouterManager
     get() = router.routerManager
 

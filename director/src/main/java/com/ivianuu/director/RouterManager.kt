@@ -31,9 +31,6 @@ class RouterManager(
     private var postponeFullRestore: Boolean = false
 ) {
 
-    /**
-     * All routers contained by this delegate
-     */
     val routers: List<Router> get() = _routers
     private val _routers = mutableListOf<Router>()
 
@@ -186,16 +183,10 @@ class RouterManager(
         }
     }
 
-    /**
-     * Postpones the restore until [startPostponedFullRestore] was called
-     */
     fun postponeRestore() {
         postponeFullRestore = true
     }
 
-    /**
-     * Starts a previously [postponeRestore] restore
-     */
     fun startPostponedFullRestore() {
         if (postponeFullRestore) {
             postponeFullRestore = false
@@ -245,9 +236,6 @@ class RouterManager(
 internal val RouterManager.rootRouterManager: RouterManager
     get() = hostRouterManager?.rootRouterManager ?: this
 
-/**
- * Returns the router for [container] and [tag] or null
- */
 fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
     getRouterOrNull(container.id, tag)?.also {
         if (!it.hasContainer) {
@@ -256,9 +244,6 @@ fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Ro
         }
     }
 
-/**
- * Returns the router for [container] and [tag] or creates a new instance
- */
 fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
     getRouter(container.id, tag).also {
         if (!it.hasContainer) {
@@ -267,33 +252,18 @@ fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
         }
     }
 
-/**
- * Returns a lazy for the router for [containerId] and [tag]
- */
 fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
     lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
 
-/**
- * Returns the controller with [tag] or null
- */
 fun RouterManager.getControllerByTagOrNull(tag: String): Controller? =
     routers.firstNotNullResultOrNull { it.getControllerByTagOrNull(tag) }
 
-/**
- * Returns the controller for with [tag] or throws
- */
 fun RouterManager.getControllerByTag(tag: String): Controller =
     getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
 
-/**
- * Returns the controller with [instanceId] or null
- */
 fun RouterManager.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
     routers.firstNotNullResultOrNull { it.getControllerByInstanceIdOrNull(instanceId) }
 
-/**
- * Returns the controller for with [instanceId] or throws
- */
 fun RouterManager.getControllerByInstanceId(instanceId: String): Controller =
     getControllerByInstanceIdOrNull(instanceId)
         ?: error("couldn't find controller with instanceId: $instanceId")
