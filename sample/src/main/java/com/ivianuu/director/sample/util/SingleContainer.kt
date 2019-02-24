@@ -16,20 +16,20 @@
 
 package com.ivianuu.director.sample.util
 
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.Transaction
 import com.ivianuu.director.hasRoot
 
 class SingleContainer(val router: Router) {
 
     val isEmpty get() = router.hasRoot
 
-    val currentTransaction: RouterTransaction? get() = router.backstack.lastOrNull()
-    val detachedTransactions: List<RouterTransaction>? get() = router.backstack.dropLast(1)
+    val currentTransaction: Transaction? get() = router.backstack.lastOrNull()
+    val detachedTransactions: List<Transaction>? get() = router.backstack.dropLast(1)
 
-    fun set(transaction: RouterTransaction) {
+    fun set(transaction: Transaction) {
         if (transaction == currentTransaction) return
 
         transaction.pushChangeHandler.check()
@@ -50,14 +50,14 @@ class SingleContainer(val router: Router) {
         router.setBackstack(newBackstack, false)
     }
 
-    private fun ControllerChangeHandler?.check() {
+    private fun ChangeHandler?.check() {
         if (this != null) check(removesFromViewOnPush) {
             "Must remove from view while using single container"
         }
     }
 }
 
-inline fun Router.moveToTop(tag: String, create: () -> RouterTransaction) {
+inline fun Router.moveToTop(tag: String, create: () -> Transaction) {
     val backstack = backstack.toMutableList()
     var transaction = backstack.firstOrNull { it.tag == tag }
     if (transaction != null) {
@@ -70,11 +70,11 @@ inline fun Router.moveToTop(tag: String, create: () -> RouterTransaction) {
     setBackstack(backstack, true)
 }
 
-inline fun SingleContainer.setIfEmpty(create: () -> RouterTransaction) {
+inline fun SingleContainer.setIfEmpty(create: () -> Transaction) {
     if (isEmpty) set(create())
 }
 
-inline fun SingleContainer.setByTag(tag: String, create: () -> RouterTransaction) {
+inline fun SingleContainer.setByTag(tag: String, create: () -> Transaction) {
     set(router.backstack.firstOrNull { it.tag == tag } ?: create())
 }
 

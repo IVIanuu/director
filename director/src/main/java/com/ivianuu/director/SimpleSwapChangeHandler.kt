@@ -22,11 +22,11 @@ import android.view.ViewGroup
 import com.ivianuu.director.internal.moveView
 
 /**
- * A [ControllerChangeHandler] that will instantly swap Views with no animations or transitions.
+ * A [ChangeHandler] that will instantly swap Views with no animations or transitions.
  */
 open class SimpleSwapChangeHandler(
     removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
-) : ControllerChangeHandler() {
+) : ChangeHandler() {
 
     override val removesFromViewOnPush: Boolean get() = _removesFromViewOnPush
     private var _removesFromViewOnPush = removesFromViewOnPush

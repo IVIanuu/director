@@ -1,17 +1,16 @@
 package com.ivianuu.director.sample.controller
 
+
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.Transaction
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
-
-
 import com.ivianuu.director.parentController
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
@@ -99,7 +98,7 @@ class NavigationController : BaseController() {
     }
 
     override fun onChangeStarted(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeStarted(changeHandler, changeType)
@@ -107,7 +106,7 @@ class NavigationController : BaseController() {
     }
 
     override fun onChangeEnded(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeEnded(changeHandler, changeType)
@@ -137,15 +136,15 @@ class NavigationController : BaseController() {
     @Parcelize
     enum class AnimMode : Parcelable {
         HORIZONTAL {
-            override fun createHandler(): ControllerChangeHandler =
+            override fun createHandler(): ChangeHandler =
                 HorizontalChangeHandler()
         },
         VERTICAL {
-            override fun createHandler(): ControllerChangeHandler =
+            override fun createHandler(): ChangeHandler =
                 VerticalChangeHandler()
         };
 
-        abstract fun createHandler(): ControllerChangeHandler
+        abstract fun createHandler(): ChangeHandler
     }
 
     companion object {
@@ -186,7 +185,7 @@ data class NavigationControllerKey(
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransaction
+        transaction: Transaction
     ) {
         transaction.changeHandler(animMode.createHandler())
     }

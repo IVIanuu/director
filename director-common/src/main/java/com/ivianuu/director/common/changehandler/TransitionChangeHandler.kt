@@ -23,19 +23,19 @@ import android.transition.Transition
 import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 import com.ivianuu.director.internal.moveView
 
 /**
- * A base [ControllerChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
+ * A base [ChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 abstract class TransitionChangeHandler(
     duration: Long = DirectorPlugins.defaultTransitionDuration,
     override var removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
-) : ControllerChangeHandler() {
+) : ChangeHandler() {
 
     var duration = duration
         private set

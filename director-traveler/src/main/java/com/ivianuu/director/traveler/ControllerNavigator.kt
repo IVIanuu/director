@@ -18,7 +18,7 @@ package com.ivianuu.director.traveler
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.Transaction
 import com.ivianuu.director.backstackSize
 import com.ivianuu.director.getControllerByTagOrNull
 import com.ivianuu.director.pop
@@ -157,7 +157,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         command: Command,
         currentController: Controller?,
         nextController: Controller,
-        transaction: RouterTransaction
+        transaction: Transaction
     ) {
         val key = when (command) {
             is Forward -> command.key

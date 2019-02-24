@@ -182,7 +182,7 @@ abstract class Controller {
      * Called when this Controller begins the process of being swapped in or out of the host view.
      */
     protected open fun onChangeStarted(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         superCalled = true
@@ -192,7 +192,7 @@ abstract class Controller {
      * Called when this Controller completes the process of being swapped in or out of the host view.
      */
     protected open fun onChangeEnded(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         superCalled = true
@@ -513,7 +513,7 @@ abstract class Controller {
     }
 
     internal fun changeStarted(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         onChangeStarted(changeHandler, changeType)
@@ -521,7 +521,7 @@ abstract class Controller {
     }
 
     internal fun changeEnded(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         onChangeEnded(changeHandler, changeType)
@@ -579,7 +579,7 @@ val Controller.isDestroyed: Boolean get() = state == DESTROYED
 
 val Controller.hasView: Boolean get() = view != null
 
-val Controller.transaction: RouterTransaction
+val Controller.transaction: Transaction
     get() = router.backstack.first { it.controller == this }
 
 val Controller.routerManager: RouterManager
@@ -643,4 +643,4 @@ fun Controller.childRouter(
     tag: String? = null
 ): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }
 
-fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
+fun Controller.toTransaction(): Transaction = Transaction(this)

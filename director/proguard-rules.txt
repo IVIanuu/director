@@ -3,10 +3,10 @@
    public <init>();
 }
 
--keepclassmembers public class * extends com.ivianuu.director.ControllerChangeHandler {
+-keepclassmembers public class * extends com.ivianuu.director.ChangeHandler {
    public <init>();
 }
 
--keepclassmembers public class * extends com.ivianuu.director.RouterTransaction {
+-keepclassmembers public class * extends com.ivianuu.director.Transaction {
    public <init>();
 }

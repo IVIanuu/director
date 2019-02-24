@@ -21,7 +21,7 @@ import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
@@ -29,12 +29,12 @@ import com.ivianuu.director.defaultRemovesFromViewOnPush
 import com.ivianuu.director.internal.moveView
 
 /**
- * A base [ControllerChangeHandler] that uses [android.animation.Animator]s to replace Controller Views
+ * A base [ChangeHandler] that uses [android.animation.Animator]s to replace Controller Views
  */
 abstract class AnimatorChangeHandler(
     duration: Long = DirectorPlugins.defaultAnimationDuration,
     override var removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
-) : ControllerChangeHandler() {
+) : ChangeHandler() {
 
     var duration = duration
         private set

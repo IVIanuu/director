@@ -692,7 +692,7 @@ class ControllerLifecycleCallbacksTest {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
             override fun onChangeStart(
                 controller: Controller,
-                changeHandler: ControllerChangeHandler,
+                changeHandler: ChangeHandler,
                 changeType: ControllerChangeType
             ) {
                 currentCallState.changeStartCalls++
@@ -700,7 +700,7 @@ class ControllerLifecycleCallbacksTest {
 
             override fun onChangeEnd(
                 controller: Controller,
-                changeHandler: ControllerChangeHandler,
+                changeHandler: ChangeHandler,
                 changeType: ControllerChangeType
             ) {
                 currentCallState.changeEndCalls++

@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
@@ -53,7 +53,7 @@ class HomeController : BaseController() {
     }
 
     override fun onChangeStarted(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         if (changeType.isEnter) {

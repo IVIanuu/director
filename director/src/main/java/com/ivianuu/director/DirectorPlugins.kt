@@ -66,26 +66,26 @@ var DirectorPlugins.defaultRetainView: Boolean
         _defaultRetainView = value
     }
 
-private var _defaultPushHandler: ControllerChangeHandler? = null
+private var _defaultPushHandler: ChangeHandler? = null
 
 /** The default push handler to use in all transactions */
-var DirectorPlugins.defaultPushHandler: ControllerChangeHandler?
+var DirectorPlugins.defaultPushHandler: ChangeHandler?
     get() = _defaultPushHandler
     set(value) {
         _defaultPushHandler = value
     }
 
-private var _defaultPopHandler: ControllerChangeHandler? = null
+private var _defaultPopHandler: ChangeHandler? = null
 
 /** The default push handler to use in all transactions */
-var DirectorPlugins.defaultPopHandler: ControllerChangeHandler?
+var DirectorPlugins.defaultPopHandler: ChangeHandler?
     get() = _defaultPopHandler
     set(value) {
         _defaultPopHandler = value
     }
 
 /** Sets the [handler] as the default push and pop handler */
-fun DirectorPlugins.setDefaultHandler(handler: ControllerChangeHandler?) {
+fun DirectorPlugins.setDefaultHandler(handler: ChangeHandler?) {
     defaultPushHandler = handler
     defaultPopHandler = handler
 }

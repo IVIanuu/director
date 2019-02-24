@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.context
 import com.ivianuu.director.push
@@ -62,7 +62,7 @@ class ExternalModulesController : BaseController() {
     }
 
     override fun onChangeStarted(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeStarted(changeHandler, changeType)

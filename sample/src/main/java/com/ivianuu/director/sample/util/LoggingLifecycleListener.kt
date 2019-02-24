@@ -2,8 +2,8 @@ package com.ivianuu.director.sample.util
 
 import android.os.Bundle
 import android.view.View
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerLifecycleListener
 
@@ -88,7 +88,7 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
 
     override fun onChangeStart(
         controller: Controller,
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeStart(controller, changeHandler, changeType)
@@ -97,7 +97,7 @@ class LoggingLifecycleListener : ControllerLifecycleListener {
 
     override fun onChangeEnd(
         controller: Controller,
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeEnd(controller, changeHandler, changeType)

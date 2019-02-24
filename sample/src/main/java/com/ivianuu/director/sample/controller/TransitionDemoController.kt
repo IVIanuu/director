@@ -4,17 +4,15 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.Transaction
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.context
-
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
@@ -74,7 +72,7 @@ class TransitionDemoController : BaseController() {
         }
     }
 
-    fun getChangeHandler(from: Controller): ControllerChangeHandler? = when (transitionDemo) {
+    fun getChangeHandler(from: Controller): ChangeHandler? = when (transitionDemo) {
         TransitionDemoController.TransitionDemo.VERTICAL -> VerticalChangeHandler()
         TransitionDemoController.TransitionDemo.CIRCULAR -> {
             val demoController = from as TransitionDemoController
@@ -141,7 +139,7 @@ class TransitionDemoController : BaseController() {
             args = bundleOf(KEY_INDEX to index)
         }
 
-        fun getRouterTransaction(index: Int, fromController: Controller): RouterTransaction {
+        fun getRouterTransaction(index: Int, fromController: Controller): Transaction {
             val toController = newInstance(index)
             return toController.toTransaction()
                 .changeHandler(toController.getChangeHandler(fromController))

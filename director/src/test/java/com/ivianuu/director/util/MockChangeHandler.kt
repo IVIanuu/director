@@ -19,13 +19,13 @@ package com.ivianuu.director.util
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ChangeHandler
 
 class MockChangeHandler internal constructor(
     override var removesFromViewOnPush: Boolean,
     var tag: String?,
     listener: Listener?
-) : ControllerChangeHandler() {
+) : ChangeHandler() {
 
     private val listener: Listener?
 
@@ -99,7 +99,7 @@ class MockChangeHandler internal constructor(
         tag = bundle.getString(KEY_TAG)
     }
 
-    override fun copy(): ControllerChangeHandler =
+    override fun copy(): ChangeHandler =
         MockChangeHandler(removesFromViewOnPush, tag, listener)
 
     companion object {

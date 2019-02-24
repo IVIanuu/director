@@ -27,7 +27,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
-class ControllerChangeHandlerTest {
+class ChangeHandlerTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1)
@@ -42,7 +42,7 @@ class ControllerChangeHandlerTest {
 
         router.push(transaction)
 
-        val restoredTransaction = RouterTransaction.fromBundle(
+        val restoredTransaction = Transaction.fromBundle(
             transaction.saveInstanceState(), DefaultControllerFactory
         )
 

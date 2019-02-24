@@ -80,14 +80,14 @@ interface ControllerLifecycleListener {
 
     fun onChangeStart(
         controller: Controller,
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
     }
 
     fun onChangeEnd(
         controller: Controller,
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
     }
@@ -115,8 +115,8 @@ fun ControllerLifecycleListener(
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener = LambdaLifecycleListener(
     preCreate = preCreate, postCreate = postCreate,
     preBuildView = preBuildView, postBuildView = postBuildView,
@@ -184,10 +184,10 @@ fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, 
 fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit): ControllerLifecycleListener =
     addLifecycleListener(onSaveViewState = block)
 
-fun Controller.doOnChangeStart(block: (controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
+fun Controller.doOnChangeStart(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
     addLifecycleListener(onChangeStart = block)
 
-fun Controller.doOnChangeEnd(block: (controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
+fun Controller.doOnChangeEnd(block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): ControllerLifecycleListener =
     addLifecycleListener(onChangeEnd = block)
 
 fun Controller.addLifecycleListener(
@@ -209,8 +209,8 @@ fun Controller.addLifecycleListener(
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener = ControllerLifecycleListener(
     preCreate = preCreate, postCreate = postCreate,
     preBuildView = preBuildView, postBuildView = postBuildView,
@@ -334,13 +334,13 @@ fun Router.doOnControllerSaveViewState(
 
 fun Router.doOnControllerChangeStart(
     recursive: Boolean = false,
-    block: (controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit
+    block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit
 ): ControllerLifecycleListener =
     addLifecycleListener(recursive = recursive, onChangeStart = block)
 
 fun Router.doOnControllerChangeEnd(
     recursive: Boolean = false,
-    block: (controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit
+    block: (controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit
 ): ControllerLifecycleListener =
     addLifecycleListener(recursive = recursive, onChangeEnd = block)
 
@@ -364,8 +364,8 @@ fun Router.addLifecycleListener(
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener {
     return ControllerLifecycleListener(
         preCreate = preCreate, postCreate = postCreate,
@@ -400,8 +400,8 @@ private class LambdaLifecycleListener(
     private val onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     private val onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     private val onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    private val onChangeStart: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    private val onChangeEnd: ((controller: Controller, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    private val onChangeStart: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    private val onChangeEnd: ((controller: Controller, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) : ControllerLifecycleListener {
     override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
         preCreate?.invoke(controller, savedInstanceState)
@@ -477,7 +477,7 @@ private class LambdaLifecycleListener(
 
     override fun onChangeStart(
         controller: Controller,
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         onChangeStart?.invoke(controller, changeHandler, changeType)
@@ -485,7 +485,7 @@ private class LambdaLifecycleListener(
 
     override fun onChangeEnd(
         controller: Controller,
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         onChangeEnd?.invoke(controller, changeHandler, changeType)

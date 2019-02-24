@@ -29,14 +29,14 @@ import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
-class RouterTransactionTest {
+class TransactionTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1)
 
     @Test
     fun testRouterSaveRestore() {
-        val transaction = RouterTransaction(TestController())
+        val transaction = Transaction(TestController())
             .pushChangeHandler(ChangeHandlerOne())
             .popChangeHandler(ChangeHandlerTwo())
             .tag("test")
@@ -46,7 +46,7 @@ class RouterTransactionTest {
 
         val bundle = transaction.saveInstanceState()
 
-        val restoredTransaction = RouterTransaction.fromBundle(bundle, DefaultControllerFactory)
+        val restoredTransaction = Transaction.fromBundle(bundle, DefaultControllerFactory)
 
         assertEquals(transaction.controller.javaClass, restoredTransaction.controller.javaClass)
         assertEquals(
@@ -61,7 +61,7 @@ class RouterTransactionTest {
     }
 }
 
-class ChangeHandlerOne : ControllerChangeHandler() {
+class ChangeHandlerOne : ChangeHandler() {
     override fun performChange(
         container: ViewGroup,
         from: View?,
@@ -73,7 +73,7 @@ class ChangeHandlerOne : ControllerChangeHandler() {
     }
 }
 
-class ChangeHandlerTwo : ControllerChangeHandler() {
+class ChangeHandlerTwo : ChangeHandler() {
     override fun performChange(
         container: ViewGroup,
         from: View?,

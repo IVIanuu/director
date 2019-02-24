@@ -2,8 +2,8 @@ package com.ivianuu.director.internal
 
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeListener
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.Router
@@ -19,7 +19,7 @@ internal object ControllerChangeManager {
         to: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ControllerChangeHandler?,
+        handler: ChangeHandler?,
         listeners: List<ControllerChangeListener>
     ) {
         val handlerToUse = when {
@@ -130,6 +130,6 @@ internal object ControllerChangeManager {
 }
 
 private data class ChangeHandlerData(
-    val changeHandler: ControllerChangeHandler,
+    val changeHandler: ChangeHandler,
     val isPush: Boolean
 )

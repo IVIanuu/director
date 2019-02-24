@@ -2,7 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouters
@@ -32,7 +32,7 @@ class ParentController : BaseController() {
     }
 
     override fun onChangeEnded(
-        changeHandler: ControllerChangeHandler,
+        changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeEnded(changeHandler, changeType)

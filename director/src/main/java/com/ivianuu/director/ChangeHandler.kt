@@ -9,7 +9,7 @@ import com.ivianuu.director.internal.newInstanceOrThrow
 /**
  * Swaps views on controller changes
  */
-abstract class ControllerChangeHandler {
+abstract class ChangeHandler {
 
     /**
      * Whether or not this changeHandler removes the from view on push
@@ -52,20 +52,20 @@ abstract class ControllerChangeHandler {
     /**
      * Returns a exact copy of this change handler
      */
-    open fun copy(): ControllerChangeHandler = fromBundle(toBundle())
+    open fun copy(): ChangeHandler = fromBundle(toBundle())
 
     internal fun toBundle(): Bundle = Bundle().apply {
-        putString(KEY_CLASS_NAME, this@ControllerChangeHandler.javaClass.name)
+        putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
         putBundle(KEY_SAVED_STATE, Bundle().also { saveToBundle(it) })
     }
 
     companion object {
-        private const val KEY_CLASS_NAME = "ControllerChangeHandler.className"
-        private const val KEY_SAVED_STATE = "ControllerChangeHandler.savedState"
+        private const val KEY_CLASS_NAME = "ChangeHandler.className"
+        private const val KEY_SAVED_STATE = "ChangeHandler.savedState"
 
-        internal fun fromBundle(bundle: Bundle): ControllerChangeHandler {
+        internal fun fromBundle(bundle: Bundle): ChangeHandler {
             val className = bundle.getString(KEY_CLASS_NAME)!!
-            return newInstanceOrThrow<ControllerChangeHandler>(className).apply {
+            return newInstanceOrThrow<ChangeHandler>(className).apply {
                 restoreFromBundle(bundle.getBundle(KEY_SAVED_STATE)!!)
             }
         }
