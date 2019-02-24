@@ -323,17 +323,19 @@ abstract class Controller {
         var view = view
 
         if (view == null) {
-            notifyLifecycleListeners { it.preBuildView(this, viewState) }
+            val viewState = viewState
+            val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
+            savedViewState?.classLoader = javaClass.classLoader
+
+            notifyLifecycleListeners { it.preBuildView(this, savedViewState) }
 
             view = onBuildView(
                 LayoutInflater.from(container.context),
                 container,
-                viewState
+                savedViewState
             ).also { this.view = it }
 
-            notifyLifecycleListeners { it.postBuildView(this, view, viewState) }
-
-            val viewState = viewState
+            notifyLifecycleListeners { it.postBuildView(this, view, savedViewState) }
 
             if (viewState != null) {
                 view.restoreHierarchyState(
@@ -341,19 +343,17 @@ abstract class Controller {
                         KEY_VIEW_STATE_HIERARCHY
                     )
                 )
-                val savedViewState = viewState.getBundle(KEY_VIEW_STATE_BUNDLE)!!
-                savedViewState.classLoader = javaClass.classLoader
             }
 
             this.viewState = null
 
-            notifyLifecycleListeners { it.preBindView(this, view, viewState) }
+            notifyLifecycleListeners { it.preBindView(this, view, savedViewState) }
 
             state = VIEW_BOUND
 
-            requireSuperCalled { onBindView(view, viewState) }
+            requireSuperCalled { onBindView(view, savedViewState) }
 
-            notifyLifecycleListeners { it.postBindView(this, view, viewState) }
+            notifyLifecycleListeners { it.postBindView(this, view, savedViewState) }
 
             attachHandler.takeView(view)
 
