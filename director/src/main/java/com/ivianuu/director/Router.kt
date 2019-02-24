@@ -92,6 +92,8 @@ class Router internal constructor(
     private var hostStarted = false
     private var hostDestroyed = false
 
+    private val hostRouter get() = (routerManager.host as? Controller)?.router
+
     private var inProgressTransactions = 0
         set(value) {
             field = value
@@ -110,6 +112,15 @@ class Router internal constructor(
     init {
         addChangeListener(internalChangeListener)
     }
+
+    internal constructor(
+        savedInstanceState: Bundle,
+        routerManager: RouterManager
+    ) : this(
+        savedInstanceState.getInt(KEY_CONTAINER_ID),
+        savedInstanceState.getString(KEY_TAG),
+        routerManager
+    )
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -293,8 +304,8 @@ class Router internal constructor(
     internal fun getAllChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return changeListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } /*+ (routerManager.hostRouter?.getAllChangeListeners(true)
-            ?: emptyList())*/
+            .map { it.listener } + (hostRouter?.getAllChangeListeners(true)
+            ?: emptyList())
     }
 
     /**
@@ -316,8 +327,8 @@ class Router internal constructor(
     internal fun getAllLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
         return lifecycleListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } /*+ (routerManager.hostRouter?.getAllLifecycleListeners(true)
-            ?: emptyList())*/
+            .map { it.listener } + (hostRouter?.getAllLifecycleListeners(true)
+            ?: emptyList())
     }
 
     /**

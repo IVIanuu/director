@@ -26,7 +26,7 @@ import com.ivianuu.stdlibx.firstNotNullResultOrNull
  */
 class RouterManager(
     val host: Any,
-    val hostRouterManager: RouterManager?,
+    val hostRouterManager: RouterManager? = null,
     savedInstanceState: Bundle? = null,
     private var postponeFullRestore: Boolean = false
 ) {
@@ -216,13 +216,8 @@ class RouterManager(
 
         this.routerStates = routerStates
             .map { routerState ->
-                // todo little hacky make this easier
-                val containerId = routerState.getInt("Router.containerId")
-                val tag = routerState.getString("Router.tag")
-
                 Router(
-                    containerId = containerId,
-                    tag = tag,
+                    savedInstanceState = routerState,
                     routerManager = this
                 ) to routerState
             }
