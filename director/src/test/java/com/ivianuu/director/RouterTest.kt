@@ -413,9 +413,7 @@ class RouterTest {
     @Test
     fun testSettingSameBackstackNoOps() {
         var changeCalls = 0
-        router.doOnChangeStarted { to, from, isPush, container, handler ->
-            changeCalls++
-        }
+        router.doOnChangeStarted { _, _, _, _, _, _ -> changeCalls++ }
 
         val backstack = listOf(
             TestController().toTransaction(),
@@ -433,9 +431,7 @@ class RouterTest {
     @Test
     fun testSettingSameVisibleControllersNoOps() {
         var changeCalls = 0
-        router.doOnChangeStarted { to, from, isPush, container, handler ->
-            changeCalls++
-        }
+        router.doOnChangeStarted { _, _, _, _, _, _ -> changeCalls++ }
 
         val backstack = listOf(
             TestController().toTransaction(),
