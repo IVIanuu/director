@@ -62,15 +62,6 @@ class Router internal constructor(
     private var realContainer: ViewGroup? = null
 
     /**
-     * Whether or not this router is going to be destroyed
-     */
-    var isBeingDestroyed: Boolean = false
-        internal set(value) {
-            _backstack.reversed().forEach { it.controller.isBeingDestroyed = true }
-            field = value
-        }
-
-    /**
      * Will be used to instantiate controllers after config changes or process death
      */
     var controllerFactory: ControllerFactory?
@@ -379,6 +370,10 @@ class Router internal constructor(
             prepareForContainerRemoval()
             _backstack.reversed().forEach { it.controller.hostStopped() }
         }
+    }
+
+    internal fun hostIsBeingDestroyed() {
+        _backstack.reversed().forEach { it.controller.isBeingDestroyed = true }
     }
 
     internal fun hostDestroyed() {

@@ -87,7 +87,7 @@ class RouterManager(
      * Notifies that the host is going to be destroyed
      */
     fun hostIsBeingDestroyed() {
-        _routers.reversed().forEach { it.isBeingDestroyed = true }
+        _routers.reversed().forEach { it.hostIsBeingDestroyed() }
     }
 
     /**
@@ -95,7 +95,7 @@ class RouterManager(
      */
     fun hostDestroyed() {
         _routers.reversed().forEach {
-            it.isBeingDestroyed = true
+            it.hostIsBeingDestroyed()
             it.removeContainer()
             it.hostDestroyed()
         }
@@ -176,7 +176,7 @@ class RouterManager(
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
             router.setBackstack(emptyList(), false)
-            router.isBeingDestroyed = true
+            router.hostIsBeingDestroyed()
             router.hostStopped()
             router.removeContainer()
             router.hostDestroyed()
