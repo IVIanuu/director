@@ -57,6 +57,7 @@ class RouterManager(
 
     internal var _controllerFactory: ControllerFactory =
         DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
+        private set
 
     init {
         restoreInstanceState(savedInstanceState)

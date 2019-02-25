@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
+import com.ivianuu.director.internal.ListenersHolder
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.takeLastUntil
 
@@ -60,8 +61,10 @@ class Router internal constructor(
         private set
     private var realContainer: ViewGroup? = null
 
-    private val listeners = mutableListOf<ListenerEntry<RouterListener>>()
-    private val controllerListeners = mutableListOf<ListenerEntry<ControllerListener>>()
+    internal val listeners: ListenersHolder<RouterListener> =
+        ListenersHolder(parent = hostRouter?.listeners)
+    internal val controllerListeners: ListenersHolder<ControllerListener> =
+        ListenersHolder(parent = hostRouter?.controllerListeners)
 
     private var hostStarted = false
     private var hostDestroyed = false
@@ -250,46 +253,28 @@ class Router internal constructor(
      * Notifies the [listener] on controller changes
      */
     fun addListener(listener: RouterListener, recursive: Boolean = false) {
-        if (listeners.none { it.listener == listener }) {
-            listeners.add(ListenerEntry(listener, recursive))
-        }
+        listeners.add(listener, recursive)
     }
 
     /**
      * Removes the previously added [listener]
      */
     fun removeListener(listener: RouterListener) {
-        listeners.removeAll { it.listener == listener }
-    }
-
-    internal fun getAllRouterListeners(recursiveOnly: Boolean = false): List<RouterListener> {
-        return listeners
-            .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (hostRouter?.getAllRouterListeners(true)
-            ?: emptyList())
+        listeners.remove(listener)
     }
 
     /**
      * Adds a listener for all controllers
      */
     fun addControllerListener(listener: ControllerListener, recursive: Boolean = false) {
-        if (controllerListeners.none { it.listener == listener }) {
-            controllerListeners.add(ListenerEntry(listener, recursive))
-        }
+        controllerListeners.add(listener, recursive)
     }
 
     /**
      * Removes the previously added [listener]
      */
     fun removeControllerListener(listener: ControllerListener) {
-        controllerListeners.removeAll { it.listener == listener }
-    }
-
-    internal fun getAllControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
-        return controllerListeners
-            .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (hostRouter?.getAllControllerListeners(true)
-            ?: emptyList())
+        controllerListeners.remove(listener)
     }
 
     /**
@@ -453,7 +438,7 @@ class Router internal constructor(
             isPush,
             container,
             handlerToUse,
-            getAllRouterListeners(false)
+            listeners.get()
         )
     }
 
@@ -477,11 +462,6 @@ class Router internal constructor(
             it.pushChangeHandler != null
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
-
-    private data class ListenerEntry<T>(
-        val listener: T,
-        val recursive: Boolean
-    )
 
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
