@@ -366,20 +366,14 @@ class Router internal constructor(
         container = null
     }
 
-    /**
-     * Notifies that the host of this router was started
-     */
-    fun hostStarted() {
+    internal fun hostStarted() {
         if (!hostStarted) {
             hostStarted = true
             _backstack.forEach { it.controller.hostStarted() }
         }
     }
 
-    /**
-     * Notifies that the host of this router was stopped
-     */
-    fun hostStopped() {
+    internal fun hostStopped() {
         if (hostStarted) {
             hostStarted = false
             prepareForContainerRemoval()
@@ -387,10 +381,7 @@ class Router internal constructor(
         }
     }
 
-    /**
-     * Notifies that the host of this router was destroyed
-     */
-    fun hostDestroyed() {
+    internal fun hostDestroyed() {
         if (!hostDestroyed) {
             hostDestroyed = true
             _backstack.reversed().forEach { it.controller.hostDestroyed() }
