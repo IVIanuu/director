@@ -33,6 +33,7 @@ import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.Router
 import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.fragmenthost.postponeFullRestore
+import com.ivianuu.director.fragmenthost.routerManager
 import com.ivianuu.director.fragmenthost.startPostponedFullRestore
 import com.ivianuu.director.getControllerByTagOrNull
 import com.ivianuu.director.pop
@@ -60,7 +61,7 @@ class ControllerScenario<C : Controller> internal constructor(
             viewModelProvider
                 .get(ControllerFactoryHolderViewModel::class.java)
                 .controllerFactory = controllerFactory
-            activity.router.controllerFactory = controllerFactory
+            activity.routerManager.controllerFactory = controllerFactory
 
             val controller = controllerFactory.createController(
                 controllerClass.java.classLoader!!,
@@ -133,11 +134,12 @@ class EmptyControllerActivity : FragmentActivity() {
         val viewModelProvider = ViewModelProvider(
             this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )
-        val factory = viewModelProvider
+
+        routerManager.controllerFactory = viewModelProvider
             .get(ControllerFactoryHolderViewModel::class.java)
             .controllerFactory
 
-        _router = getRouter(android.R.id.content).apply { controllerFactory = factory }
+        _router = getRouter(android.R.id.content)
         startPostponedFullRestore()
     }
 }
