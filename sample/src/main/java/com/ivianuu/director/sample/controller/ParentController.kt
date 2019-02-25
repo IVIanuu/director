@@ -3,6 +3,7 @@ package com.ivianuu.director.sample.controller
 import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouters
@@ -32,10 +33,11 @@ class ParentController : BaseController() {
     }
 
     override fun onChangeEnded(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        super.onChangeEnded(changeHandler, changeType)
+        super.onChangeEnded(other, changeHandler, changeType)
 
         if (changeType == ControllerChangeType.PUSH_ENTER) {
             addChild(0)
@@ -61,7 +63,7 @@ class ParentController : BaseController() {
                     false
                 )
 
-                childController.doOnChangeEnd { _, _, changeType ->
+                childController.doOnChangeEnd { _, _, _, changeType ->
                     if (!isBeingDestroyed) {
                         if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
                             if (index < NUMBER_OF_CHILDREN - 1) {

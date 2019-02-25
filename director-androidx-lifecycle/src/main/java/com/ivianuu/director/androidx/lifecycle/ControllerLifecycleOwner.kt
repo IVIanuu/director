@@ -62,7 +62,8 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
 
 }
 
-private val lifecycleOwnersByController = mutableMapOf<Controller, LifecycleOwner>()
+private val lifecycleOwnersByController =
+    mutableMapOf<Controller, LifecycleOwner>()
 
 /**
  * The cached lifecycle owner of this controller

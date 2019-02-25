@@ -182,6 +182,7 @@ abstract class Controller {
      * Called when this Controller begins the process of being swapped in or out of the host view.
      */
     protected open fun onChangeStarted(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
@@ -192,6 +193,7 @@ abstract class Controller {
      * Called when this Controller completes the process of being swapped in or out of the host view.
      */
     protected open fun onChangeEnded(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
@@ -515,19 +517,21 @@ abstract class Controller {
     }
 
     internal fun changeStarted(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        onChangeStarted(changeHandler, changeType)
-        notifyListeners { it.onChangeStart(this, changeHandler, changeType) }
+        requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
+        notifyListeners { it.onChangeStart(this, other, changeHandler, changeType) }
     }
 
     internal fun changeEnded(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        onChangeEnded(changeHandler, changeType)
-        notifyListeners { it.onChangeEnd(this, changeHandler, changeType) }
+        requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
+        notifyListeners { it.onChangeEnd(this, other, changeHandler, changeType) }
     }
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {

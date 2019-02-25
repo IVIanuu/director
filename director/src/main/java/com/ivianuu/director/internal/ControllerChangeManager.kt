@@ -46,10 +46,10 @@ internal object ControllerChangeManager {
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
         val toView = to?.inflate(container)
-        to?.changeStarted(handlerToUse, toChangeType)
+        to?.changeStarted(from, handlerToUse, toChangeType)
 
         val fromView = from?.view
-        from?.changeStarted(handlerToUse, fromChangeType)
+        from?.changeStarted(to, handlerToUse, fromChangeType)
 
         handlerToUse.performChange(
             container,
@@ -60,12 +60,12 @@ internal object ControllerChangeManager {
         ) {
             if (from != null) {
                 handlers.remove(from.instanceId)
-                from.changeEnded(handlerToUse, fromChangeType)
+                from.changeEnded(to, handlerToUse, fromChangeType)
             }
 
             if (to != null) {
                 handlers.remove(to.instanceId)
-                to.changeEnded(handlerToUse, toChangeType)
+                to.changeEnded(from, handlerToUse, toChangeType)
             }
 
             listeners.forEach {

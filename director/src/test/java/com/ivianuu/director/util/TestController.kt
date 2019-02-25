@@ -66,18 +66,20 @@ class TestController : Controller() {
     }
 
     override fun onChangeStarted(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        super.onChangeStarted(changeHandler, changeType)
+        super.onChangeStarted(other, changeHandler, changeType)
         currentCallState.changeStartCalls++
     }
 
     override fun onChangeEnded(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        super.onChangeEnded(changeHandler, changeType)
+        super.onChangeEnded(other, changeHandler, changeType)
         currentCallState.changeEndCalls++
 
         if (changeHandler is MockChangeHandler) {

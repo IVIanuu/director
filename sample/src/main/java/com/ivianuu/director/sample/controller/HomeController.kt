@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
@@ -53,9 +54,11 @@ class HomeController : BaseController() {
     }
 
     override fun onChangeStarted(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
+        super.onChangeStarted(other, changeHandler, changeType)
         if (changeType.isEnter) {
             setTitle()
         }

@@ -98,18 +98,20 @@ class NavigationController : BaseController() {
     }
 
     override fun onChangeStarted(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        super.onChangeStarted(changeHandler, changeType)
+        super.onChangeStarted(other, changeHandler, changeType)
         setButtonsEnabled(false)
     }
 
     override fun onChangeEnded(
+        other: Controller?,
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
-        super.onChangeEnded(changeHandler, changeType)
+        super.onChangeEnded(other, changeHandler, changeType)
         setButtonsEnabled(true)
     }
 
