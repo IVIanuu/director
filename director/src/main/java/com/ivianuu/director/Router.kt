@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
-import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.takeLastUntil
 
@@ -60,20 +59,6 @@ class Router internal constructor(
     var container: ControllerContainer? = null
         private set
     private var realContainer: ViewGroup? = null
-
-    /**
-     * Will be used to instantiate controllers after config changes or process death
-     */
-    var controllerFactory: ControllerFactory?
-        get() = _controllerFactory
-        set(value) {
-            _controllerFactory = value
-                ?: DirectorPlugins.defaultControllerFactory
-                        ?: DefaultControllerFactory
-        }
-
-    private var _controllerFactory: ControllerFactory =
-        DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
 
     private val listeners = mutableListOf<ListenerEntry<RouterListener>>()
     private val controllerListeners = mutableListOf<ListenerEntry<ControllerListener>>()
@@ -428,7 +413,7 @@ class Router internal constructor(
         _backstack.clear()
         _backstack.addAll(
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
-                .map { Transaction.fromBundle(it, _controllerFactory) }
+                .map { Transaction.fromBundle(it, routerManager._controllerFactory) }
         )
 
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
@@ -517,8 +502,6 @@ class Router internal constructor(
         )
     }
 }
-
-val Router.host: Any get() = routerManager.host
 
 val Router.hasContainer: Boolean get() = container != null
 

@@ -18,6 +18,7 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
+import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 
@@ -35,13 +36,27 @@ class RouterManager(
     private val _routers = mutableListOf<Router>()
 
     private var hostStarted = false
-    private var routerStates: Map<Router, Bundle>? = null
-
     private var rootView: ViewGroup? = null
+
+    private var routerStates: Map<Router, Bundle>? = null
 
     internal val transactionIndexer: TransactionIndexer by lazy(LazyThreadSafetyMode.NONE) {
         hostRouterManager?.transactionIndexer ?: TransactionIndexer()
     }
+
+    /**
+     * Will be used to instantiate controllers after config changes or process death
+     */
+    var controllerFactory: ControllerFactory?
+        get() = _controllerFactory
+        set(value) {
+            _controllerFactory = value
+                ?: DirectorPlugins.defaultControllerFactory
+                        ?: DefaultControllerFactory
+        }
+
+    internal var _controllerFactory: ControllerFactory =
+        DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
 
     init {
         restoreInstanceState(savedInstanceState)
