@@ -536,6 +536,7 @@ abstract class Controller {
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
         listeners.get().forEach(block)
+        block.invoke(router.internalControllerListener)
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {

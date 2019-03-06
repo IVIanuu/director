@@ -774,6 +774,7 @@ class ControllerLifecycleCallbacksTest {
         val parent = TestController()
         val child = TestController()
 
+
         val listener = LastInFirstOutControllerListener(parent, child)
 
         parent.addListener(listener)

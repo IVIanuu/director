@@ -82,6 +82,18 @@ class Router internal constructor(
         onChangeEnded = { _, _, _, _, _, _ -> inProgressTransactions-- }
     )
 
+    val internalControllerListener = ControllerListener(
+        postDetach = { controller, _ ->
+            if (destroyingControllers.contains(controller)) {
+                destroyingControllers.remove(controller)
+                controller.containerRemoved()
+                controller.hostDestroyed()
+            }
+        }
+    )
+
+    private val destroyingControllers = mutableListOf<Controller>()
+
     init {
         addListener(internalChangeListener)
     }
@@ -127,12 +139,10 @@ class Router internal constructor(
 
         // to ensure the destruction lifecycle onDetach -> onUnbindView -> onDestroy
         // we have to await until the view gets detached
-        destroyedVisibleTransactions.reversed().forEach {
-            it.controller.doOnPostDetach { _, _ ->
-                it.controller.containerRemoved()
-                it.controller.hostDestroyed()
-            }
-        }
+        destroyingControllers.addAll(
+            destroyedVisibleTransactions.reversed()
+                .map { it.controller }
+        )
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach {
