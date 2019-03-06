@@ -88,6 +88,8 @@ abstract class Controller {
     private var viewIsAttached = false
     private var attachedToUnownedParent = false
 
+    private var isPerformingExitTransition = false
+
     /**
      * Whether or not the view should be retained while being detached
      */
@@ -113,9 +115,15 @@ abstract class Controller {
         } else {
             detach()
 
-            // this means that a controller was pushed on top of us
-            if (!attachedToUnownedParent && !isBeingDestroyed && !retainView) {
-                unbindView()
+            val isViewRemovalAllowed = isPerformingExitTransition
+                    && !attachedToUnownedParent && !isBeingDestroyed
+
+            if (isViewRemovalAllowed) {
+                if (!retainView) {
+                    unbindView()
+                } else {
+                    childRouterManager.removeContainers()
+                }
             }
         }
     }
@@ -523,6 +531,7 @@ abstract class Controller {
     ) {
         requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
         notifyListeners { it.onChangeStart(this, other, changeHandler, changeType) }
+        isPerformingExitTransition = !changeType.isEnter
     }
 
     internal fun changeEnded(
@@ -532,6 +541,7 @@ abstract class Controller {
     ) {
         requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
         notifyListeners { it.onChangeEnd(this, other, changeHandler, changeType) }
+        isPerformingExitTransition = false
     }
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {

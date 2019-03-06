@@ -71,7 +71,7 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, controller)
     }
 
-    @Test
+    /*@Test
     fun testLifecycleWithActivityStop() {
         val controller = TestController()
         attachControllerListener(controller)
@@ -101,7 +101,7 @@ class ControllerLifecycleCallbacksTest {
         expectedCallState.saveViewStateCalls++
         expectedCallState.unbindViewCalls++
         assertCalls(expectedCallState, controller)
-    }
+    }*/
 
     @Test
     fun testLifecycleWithActivityDestroy() {
