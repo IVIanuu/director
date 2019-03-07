@@ -169,12 +169,12 @@ class Router internal constructor(
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId, true)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
                     ?: SimpleSwapChangeHandler()
-                    localHandler.forceRemoveViewOnPush = true
                     performControllerChange(
                         transaction,
                         null,
                         isPush,
-                        localHandler
+                        localHandler,
+                        true
                     )
                 }
 
@@ -188,7 +188,8 @@ class Router internal constructor(
                         newVisibleTransactions.getOrNull(i - 1),
                         transaction,
                         true,
-                        localHandler
+                        localHandler,
+                        false
                     )
                 }
 
@@ -199,14 +200,12 @@ class Router internal constructor(
                     else oldTopTransaction?.popChangeHandler?.copy())
                     ?: SimpleSwapChangeHandler()
 
-                localHandler.forceRemoveViewOnPush =
-                    !newVisibleTransactions.contains(oldTopTransaction)
-
                 performControllerChange(
                     oldTopTransaction,
                     newTopTransaction,
                     isPush,
-                    localHandler
+                    localHandler,
+                    !newVisibleTransactions.contains(oldTopTransaction)
                 )
             }
         }
@@ -254,7 +253,8 @@ class Router internal constructor(
             .forEach {
                 performControllerChange(
                     null, it, true,
-                    SimpleSwapChangeHandler(false)
+                    SimpleSwapChangeHandler(false),
+                    false
                 )
             }
     }
@@ -427,7 +427,8 @@ class Router internal constructor(
         from: Transaction?,
         to: Transaction?,
         isPush: Boolean,
-        handler: ChangeHandler? = null
+        handler: ChangeHandler? = null,
+        forceRemoveFromViewOnPush: Boolean
     ) {
         check(!isPush || to == null || to.controller.state != DESTROYED) {
             "Trying to push a controller that has already been destroyed ${to!!.javaClass.simpleName}"
@@ -448,6 +449,7 @@ class Router internal constructor(
             isPush,
             container,
             handlerToUse,
+            forceRemoveFromViewOnPush,
             listeners.get()
         )
     }

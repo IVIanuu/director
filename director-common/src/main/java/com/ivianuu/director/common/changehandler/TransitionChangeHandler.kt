@@ -21,8 +21,7 @@ import android.os.Build
 import android.os.Bundle
 import android.transition.Transition
 import android.transition.TransitionManager
-import android.view.View
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
@@ -43,23 +42,19 @@ abstract class TransitionChangeHandler(
     private var canceled = false
     private var needsImmediateCompletion = false
 
-    override fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    ) {
+    override fun performChange(changeData: ChangeData) {
+        val (container, _, _, _,
+            onChangeComplete) = changeData
+
         if (canceled) {
             if (needsImmediateCompletion) {
-                executePropertyChanges(container, from, to, toIndex, null, isPush)
+                executePropertyChanges(changeData, null)
             }
             onChangeComplete()
             return
         }
 
-        val transition = getTransition(container, from, to, toIndex, isPush)
+        val transition = getTransition(changeData)
         if (duration != NO_DURATION) {
             transition.duration = duration
         }
@@ -83,20 +78,13 @@ abstract class TransitionChangeHandler(
             }
         })
 
-        prepareForTransition(
-            container,
-            from,
-            to,
-            toIndex,
-            transition,
-            isPush
-        ) {
+        prepareForTransition(changeData, transition) {
             // todo transition manager needs a fully attached container
             if (container.isLaidOut) {
                 TransitionManager.beginDelayedTransition(container, transition)
-                executePropertyChanges(container, from, to, toIndex, transition, isPush)
+                executePropertyChanges(changeData, transition)
             } else {
-                executePropertyChanges(container, from, to, toIndex, transition, isPush)
+                executePropertyChanges(changeData, transition)
                 onChangeComplete()
             }
         }
@@ -123,24 +111,14 @@ abstract class TransitionChangeHandler(
     /**
      * Returns the [Transition] to use to swap views
      */
-    protected abstract fun getTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition
+    protected abstract fun getTransition(changeData: ChangeData): Transition
 
     /**
      * Called before starting the [transition]
      */
     protected open fun prepareForTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
+        changeData: ChangeData,
         transition: Transition,
-        isPush: Boolean,
         onTransitionPrepared: () -> Unit
     ) {
         onTransitionPrepared()
@@ -152,13 +130,12 @@ abstract class TransitionChangeHandler(
      * and adds the [to] view.
      */
     protected open fun executePropertyChanges(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        transition: Transition?,
-        isPush: Boolean
+        changeData: ChangeData,
+        transition: Transition?
     ) {
+        val (container, from, to, isPush,
+            _, toIndex, forceRemoveFromViewOnPush) = changeData
+
         if (to != null) {
             if (to.parent == null) {
                 container.addView(to, toIndex)
@@ -167,7 +144,7 @@ abstract class TransitionChangeHandler(
             }
         }
 
-        if (from != null && (removesFromViewOnPush || !isPush)) {
+        if (from != null && (removesFromViewOnPush || forceRemoveFromViewOnPush || !isPush)) {
             container.removeView(from)
         }
     }

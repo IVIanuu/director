@@ -20,10 +20,9 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.DirectorPlugins
-import com.ivianuu.director.common.ChangeData
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 import com.ivianuu.director.internal.moveView
@@ -51,15 +50,11 @@ abstract class AnimatorChangeHandler(
         this.duration = duration
     }
 
-    override fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    ) {
-        changeData = ChangeData(container, from, to, toIndex, isPush, onChangeComplete)
+    override fun performChange(changeData: ChangeData) {
+        this.changeData = changeData
+
+        val (container, from, to, isPush,
+            _, toIndex) = changeData
 
         var readyToAnimate = true
         val addingToView = to != null && to.parent == null
@@ -75,20 +70,13 @@ abstract class AnimatorChangeHandler(
             if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
                 onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
-                    performAnimation(
-                        container,
-                        from,
-                        to,
-                        toIndex,
-                        isPush,
-                        addingToView
-                    )
+                    performAnimation(changeData, addingToView)
                 }
             }
         }
 
         if (readyToAnimate) {
-            performAnimation(container, from, to, toIndex, isPush, addingToView)
+            performAnimation(changeData, addingToView)
         }
     }
 
@@ -126,11 +114,7 @@ abstract class AnimatorChangeHandler(
      * Should be overridden to return the Animator to use while replacing Views.
      */
     protected abstract fun getAnimator(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
+        changeData: ChangeData,
         toAddedToContainer: Boolean
     ): Animator
 
@@ -142,11 +126,7 @@ abstract class AnimatorChangeHandler(
     }
 
     private fun performAnimation(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
+        changeData: ChangeData,
         toAddedToContainer: Boolean
     ) {
         if (canceled) {
@@ -154,7 +134,7 @@ abstract class AnimatorChangeHandler(
             return
         }
 
-        animator = getAnimator(container, from, to, toIndex, isPush, toAddedToContainer).apply {
+        animator = getAnimator(changeData, toAddedToContainer).apply {
             if (this@AnimatorChangeHandler.duration != NO_DURATION) {
                 duration = this@AnimatorChangeHandler.duration
             }
@@ -173,7 +153,8 @@ abstract class AnimatorChangeHandler(
         if (completed) return
         completed = true
 
-        val (container, from, to, _, isPush, onChangeComplete) = changeData!!
+        val (container, from, to, isPush,
+            onChangeComplete, _, forceRemoveFromViewOnPush) = changeData!!
 
         if (canceled && !needsImmediateCompletion) {
             if (from != null) {
@@ -184,7 +165,7 @@ abstract class AnimatorChangeHandler(
                 container.removeView(to)
             }
         } else {
-            if (from != null && (!isPush || removesFromViewOnPush)) {
+            if (from != null && (!isPush || removesFromViewOnPush || forceRemoveFromViewOnPush)) {
                 container.removeView(from)
             }
 

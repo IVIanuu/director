@@ -18,7 +18,7 @@ package com.ivianuu.director.util
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
 
 class MockChangeHandler internal constructor(
@@ -52,14 +52,10 @@ class MockChangeHandler internal constructor(
         }
     }
 
-    override fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    ) {
+    override fun performChange(changeData: ChangeData) {
+        val (container, from, to, isPush,
+            onChangeComplete, toIndex) = changeData
+
         this.from = from
         this.to = to
 
@@ -67,11 +63,11 @@ class MockChangeHandler internal constructor(
 
         if (isPush) {
             if (to != null && to.parent == null) {
-                container.addView(to)
+                container.addView(to, toIndex)
                 listener.didAttachOrDetach()
             }
 
-            if (removesFromViewOnPush && from != null) {
+            if ((removesFromViewOnPush || changeData.forceRemoveFromViewOnPush) && from != null) {
                 container.removeView(from)
             }
         } else {

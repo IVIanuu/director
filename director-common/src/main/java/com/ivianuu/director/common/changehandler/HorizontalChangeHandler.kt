@@ -20,7 +20,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 
@@ -34,13 +34,11 @@ open class HorizontalChangeHandler(
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
     override fun getAnimator(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
+        changeData: ChangeData,
         toAddedToContainer: Boolean
     ): Animator {
+        val (_, from, to, isPush) = changeData
+
         val animatorSet = AnimatorSet()
 
         if (isPush) {

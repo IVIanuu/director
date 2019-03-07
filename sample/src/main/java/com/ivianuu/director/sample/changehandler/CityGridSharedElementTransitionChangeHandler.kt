@@ -11,8 +11,7 @@ import android.transition.Slide
 import android.transition.Transition
 import android.transition.TransitionSet
 import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
 import java.util.*
 
@@ -38,48 +37,24 @@ class CityGridSharedElementTransitionChangeHandler(
         }
     }
 
-    override fun getExitTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? = if (isPush) {
+    override fun getExitTransition(changeData: ChangeData): Transition? = if (changeData.isPush) {
         Explode()
     } else {
         Slide(Gravity.BOTTOM)
     }
 
-    override fun getSharedElementTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? = TransitionSet()
+    override fun getSharedElementTransition(changeData: ChangeData): Transition? = TransitionSet()
         .addTransition(ChangeBounds())
         .addTransition(ChangeClipBounds())
         .addTransition(ChangeTransform())
 
-    override fun getEnterTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? = if (isPush) {
+    override fun getEnterTransition(changeData: ChangeData): Transition? = if (changeData.isPush) {
         Slide(Gravity.BOTTOM)
     } else {
         Explode()
     }
 
-    override fun configureSharedElements(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ) {
+    override fun configureSharedElements(changeData: ChangeData) {
         names.forEach {
             addSharedElement(it)
             waitOnSharedElementNamed(it)

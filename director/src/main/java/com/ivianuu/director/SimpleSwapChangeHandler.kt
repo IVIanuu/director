@@ -18,7 +18,6 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import com.ivianuu.director.internal.moveView
 
 /**
@@ -31,16 +30,13 @@ open class SimpleSwapChangeHandler(
     override val removesFromViewOnPush: Boolean get() = _removesFromViewOnPush
     private var _removesFromViewOnPush = removesFromViewOnPush
 
-    private var container: ViewGroup? = null
-    private var onChangeComplete: (() -> Unit)? = null
+    private var changeData: ChangeData? = null
 
     private val attachStateChangeListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) {
             v.removeOnAttachStateChangeListener(this)
-
-            onChangeComplete?.invoke()
-            onChangeComplete = null
-            container = null
+            changeData?.onChangeComplete?.invoke()
+            changeData = null
         }
 
         override fun onViewDetachedFromWindow(v: View) {
@@ -59,24 +55,18 @@ open class SimpleSwapChangeHandler(
 
     override fun cancel(immediate: Boolean) {
         super.cancel(immediate)
-        onChangeComplete?.let {
-            it()
-            onChangeComplete = null
-            container?.removeOnAttachStateChangeListener(attachStateChangeListener)
-            container = null
+        changeData?.let {
+            it.onChangeComplete()
+            it.container.removeOnAttachStateChangeListener(attachStateChangeListener)
         }
+        changeData = null
     }
 
-    override fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    ) {
-        this.onChangeComplete = onChangeComplete
-        this.container = container
+    override fun performChange(changeData: ChangeData) {
+        this.changeData = changeData
+
+        val (container, from, to, isPush,
+            onChangeComplete, toIndex, forceRemoveFromViewOnPush) = changeData
 
         if (to != null) {
             if (to.parent == null) {
@@ -86,14 +76,13 @@ open class SimpleSwapChangeHandler(
             }
         }
 
-        if (from != null && (!isPush || removesFromViewOnPush)) {
+        if (from != null && (!isPush || removesFromViewOnPush || forceRemoveFromViewOnPush)) {
             container.removeView(from)
         }
 
         if (container.windowToken != null) {
             onChangeComplete()
-            this.container = null
-            this.onChangeComplete = null
+            this.changeData = null
         } else {
             container.addOnAttachStateChangeListener(attachStateChangeListener)
         }

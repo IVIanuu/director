@@ -26,6 +26,7 @@ import android.transition.TransitionSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnPreDrawListener
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.addTargets
 import com.ivianuu.director.common.findNamedView
@@ -56,85 +57,67 @@ abstract class SharedElementTransitionChangeHandler(
     private var exitTransitionCallback: SharedElementCallback? = null
     private var enterTransitionCallback: SharedElementCallback? = null
 
-    override fun getTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition {
-        exitTransition = getExitTransition(container, from, to, toIndex, isPush)
-        enterTransition = getEnterTransition(container, from, to, toIndex, isPush)
-        sharedElementTransition = getSharedElementTransition(container, from, to, toIndex, isPush)
-        exitTransitionCallback = getExitTransitionCallback(container, from, to, toIndex, isPush)
-        enterTransitionCallback = getEnterTransitionCallback(container, from, to, toIndex, isPush)
+    override fun getTransition(changeData: ChangeData): Transition {
+        exitTransition = getExitTransition(changeData)
+        enterTransition = getEnterTransition(changeData)
+        sharedElementTransition = getSharedElementTransition(changeData)
+        exitTransitionCallback = getExitTransitionCallback(changeData)
+        enterTransitionCallback = getEnterTransitionCallback(changeData)
 
         check(enterTransition != null || sharedElementTransition != null || exitTransition != null) {
             "SharedElementTransitionChangeHandler must have at least one transaction."
         }
 
-        return mergeTransitions(isPush)
+        return mergeTransitions(changeData.isPush)
     }
 
     override fun prepareForTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
+        changeData: ChangeData,
         transition: Transition,
-        isPush: Boolean,
         onTransitionPrepared: () -> Unit
     ) {
         val listener = {
-            configureTransition(container, from, to, transition, isPush)
+            configureTransition(changeData, transition)
             onTransitionPrepared()
         }
 
-        configureSharedElements(container, from, to, toIndex, isPush)
+        configureSharedElements(changeData)
+
+        val to = changeData.to
 
         if (to != null && to.parent == null && waitForTransitionNames.isNotEmpty()) {
             waitOnAllTransitionNames(to, listener)
-            container.addView(to, toIndex)
+            changeData.container.addView(to, changeData.toIndex)
         } else {
             listener()
         }
     }
 
     override fun executePropertyChanges(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        transition: Transition?,
-        isPush: Boolean
+        changeData: ChangeData,
+        transition: Transition?
     ) {
+        val to = changeData.to
         if (to != null && removedViews.isNotEmpty()) {
             to.visibility = View.VISIBLE
             removedViews.forEach { it.second.addView(it.first) }
             removedViews.clear()
         }
 
-        super.executePropertyChanges(container, from, to, toIndex, transition, isPush)
+        super.executePropertyChanges(changeData, transition)
     }
 
-    private fun configureTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        transition: Transition,
-        isPush: Boolean
-    ) {
+    private fun configureTransition(changeData: ChangeData, transition: Transition) {
+        val (container) = changeData
+
         val nonExistentView = View(container.context)
 
         val fromSharedElements = mutableListOf<View>()
         val toSharedElements = mutableListOf<View>()
 
         configureSharedElements(
-            container,
+            changeData,
             nonExistentView,
-            to,
-            from,
-            isPush,
             fromSharedElements,
             toSharedElements
         )
@@ -143,7 +126,7 @@ abstract class SharedElementTransitionChangeHandler(
         val exitingViews = if (exitTransition != null) {
             configureEnteringExitingViews(
                 exitTransition,
-                from,
+                changeData.from,
                 fromSharedElements,
                 nonExistentView
             )
@@ -171,7 +154,7 @@ abstract class SharedElementTransitionChangeHandler(
 
         scheduleTargetChange(
             container,
-            to,
+            changeData.to,
             nonExistentView,
             toSharedElements,
             enteringViews,
@@ -306,14 +289,13 @@ abstract class SharedElementTransitionChangeHandler(
     }
 
     private fun configureSharedElements(
-        container: ViewGroup,
+        changeData: ChangeData,
         nonExistentView: View,
-        to: View?,
-        from: View?,
-        isPush: Boolean,
         fromSharedElements: MutableList<View>,
         toSharedElements: MutableList<View>
     ) {
+        val (container, from, to, isPush) = changeData
+
         if (to == null || from == null) {
             return
         }
@@ -576,68 +558,34 @@ abstract class SharedElementTransitionChangeHandler(
      * should be called for each shared element that will be used. If one or more of these shared elements will not instantly be available in
      * the incoming view (for ex, in a RecyclerView), waitOnSharedElementNamed can be called to delay the transition until everything is available.
      */
-    protected abstract fun configureSharedElements(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    )
+    protected abstract fun configureSharedElements(changeData: ChangeData)
 
     /**
      * Should return the transition that will be used on the exiting ("from") view, if one is desired.
      */
-    protected open fun getExitTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? = null
+    protected open fun getExitTransition(changeData: ChangeData): Transition? = null
 
     /**
      * Should return the transition that will be used on shared elements between the from and to views.
      */
-    protected open fun getSharedElementTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? = null
+    protected open fun getSharedElementTransition(changeData: ChangeData): Transition? = null
 
     /**
      * Should return the transition that will be used on the entering ("to") view, if one is desired.
      */
-    protected open fun getEnterTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? = null
+    protected open fun getEnterTransition(changeData: ChangeData): Transition? = null
 
     /**
      * Should return a callback that can be used to customize transition behavior of the shared element transition for the "from" view.
      */
-    protected open fun getExitTransitionCallback(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): SharedElementCallback? = null
+    protected open fun getExitTransitionCallback(changeData: ChangeData): SharedElementCallback? =
+        null
 
     /**
      * Should return a callback that can be used to customize transition behavior of the shared element transition for the "to" view.
      */
-    protected open fun getEnterTransitionCallback(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): SharedElementCallback? = null
+    protected open fun getEnterTransitionCallback(changeData: ChangeData): SharedElementCallback? =
+        null
 
     /**
      * Should return whether or not the the exit transition and enter transition should overlap. If true,

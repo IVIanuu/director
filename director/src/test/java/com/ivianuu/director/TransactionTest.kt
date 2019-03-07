@@ -16,8 +16,6 @@
 
 package com.ivianuu.director
 
-import android.view.View
-import android.view.ViewGroup
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.util.ActivityProxy
@@ -62,25 +60,11 @@ class TransactionTest {
 }
 
 class ChangeHandlerOne : ChangeHandler() {
-    override fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    ) {
+    override fun performChange(changeData: ChangeData) {
     }
 }
 
 class ChangeHandlerTwo : ChangeHandler() {
-    override fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    ) {
+    override fun performChange(changeData: ChangeData) {
     }
 }

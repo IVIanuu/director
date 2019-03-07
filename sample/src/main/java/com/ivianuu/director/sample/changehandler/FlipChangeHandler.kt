@@ -5,9 +5,8 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.util.Property
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.AnimatorChangeHandler
 
 class FlipChangeHandler(
@@ -27,13 +26,11 @@ class FlipChangeHandler(
     }
 
     override fun getAnimator(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
+        changeData: ChangeData,
         toAddedToContainer: Boolean
     ): Animator {
+        val (_, from, to, isPush) = changeData
+
         val animatorSet = AnimatorSet()
 
         if (to != null) {

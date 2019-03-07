@@ -12,7 +12,7 @@ import android.transition.Transition
 import android.transition.Transition.TransitionListener
 import android.transition.TransitionSet
 import android.view.View
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
 import com.ivianuu.director.common.findNamedView
 import java.util.*
@@ -39,23 +39,11 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         sharedElementNames.addAll(bundle.getStringArrayList(KEY_SHARED_ELEMENT_NAMES)!!)
     }
 
-    override fun getExitTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? {
+    override fun getExitTransition(changeData: ChangeData): Transition? {
         return Fade(Fade.OUT)
     }
 
-    override fun getSharedElementTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? {
+    override fun getSharedElementTransition(changeData: ChangeData): Transition? {
         val transition =
             TransitionSet()
                 .addTransition(ChangeBounds()).addTransition(ChangeClipBounds())
@@ -66,9 +54,9 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         // The framework doesn't totally fade out the "from" shared element, so we'll hide it manually once it's safe.
         transition.addListener(object : TransitionListener {
             override fun onTransitionStart(transition: Transition) {
-                if (from != null) {
+                if (changeData.from != null) {
                     sharedElementNames
-                        .mapNotNull { from.findNamedView(it) }
+                        .mapNotNull { changeData.from!!.findNamedView(it) }
                         .forEach { it.visibility = View.INVISIBLE }
                 }
             }
@@ -89,23 +77,11 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         return transition
     }
 
-    override fun getEnterTransition(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ): Transition? {
+    override fun getEnterTransition(changeData: ChangeData): Transition? {
         return Fade(Fade.IN)
     }
 
-    override fun configureSharedElements(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean
-    ) {
+    override fun configureSharedElements(changeData: ChangeData) {
         sharedElementNames.forEach { addSharedElement(it) }
     }
 

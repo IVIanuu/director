@@ -16,8 +16,6 @@
 
 package com.ivianuu.director
 
-import android.view.View
-import android.view.ViewGroup
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
@@ -96,34 +94,15 @@ class ViewLeakTest {
     }
 
     class NeverAddChangeHandler : ChangeHandler() {
-        override fun performChange(
-            container: ViewGroup,
-            from: View?,
-            to: View?,
-            toIndex: Int,
-            isPush: Boolean,
-            onChangeComplete: () -> Unit
-        ) {
-
-            if (from != null) {
-                container.removeView(from)
-            }
+        override fun performChange(changeData: ChangeData) {
+            changeData.from?.let(changeData.container::removeView)
         }
     }
 
     class NeverCompleteChangeHandler : ChangeHandler() {
-        override fun performChange(
-            container: ViewGroup,
-            from: View?,
-            to: View?,
-            toIndex: Int,
-            isPush: Boolean,
-            onChangeComplete: () -> Unit
-        ) {
-            if (from != null) {
-                container.removeView(from)
-            }
-            container.addView(to)
+        override fun performChange(changeData: ChangeData) {
+            changeData.from?.let(changeData.container::removeView)
+            changeData.container.addView(changeData.to, changeData.toIndex)
         }
     }
 }

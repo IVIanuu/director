@@ -2,6 +2,7 @@ package com.ivianuu.director.internal
 
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
@@ -11,7 +12,7 @@ import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal object ControllerChangeManager {
 
-    private val handlers = mutableMapOf<String, ChangeHandlerData>()
+    private val handlers = mutableMapOf<String, HandlerWithIsPush>()
 
     fun executeChange(
         router: Router,
@@ -20,6 +21,7 @@ internal object ControllerChangeManager {
         isPush: Boolean,
         container: ViewGroup,
         handler: ChangeHandler?,
+        forceRemoveFromViewOnPush: Boolean,
         listeners: List<RouterListener>
     ) {
         val handlerToUse = when {
@@ -34,7 +36,7 @@ internal object ControllerChangeManager {
         }
 
         if (to != null) {
-            handlers[to.instanceId] = ChangeHandlerData(handlerToUse, isPush)
+            handlers[to.instanceId] = HandlerWithIsPush(handlerToUse, isPush)
         }
 
         listeners.forEach { it.onChangeStarted(router, to, from, isPush, container, handlerToUse) }
@@ -51,13 +53,7 @@ internal object ControllerChangeManager {
         val fromView = from?.view
         from?.changeStarted(to, handlerToUse, fromChangeType)
 
-        handlerToUse.performChange(
-            container,
-            fromView,
-            toView,
-            getToIndex(router, container, toView, fromView, isPush),
-            isPush
-        ) {
+        val onChangeComplete: () -> Unit = {
             if (from != null) {
                 handlers.remove(from.instanceId)
                 from.changeEnded(to, handlerToUse, fromChangeType)
@@ -78,14 +74,19 @@ internal object ControllerChangeManager {
                     handlerToUse
                 )
             }
-
-            if (handlerToUse.forceRemoveViewOnPush && fromView != null) {
-                val fromParent = fromView.parent
-                if (fromParent != null && fromParent is ViewGroup) {
-                    fromParent.removeView(fromView)
-                }
-            }
         }
+
+        val changeData = ChangeData(
+            container,
+            fromView,
+            toView,
+            isPush,
+            onChangeComplete,
+            getToIndex(router, container, toView, fromView, isPush),
+            forceRemoveFromViewOnPush
+        )
+
+        handlerToUse.performChange(changeData)
     }
 
     fun cancelChange(instanceId: String, immediate: Boolean) {
@@ -138,7 +139,7 @@ internal object ControllerChangeManager {
 
 }
 
-private data class ChangeHandlerData(
+private data class HandlerWithIsPush(
     val changeHandler: ChangeHandler,
     val isPush: Boolean
 )

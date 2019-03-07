@@ -1,9 +1,6 @@
 package com.ivianuu.director
 
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-
 import com.ivianuu.director.internal.newInstanceOrThrow
 
 /**
@@ -16,20 +13,12 @@ abstract class ChangeHandler {
      */
     open val removesFromViewOnPush: Boolean get() = true
 
-    internal var forceRemoveViewOnPush = false
     internal var hasBeenUsed = false
 
     /**
      * Responsible for swapping Views from one Controller to another.
      */
-    abstract fun performChange(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
-        onChangeComplete: () -> Unit
-    )
+    abstract fun performChange(changeData: ChangeData)
 
     /**
      * Saves any data about this changeHandler to a Bundle in case the application is killed.

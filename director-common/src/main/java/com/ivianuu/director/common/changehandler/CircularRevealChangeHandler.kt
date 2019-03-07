@@ -6,7 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewAnimationUtils
-import android.view.ViewGroup
+import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 
@@ -51,13 +51,10 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
     }
 
     override fun getAnimator(
-        container: ViewGroup,
-        from: View?,
-        to: View?,
-        toIndex: Int,
-        isPush: Boolean,
+        changeData: ChangeData,
         toAddedToContainer: Boolean
     ): Animator {
+        val (_, from, to, isPush) = changeData
         val radius = Math.hypot(cx.toDouble(), cy.toDouble()).toFloat()
         var animator: Animator? = null
         if (isPush && to != null) {
