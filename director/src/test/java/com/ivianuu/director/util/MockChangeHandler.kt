@@ -20,14 +20,15 @@ import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.internal.moveView
+
+private object NoopListener : MockChangeHandler.Listener
 
 class MockChangeHandler internal constructor(
     override var removesFromViewOnPush: Boolean,
     var tag: String?,
-    listener: Listener?
+    val listener: Listener = NoopListener
 ) : ChangeHandler() {
-
-    private val listener: Listener?
 
     var from: View? = null
     var to: View? = null
@@ -43,15 +44,6 @@ class MockChangeHandler internal constructor(
         }
     }
 
-    init {
-        if (listener == null) {
-            this.listener = object : Listener {
-            }
-        } else {
-            this.listener = listener
-        }
-    }
-
     override fun performChange(changeData: ChangeData) {
         val (container, from, to, isPush,
             onChangeComplete, toIndex) = changeData
@@ -59,12 +51,16 @@ class MockChangeHandler internal constructor(
         this.from = from
         this.to = to
 
-        listener!!.willStartChange()
+        listener.willStartChange()
 
         if (isPush) {
-            if (to != null && to.parent == null) {
-                container.addView(to, toIndex)
-                listener.didAttachOrDetach()
+            if (to != null) {
+                if (to.parent == null) {
+                    container.addView(to, toIndex)
+                    listener.didAttachOrDetach()
+                } else if (container.indexOfChild(to) != toIndex) {
+                    container.moveView(to, toIndex)
+                }
             }
 
             if ((removesFromViewOnPush || changeData.forceRemoveFromViewOnPush) && from != null) {
@@ -104,15 +100,18 @@ class MockChangeHandler internal constructor(
     }
 }
 
-fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null, null)
+fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null)
 
-fun noRemoveViewOnPushHandler(): MockChangeHandler = MockChangeHandler(false, null, null)
+fun noRemoveViewOnPushHandler(): MockChangeHandler = MockChangeHandler(
+    false,
+    null
+)
 
 fun noRemoveViewOnPushHandler(tag: String): MockChangeHandler =
-    MockChangeHandler(false, tag, null)
+    MockChangeHandler(false, tag)
 
 fun listeningChangeHandler(listener: MockChangeHandler.Listener): MockChangeHandler =
     MockChangeHandler(true, null, listener)
 
 fun taggedHandler(tag: String, removeViewOnPush: Boolean): MockChangeHandler =
-    MockChangeHandler(removeViewOnPush, tag, null)
+    MockChangeHandler(removeViewOnPush, tag)
