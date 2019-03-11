@@ -113,14 +113,14 @@ class Router internal constructor(
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
             .onEach { it.ensureValidIndex(routerManager.transactionIndexer) }
-            .map { it.transactionIndex }
+            .map(Transaction::transactionIndex)
             .sorted()
 
         newBackstack.forEachIndexed { i, transaction ->
             transaction.transactionIndex = indices[i]
         }
 
-        check(newBackstack.size == newBackstack.distinctBy { it.controller }.size) {
+        check(newBackstack.size == newBackstack.distinctBy(Transaction::controller).size) {
             "Trying to push the same controller to the backstack more than once."
         }
 
@@ -141,7 +141,7 @@ class Router internal constructor(
         // we have to await until the view gets detached
         destroyingControllers.addAll(
             destroyedVisibleTransactions.reversed()
-                .map { it.controller }
+                .map(Transaction::controller)
         )
 
         // Ensure all new controllers have a valid router set
@@ -377,7 +377,7 @@ class Router internal constructor(
         prepareForContainerRemoval()
 
         return Bundle().apply {
-            val backstack = _backstack.map { it.saveInstanceState() }
+            val backstack = _backstack.map(Transaction::saveInstanceState)
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)

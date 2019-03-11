@@ -32,8 +32,7 @@ internal class ListenersHolder<T>(var parent: ListenersHolder<T>? = null) {
     fun get(recursiveOnly: Boolean = false): List<T> {
         return listeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } +
-                (parent?.get(true) ?: emptyList())
+            .map(ListenerEntry<T>::listener) + (parent?.get(true) ?: emptyList())
     }
 
     data class ListenerEntry<T>(

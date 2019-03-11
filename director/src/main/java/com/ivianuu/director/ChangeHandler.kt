@@ -45,7 +45,7 @@ abstract class ChangeHandler {
 
     internal fun toBundle(): Bundle = Bundle().apply {
         putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
-        putBundle(KEY_SAVED_STATE, Bundle().also { saveToBundle(it) })
+        putBundle(KEY_SAVED_STATE, Bundle().also(this@ChangeHandler::saveToBundle))
     }
 
     companion object {

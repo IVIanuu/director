@@ -95,8 +95,8 @@ class Transaction {
         ) = Transaction(
                 Controller.fromBundle(bundle.getBundle(KEY_CONTROLLER_BUNDLE)!!, controllerFactory),
             bundle.getString(KEY_TAG),
-            bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let { ChangeHandler.fromBundle(it) },
-            bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let { ChangeHandler.fromBundle(it) },
+            bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let(ChangeHandler.Companion::fromBundle),
+            bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let(ChangeHandler.Companion::fromBundle),
             bundle.getInt(KEY_INDEX),
             bundle.getBoolean(KEY_ATTACHED_TO_ROUTER)
         )

@@ -19,6 +19,9 @@ package com.ivianuu.director
 import android.view.View
 import android.view.ViewGroup
 
+/**
+ * All necessary info a [ChangeHandler] needs to do it's job
+ */
 data class ChangeData(
     val container: ViewGroup,
     val from: View?,

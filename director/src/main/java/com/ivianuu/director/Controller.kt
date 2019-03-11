@@ -58,11 +58,7 @@ abstract class Controller {
      * The target controller of this controller
      */
     var targetController: Controller?
-        get() = targetInstanceId?.let {
-            routerManager.rootRouterManager.getControllerByInstanceIdOrNull(
-                it
-            )
-        }
+        get() = targetInstanceId?.let(routerManager.rootRouterManager::getControllerByInstanceIdOrNull)
         set(value) {
             check(targetInstanceId == null) {
                 "the target controller can only be set once"
@@ -334,7 +330,7 @@ abstract class Controller {
 
         state = DESTROYED
 
-        requireSuperCalled { onDestroy() }
+        requireSuperCalled(this::onDestroy)
 
         notifyListeners { it.postDestroy(this) }
     }
@@ -382,9 +378,9 @@ abstract class Controller {
 
             attachHandler.takeView(view)
 
-            view.safeAs<ViewGroup>()?.let { childRouterManager.setContainers(it) }
+            view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
         } else if (retainView) {
-            view.safeAs<ViewGroup>()?.let { childRouterManager.setContainers(it) }
+            view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
         }
 
         return view

@@ -78,7 +78,7 @@ class RouterManager(
      */
     fun hostStarted() {
         hostStarted = true
-        _routers.forEach { it.hostStarted() }
+        _routers.forEach(Router::hostStarted)
     }
 
     /**
@@ -86,7 +86,7 @@ class RouterManager(
      */
     fun hostStopped() {
         hostStarted = false
-        _routers.reversed().forEach { it.hostStopped() }
+        _routers.reversed().forEach(Router::hostStopped)
     }
 
     /**
@@ -94,7 +94,7 @@ class RouterManager(
      */
     fun removeContainers() {
         if (rootView != null) {
-            _routers.reversed().forEach { it.removeContainer() }
+            _routers.reversed().forEach(Router::removeContainer)
             rootView = null
         }
     }
@@ -103,7 +103,7 @@ class RouterManager(
      * Notifies that the host is going to be destroyed
      */
     fun hostIsBeingDestroyed() {
-        _routers.reversed().forEach { it.hostIsBeingDestroyed() }
+        _routers.reversed().forEach(Router::hostIsBeingDestroyed)
     }
 
     /**
@@ -146,7 +146,7 @@ class RouterManager(
                 transactionIndexer.saveInstanceState()
             )
         }
-        val routerStates = _routers.map { it.saveInstanceState() }
+        val routerStates = _routers.map(Router::saveInstanceState)
         putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
@@ -155,10 +155,10 @@ class RouterManager(
      */
     fun handleBack(): Boolean {
         return _routers
-            .flatMap { it.backstack }
+            .flatMap(Router::backstack)
             .asSequence()
-            .sortedByDescending { it.transactionIndex }
-            .map { it.controller }
+            .sortedByDescending(Transaction::transactionIndex)
+            .map(Transaction::controller)
             .any { it.isAttached && it.router.handleBack() }
     }
 
@@ -226,7 +226,7 @@ class RouterManager(
 
     private fun restoreFullState() {
         routerStates
-            ?.filterKeys { _routers.contains(it) }
+            ?.filterKeys(_routers::contains)
             ?.forEach {
                 it.key.restoreInstanceState(it.value)
                 it.key.rebind()

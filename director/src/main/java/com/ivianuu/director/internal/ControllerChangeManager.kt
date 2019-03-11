@@ -119,7 +119,7 @@ internal object ControllerChangeManager {
             if (container.childCount == 0) return -1
             val backstackIndex = router.backstack.indexOfFirst { it.controller.view == to }
             (0 until container.childCount)
-                .map { container.getChildAt(it) }
+                .map(container::getChildAt)
                 .indexOfFirst { v ->
                     router.backstack.indexOfFirst {
                         it.controller.view == v
