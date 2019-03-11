@@ -154,8 +154,8 @@ abstract class RouterAdapter(
 
         savedState.getSparseParcelableArray<Bundle>(KEY_ROUTER_STATES)?.let { states ->
             (0 until states.size())
-                .map { states.valueAt(it) }
-                .forEachIndexed { index, bundle -> savedStates.setValueAt(index, bundle) }
+                .map(states::valueAt)
+                .forEachIndexed(savedStates::setValueAt)
         }
     }
 

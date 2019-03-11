@@ -107,7 +107,7 @@ abstract class DialogController : Controller(),
             savedViewState
         ).also { this.dialogView = it }
 
-        dialogView?.let { dialog.setContentView(it) }
+        dialogView?.let(dialog::setContentView)
 
         dialog.ownerActivity = activity
         dialog.setCancelable(isCancelable)
@@ -115,7 +115,7 @@ abstract class DialogController : Controller(),
         dialog.setOnCancelListener(this)
         dialog.setOnDismissListener(this)
 
-        savedViewState?.getBundle(KEY_DIALOG_STATE)?.let { dialog.onRestoreInstanceState(it) }
+        savedViewState?.getBundle(KEY_DIALOG_STATE)?.let(dialog::onRestoreInstanceState)
 
         return view
     }

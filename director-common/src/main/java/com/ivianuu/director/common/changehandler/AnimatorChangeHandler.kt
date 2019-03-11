@@ -177,7 +177,7 @@ abstract class AnimatorChangeHandler(
         onChangeComplete()
 
         animator?.let { animator ->
-            animatorListener?.let { animator.removeListener(it) }
+            animatorListener?.let(animator::removeListener)
             animator.cancel()
         }
 

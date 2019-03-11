@@ -88,8 +88,8 @@ abstract class RouterPagerAdapter(
             savedStates.clear()
             bundle.getSparseParcelableArray<Bundle>(KEY_SAVED_PAGES)?.let { pages ->
                 (0 until pages.size())
-                    .map { pages.valueAt(it) }
-                    .forEachIndexed { index, bundle -> savedStates.setValueAt(index, bundle) }
+                    .map(pages::valueAt)
+                    .forEachIndexed(savedStates::setValueAt)
             }
         }
     }

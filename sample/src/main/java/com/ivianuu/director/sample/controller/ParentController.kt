@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.Router
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouters
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
@@ -97,7 +98,7 @@ class ParentController : BaseController() {
     }
 
     override fun handleBack(): Boolean {
-        val childControllers = childRouters.count { it.hasRoot }
+        val childControllers = childRouters.count(Router::hasRoot)
 
         return if (childControllers != NUMBER_OF_CHILDREN || finishing) {
             true

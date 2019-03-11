@@ -24,7 +24,6 @@ import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 
-
 /**
  * A [AnimatorChangeHandler] that will cross fade two views
  */

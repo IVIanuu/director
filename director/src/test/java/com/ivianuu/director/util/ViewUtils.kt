@@ -37,7 +37,7 @@ fun View.reportAttached(attached: Boolean, applyOnChildren: Boolean = true) {
 
     if (applyOnChildren && this is ViewGroup) {
         (0 until childCount)
-            .map { getChildAt(it) }
+            .map(this::getChildAt)
             .forEach { it.reportAttached(attached, true) }
     }
 }

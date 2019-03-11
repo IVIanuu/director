@@ -29,7 +29,7 @@ import com.ivianuu.director.retained.retained
  */
 class ControllerViewModelStoreOwner(controller: Controller) : ViewModelStoreOwner {
 
-    private val _viewModelStore by controller.retained(KEY_VIEW_MODEL_STORE) { ViewModelStore() }
+    private val _viewModelStore by controller.retained(KEY_VIEW_MODEL_STORE, ::ViewModelStore)
 
     init {
         controller.doOnPostDestroy {

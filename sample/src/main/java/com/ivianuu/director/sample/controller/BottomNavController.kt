@@ -42,7 +42,7 @@ class BottomNavController : BaseController() {
 
         bottom_nav_view.setOnNavigationItemSelectedListener { item ->
             val i = (0 until bottom_nav_view.menu.size())
-                .map { bottom_nav_view.menu.getItem(it) }
+                .map(bottom_nav_view.menu::getItem)
                 .indexOfFirst { it == item }
 
             swapTo(i)
@@ -52,7 +52,7 @@ class BottomNavController : BaseController() {
 
         bottom_nav_view.setOnNavigationItemReselectedListener { item ->
             val i = (0 until bottom_nav_view.menu.size())
-                .map { bottom_nav_view.menu.getItem(it) }
+                .map(bottom_nav_view.menu::getItem)
                 .indexOfFirst { it == item }
 
             // pop to root on re selections
