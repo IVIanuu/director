@@ -40,16 +40,13 @@ abstract class TransitionChangeHandler(
         private set
 
     private var canceled = false
-    private var needsImmediateCompletion = false
 
     override fun performChange(changeData: ChangeData) {
         val (container, _, _, _,
             onChangeComplete) = changeData
 
         if (canceled) {
-            if (needsImmediateCompletion) {
-                executePropertyChanges(changeData, null)
-            }
+            executePropertyChanges(changeData, null)
             onChangeComplete()
             return
         }
@@ -102,10 +99,9 @@ abstract class TransitionChangeHandler(
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
-    override fun cancel(immediate: Boolean) {
-        super.cancel(immediate)
+    override fun cancel() {
+        super.cancel()
         canceled = true
-        needsImmediateCompletion = immediate
     }
 
     /**

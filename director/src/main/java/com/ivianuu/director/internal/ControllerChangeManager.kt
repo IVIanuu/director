@@ -12,7 +12,7 @@ import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal object ControllerChangeManager {
 
-    private val handlers = mutableMapOf<String, HandlerWithIsPush>()
+    private val handlers = mutableMapOf<String, ChangeHandler>()
 
     fun executeChange(
         router: Router,
@@ -32,11 +32,11 @@ internal object ControllerChangeManager {
         handlerToUse.hasBeenUsed = true
 
         if (from != null) {
-            cancelChange(from.instanceId, isPush)
+            cancelChange(from.instanceId)
         }
 
         if (to != null) {
-            handlers[to.instanceId] = HandlerWithIsPush(handlerToUse, isPush)
+            handlers[to.instanceId] = handlerToUse
         }
 
         listeners.forEach { it.onChangeStarted(router, to, from, isPush, container, handlerToUse) }
@@ -89,22 +89,8 @@ internal object ControllerChangeManager {
         handlerToUse.performChange(changeData)
     }
 
-    fun cancelChange(instanceId: String, immediate: Boolean) {
-        val changeHandlerData = handlers[instanceId]
-
-        if (changeHandlerData != null) {
-            if (immediate) {
-                changeHandlerData.changeHandler.cancel(true)
-            } else {
-                if (changeHandlerData.isPush) {
-                    changeHandlerData.changeHandler.cancel(false)
-                } else {
-                    changeHandlerData.changeHandler.cancel(true)
-                }
-            }
-
-            handlers.remove(instanceId)
-        }
+    fun cancelChange(instanceId: String) {
+        handlers.remove(instanceId)?.cancel()
     }
 
     private fun getToIndex(
@@ -138,8 +124,3 @@ internal object ControllerChangeManager {
     }
 
 }
-
-private data class HandlerWithIsPush(
-    val changeHandler: ChangeHandler,
-    val isPush: Boolean
-)

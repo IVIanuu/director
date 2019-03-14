@@ -21,6 +21,12 @@ abstract class ChangeHandler {
     abstract fun performChange(changeData: ChangeData)
 
     /**
+     * Will be called when the change must be canceled
+     */
+    open fun cancel() {
+    }
+
+    /**
      * Saves any data about this changeHandler to a Bundle in case the application is killed.
      */
     open fun saveToBundle(bundle: Bundle) {
@@ -30,12 +36,6 @@ abstract class ChangeHandler {
      * Restores data that was saved in the [saveToBundle] method.
      */
     open fun restoreFromBundle(bundle: Bundle) {
-    }
-
-    /**
-     * Will be called when the change must be canceled
-     */
-    open fun cancel(immediate: Boolean) {
     }
 
     /**

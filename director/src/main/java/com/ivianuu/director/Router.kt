@@ -166,7 +166,7 @@ class Router internal constructor(
                 .reversed()
                 .filterNot { o -> newVisibleTransactions.any { it.controller == o.controller } }
                 .forEachIndexed { i, transaction ->
-                    ControllerChangeManager.cancelChange(transaction.controller.instanceId, true)
+                    ControllerChangeManager.cancelChange(transaction.controller.instanceId)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
                     ?: SimpleSwapChangeHandler()
                     performControllerChange(
@@ -366,7 +366,7 @@ class Router internal constructor(
 
     private fun prepareForContainerRemoval() {
         _backstack.reversed().forEach {
-            ControllerChangeManager.cancelChange(it.controller.instanceId, true)
+            ControllerChangeManager.cancelChange(it.controller.instanceId)
         }
     }
 

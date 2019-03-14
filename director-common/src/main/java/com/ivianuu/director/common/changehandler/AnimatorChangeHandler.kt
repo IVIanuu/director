@@ -43,7 +43,6 @@ abstract class AnimatorChangeHandler(
     private var changeData: ChangeData? = null
 
     private var canceled = false
-    private var needsImmediateCompletion = false
     private var completed = false
 
     init {
@@ -92,19 +91,12 @@ abstract class AnimatorChangeHandler(
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
-    override fun cancel(immediate: Boolean) {
-        super.cancel(immediate)
+    override fun cancel() {
+        super.cancel()
         canceled = true
-        needsImmediateCompletion = immediate
 
         when {
-            animator != null -> {
-                if (immediate) {
-                    animator?.end()
-                } else {
-                    animator?.cancel()
-                }
-            }
+            animator != null -> animator?.cancel()
             onReadyOrAbortedListener != null -> onReadyOrAbortedListener?.onReadyOrAborted()
             changeData != null -> complete(null)
         }
@@ -156,22 +148,12 @@ abstract class AnimatorChangeHandler(
         val (container, from, to, isPush,
             onChangeComplete, _, forceRemoveFromViewOnPush) = changeData!!
 
-        if (canceled && !needsImmediateCompletion) {
-            if (from != null) {
-                resetFromView(from)
-            }
+        if (from != null && (!isPush || removesFromViewOnPush || forceRemoveFromViewOnPush)) {
+            container.removeView(from)
+        }
 
-            if (to != null && to.parent == container) {
-                container.removeView(to)
-            }
-        } else {
-            if (from != null && (!isPush || removesFromViewOnPush || forceRemoveFromViewOnPush)) {
-                container.removeView(from)
-            }
-
-            if (isPush && from != null) {
-                resetFromView(from)
-            }
+        if (isPush && from != null) {
+            resetFromView(from)
         }
 
         onChangeComplete()
