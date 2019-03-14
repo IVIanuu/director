@@ -15,7 +15,6 @@
       <module fileurl="file://$PROJECT_DIR$/director-testing/director-testing.iml" filepath="$PROJECT_DIR$/director-testing/director-testing.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-traveler/director-traveler.iml" filepath="$PROJECT_DIR$/director-traveler/director-traveler.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-viewpager/director-viewpager.iml" filepath="$PROJECT_DIR$/director-viewpager/director-viewpager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-viewpager2/director-viewpager2.iml" filepath="$PROJECT_DIR$/director-viewpager2/director-viewpager2.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
     </modules>
   </component>

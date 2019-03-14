@@ -128,18 +128,20 @@ private fun bfsAddViewChildren(views: MutableList<View>, startView: View) {
         .forEach { views.add(it) }
 }
 
-private fun containedBeforeIndex(views: List<View>, view: View, maxIndex: Int): Boolean =
-    (0 until maxIndex)
+private fun containedBeforeIndex(views: List<View>, view: View, maxIndex: Int): Boolean {
+    return (0 until maxIndex)
         .map { views[it] }
         .any { it == view }
+}
 
 private val Transition.hasSimpleTarget: Boolean
     get() = (!targetIds.isNullOrEmpty()
             || !targetNames.isNullOrEmpty()
             || !targetTypes.isNullOrEmpty())
 
-fun transitionSetOf(ordering: Int, vararg transitions: Transition?): TransitionSet =
-    TransitionSet().apply {
+fun transitionSetOf(ordering: Int, vararg transitions: Transition?): TransitionSet {
+    return TransitionSet().apply {
         this.ordering = ordering
         transitions.filterNotNull().forEach { addTransition(it) }
     }
+}

@@ -88,9 +88,6 @@ class HomeController : BaseController() {
             HomeItem.VIEW_PAGER -> {
                 router.push(PagerController().toTransaction())
             }
-            HomeItem.VIEW_PAGER2 -> {
-                router.push(Pager2Controller().toTransaction())
-            }
             HomeItem.BOTTOM_NAV -> {
                 router.push(BottomNavController().toTransaction())
             }
@@ -172,7 +169,6 @@ enum class HomeItem(val title: String, val color: Int) {
     SHARED_ELEMENT_TRANSITIONS("Shared Element Demos", R.color.purple_300),
     CHILD_CONTROLLERS("Child Controllers", R.color.orange_300),
     VIEW_PAGER("ViewPager", R.color.green_300),
-    VIEW_PAGER2("ViewPager 2", R.color.yellow_300),
     BOTTOM_NAV("Bottom Nav", R.color.blue_300),
     TARGET_CONTROLLER("Target Controller", R.color.pink_300),
     MULTIPLE_CHILD_ROUTERS("Multiple Child Routers", R.color.deep_orange_300),

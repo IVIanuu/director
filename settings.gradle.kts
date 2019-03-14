@@ -10,6 +10,5 @@ include(
     ":director-testing",
     ":director-traveler",
     ":director-viewpager",
-    ":director-viewpager2",
     ":sample"
 )
