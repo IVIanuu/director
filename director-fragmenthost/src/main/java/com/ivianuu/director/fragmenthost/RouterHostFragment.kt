@@ -22,7 +22,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.host
+import androidx.fragment.app.hasHost
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.getRouter
@@ -114,7 +114,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         }
 
         fun postponeFullRestore(activity: FragmentActivity) {
-            if (activity.supportFragmentManager.host != null) {
+            if (activity.supportFragmentManager.hasHost) {
                 get(activity).manager.postponeRestore()
             } else {
                 postponedActivities.add(activity)
@@ -122,7 +122,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         }
 
         fun startPostponedFullRestore(activity: FragmentActivity) {
-            if (activity.supportFragmentManager.host != null) {
+            if (activity.supportFragmentManager.hasHost) {
                 get(activity).manager.startPostponedFullRestore()
             } else {
                 postponedActivities.remove(activity)

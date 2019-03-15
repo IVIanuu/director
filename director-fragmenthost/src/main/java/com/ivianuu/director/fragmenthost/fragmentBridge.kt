@@ -16,4 +16,5 @@
 
 package androidx.fragment.app
 
-internal val FragmentManager.host: Any? get() = (this as FragmentManagerImpl).mHost
+internal val FragmentManager.hasHost: Boolean
+    get() = (this as FragmentManagerImpl).mHost != null
