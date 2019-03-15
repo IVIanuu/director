@@ -165,7 +165,7 @@ class Router internal constructor(
                 .dropLast(if (replacingTopTransactions) 1 else 0)
                 .reversed()
                 .filterNot { o -> newVisibleTransactions.any { it.controller == o.controller } }
-                .forEachIndexed { i, transaction ->
+                .forEach { transaction ->
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
                     ?: DefaultChangeHandler()
