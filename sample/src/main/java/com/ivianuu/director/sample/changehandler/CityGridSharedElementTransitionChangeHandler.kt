@@ -37,21 +37,27 @@ class CityGridSharedElementTransitionChangeHandler(
         }
     }
 
-    override fun getExitTransition(changeData: ChangeData): Transition? = if (changeData.isPush) {
-        Explode()
-    } else {
-        Slide(Gravity.BOTTOM)
+    override fun getExitTransition(changeData: ChangeData): Transition? {
+        return if (changeData.isPush) {
+            Explode()
+        } else {
+            Slide(Gravity.BOTTOM)
+        }
     }
 
-    override fun getSharedElementTransition(changeData: ChangeData): Transition? = TransitionSet()
-        .addTransition(ChangeBounds())
-        .addTransition(ChangeClipBounds())
-        .addTransition(ChangeTransform())
+    override fun getSharedElementTransition(changeData: ChangeData): Transition? {
+        return TransitionSet()
+            .addTransition(ChangeBounds())
+            .addTransition(ChangeClipBounds())
+            .addTransition(ChangeTransform())
+    }
 
-    override fun getEnterTransition(changeData: ChangeData): Transition? = if (changeData.isPush) {
-        Slide(Gravity.BOTTOM)
-    } else {
-        Explode()
+    override fun getEnterTransition(changeData: ChangeData): Transition? {
+        return if (changeData.isPush) {
+            Slide(Gravity.BOTTOM)
+        } else {
+            Explode()
+        }
     }
 
     override fun configureSharedElements(changeData: ChangeData) {

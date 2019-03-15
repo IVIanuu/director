@@ -70,13 +70,15 @@ class Transaction {
         }
     }
 
-    internal fun saveInstanceState() = Bundle().apply {
-        putBundle(KEY_CONTROLLER_BUNDLE, controller.saveInstanceState())
-        pushChangeHandler?.let { putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
-        popChangeHandler?.let { putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
-        putString(KEY_TAG, tag)
-        putInt(KEY_INDEX, transactionIndex)
-        putBoolean(KEY_ATTACHED_TO_ROUTER, attachedToRouter)
+    internal fun saveInstanceState(): Bundle {
+        return Bundle().apply {
+            putBundle(KEY_CONTROLLER_BUNDLE, controller.saveInstanceState())
+            pushChangeHandler?.let { putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
+            popChangeHandler?.let { putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
+            putString(KEY_TAG, tag)
+            putInt(KEY_INDEX, transactionIndex)
+            putBoolean(KEY_ATTACHED_TO_ROUTER, attachedToRouter)
+        }
     }
 
     internal companion object {
@@ -92,14 +94,16 @@ class Transaction {
         fun fromBundle(
             bundle: Bundle,
             controllerFactory: ControllerFactory
-        ) = Transaction(
+        ): Transaction {
+            return Transaction(
                 Controller.fromBundle(bundle.getBundle(KEY_CONTROLLER_BUNDLE)!!, controllerFactory),
-            bundle.getString(KEY_TAG),
-            bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let(ChangeHandler.Companion::fromBundle),
-            bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let(ChangeHandler.Companion::fromBundle),
-            bundle.getInt(KEY_INDEX),
-            bundle.getBoolean(KEY_ATTACHED_TO_ROUTER)
-        )
+                bundle.getString(KEY_TAG),
+                bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let(ChangeHandler.Companion::fromBundle),
+                bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let(ChangeHandler.Companion::fromBundle),
+                bundle.getInt(KEY_INDEX),
+                bundle.getBoolean(KEY_ATTACHED_TO_ROUTER)
+            )
+        }
     }
 }
 

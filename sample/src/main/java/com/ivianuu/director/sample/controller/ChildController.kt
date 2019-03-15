@@ -30,12 +30,14 @@ class ChildController : BaseController() {
         private const val KEY_BG_COLOR = "ChildController.bgColor"
         private const val KEY_COLOR_IS_RES = "ChildController.colorIsResId"
 
-        fun newInstance(title: String, bgColor: Int, colorIsRes: Boolean) = ChildController().apply {
-            args = bundleOf(
-                KEY_TITLE to title,
-                KEY_BG_COLOR to bgColor,
-                KEY_COLOR_IS_RES to colorIsRes
-            )
+        fun newInstance(title: String, bgColor: Int, colorIsRes: Boolean): ChildController {
+            return ChildController().apply {
+                args = bundleOf(
+                    KEY_TITLE to title,
+                    KEY_BG_COLOR to bgColor,
+                    KEY_COLOR_IS_RES to colorIsRes
+                )
+            }
         }
     }
 }
