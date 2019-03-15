@@ -8,7 +8,7 @@ class OnReadyOrAbortedListener(
     val action: () -> Unit
 ) : ViewTreeObserver.OnPreDrawListener {
 
-    private var hasRun = false
+    private var finished = false
 
     init {
         view.viewTreeObserver.addOnPreDrawListener(this)
@@ -20,8 +20,8 @@ class OnReadyOrAbortedListener(
     }
 
     fun onReadyOrAborted() {
-        if (hasRun) return
-        hasRun = true
+        if (finished) return
+        finished = true
 
         val observer = view.viewTreeObserver
         if (observer.isAlive) {

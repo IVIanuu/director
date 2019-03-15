@@ -19,7 +19,7 @@ package com.ivianuu.director.sample.controller
 import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import com.afollestad.materialdialogs.MaterialDialog
 import com.ivianuu.director.context
 import com.ivianuu.director.dialog.DialogController
 
@@ -29,14 +29,15 @@ import com.ivianuu.director.dialog.DialogController
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onBuildDialog(savedViewState: Bundle?): Dialog = AlertDialog.Builder(context)
-        .setTitle("Hello")
-        .setMessage("This is a simple dialog controller.")
-        .setCancelable(isCancelable)
-        .setPositiveButton("OK") { _, _ ->
+    override fun onBuildDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(context)
+        .title("Hello")
+        .content("This is a simple dialog controller.")
+        .positiveText("OK")
+        .onPositive { _, _ ->
             Toast.makeText(context, "Ok clicked!", Toast.LENGTH_SHORT).show()
         }
-        .setNegativeButton("Cancel") { _, _  -> dismiss() }
-        .create()
+        .negativeText("Cancel")
+        .onNegative { _, _ -> dismiss() }
+        .build()
 
 }
