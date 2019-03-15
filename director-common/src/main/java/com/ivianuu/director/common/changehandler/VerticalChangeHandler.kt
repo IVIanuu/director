@@ -66,9 +66,4 @@ open class VerticalChangeHandler(
     override fun resetFromView(from: View) {
     }
 
-    override fun copy() =
-        VerticalChangeHandler(
-            duration,
-            removesFromViewOnPush
-        )
 }

@@ -88,8 +88,6 @@ open class DefaultChangeHandler(
         }
     }
 
-    override fun copy(): DefaultChangeHandler = DefaultChangeHandler(removesFromViewOnPush)
-
     companion object {
         private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
             "DefaultChangeHandler.removesFromViewOnPush"
