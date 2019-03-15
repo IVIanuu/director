@@ -52,7 +52,7 @@ abstract class AnimatorChangeHandler(
     override fun performChange(changeData: ChangeData) {
         this.changeData = changeData
 
-        val (container, from, to, isPush,
+        val (container, _, to, _,
             _, toIndex) = changeData
 
         var readyToAnimate = true
@@ -69,13 +69,13 @@ abstract class AnimatorChangeHandler(
             if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
                 readyToAnimate = false
                 onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
-                    performAnimation(changeData, addingToView)
+                    performAnimation(changeData)
                 }
             }
         }
 
         if (readyToAnimate) {
-            performAnimation(changeData, addingToView)
+            performAnimation(changeData)
         }
     }
 
@@ -105,10 +105,7 @@ abstract class AnimatorChangeHandler(
     /**
      * Should be overridden to return the Animator to use while replacing Views.
      */
-    protected abstract fun getAnimator(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ): Animator
+    protected abstract fun getAnimator(changeData: ChangeData): Animator
 
     /**
      * Resets the from view of an animation to the pre animation state
@@ -117,16 +114,13 @@ abstract class AnimatorChangeHandler(
     protected open fun resetFromView(from: View) {
     }
 
-    private fun performAnimation(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ) {
+    private fun performAnimation(changeData: ChangeData) {
         if (canceled) {
             complete(null)
             return
         }
 
-        animator = getAnimator(changeData, toAddedToContainer).apply {
+        animator = getAnimator(changeData).apply {
             if (this@AnimatorChangeHandler.duration != NO_DURATION) {
                 duration = this@AnimatorChangeHandler.duration
             }
