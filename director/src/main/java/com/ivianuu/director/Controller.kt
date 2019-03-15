@@ -263,15 +263,13 @@ abstract class Controller {
         listeners.parent = router.controllerListeners
 
         // create
-        if (!isCreated) {
-            notifyListeners { it.preCreate(this, instanceState) }
+        notifyListeners { it.preCreate(this, instanceState) }
 
-            state = CREATED
+        state = CREATED
 
-            requireSuperCalled { onCreate(instanceState) }
+        requireSuperCalled { onCreate(instanceState) }
 
-            notifyListeners { it.postCreate(this, instanceState) }
-        }
+        notifyListeners { it.postCreate(this, instanceState) }
 
         // restore the instance state
         instanceState?.let { instanceState ->
@@ -307,17 +305,16 @@ abstract class Controller {
 
     internal fun containerRemoved() {
         // decide whether or not our view should be retained
-        val view = view
-        if (view != null) {
-            if (isBeingDestroyed || !retainView) {
-                unbindView()
-            } else if (retainView) {
-                // remove containers to let children
-                // decide whether they wanna keep their view or not
-                childRouterManager.removeContainers()
-                // remove our retained view from the parent
-                view.parent.safeAs<ViewGroup>()?.removeView(view)
-            }
+        val view = view ?: return
+
+        if (isBeingDestroyed || !retainView) {
+            unbindView()
+        } else if (retainView) {
+            // remove containers to let children
+            // decide whether they wanna keep their view or not
+            childRouterManager.removeContainers()
+            // remove our retained view from the parent
+            view.parent.safeAs<ViewGroup>()?.removeView(view)
         }
     }
 
@@ -338,50 +335,54 @@ abstract class Controller {
     internal fun inflate(container: ViewGroup): View {
         var view = view
 
-        if (view == null) {
-            val viewState = viewState
-            val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
-            savedViewState?.classLoader = javaClass.classLoader
-
-            notifyListeners { it.preBuildView(this, savedViewState) }
-
-            view = onBuildView(
-                LayoutInflater.from(container.context),
-                container,
-                savedViewState
-            ).also { this.view = it }
-
-            notifyListeners { it.postBuildView(this, view, savedViewState) }
-
-            notifyListeners { it.preBindView(this, view, savedViewState) }
-
-            state = VIEW_BOUND
-
-            requireSuperCalled { onBindView(view, savedViewState) }
-
-            notifyListeners { it.postBindView(this, view, savedViewState) }
-
-            if (viewState != null) {
-                view.restoreHierarchyState(
-                    viewState.getSparseParcelableArray(
-                        KEY_VIEW_STATE_HIERARCHY
-                    )
-                )
-
-                if (savedViewState != null) {
-                    requireSuperCalled { onRestoreViewState(view, savedViewState) }
-                    notifyListeners { it.onRestoreViewState(this, view, viewState) }
-                }
+        if (view != null) {
+            // restore containers
+            if (retainView) {
+                view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
             }
-
-            this.viewState = null
-
-            attachHandler.takeView(view)
-
-            view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
-        } else if (retainView) {
-            view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
+            return view
         }
+
+        val viewState = viewState
+        val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
+        savedViewState?.classLoader = javaClass.classLoader
+
+        notifyListeners { it.preBuildView(this, savedViewState) }
+
+        view = onBuildView(
+            LayoutInflater.from(container.context),
+            container,
+            savedViewState
+        ).also { this.view = it }
+
+        notifyListeners { it.postBuildView(this, view, savedViewState) }
+
+        notifyListeners { it.preBindView(this, view, savedViewState) }
+
+        state = VIEW_BOUND
+
+        requireSuperCalled { onBindView(view, savedViewState) }
+
+        notifyListeners { it.postBindView(this, view, savedViewState) }
+
+        if (viewState != null) {
+            view.restoreHierarchyState(
+                viewState.getSparseParcelableArray(
+                    KEY_VIEW_STATE_HIERARCHY
+                )
+            )
+
+            if (savedViewState != null) {
+                requireSuperCalled { onRestoreViewState(view, savedViewState) }
+                notifyListeners { it.onRestoreViewState(this, view, viewState) }
+            }
+        }
+
+        this.viewState = null
+
+        attachHandler.takeView(view)
+
+        view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
 
         return view
     }
