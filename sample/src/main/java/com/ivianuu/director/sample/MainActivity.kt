@@ -44,7 +44,8 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
                 AutoTransition().apply {
                     ordering = TransitionSet.ORDERING_TOGETHER
                     duration = 180
-                })
+                }
+            )
 
             toolbar!!.navigationIcon = if (backstackSize > 1) {
                 getDrawable(R.drawable.abc_ic_ab_back_material)

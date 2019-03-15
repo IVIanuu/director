@@ -51,7 +51,7 @@ class SingleContainer(val router: Router) {
     }
 
     private fun ChangeHandler?.check() {
-        if (this != null) check(removesFromViewOnPush) {
+        check(this?.removesFromViewOnPush ?: true) {
             "Must remove from view while using single container"
         }
     }

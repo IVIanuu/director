@@ -55,8 +55,4 @@ abstract class BaseController : Controller(), LayoutContainer {
         (activity as? ToolbarProvider)?.toolbar?.title = toolbarTitle
     }
 
-    override fun toString(): String {
-        return "${javaClass.simpleName} ${System.identityHashCode(this)}"
-    }
-
 }
