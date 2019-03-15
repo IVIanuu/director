@@ -606,7 +606,7 @@ class ControllerLifecycleCallbacksTest {
         parent.getChildRouter(parent.childContainer1!!).apply {
             setRoot(
                 child.toTransaction()
-                    .changeHandler(SimpleSwapChangeHandler())
+                    .changeHandler(DefaultChangeHandler())
             )
         }
 

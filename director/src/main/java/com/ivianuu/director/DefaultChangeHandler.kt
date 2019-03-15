@@ -23,7 +23,7 @@ import com.ivianuu.director.internal.moveView
 /**
  * A [ChangeHandler] that will instantly swap Views with no animations or transitions.
  */
-open class SimpleSwapChangeHandler(
+open class DefaultChangeHandler(
     removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : ChangeHandler() {
 
@@ -88,10 +88,10 @@ open class SimpleSwapChangeHandler(
         }
     }
 
-    override fun copy(): SimpleSwapChangeHandler = SimpleSwapChangeHandler(removesFromViewOnPush)
+    override fun copy(): DefaultChangeHandler = DefaultChangeHandler(removesFromViewOnPush)
 
     companion object {
         private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
-            "SimpleSwapChangeHandler.removesFromViewOnPush"
+            "DefaultChangeHandler.removesFromViewOnPush"
     }
 }

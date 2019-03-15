@@ -286,11 +286,11 @@ class RouterTest {
     @Test
     fun testPopToRootWithNoRemoveViewOnPush() {
         val rootTransaction = TestController().toTransaction()
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
+            .pushChangeHandler(DefaultChangeHandler(false))
         val transaction1 = TestController().toTransaction()
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
+            .pushChangeHandler(DefaultChangeHandler(false))
         val transaction2 = TestController().toTransaction()
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
+            .pushChangeHandler(DefaultChangeHandler(false))
 
         val backstack =
             listOf(rootTransaction, transaction1, transaction2)

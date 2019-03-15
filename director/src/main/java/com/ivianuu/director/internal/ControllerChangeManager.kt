@@ -6,9 +6,9 @@ import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.DefaultChangeHandler
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterListener
-import com.ivianuu.director.SimpleSwapChangeHandler
 
 internal object ControllerChangeManager {
 
@@ -25,7 +25,7 @@ internal object ControllerChangeManager {
         listeners: List<RouterListener>
     ) {
         val handlerToUse = when {
-            handler == null -> SimpleSwapChangeHandler()
+            handler == null -> DefaultChangeHandler()
             handler.hasBeenUsed -> handler.copy()
             else -> handler
         }

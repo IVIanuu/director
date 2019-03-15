@@ -34,8 +34,8 @@ class ChangeHandlerTest {
 
     @Test
     fun testSaveRestore() {
-        val changeHandler1 = SimpleSwapChangeHandler(false)
-        val changeHandler2 = SimpleSwapChangeHandler(true)
+        val changeHandler1 = DefaultChangeHandler(false)
+        val changeHandler2 = DefaultChangeHandler(true)
 
         val transaction = TestController().toTransaction()
             .pushChangeHandler(changeHandler1).popChangeHandler(changeHandler2)
@@ -52,8 +52,8 @@ class ChangeHandlerTest {
         assertEquals(changeHandler1.javaClass, restored1?.javaClass)
         assertEquals(changeHandler2.javaClass, restored2?.javaClass)
 
-        val restored1Cast = restored1 as SimpleSwapChangeHandler
-        val restored2Cast = restored2 as SimpleSwapChangeHandler
+        val restored1Cast = restored1 as DefaultChangeHandler
+        val restored2Cast = restored2 as DefaultChangeHandler
 
         assertEquals(
             changeHandler1.removesFromViewOnPush,

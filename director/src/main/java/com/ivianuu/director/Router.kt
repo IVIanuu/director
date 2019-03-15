@@ -168,7 +168,7 @@ class Router internal constructor(
                 .forEachIndexed { i, transaction ->
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId)
                     val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
-                    ?: SimpleSwapChangeHandler()
+                    ?: DefaultChangeHandler()
                     performControllerChange(
                         transaction,
                         null,
@@ -198,7 +198,7 @@ class Router internal constructor(
                 val localHandler = handler?.copy()
                     ?: (if (isPush) newTopTransaction?.pushChangeHandler?.copy()
                     else oldTopTransaction?.popChangeHandler?.copy())
-                    ?: SimpleSwapChangeHandler()
+                    ?: DefaultChangeHandler()
 
                 performControllerChange(
                     oldTopTransaction,
@@ -253,7 +253,7 @@ class Router internal constructor(
             .forEach {
                 performControllerChange(
                     null, it, true,
-                    SimpleSwapChangeHandler(false),
+                    DefaultChangeHandler(false),
                     false
                 )
             }

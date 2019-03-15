@@ -25,8 +25,8 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import com.ivianuu.director.Controller
+import com.ivianuu.director.DefaultChangeHandler
 import com.ivianuu.director.Router
-import com.ivianuu.director.SimpleSwapChangeHandler
 import com.ivianuu.director.activity
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.pop
@@ -212,7 +212,7 @@ abstract class DialogController : Controller(),
 fun DialogController.show(router: Router, tag: String? = null) {
     router.push(
         toTransaction()
-            .changeHandler(SimpleSwapChangeHandler(removesFromViewOnPush = false))
+            .changeHandler(DefaultChangeHandler(removesFromViewOnPush = false))
             .tag(tag)
     )
 }
