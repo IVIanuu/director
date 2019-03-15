@@ -333,6 +333,7 @@ abstract class Controller {
     internal fun inflate(container: ViewGroup): View {
         var view = view
 
+        // return the retained view
         if (view != null) {
             // restore containers
             if (retainView) {
