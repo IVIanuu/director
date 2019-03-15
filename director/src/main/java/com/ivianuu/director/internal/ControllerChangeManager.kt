@@ -40,6 +40,14 @@ internal object ControllerChangeManager {
         }
 
         listeners.forEach { it.onChangeStarted(router, to, from, isPush, container, handlerToUse) }
+        router.internalChangeListener.onChangeStarted(
+            router,
+            to,
+            from,
+            isPush,
+            container,
+            handlerToUse
+        )
 
         val toChangeType =
             if (isPush) ControllerChangeType.PUSH_ENTER else ControllerChangeType.POP_ENTER
@@ -74,6 +82,15 @@ internal object ControllerChangeManager {
                     handlerToUse
                 )
             }
+
+            router.internalChangeListener.onChangeCompleted(
+                router,
+                to,
+                from,
+                isPush,
+                container,
+                handlerToUse
+            )
         }
 
         val changeData = ChangeData(

@@ -77,12 +77,12 @@ class Router internal constructor(
             container?.ignoreTouchEvents = blockTouchesOnTransactions && value > 0
         }
 
-    private val internalChangeListener = RouterListener(
+    internal val internalChangeListener = RouterListener(
         onChangeStarted = { _, _, _, _, _, _ -> inProgressTransactions++ },
         onChangeEnded = { _, _, _, _, _, _ -> inProgressTransactions-- }
     )
 
-    val internalControllerListener = ControllerListener(
+    internal val internalControllerListener = ControllerListener(
         postDetach = { controller, _ ->
             if (destroyingControllers.contains(controller)) {
                 destroyingControllers.remove(controller)
@@ -93,10 +93,6 @@ class Router internal constructor(
     )
 
     private val destroyingControllers = mutableListOf<Controller>()
-
-    init {
-        addListener(internalChangeListener)
-    }
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
