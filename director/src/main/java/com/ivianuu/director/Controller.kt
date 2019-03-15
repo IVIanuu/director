@@ -82,7 +82,6 @@ abstract class Controller {
 
     private var hasSavedViewState = false
     private var viewIsAttached = false
-    private var attachedToUnownedParent = false
 
     private var isPerformingExitTransition = false
 
@@ -111,8 +110,7 @@ abstract class Controller {
         } else {
             detach()
 
-            val isViewRemovalAllowed = isPerformingExitTransition
-                    && !attachedToUnownedParent && !isBeingDestroyed
+            val isViewRemovalAllowed = isPerformingExitTransition && !isBeingDestroyed
 
             if (isViewRemovalAllowed) {
                 if (!retainView) {
@@ -394,11 +392,6 @@ abstract class Controller {
 
         if (!viewIsAttached) return
 
-        attachedToUnownedParent = view.parent != router.container
-
-        // this can happen while transitions just ignore it
-        if (attachedToUnownedParent) return
-
         if (!hostStarted) {
             awaitingHostStart = true
             return
@@ -422,19 +415,17 @@ abstract class Controller {
     private fun detach() {
         val view = view ?: return
 
-        if (attachedToUnownedParent) return
+        if (!isAttached) return
 
-        if (isAttached) {
-            childRouterManager.hostStopped()
+        childRouterManager.hostStopped()
 
-            notifyListeners { it.preDetach(this, view) }
+        notifyListeners { it.preDetach(this, view) }
 
-            state = VIEW_BOUND
+        state = VIEW_BOUND
 
-            requireSuperCalled { onDetach(view) }
+        requireSuperCalled { onDetach(view) }
 
-            notifyListeners { it.postDetach(this, view) }
-        }
+        notifyListeners { it.postDetach(this, view) }
     }
 
     private fun unbindView() {
