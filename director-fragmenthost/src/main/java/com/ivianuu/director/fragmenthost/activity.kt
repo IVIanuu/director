@@ -20,21 +20,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
+import com.ivianuu.director.getRouter
+import com.ivianuu.director.getRouterOrNull
 
 fun FragmentActivity.getRouterOrNull(containerId: Int, tag: String? = null): Router? =
-    RouterHostFragment.getRouterOrNull(this, containerId, tag)
+    routerManager.getRouterOrNull(containerId, tag)
 
 fun FragmentActivity.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
-    RouterHostFragment.getRouterOrNull(this, container, tag)
+    routerManager.getRouterOrNull(container, tag)
 
 fun FragmentActivity.getRouter(containerId: Int, tag: String? = null): Router =
-    RouterHostFragment.getRouter(this, containerId, tag)
+    routerManager.getRouter(containerId, tag)
 
 fun FragmentActivity.getRouter(container: ViewGroup, tag: String? = null): Router =
-    RouterHostFragment.getRouter(this, container, tag)
+    routerManager.getRouter(container, tag)
 
 fun FragmentActivity.removeRouter(router: Router) {
-    RouterHostFragment.removeRouter(this, router)
+    routerManager.removeRouter(router)
 }
 
 fun FragmentActivity.router(containerId: Int, tag: String? = null): Lazy<Router> =

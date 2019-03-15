@@ -32,6 +32,9 @@ class RouterManager(
     private var postponeFullRestore: Boolean = false
 ) {
 
+    /**
+     * All routers of this router manager
+     */
     val routers: List<Router> get() = _routers
     private val _routers = mutableListOf<Router>()
 

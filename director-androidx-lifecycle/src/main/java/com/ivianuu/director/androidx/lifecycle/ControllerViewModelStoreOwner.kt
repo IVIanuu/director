@@ -71,5 +71,4 @@ val Controller.viewModelStore: ViewModelStore get() = viewModelStoreOwner.viewMo
  */
 fun Controller.viewModelProvider(
     factory: ViewModelProvider.Factory = ViewModelProvider.NewInstanceFactory()
-): ViewModelProvider =
-    ViewModelProvider(viewModelStore, factory)
+): ViewModelProvider = ViewModelProvider(viewModelStore, factory)
