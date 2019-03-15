@@ -38,7 +38,7 @@ abstract class ChangeHandler {
     open fun restoreFromBundle(bundle: Bundle) {
     }
 
-    internal fun copy(): ChangeHandler = fromBundle(toBundle())
+    internal open fun copy(): ChangeHandler = fromBundle(toBundle())
 
     internal fun toBundle(): Bundle = Bundle().apply {
         putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)

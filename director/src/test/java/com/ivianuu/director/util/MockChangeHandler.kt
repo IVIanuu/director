@@ -25,8 +25,8 @@ import com.ivianuu.director.internal.moveView
 private object NoopListener : MockChangeHandler.Listener
 
 class MockChangeHandler internal constructor(
-    override var removesFromViewOnPush: Boolean,
-    var tag: String?,
+    override var removesFromViewOnPush: Boolean = true,
+    var tag: String? = null,
     val listener: Listener = NoopListener
 ) : ChangeHandler() {
 
@@ -90,6 +90,8 @@ class MockChangeHandler internal constructor(
         removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
         tag = bundle.getString(KEY_TAG)
     }
+
+    override fun copy(): ChangeHandler = MockChangeHandler(removesFromViewOnPush, tag, listener)
 
     companion object {
         private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "removesFromViewOnPush"
