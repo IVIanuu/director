@@ -25,10 +25,7 @@ class FlipChangeHandler(
         DOWN(180f, -180f, View.ROTATION_X)
     }
 
-    override fun getAnimator(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ): Animator {
+    override fun getAnimator(changeData: ChangeData): Animator {
         val (_, from, to, isPush) = changeData
 
         val animatorSet = AnimatorSet()

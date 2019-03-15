@@ -9,15 +9,19 @@ import com.ivianuu.director.common.changehandler.AnimatorChangeHandler
 
 class ScaleFadeChangeHandler : AnimatorChangeHandler() {
 
-    override fun getAnimator(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ): Animator {
+    private var addedToView = false
+
+    override fun performChange(changeData: ChangeData) {
+        addedToView = changeData.to?.parent != null
+        super.performChange(changeData)
+    }
+
+    override fun getAnimator(changeData: ChangeData): Animator {
         val (_, from, to) = changeData
 
         val animator = AnimatorSet()
         if (to != null) {
-            val start = if (toAddedToContainer) 0f else to.alpha
+            val start = if (addedToView) 0f else to.alpha
             animator.play(ObjectAnimator.ofFloat(to, View.ALPHA, start, 1f))
         }
 

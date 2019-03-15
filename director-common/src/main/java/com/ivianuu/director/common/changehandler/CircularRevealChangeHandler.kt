@@ -50,10 +50,7 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
         this.cy = cy
     }
 
-    override fun getAnimator(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ): Animator {
+    override fun getAnimator(changeData: ChangeData): Animator {
         val (_, from, to, isPush) = changeData
         val radius = Math.hypot(cx.toDouble(), cy.toDouble()).toFloat()
         var animator: Animator? = null

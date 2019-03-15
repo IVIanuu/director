@@ -32,16 +32,20 @@ open class FadeChangeHandler(
     removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
-    override fun getAnimator(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ): Animator {
+    private var addedToView = false
+
+    override fun performChange(changeData: ChangeData) {
+        addedToView = changeData.to?.parent != null
+        super.performChange(changeData)
+    }
+
+    override fun getAnimator(changeData: ChangeData): Animator {
         val (_, from, to, isPush) = changeData
 
         val animator = AnimatorSet()
 
         if (to != null) {
-            val start = (if (toAddedToContainer) 0f else to.alpha).toFloat()
+            val start = (if (addedToView) 0f else to.alpha).toFloat()
             animator.play(ObjectAnimator.ofFloat(to, View.ALPHA, start, 1f))
         }
 

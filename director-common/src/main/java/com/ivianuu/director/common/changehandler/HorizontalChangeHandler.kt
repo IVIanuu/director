@@ -32,10 +32,7 @@ open class HorizontalChangeHandler(
     removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
 ) : AnimatorChangeHandler(duration, removesFromViewOnPush) {
 
-    override fun getAnimator(
-        changeData: ChangeData,
-        toAddedToContainer: Boolean
-    ): Animator {
+    override fun getAnimator(changeData: ChangeData): Animator {
         val (_, from, to, isPush) = changeData
 
         val animatorSet = AnimatorSet()
