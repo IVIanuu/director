@@ -1,6 +1,9 @@
 package com.ivianuu.director.sample
 
 import android.os.Bundle
+import android.transition.AutoTransition
+import android.transition.TransitionManager
+import android.transition.TransitionSet
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ivianuu.director.Router
@@ -36,14 +39,15 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
 
     private fun Router.addToolbarHandling() {
         fun updateToolbarVisibility() {
-            android.transition.TransitionManager.beginDelayedTransition(toolbar,
-                android.transition.AutoTransition().apply {
-                    ordering = android.transition.TransitionSet.ORDERING_TOGETHER
+            TransitionManager.beginDelayedTransition(
+                toolbar,
+                AutoTransition().apply {
+                    ordering = TransitionSet.ORDERING_TOGETHER
                     duration = 180
                 })
 
             toolbar!!.navigationIcon = if (backstackSize > 1) {
-                getDrawable(com.ivianuu.director.sample.R.drawable.abc_ic_ab_back_material)
+                getDrawable(R.drawable.abc_ic_ab_back_material)
                     .apply {
                         setColorFilter(
                             android.graphics.Color.WHITE,
