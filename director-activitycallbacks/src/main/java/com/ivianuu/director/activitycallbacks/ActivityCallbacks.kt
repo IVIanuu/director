@@ -102,7 +102,8 @@ class ActivityCallbacks : Fragment() {
         private const val FRAGMENT_TAG =
             "com.ivianuu.director.activitycallbacks.ActivityCallbacks"
 
-        private val activities = mutableMapOf<ActivityCallbacks, FragmentActivity>()
+        private val activities =
+            mutableMapOf<ActivityCallbacks, FragmentActivity>()
 
         internal fun get(controller: Controller): ActivityCallbacks {
             val activity = (controller.activity as? FragmentActivity)

@@ -26,6 +26,7 @@ import com.ivianuu.director.doOnPostDestroy
  * Listener for activity results
  */
 interface ActivityResultListener {
+
     /**
      * Will be called on activity results
      */
@@ -34,6 +35,7 @@ interface ActivityResultListener {
         resultCode: Int,
         data: Intent?
     )
+
 }
 
 /**
