@@ -18,7 +18,6 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
 import com.ivianuu.director.internal.ListenersHolder
-import com.ivianuu.director.internal.ViewAttachHandler
 import com.ivianuu.director.internal.classForNameOrThrow
 import com.ivianuu.stdlibx.safeAs
 import java.util.*
@@ -102,21 +101,27 @@ abstract class Controller {
 
     private val listeners = ListenersHolder<ControllerListener>()
 
-    private val attachHandler = ViewAttachHandler { attached ->
-        viewIsAttached = attached
+    private val viewAttachListener = object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) {
+            if (!viewIsAttached) {
+                viewIsAttached = true
+                attach()
+            }
+        }
 
-        if (attached) {
-            attach()
-        } else {
-            detach()
+        override fun onViewDetachedFromWindow(v: View) {
+            if (viewIsAttached) {
+                viewIsAttached = false
+                detach()
 
-            val isViewRemovalAllowed = isPerformingExitTransition && !isBeingDestroyed
+                val isViewRemovalAllowed = isPerformingExitTransition && !isBeingDestroyed
 
-            if (isViewRemovalAllowed) {
-                if (!retainView) {
-                    unbindView()
-                } else {
-                    childRouterManager.removeContainers()
+                if (isViewRemovalAllowed) {
+                    if (!retainView) {
+                        unbindView()
+                    } else {
+                        childRouterManager.removeContainers()
+                    }
                 }
             }
         }
@@ -379,7 +384,7 @@ abstract class Controller {
 
         this.viewState = null
 
-        attachHandler.takeView(view)
+        view.addOnAttachStateChangeListener(viewAttachListener)
 
         view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
 
@@ -441,7 +446,8 @@ abstract class Controller {
 
         requireSuperCalled { onUnbindView(view) }
 
-        attachHandler.dropView(view)
+        view.removeOnAttachStateChangeListener(viewAttachListener)
+        viewIsAttached = false
 
         this.view = null
 
