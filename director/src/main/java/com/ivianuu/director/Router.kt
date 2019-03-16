@@ -194,7 +194,6 @@ class Router internal constructor(
 
         _backstack
             .filterVisible()
-            .filterNot { it.controller.isAttached }
             .forEach {
                 performControllerChange(
                     null, it, true,

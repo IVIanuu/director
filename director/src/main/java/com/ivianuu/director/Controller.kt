@@ -378,9 +378,9 @@ abstract class Controller {
     }
 
     private fun attach() {
-        val view = view ?: return
-
         if (isAttached) return
+
+        val view = view ?: return
 
         if (!viewIsAttached) return
 
@@ -405,9 +405,9 @@ abstract class Controller {
     }
 
     private fun detach() {
-        val view = view ?: return
-
         if (!isAttached) return
+
+        val view = view ?: return
 
         childRouterManager.hostStopped()
 
