@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import android.os.Bundle
-import android.view.View
 import com.ivianuu.director.internal.moveView
 
 /**
@@ -30,41 +29,7 @@ open class DefaultChangeHandler(
     override val removesFromViewOnPush: Boolean get() = _removesFromViewOnPush
     private var _removesFromViewOnPush = removesFromViewOnPush
 
-    private var changeData: ChangeData? = null
-
-    private val attachStateChangeListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
-            v.removeOnAttachStateChangeListener(this)
-            changeData?.onChangeComplete?.invoke()
-            changeData = null
-        }
-
-        override fun onViewDetachedFromWindow(v: View) {
-        }
-    }
-
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        _removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
-    }
-
-    override fun cancel() {
-        super.cancel()
-        changeData?.let {
-            it.onChangeComplete()
-            it.container.removeOnAttachStateChangeListener(attachStateChangeListener)
-        }
-        changeData = null
-    }
-
     override fun performChange(changeData: ChangeData) {
-        this.changeData = changeData
-
         val (container, from, to, isPush,
             onChangeComplete, toIndex, forceRemoveFromViewOnPush) = changeData
 
@@ -80,12 +45,17 @@ open class DefaultChangeHandler(
             container.removeView(from)
         }
 
-        if (container.windowToken != null) {
-            onChangeComplete()
-            this.changeData = null
-        } else {
-            container.addOnAttachStateChangeListener(attachStateChangeListener)
-        }
+        onChangeComplete()
+    }
+
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
+    }
+
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        _removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     companion object {
