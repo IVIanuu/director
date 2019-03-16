@@ -66,8 +66,14 @@ abstract class Controller {
 
     private var targetInstanceId: String? = null
 
+    /**
+     * The current state of this controller
+     */
     var state: ControllerState = INITIALIZED
 
+    /**
+     * Whether or not this controller is in the process of being destroyed
+     */
     var isBeingDestroyed = false
         internal set(value) {
             if (value) childRouterManager.hostIsBeingDestroyed()
@@ -77,8 +83,8 @@ abstract class Controller {
     private var allState: Bundle? = null
     private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
-
     private var hasSavedViewState = false
+
     private var viewIsAttached = false
 
     private var isPerformingExitTransition = false
