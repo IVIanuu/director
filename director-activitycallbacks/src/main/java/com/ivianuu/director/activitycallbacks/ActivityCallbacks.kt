@@ -40,7 +40,7 @@ class ActivityCallbacks : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         activityResultListeners[requestCode]?.toSet()?.let { listeners ->
-            listeners.forEach { it.onActivityResult(requestCode, resultCode, data) }
+            listeners.forEach { it(requestCode, resultCode, data) }
         }
     }
 
@@ -64,7 +64,7 @@ class ActivityCallbacks : Fragment() {
     }
 
     private val permissionResultListeners =
-        mutableMapOf<Int, MutableSet<PermissionListener>>()
+        mutableMapOf<Int, MutableSet<PermissionResultListener>>()
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -74,14 +74,14 @@ class ActivityCallbacks : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionResultListeners[requestCode]?.toSet()?.let { listeners ->
             listeners.forEach {
-                it.onRequestPermissionsResult(requestCode, permissions, grantResults)
+                it(requestCode, permissions, grantResults)
             }
         }
     }
 
     internal fun addPermissionResultListener(
         requestCode: Int,
-        listener: PermissionListener
+        listener: PermissionResultListener
     ) {
         permissionResultListeners.getOrPut(requestCode) { mutableSetOf() }
             .add(listener)
@@ -89,7 +89,7 @@ class ActivityCallbacks : Fragment() {
 
     internal fun removePermissionResultListener(
         requestCode: Int,
-        listener: PermissionListener
+        listener: PermissionResultListener
     ) {
         val callbacksForCode = permissionResultListeners[requestCode] ?: return
         callbacksForCode.remove(listener)

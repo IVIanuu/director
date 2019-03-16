@@ -22,24 +22,16 @@ import com.ivianuu.director.Controller
 import com.ivianuu.director.doOnPostDestroy
 
 /**
- * Permission result
+ * Lister for permission results
  */
-interface PermissionListener {
-
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    )
-
-}
+typealias PermissionResultListener = (requestCode: Int, permissions: Array<out String>, grantResults: IntArray) -> Unit
 
 /**
  * Notifies the [listener] on activity results for [requestCode]
  */
 fun Controller.addPermissionResultListener(
     requestCode: Int,
-    listener: PermissionListener
+    listener: PermissionResultListener
 ) {
     // remove the listener on controller destruction
     doOnPostDestroy {
@@ -51,33 +43,11 @@ fun Controller.addPermissionResultListener(
 }
 
 /**
- * Notifies [onRequestPermissionsResult] on permission results for [requestCode]
- */
-fun Controller.addPermissionResultListener(
-    requestCode: Int,
-    onRequestPermissionsResult: (requestCode: Int, permissions: Array<out String>, grantResults: IntArray) -> Unit
-): PermissionListener {
-    val listener = object : PermissionListener {
-        override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-        ) {
-            onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-    }
-
-    addPermissionResultListener(requestCode, listener)
-
-    return listener
-}
-
-/**
  * Removes the previously added [listener]
  */
 fun Controller.removePermissionResultListener(
     requestCode: Int,
-    listener: PermissionListener
+    listener: PermissionResultListener
 ) {
     activityCallbacks
         .removePermissionResultListener(requestCode, listener)

@@ -25,18 +25,7 @@ import com.ivianuu.director.doOnPostDestroy
 /**
  * Listener for activity results
  */
-interface ActivityResultListener {
-
-    /**
-     * Will be called on activity results
-     */
-    fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    )
-
-}
+typealias ActivityResultListener = (requestCode: Int, resultCode: Int, data: Intent?) -> Unit
 
 /**
  * Notifies the [listener] on activity results for [requestCode]
@@ -52,24 +41,6 @@ fun Controller.addActivityResultListener(
     }
 
     activityCallbacks.addActivityResultListener(requestCode, listener)
-}
-
-/**
- * Notifies [onActivityResult] on activity results for [requestCode]
- */
-fun Controller.addActivityResultListener(
-    requestCode: Int,
-    onActivityResult: (requestCode: Int, resultCode: Int, data: Intent?) -> Unit
-): ActivityResultListener {
-    val listener = object : ActivityResultListener {
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            onActivityResult(requestCode, resultCode, data)
-        }
-    }
-
-    addActivityResultListener(requestCode, listener)
-
-    return listener
 }
 
 /**
