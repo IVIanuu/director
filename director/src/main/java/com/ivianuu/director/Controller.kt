@@ -5,7 +5,6 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.SparseArray
@@ -296,13 +295,7 @@ abstract class Controller {
     internal fun hostStopped() {
         if (hostStarted) {
             hostStarted = false
-
             detach()
-
-            // cancel any pending input event
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                view?.cancelPendingInputEvents()
-            }
         }
     }
 

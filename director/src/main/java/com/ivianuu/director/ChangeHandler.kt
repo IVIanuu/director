@@ -33,7 +33,7 @@ abstract class ChangeHandler {
     }
 
     /**
-     * Restores data that was saved in the [saveToBundle] method.
+     * Restores data that was saved in [saveToBundle].
      */
     open fun restoreFromBundle(bundle: Bundle) {
     }
