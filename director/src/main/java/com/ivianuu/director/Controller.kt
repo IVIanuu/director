@@ -122,9 +122,9 @@ abstract class Controller {
                 viewIsAttached = false
                 detach()
 
-                val isViewRemovalAllowed = isPerformingExitTransition && !isBeingDestroyed
+                val removeViewRef = isPerformingExitTransition && !isBeingDestroyed
 
-                if (isViewRemovalAllowed) {
+                if (removeViewRef) {
                     if (!retainView) {
                         unbindView()
                     } else {
@@ -427,6 +427,8 @@ abstract class Controller {
         requireSuperCalled { onDetach(view) }
 
         notifyListeners { it.postDetach(this, view) }
+
+        println("${javaClass.name} post detach is being destroyed $isBeingDestroyed doing exit $isPerformingExitTransition")
 
         if (isBeingDestroyed && isPerformingExitTransition) {
             containerRemoved()
