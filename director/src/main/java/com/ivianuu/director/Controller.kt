@@ -94,6 +94,9 @@ abstract class Controller {
             }
         }
 
+    /**
+     * The child router manager of this controller
+     */
     val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
         RouterManager(this, routerManager, postponeFullRestore = true)
     }
