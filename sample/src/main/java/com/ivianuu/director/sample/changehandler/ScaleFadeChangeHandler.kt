@@ -12,7 +12,7 @@ class ScaleFadeChangeHandler : AnimatorChangeHandler() {
     private var addedToView = false
 
     override fun performChange(changeData: ChangeData) {
-        addedToView = changeData.to?.parent != null
+        addedToView = changeData.to != null && changeData.to!!.parent == null
         super.performChange(changeData)
     }
 
