@@ -8,8 +8,14 @@ import com.ivianuu.director.internal.TransactionIndexer
  */
 class Transaction {
 
+    /**
+     * The controller of this transaction
+     */
     val controller: Controller
 
+    /**
+     * The tag of this transaction
+     */
     var tag: String? = null
         set(value) {
             checkModify()
