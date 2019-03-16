@@ -28,7 +28,6 @@ import com.ivianuu.stdlibx.firstNotNullResultOrNull
 class RouterManager(
     val host: Any,
     val hostRouterManager: RouterManager? = null,
-    savedInstanceState: Bundle? = null,
     private var postponeFullRestore: Boolean = false
 ) {
 
@@ -38,7 +37,13 @@ class RouterManager(
     val routers: List<Router> get() = _routers
     private val _routers = mutableListOf<Router>()
 
-    private var hostStarted = false
+    internal var hostStarted = false
+        private set
+    internal var hostIsBeingDestroyed = false
+        private set
+    internal var hostDestroyed = false
+        private set
+
     private var rootView: ViewGroup? = null
 
     private var routerStates: Map<Router, Bundle>? = null
@@ -62,10 +67,6 @@ class RouterManager(
         DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
         private set
 
-    init {
-        restoreInstanceState(savedInstanceState)
-    }
-
     /**
      * Sets the root view for all routers
      */
@@ -80,16 +81,20 @@ class RouterManager(
      * Notifies that the host was started
      */
     fun hostStarted() {
-        hostStarted = true
-        _routers.forEach(Router::hostStarted)
+        if (!hostStarted) {
+            hostStarted = true
+            _routers.forEach(Router::hostStarted)
+        }
     }
 
     /**
      * Notifies that the host was stopped
      */
     fun hostStopped() {
-        hostStarted = false
-        _routers.reversed().forEach(Router::hostStopped)
+        if (hostStarted) {
+            hostStarted = false
+            _routers.reversed().forEach(Router::hostStopped)
+        }
     }
 
     /**
@@ -106,17 +111,23 @@ class RouterManager(
      * Notifies that the host is going to be destroyed
      */
     fun hostIsBeingDestroyed() {
-        _routers.reversed().forEach(Router::hostIsBeingDestroyed)
+        if (!hostIsBeingDestroyed) {
+            hostIsBeingDestroyed = true
+            _routers.reversed().forEach(Router::hostIsBeingDestroyed)
+        }
     }
 
     /**
      * Notifies that the host was destroyed
      */
     fun hostDestroyed() {
-        _routers.reversed().forEach {
-            it.hostIsBeingDestroyed()
-            it.removeContainer()
-            it.hostDestroyed()
+        if (!hostDestroyed) {
+            hostDestroyed = true
+            _routers.reversed().forEach {
+                it.hostIsBeingDestroyed()
+                it.removeContainer()
+                it.hostDestroyed()
+            }
         }
     }
 
@@ -181,6 +192,12 @@ class RouterManager(
             _routers.add(router)
             if (hostStarted) {
                 router.hostStarted()
+            }
+            if (hostIsBeingDestroyed) {
+                router.hostIsBeingDestroyed()
+            }
+            if (hostDestroyed) {
+                router.hostDestroyed()
             }
         }
 

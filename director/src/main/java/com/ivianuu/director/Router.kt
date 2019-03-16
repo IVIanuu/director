@@ -66,9 +66,6 @@ class Router internal constructor(
     internal val controllerListeners: ListenersHolder<ControllerListener> =
         ListenersHolder(parent = hostRouter?.controllerListeners)
 
-    private var hostStarted = false
-    private var hostDestroyed = false
-
     private val hostRouter get() = (routerManager.host as? Controller)?.router
 
     private var inProgressTransactions = 0
@@ -143,7 +140,7 @@ class Router internal constructor(
         // Ensure all new controllers have a valid router set
         newBackstack.forEach {
             it.attachedToRouter = true
-            setControllerRouter(it.controller)
+            moveControllerToCorrectState(it.controller)
         }
 
         val newVisibleTransactions = newBackstack.filterVisible()
@@ -334,18 +331,12 @@ class Router internal constructor(
     }
 
     internal fun hostStarted() {
-        if (!hostStarted) {
-            hostStarted = true
-            _backstack.forEach { it.controller.hostStarted() }
-        }
+        _backstack.forEach { it.controller.hostStarted() }
     }
 
     internal fun hostStopped() {
-        if (hostStarted) {
-            hostStarted = false
-            prepareForContainerRemoval()
-            _backstack.reversed().forEach { it.controller.hostStopped() }
-        }
+        prepareForContainerRemoval()
+        _backstack.reversed().forEach { it.controller.hostStopped() }
     }
 
     internal fun hostIsBeingDestroyed() {
@@ -353,11 +344,8 @@ class Router internal constructor(
     }
 
     internal fun hostDestroyed() {
-        if (!hostDestroyed) {
-            hostDestroyed = true
-            _backstack.reversed().forEach { it.controller.hostDestroyed() }
-            removeContainer()
-        }
+        _backstack.reversed().forEach { it.controller.hostDestroyed() }
+        removeContainer()
     }
 
     private fun prepareForContainerRemoval() {
@@ -416,7 +404,7 @@ class Router internal constructor(
             KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS
         )
 
-        _backstack.forEach { setControllerRouter(it.controller) }
+        _backstack.forEach { moveControllerToCorrectState(it.controller) }
     }
 
     private fun performControllerChange(
@@ -450,18 +438,25 @@ class Router internal constructor(
         )
     }
 
-    private fun setControllerRouter(controller: Controller) {
+    private fun moveControllerToCorrectState(controller: Controller) {
         if (!controller.routerSet) {
             controller.setRouter(this)
+        }
 
-            // bring them in the correct state
-            if (hasContainer) {
-                controller.containerSet()
-            }
+        if (hasContainer) {
+            controller.containerSet()
+        }
 
-            if (hostStarted) {
-                controller.hostStarted()
-            }
+        if (routerManager.hostStarted) {
+            controller.hostStarted()
+        }
+
+        if (routerManager.hostIsBeingDestroyed) {
+            controller.isBeingDestroyed = true
+        }
+
+        if (routerManager.hostDestroyed) {
+            controller.hostDestroyed()
         }
     }
 

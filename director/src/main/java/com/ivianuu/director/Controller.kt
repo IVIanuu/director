@@ -128,7 +128,6 @@ abstract class Controller {
 
     private var superCalled = false
 
-    private var hostStarted = false
     private var awaitingHostStart = false
 
     /**
@@ -286,17 +285,11 @@ abstract class Controller {
     }
 
     internal fun hostStarted() {
-        if (!hostStarted) {
-            hostStarted = true
-            attach()
-        }
+        attach()
     }
 
     internal fun hostStopped() {
-        if (hostStarted) {
-            hostStarted = false
-            detach()
-        }
+        detach()
     }
 
     internal fun containerRemoved() {
@@ -391,7 +384,7 @@ abstract class Controller {
 
         if (!viewIsAttached) return
 
-        if (!hostStarted) {
+        if (!routerManager.hostStarted) {
             awaitingHostStart = true
             return
         } else {
