@@ -29,20 +29,6 @@ class Router internal constructor(
     var popsLastView = DirectorPlugins.defaultPopsLastView
 
     /**
-     * Whether or not touch events should be blocked while changing controllers
-     */
-    var blockTouchesOnTransactions = DirectorPlugins.defaultBlockTouchesOnTransactions
-        set(value) {
-            field = value
-            if (!value) container?.ignoreTouchEvents = false
-        }
-
-    /**
-     * Whether or not back presses should be blocked while changing controllers
-     */
-    var blockBackClicksOnTransactions = DirectorPlugins.defaultBlockBackClicksOnTransactions
-
-    /**
      * The tag of this router
      */
     var tag: String? = tag
@@ -57,9 +43,8 @@ class Router internal constructor(
     /**
      * The container of this router
      */
-    var container: ControllerContainer? = null
+    var container: ViewGroup? = null
         private set
-    private var realContainer: ViewGroup? = null
 
     internal val listeners: ListenersHolder<RouterListener> =
         ListenersHolder(parent = hostRouter?.listeners)
@@ -67,29 +52,6 @@ class Router internal constructor(
         ListenersHolder(parent = hostRouter?.controllerListeners)
 
     private val hostRouter get() = (routerManager.host as? Controller)?.router
-
-    private var inProgressTransactions = 0
-        set(value) {
-            field = value
-            container?.ignoreTouchEvents = blockTouchesOnTransactions && value > 0
-        }
-
-    internal val internalChangeListener = RouterListener(
-        onChangeStarted = { _, _, _, _, _, _ -> inProgressTransactions++ },
-        onChangeEnded = { _, _, _, _, _, _ -> inProgressTransactions-- }
-    )
-
-    internal val internalControllerListener = ControllerListener(
-        postDetach = { controller, _ ->
-            if (destroyingControllers.contains(controller)) {
-                destroyingControllers.remove(controller)
-                controller.containerRemoved()
-                controller.hostDestroyed()
-            }
-        }
-    )
-
-    private val destroyingControllers = mutableListOf<Controller>()
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -123,19 +85,12 @@ class Router internal constructor(
         _backstack.clear()
         _backstack.addAll(newBackstack)
 
-        val (destroyedVisibleTransactions, destroyedInvisibleTransactions) = oldTransactions
+        val destroyedInvisibleTransactions = oldTransactions
             // find destroyed transactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
             // Inform the controller that it will be destroyed soon
             .onEach { it.controller.isBeingDestroyed = true }
-            .partition { it.controller.isAttached }
-
-        // to ensure the destruction lifecycle onDetach -> onUnbindView -> onDestroy
-        // we have to await until the view gets detached
-        destroyingControllers.addAll(
-            destroyedVisibleTransactions.reversed()
-                .map(Transaction::controller)
-        )
+            .filterNot { it.controller.isAttached }
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach {
@@ -215,9 +170,6 @@ class Router internal constructor(
      * Returns whether or not the back click was handled
      */
     fun handleBack(): Boolean {
-        // ignore back clicks while transacting
-        if (blockBackClicksOnTransactions && inProgressTransactions > 0) return true
-
         val currentTransaction = backstack.lastOrNull()
 
         return if (currentTransaction != null) {
@@ -288,24 +240,9 @@ class Router internal constructor(
             "container id of the container must match the container id of this router"
         }
 
-        if (this.realContainer != container) {
+        if (this.container != container) {
             removeContainer()
-
-            this.realContainer = container
-            this.container = if (container is ControllerContainer) {
-                container
-            } else {
-                ControllerContainer(container.context)
-                    .also {
-                        container.addView(
-                            it, ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
-                            )
-                        )
-                    }
-            }
-
+            this.container = container
             _backstack.forEach { it.controller.containerSet() }
         }
     }
@@ -314,19 +251,10 @@ class Router internal constructor(
      * Removes the current container if set
      */
     fun removeContainer() {
-        container?.let { container ->
-            prepareForContainerRemoval()
-
-            _backstack.reversed().forEach {
-                it.controller.containerRemoved()
-            }
-
-            if (realContainer != container) {
-                realContainer!!.removeView(container)
-            }
-        }
-
-        realContainer = null
+        if (container == null) return
+        prepareForContainerRemoval()
+        _backstack.reversed().forEach { it.controller.containerRemoved() }
+        container?.setOnTouchListener(null)
         container = null
     }
 
@@ -365,8 +293,6 @@ class Router internal constructor(
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
-            putBoolean(KEY_BLOCK_TOUCHES_ON_TRANSACTIONS, blockTouchesOnTransactions)
-            putBoolean(KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS, blockBackClicksOnTransactions)
             putString(KEY_TAG, tag)
         }
     }
@@ -396,13 +322,6 @@ class Router internal constructor(
         )
 
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
-
-        blockTouchesOnTransactions = savedInstanceState.getBoolean(
-            KEY_BLOCK_TOUCHES_ON_TRANSACTIONS
-        )
-        blockBackClicksOnTransactions = savedInstanceState.getBoolean(
-            KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS
-        )
 
         _backstack.forEach { moveControllerToCorrectState(it.controller) }
     }
@@ -469,9 +388,6 @@ class Router internal constructor(
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
         private const val KEY_CONTAINER_ID = "Router.containerId"
-        private const val KEY_BLOCK_TOUCHES_ON_TRANSACTIONS = "Router.blockTouchesOnTransactions"
-        private const val KEY_BLOCK_BACK_CLICKS_ON_TRANSACTIONS =
-            "Router.blockBackClicksOnTransactions"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
         private const val KEY_TAG = "Router.tag"
 

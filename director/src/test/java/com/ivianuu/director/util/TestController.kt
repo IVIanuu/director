@@ -46,14 +46,14 @@ class TestController : Controller() {
         savedViewState: Bundle?
     ): View {
         currentCallState.buildViewCalls++
-        val view = AttachFakingControllerContainer(inflater.context)
+        val view = AttachFakingFrameLayout(inflater.context)
         view.id = VIEW_ID
 
-        val childContainer1 = AttachFakingControllerContainer(inflater.context)
+        val childContainer1 = AttachFakingFrameLayout(inflater.context)
         childContainer1.id = CHILD_VIEW_ID_1
         view.addView(childContainer1)
 
-        val childContainer2 = AttachFakingControllerContainer(inflater.context)
+        val childContainer2 = AttachFakingFrameLayout(inflater.context)
         childContainer2.id = CHILD_VIEW_ID_2
         view.addView(childContainer2)
 

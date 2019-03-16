@@ -39,24 +39,6 @@ var DirectorPlugins.defaultPopsLastView: Boolean
         _defaultPopsLastView = value
     }
 
-private var _defaultBlockTouchesOnTransactions = true
-
-/** Default block touches on transactions */
-var DirectorPlugins.defaultBlockTouchesOnTransactions: Boolean
-    get() = _defaultBlockTouchesOnTransactions
-    set(value) {
-        _defaultBlockTouchesOnTransactions = value
-    }
-
-private var _defaultBlockBackClicksOnTransactions = true
-
-/** Default block back clicks on transactions */
-var DirectorPlugins.defaultBlockBackClicksOnTransactions: Boolean
-    get() = _defaultBlockBackClicksOnTransactions
-    set(value) {
-        _defaultBlockBackClicksOnTransactions = value
-    }
-
 private var _defaultRetainView = false
 
 /** Default retain view */

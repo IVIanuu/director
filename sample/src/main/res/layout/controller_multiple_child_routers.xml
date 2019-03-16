@@ -5,19 +5,19 @@
     android:orientation="vertical"
     android:background="?android:windowBackground">
 
-    <com.ivianuu.director.ControllerContainer
+    <FrameLayout
         android:id="@+id/container_0"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <com.ivianuu.director.ControllerContainer
+    <FrameLayout
         android:id="@+id/container_1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <com.ivianuu.director.ControllerContainer
+    <FrameLayout
         android:id="@+id/container_2"
         android:layout_width="match_parent"
         android:layout_height="0dp"

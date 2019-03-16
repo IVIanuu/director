@@ -418,6 +418,10 @@ abstract class Controller {
         requireSuperCalled { onDetach(view) }
 
         notifyListeners { it.postDetach(this, view) }
+
+        if (isBeingDestroyed && isPerformingExitTransition) {
+            containerRemoved()
+        }
     }
 
     private fun unbindView() {
@@ -438,6 +442,10 @@ abstract class Controller {
         this.view = null
 
         notifyListeners { it.postUnbindView(this) }
+
+        if (isBeingDestroyed && isPerformingExitTransition) {
+            hostDestroyed()
+        }
     }
 
     internal fun saveInstanceState(): Bundle {
@@ -527,7 +535,6 @@ abstract class Controller {
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
         listeners.get().forEach(block)
-        block.invoke(router.internalControllerListener)
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {

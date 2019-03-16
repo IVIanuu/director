@@ -23,11 +23,11 @@ class ActivityProxy {
 
     private val activityController = Robolectric.buildActivity(TestActivity::class.java)
 
-    val view1 = AttachFakingControllerContainer(activityController.get()).apply {
+    val view1 = AttachFakingFrameLayout(activityController.get()).apply {
         id = 4
     }
 
-    val view2 = AttachFakingControllerContainer(activityController.get()).apply {
+    val view2 = AttachFakingFrameLayout(activityController.get()).apply {
         id = 5
     }
 
