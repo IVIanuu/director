@@ -153,7 +153,11 @@ class Router internal constructor(
                     newTopTransaction,
                     isPush,
                     localHandler,
-                    !newVisibleTransactions.contains(oldTopTransaction)
+                    if (oldTopTransaction != null) {
+                        !newVisibleTransactions.contains(oldTopTransaction)
+                    } else {
+                        false
+                    }
                 )
             }
         }
