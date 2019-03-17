@@ -63,5 +63,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         doOnChangeStarted { _, _, _, _, _, _ -> updateToolbarVisibility() }
 
         toolbar!!.setNavigationOnClickListener { popTop() }
+
+        updateToolbarVisibility()
     }
 }
