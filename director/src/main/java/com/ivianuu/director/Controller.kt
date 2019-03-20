@@ -16,7 +16,6 @@ import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_BOUND
-import com.ivianuu.director.internal.ListenersHolder
 import com.ivianuu.director.internal.classForNameOrThrow
 import com.ivianuu.stdlibx.safeAs
 import java.util.*
@@ -107,7 +106,7 @@ abstract class Controller {
         RouterManager(this, routerManager, postponeFullRestore = true)
     }
 
-    private val listeners = ListenersHolder<ControllerListener>()
+    private val listeners = mutableListOf<ControllerListener>()
 
     private val viewAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) {
@@ -269,8 +268,6 @@ abstract class Controller {
         // restore the internal state
         allState?.let { restoreInstanceState() }
         allState = null
-
-        listeners.parent = router.controllerListeners
 
         // create
         notifyListeners { it.preCreate(this, instanceState) }
@@ -545,7 +542,8 @@ abstract class Controller {
     }
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
-        listeners.get().forEach(block)
+        (listeners + router.getControllerListeners()).forEach(block)
+
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {

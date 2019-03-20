@@ -13,6 +13,7 @@ import com.ivianuu.director.fragmenthost.getRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popTop
 import com.ivianuu.director.sample.controller.HomeController
+import com.ivianuu.director.sample.util.LoggingControllerListener
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.activity_main.controller_container
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         setContentView(R.layout.activity_main)
 
         with(getRouter(controller_container)) {
+            addControllerListener(LoggingControllerListener())
+
             addToolbarHandling()
 
             if (!hasRoot) {
