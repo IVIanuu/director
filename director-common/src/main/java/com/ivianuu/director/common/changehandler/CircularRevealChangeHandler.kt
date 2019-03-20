@@ -9,6 +9,7 @@ import android.view.ViewAnimationUtils
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
+import kotlin.math.hypot
 
 /**
  * A [AnimatorChangeHandler] that will perform a circular reveal
@@ -52,7 +53,7 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
 
     override fun getAnimator(changeData: ChangeData): Animator {
         val (_, from, to, isPush) = changeData
-        val radius = Math.hypot(cx.toDouble(), cy.toDouble()).toFloat()
+        val radius = hypot(cx.toFloat(), cy.toFloat())
         var animator: Animator? = null
         if (isPush && to != null) {
             animator = ViewAnimationUtils.createCircularReveal(to, cx, cy, 0f, radius)

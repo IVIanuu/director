@@ -24,6 +24,9 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.NestedScrollingParent
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import kotlin.math.absoluteValue
+import kotlin.math.log10
+import kotlin.math.min
 
 /**
  * A [FrameLayout] which responds to nested scrolls to create drag-dismissable layouts.
@@ -93,7 +96,7 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
     }
 
     override fun onStopNestedScroll(child: View) {
-        if (Math.abs(totalDrag) >= dragDismissDistance) {
+        if (totalDrag.absoluteValue >= dragDismissDistance) {
             callbacks.toList().forEach { it.onDragDismissed() }
         } else { // settle back to natural position
             animate()
@@ -167,7 +170,7 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
         // how far have we dragged relative to the distance to perform a dismiss
         // (0–1 where 1 = dismiss distance). Decreasing logarithmically as we approach the limit
         var dragFraction =
-            Math.log10((1 + Math.abs(totalDrag) / dragDismissDistance).toDouble()).toFloat()
+            log10((1 + totalDrag.absoluteValue / dragDismissDistance).toDouble()).toFloat()
 
         // calculate the desired translation given the drag fraction
         var dragTo = dragFraction * dragDismissDistance * dragElacticity
@@ -199,7 +202,7 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
         }
         dispatchDragCallback(
             dragFraction, dragTo,
-            Math.min(1f, Math.abs(totalDrag) / dragDismissDistance), totalDrag
+            min(1f, totalDrag.absoluteValue / dragDismissDistance), totalDrag
         )
     }
 
