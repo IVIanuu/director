@@ -173,7 +173,9 @@ class RouterManager(
             .asSequence()
             .sortedByDescending(Transaction::transactionIndex)
             .map(Transaction::controller)
-            .any { it.isAttached && it.router.handleBack() }
+            .filter(Controller::isAttached)
+            .map(Controller::router)
+            .any(Router::handleBack)
     }
 
     /**

@@ -54,10 +54,7 @@ internal object ControllerChangeManager {
         from?.changeStarted(to, handlerToUse, fromChangeType)
 
         val onChangeComplete: () -> Unit = {
-            if (from != null) {
-                handlers.remove(from.instanceId)
-                from.changeEnded(to, handlerToUse, fromChangeType)
-            }
+            from?.changeEnded(to, handlerToUse, fromChangeType)
 
             if (to != null) {
                 handlers.remove(to.instanceId)
