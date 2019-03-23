@@ -573,10 +573,9 @@ abstract class Controller {
                 classLoader = cls.classLoader
             }
 
-            return factory.createController(
-                cls.classLoader!!, className, args
-            ).apply {
-                allState = bundle
+            return factory.createController(cls.classLoader!!, className).apply {
+                this.args = args
+                this.allState = bundle
             }
         }
     }

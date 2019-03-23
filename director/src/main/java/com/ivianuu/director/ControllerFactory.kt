@@ -16,7 +16,6 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import com.ivianuu.director.internal.newInstanceOrThrow
 
 /**
@@ -29,8 +28,7 @@ interface ControllerFactory {
      */
     fun createController(
         classLoader: ClassLoader,
-        className: String,
-        args: Bundle = Bundle()
+        className: String
     ): Controller = newInstanceOrThrow(className)
 
 }
@@ -38,6 +36,5 @@ interface ControllerFactory {
 /**
  * Returns a new instance of a [T]
  */
-inline fun <reified T> ControllerFactory.createController(
-    args: Bundle = Bundle()
-): T = createController(T::class.java.classLoader!!, T::class.java.name, args) as T
+inline fun <reified T> ControllerFactory.createController(): T =
+    createController(T::class.java.classLoader!!, T::class.java.name) as T

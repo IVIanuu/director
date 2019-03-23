@@ -16,14 +16,12 @@
 
 package com.ivianuu.director.sample.util
 
-import android.os.Bundle
 import com.ivianuu.director.ControllerFactory
 
 class LoggingControllerFactory : ControllerFactory {
     override fun createController(
         classLoader: ClassLoader,
-        className: String,
-        args: Bundle
-    ) = super.createController(classLoader, className, args)
-        .also { d { "instantiated $it for $className and args $args" } }
+        className: String
+    ) = super.createController(classLoader, className)
+        .also { d { "instantiated $it for $className" } }
 }
