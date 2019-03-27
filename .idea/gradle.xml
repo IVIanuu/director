@@ -15,11 +15,10 @@
             <option value="$PROJECT_DIR$/director-common" />
             <option value="$PROJECT_DIR$/director-dialog" />
             <option value="$PROJECT_DIR$/director-fragmenthost" />
+            <option value="$PROJECT_DIR$/director-pager" />
             <option value="$PROJECT_DIR$/director-retained" />
             <option value="$PROJECT_DIR$/director-scopes" />
-            <option value="$PROJECT_DIR$/director-testing" />
             <option value="$PROJECT_DIR$/director-traveler" />
-            <option value="$PROJECT_DIR$/director-viewpager" />
             <option value="$PROJECT_DIR$/sample" />
           </set>
         </option>

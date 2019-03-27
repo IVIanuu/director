@@ -44,9 +44,9 @@ dependencies {
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
     implementation(project(":director-fragmenthost"))
+    implementation(project(":director-pager"))
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
-    implementation(project(":director-viewpager"))
 
     implementation(Deps.epoxy)
     implementation(Deps.epoxyKtx)
@@ -61,7 +61,6 @@ dependencies {
 
     implementation("com.afollestad.material-dialogs:core:0.9.6.0")
 
-    testImplementation(project(":director-testing"))
     testImplementation(Deps.androidxTestCore)
     testImplementation(Deps.androidxTestJunit)
     testImplementation(Deps.androidxTestRules)

@@ -5,10 +5,9 @@ include(
     ":director-common",
     ":director-dialog",
     ":director-fragmenthost",
+    ":director-pager",
     ":director-retained",
     ":director-scopes",
-    ":director-testing",
     ":director-traveler",
-    ":director-viewpager",
     ":sample"
 )
