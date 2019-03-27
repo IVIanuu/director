@@ -52,20 +52,6 @@ abstract class Controller {
         private set
 
     /**
-     * The target controller of this controller
-     */
-    var targetController: Controller?
-        get() = targetInstanceId?.let(routerManager.rootRouterManager::getControllerByInstanceIdOrNull)
-        set(value) {
-            check(targetInstanceId == null) {
-                "the target controller can only be set once"
-            }
-            targetInstanceId = value?.instanceId
-        }
-
-    private var targetInstanceId: String? = null
-
-    /**
      * The current state of this controller
      */
     var state: ControllerState = INITIALIZED
@@ -465,7 +451,6 @@ abstract class Controller {
         outState.putBundle(KEY_VIEW_STATE, viewState)
         outState.putBundle(KEY_ARGS, args)
         outState.putString(KEY_INSTANCE_ID, instanceId)
-        outState.putString(KEY_TARGET_INSTANCE_ID, instanceId)
         outState.putBoolean(KEY_RETAIN_VIEW, retainView)
 
         val savedState = Bundle(javaClass.classLoader)
@@ -494,7 +479,6 @@ abstract class Controller {
             ?.also { it.classLoader = javaClass.classLoader }
 
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
-        targetInstanceId = savedInstanceState.getString(KEY_TARGET_INSTANCE_ID)
 
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
 
@@ -556,7 +540,6 @@ abstract class Controller {
         private const val KEY_CHILD_ROUTER_STATES = "Controller.childRouterStates"
         private const val KEY_SAVED_STATE = "Controller.instanceState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
-        private const val KEY_TARGET_INSTANCE_ID = "Controller.targetInstanceId"
         private const val KEY_ARGS = "Controller.args"
         private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"
         private const val KEY_VIEW_STATE_BUNDLE = "Controller.viewState.bundle"
