@@ -425,8 +425,6 @@ abstract class Controller {
 
         notifyListeners { it.postDetach(this, view) }
 
-        println("${javaClass.name} post detach is being destroyed $isBeingDestroyed doing exit $isPerformingExitTransition")
-
         if (isBeingDestroyed && isPerformingExitTransition) {
             containerRemoved()
         }
