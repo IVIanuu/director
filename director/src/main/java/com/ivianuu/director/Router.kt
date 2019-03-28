@@ -84,11 +84,16 @@ class Router internal constructor(
         _backstack.clear()
         _backstack.addAll(newBackstack)
 
-        val destroyedInvisibleTransactions = oldTransactions
-            // find destroyed transactions
+        // find destroyed transactions
+        val destroyedTransactions = oldTransactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
-            // Inform the controller that it will be destroyed soon
-            .onEach { it.controller.isBeingDestroyed = true }
+
+        // Inform the controller that it will be destroyed soon
+        destroyedTransactions.forEach {
+            it.controller.isBeingDestroyed = true
+        }
+
+        val destroyedInvisibleTransactions = destroyedTransactions
             .filterNot { it.controller.isAttached }
 
         // Ensure all new controllers have a valid router set
@@ -108,14 +113,16 @@ class Router internal constructor(
                     || oldTopTransaction.controller != newTopTransaction.controller)
 
             // Remove all visible controllers that were previously on the backstack
+            // from top to bottom
             oldVisibleTransactions
                 .dropLast(if (replacingTopTransactions) 1 else 0)
                 .reversed()
-                .filterNot { o -> newVisibleTransactions.any { it.controller == o.controller } }
+                .filterNot { old -> newVisibleTransactions.any { it.controller == old.controller } }
                 .forEach { transaction ->
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId)
-                    val localHandler = handler?.copy() ?: transaction.popChangeHandler?.copy()
-                    ?: DefaultChangeHandler()
+                    val localHandler = handler?.copy()
+                        ?: transaction.popChangeHandler?.copy()
+                        ?: DefaultChangeHandler()
                     performControllerChange(
                         transaction,
                         null,
@@ -125,10 +132,10 @@ class Router internal constructor(
                     )
                 }
 
-            // Add any new controllers to the backstack
+            // Add any new controllers to the backstack from bottom to top
             newVisibleTransactions
                 .dropLast(if (replacingTopTransactions) 1 else 0)
-                .filterNot { n -> oldVisibleTransactions.any { it.controller == n.controller } }
+                .filterNot { new -> oldVisibleTransactions.any { it.controller == new.controller } }
                 .forEachIndexed { i, transaction ->
                     val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                     performControllerChange(
@@ -147,16 +154,18 @@ class Router internal constructor(
                     else oldTopTransaction?.popChangeHandler?.copy())
                     ?: DefaultChangeHandler()
 
+                val forceRemoveFromView = if (oldTopTransaction != null) {
+                    !newVisibleTransactions.contains(oldTopTransaction)
+                } else {
+                    false
+                }
+
                 performControllerChange(
                     oldTopTransaction,
                     newTopTransaction,
                     isPush,
                     localHandler,
-                    if (oldTopTransaction != null) {
-                        !newVisibleTransactions.contains(oldTopTransaction)
-                    } else {
-                        false
-                    }
+                    forceRemoveFromView
                 )
             }
         }
@@ -221,7 +230,7 @@ class Router internal constructor(
     }
 
     /**
-     * Adds a listener for all controllers
+     * Adds the [listener] to all controllers
      */
     fun addControllerListener(listener: ControllerListener, recursive: Boolean = false) {
         controllerListeners.add(ListenerEntry(listener, recursive))

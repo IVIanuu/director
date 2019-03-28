@@ -63,7 +63,6 @@ class Transaction {
         this.attachedToRouter = attachedToRouter
     }
 
-
     internal fun ensureValidIndex(indexer: TransactionIndexer) {
         if (transactionIndex == INVALID_INDEX) {
             transactionIndex = indexer.nextIndex()
