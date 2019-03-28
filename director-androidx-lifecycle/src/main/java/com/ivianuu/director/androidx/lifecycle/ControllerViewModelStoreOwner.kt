@@ -16,7 +16,6 @@
 
 package com.ivianuu.director.androidx.lifecycle
 
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.Controller
@@ -65,10 +64,3 @@ val Controller.viewModelStoreOwner: ViewModelStoreOwner
  * The view model store of this controller
  */
 val Controller.viewModelStore: ViewModelStore get() = viewModelStoreOwner.viewModelStore
-
-/**
- * Returns a view model provider which uses the [viewModelStore] and the [factory]
- */
-fun Controller.viewModelProvider(
-    factory: ViewModelProvider.Factory = ViewModelProvider.NewInstanceFactory()
-): ViewModelProvider = ViewModelProvider(viewModelStore, factory)

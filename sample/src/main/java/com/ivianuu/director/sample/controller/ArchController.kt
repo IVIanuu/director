@@ -21,8 +21,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.androidx.lifecycle.lifecycleOwner
-import com.ivianuu.director.androidx.lifecycle.viewModelProvider
+import com.ivianuu.director.androidx.lifecycle.viewModelStore
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
 import com.ivianuu.scopes.MutableScope
@@ -39,7 +40,10 @@ class ArchController : BaseController() {
     override val layoutRes get() = R.layout.controller_arch
 
     private val viewModel by lazy {
-        viewModelProvider().get(ArchViewModel::class.java)
+        ViewModelProvider(
+            viewModelStore,
+            ViewModelProvider.NewInstanceFactory()
+        ).get(ArchViewModel::class.java)
     }
 
     override fun onAttach(view: View) {

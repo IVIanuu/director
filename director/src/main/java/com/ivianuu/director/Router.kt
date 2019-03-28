@@ -265,7 +265,6 @@ class Router internal constructor(
         if (container == null) return
         prepareForContainerRemoval()
         _backstack.reversed().forEach { it.controller.containerRemoved() }
-        container?.setOnTouchListener(null)
         container = null
     }
 
