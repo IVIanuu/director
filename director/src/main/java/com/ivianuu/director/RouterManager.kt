@@ -274,21 +274,23 @@ class RouterManager(
 internal val RouterManager.rootRouterManager: RouterManager
     get() = hostRouterManager?.rootRouterManager ?: this
 
-fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
-    getRouterOrNull(container.id, tag)?.also {
+fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? {
+    return getRouterOrNull(container.id, tag)?.also {
         if (!it.hasContainer) {
             it.setContainer(container)
             it.rebind()
         }
     }
+}
 
-fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router =
-    getRouter(container.id, tag).also {
+fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router {
+    return getRouter(container.id, tag).also {
         if (!it.hasContainer) {
             it.setContainer(container)
             it.rebind()
         }
     }
+}
 
 fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
     lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
