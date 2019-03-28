@@ -108,16 +108,6 @@ class RouterManager(
     }
 
     /**
-     * Notifies that the host is going to be destroyed
-     */
-    fun hostIsBeingDestroyed() {
-        if (!hostIsBeingDestroyed) {
-            hostIsBeingDestroyed = true
-            _routers.reversed().forEach(Router::hostIsBeingDestroyed)
-        }
-    }
-
-    /**
      * Notifies that the host was destroyed
      */
     fun hostDestroyed() {
