@@ -107,6 +107,13 @@ class RouterManager(
         }
     }
 
+    internal fun hostIsBeingDestroyed() {
+        if (!hostIsBeingDestroyed) {
+            hostIsBeingDestroyed = true
+            _routers.reversed().forEach(Router::hostIsBeingDestroyed)
+        }
+    }
+
     /**
      * Notifies that the host was destroyed
      */
