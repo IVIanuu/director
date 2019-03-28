@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
-import com.ivianuu.director.internal.ListenerEntry
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.takeLastUntil
 
@@ -48,7 +47,7 @@ class Router internal constructor(
 
     private val listeners =
         mutableListOf<ListenerEntry<RouterListener>>()
-    internal val controllerListeners =
+    private val controllerListeners =
         mutableListOf<ListenerEntry<ControllerListener>>()
 
     private val hostRouter get() = (routerManager.host as? Controller)?.router
@@ -402,6 +401,11 @@ class Router internal constructor(
             it.pushChangeHandler != null
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
+
+    private data class ListenerEntry<T>(
+        val listener: T,
+        val recursive: Boolean
+    )
 
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
