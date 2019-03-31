@@ -24,20 +24,12 @@ class LoggingControllerListener : ControllerListener {
         controller.d { "post create" }
     }
 
-    override fun preBuildView(controller: Controller, savedViewState: Bundle?) {
-        controller.d { "pre build view" }
+    override fun preCreateView(controller: Controller, savedViewState: Bundle?) {
+        controller.d { "pre create view" }
     }
 
-    override fun postBuildView(controller: Controller, view: View, savedViewState: Bundle?) {
-        controller.d { "post build view" }
-    }
-
-    override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-        controller.d { "pre bind view" }
-    }
-
-    override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-        controller.d { "post bind view" }
+    override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
+        controller.d { "post create view" }
     }
 
     override fun preAttach(controller: Controller, view: View) {
@@ -56,12 +48,12 @@ class LoggingControllerListener : ControllerListener {
         controller.d { "post detach" }
     }
 
-    override fun preUnbindView(controller: Controller, view: View) {
-        controller.d { "pre unbind view" }
+    override fun preDestroyView(controller: Controller, view: View) {
+        controller.d { "pre destroy view" }
     }
 
-    override fun postUnbindView(controller: Controller) {
-        controller.d { "post unbind view" }
+    override fun postDestroyView(controller: Controller) {
+        controller.d { "post destroy view" }
     }
 
     override fun preDestroy(controller: Controller) {

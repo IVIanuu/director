@@ -5,7 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.ivianuu.director.activitycallbacks.addActivityResultListener
 import com.ivianuu.director.activitycallbacks.startActivityForResult
 import com.ivianuu.director.changeHandler
@@ -48,28 +50,34 @@ class TargetDisplayController : BaseController(),
         }
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-        btn_pick_title.setOnClickListener {
-            router.push(
-                TargetTitleEntryController.newInstance(this@TargetDisplayController)
-                    .toTransaction()
-                    .changeHandler(HorizontalChangeHandler())
-            )
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            btn_pick_title.setOnClickListener {
+                router.push(
+                    TargetTitleEntryController.newInstance(this@TargetDisplayController)
+                        .toTransaction()
+                        .changeHandler(HorizontalChangeHandler())
+                )
+            }
 
-        btn_pick_image.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            intent.type = "image/*"
-            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            startActivityForResult(
-                Intent.createChooser(intent, "Select Image"),
-                REQUEST_SELECT_IMAGE
-            )
-        }
+            btn_pick_image.setOnClickListener {
+                val intent =
+                    Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                intent.type = "image/*"
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+                startActivityForResult(
+                    Intent.createChooser(intent, "Select Image"),
+                    REQUEST_SELECT_IMAGE
+                )
+            }
 
-        setTextView()
-        setImageView()
+            setTextView()
+            setImageView()
+        }
     }
 
     override fun onTitlePicked(option: String) {

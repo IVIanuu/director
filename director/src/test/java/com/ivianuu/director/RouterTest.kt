@@ -17,11 +17,7 @@
 package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.EmptyChangeListener
-import com.ivianuu.director.util.EmptyControllerListener
-import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.noRemoveViewOnPushHandler
+import com.ivianuu.director.util.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -511,7 +507,7 @@ class RouterTest {
     @Test
     fun testIsBeingDestroyed() {
         val listener = ControllerListener(
-            preUnbindView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }
+            preDestroyView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }
         )
 
         val controller1 = TestController()

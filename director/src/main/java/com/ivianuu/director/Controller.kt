@@ -15,7 +15,7 @@ import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
-import com.ivianuu.director.ControllerState.VIEW_BOUND
+import com.ivianuu.director.ControllerState.VIEW_CREATED
 import com.ivianuu.director.internal.classForNameOrThrow
 import com.ivianuu.stdlibx.safeAs
 import java.util.*
@@ -81,7 +81,7 @@ abstract class Controller {
         set(value) {
             field = value
             if (!value && !isAttached) {
-                unbindView()
+                destroyView()
             }
         }
 
@@ -111,7 +111,7 @@ abstract class Controller {
 
                 if (removeViewRef) {
                     if (!retainView) {
-                        unbindView()
+                        destroyView()
                     } else {
                         childRouterManager.removeContainers()
                     }
@@ -136,18 +136,11 @@ abstract class Controller {
     /**
      * Returns the view for this controller
      */
-    protected abstract fun onBuildView(
+    protected abstract fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View
-
-    /**
-     * Called after the view was build and the view state restored
-     */
-    protected open fun onBindView(view: View, savedViewState: Bundle?) {
-        superCalled = true
-    }
 
     /**
      * Called when this Controller is attached to its container
@@ -166,7 +159,7 @@ abstract class Controller {
     /**
      * Called when the view of this controller gets destroyed
      */
-    protected open fun onUnbindView(view: View) {
+    protected open fun onDestroyView(view: View) {
         superCalled = true
     }
 
@@ -289,7 +282,7 @@ abstract class Controller {
         val view = view ?: return
 
         if (isBeingDestroyed || !retainView) {
-            unbindView()
+            destroyView()
         } else if (retainView) {
             // remove containers to let children
             // decide whether they wanna keep their view or not
@@ -313,7 +306,7 @@ abstract class Controller {
         notifyListeners { it.postDestroy(this) }
     }
 
-    internal fun inflate(container: ViewGroup): View {
+    internal fun createView(container: ViewGroup): View {
         var view = view
 
         // return the retained view
@@ -329,23 +322,17 @@ abstract class Controller {
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
         savedViewState?.classLoader = javaClass.classLoader
 
-        notifyListeners { it.preBuildView(this, savedViewState) }
+        notifyListeners { it.preCreateView(this, savedViewState) }
 
-        view = onBuildView(
+        view = onCreateView(
             LayoutInflater.from(container.context),
             container,
             savedViewState
         ).also { this.view = it }
 
-        notifyListeners { it.postBuildView(this, view, savedViewState) }
+        state = VIEW_CREATED
 
-        notifyListeners { it.preBindView(this, view, savedViewState) }
-
-        state = VIEW_BOUND
-
-        requireSuperCalled { onBindView(view, savedViewState) }
-
-        notifyListeners { it.postBindView(this, view, savedViewState) }
+        notifyListeners { it.postCreateView(this, view, savedViewState) }
 
         if (viewState != null) {
             view.restoreHierarchyState(
@@ -405,7 +392,7 @@ abstract class Controller {
 
         notifyListeners { it.preDetach(this, view) }
 
-        state = VIEW_BOUND
+        state = VIEW_CREATED
 
         requireSuperCalled { onDetach(view) }
 
@@ -416,7 +403,7 @@ abstract class Controller {
         }
     }
 
-    private fun unbindView() {
+    private fun destroyView() {
         val view = view ?: return
         if (!isBeingDestroyed && !hasSavedViewState) {
             saveViewState()
@@ -424,16 +411,16 @@ abstract class Controller {
 
         childRouterManager.removeContainers()
 
-        notifyListeners { it.preUnbindView(this, view) }
+        notifyListeners { it.preDestroyView(this, view) }
 
-        requireSuperCalled { onUnbindView(view) }
+        requireSuperCalled { onDestroyView(view) }
 
         view.removeOnAttachStateChangeListener(viewAttachListener)
         viewIsAttached = false
 
         this.view = null
 
-        notifyListeners { it.postUnbindView(this) }
+        notifyListeners { it.postDestroyView(this) }
 
         if (isBeingDestroyed && isPerformingExitTransition) {
             hostDestroyed()
@@ -564,7 +551,7 @@ abstract class Controller {
 
 val Controller.isCreated: Boolean get() = state.isAtLeast(CREATED)
 
-val Controller.isViewBound: Boolean get() = state.isAtLeast(VIEW_BOUND)
+val Controller.isViewCreated: Boolean get() = state.isAtLeast(VIEW_CREATED)
 
 val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
 

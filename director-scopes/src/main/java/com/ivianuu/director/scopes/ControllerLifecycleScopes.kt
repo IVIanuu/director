@@ -19,11 +19,11 @@ package com.ivianuu.director.scopes
 import com.ivianuu.director.Controller
 import com.ivianuu.director.common.ControllerEvent
 import com.ivianuu.director.common.ControllerEvent.ATTACH
-import com.ivianuu.director.common.ControllerEvent.BIND_VIEW
 import com.ivianuu.director.common.ControllerEvent.CREATE
+import com.ivianuu.director.common.ControllerEvent.CREATE_VIEW
 import com.ivianuu.director.common.ControllerEvent.DESTROY
+import com.ivianuu.director.common.ControllerEvent.DESTROY_VIEW
 import com.ivianuu.director.common.ControllerEvent.DETACH
-import com.ivianuu.director.common.ControllerEvent.UNBIND_VIEW
 import com.ivianuu.scopes.Scope
 import com.ivianuu.scopes.cache.LifecycleScopesStore
 import com.ivianuu.scopes.lifecycle.LifecycleScopes
@@ -41,12 +41,12 @@ fun Controller.scopeFor(event: ControllerEvent): Scope =
 
 val Controller.create: Scope get() = scopeFor(CREATE)
 
-val Controller.bindView: Scope get() = scopeFor(BIND_VIEW)
+val Controller.createView: Scope get() = scopeFor(CREATE_VIEW)
 
 val Controller.attach: Scope get() = scopeFor(ATTACH)
 
 val Controller.detach: Scope get() = scopeFor(DETACH)
 
-val Controller.unbindView: Scope get() = scopeFor(UNBIND_VIEW)
+val Controller.destroyView: Scope get() = scopeFor(DESTROY_VIEW)
 
 val Controller.destroy: Scope get() = scopeFor(DESTROY)

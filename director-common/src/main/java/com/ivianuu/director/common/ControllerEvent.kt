@@ -24,9 +24,9 @@ import com.ivianuu.director.Controller
  */
 enum class ControllerEvent {
     CREATE,
-    BIND_VIEW,
+    CREATE_VIEW,
     ATTACH,
     DETACH,
-    UNBIND_VIEW,
+    DESTROY_VIEW,
     DESTROY
 }

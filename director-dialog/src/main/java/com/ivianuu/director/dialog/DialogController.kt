@@ -22,14 +22,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.Controller
-import com.ivianuu.director.DefaultChangeHandler
-import com.ivianuu.director.Router
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.pop
-import com.ivianuu.director.push
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
+import com.ivianuu.director.*
 
 /**
  * A controller counterpart for dialog fragments
@@ -44,14 +37,14 @@ abstract class DialogController : Controller(),
     var dialog: Dialog? = null
         private set
 
-    override fun onBuildView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
         val view = View(inflater.context) // dummy view
 
-        val dialog = onBuildDialog(savedViewState).also { this.dialog = it }
+        val dialog = onCreateDialog(savedViewState).also { this.dialog = it }
 
         dialog.setOnShowListener(this)
         dialog.setOnCancelListener(this)
@@ -62,7 +55,7 @@ abstract class DialogController : Controller(),
         return view
     }
 
-    protected abstract fun onBuildDialog(savedViewState: Bundle?): Dialog
+    protected abstract fun onCreateDialog(savedViewState: Bundle?): Dialog
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -74,8 +67,8 @@ abstract class DialogController : Controller(),
         dialog?.hide()
     }
 
-    override fun onUnbindView(view: View) {
-        super.onUnbindView(view)
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
         dialog?.let {
             it.setOnShowListener(null)
             it.setOnCancelListener(null)

@@ -2,13 +2,14 @@ package com.ivianuu.director.sample.controller
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.childRouter
-import com.ivianuu.director.context
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
@@ -50,20 +51,24 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            recycler_view.layoutManager = LinearLayoutManager(context)
+            recycler_view.adapter = epoxyController.adapter
+            isTwoPane = context.resources.configuration.orientation ==
+                    Configuration.ORIENTATION_LANDSCAPE
 
-        recycler_view.layoutManager = LinearLayoutManager(context)
-        recycler_view.adapter = epoxyController.adapter
-        isTwoPane = context.resources.configuration.orientation ==
-                Configuration.ORIENTATION_LANDSCAPE
+            childRouter.popsLastView = !isTwoPane
 
-        childRouter.popsLastView = !isTwoPane
+            epoxyController.requestModelBuild()
 
-        epoxyController.requestModelBuild()
-
-        if (isTwoPane && !childRouter.hasRoot) {
-            onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
+            if (isTwoPane && !childRouter.hasRoot) {
+                onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
+            }
         }
     }
 

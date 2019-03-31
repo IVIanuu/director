@@ -23,7 +23,7 @@ enum class ControllerState {
     DESTROYED,
     INITIALIZED,
     CREATED,
-    VIEW_BOUND,
+    VIEW_CREATED,
     ATTACHED,
 }
 

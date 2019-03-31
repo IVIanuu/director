@@ -40,12 +40,12 @@ class TestController : Controller() {
         currentCallState.createCalls++
     }
 
-    override fun onBuildView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        currentCallState.buildViewCalls++
+        currentCallState.createViewCalls++
         val view = AttachFakingFrameLayout(inflater.context)
         view.id = VIEW_ID
 
@@ -58,11 +58,6 @@ class TestController : Controller() {
         view.addView(childContainer2)
 
         return view
-    }
-
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-        currentCallState.bindViewCalls++
     }
 
     override fun onChangeStarted(
@@ -104,9 +99,9 @@ class TestController : Controller() {
         currentCallState.detachCalls++
     }
 
-    override fun onUnbindView(view: View) {
-        super.onUnbindView(view)
-        currentCallState.unbindViewCalls++
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        currentCallState.destroyViewCalls++
     }
 
     override fun onDestroy() {

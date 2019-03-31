@@ -29,7 +29,7 @@ import com.ivianuu.director.dialog.DialogController
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onBuildDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(context)
+    override fun onCreateDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(context)
         .title("Hello")
         .content("This is a simple dialog controller.")
         .positiveText("OK")

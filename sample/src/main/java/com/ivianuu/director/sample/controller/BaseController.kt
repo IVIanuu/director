@@ -14,18 +14,21 @@ import kotlinx.android.synthetic.*
 abstract class BaseController : Controller(), LayoutContainer {
 
     override val containerView: View?
-        get() = view
+        get() = _containerView
+
+    private var _containerView: View? = null
 
     protected open val layoutRes = 0
     var toolbarTitle: String? = null
 
-    override fun onBuildView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
         check(layoutRes != 0) { "no layout res provided" }
         return inflater.inflate(layoutRes, container, false)
+            .also { _containerView = it }
     }
 
     override fun onAttach(view: View) {
@@ -33,9 +36,10 @@ abstract class BaseController : Controller(), LayoutContainer {
         super.onAttach(view)
     }
 
-    override fun onUnbindView(view: View) {
+    override fun onDestroyView(view: View) {
         clearFindViewByIdCache()
-        super.onUnbindView(view)
+        _containerView = null
+        super.onDestroyView(view)
     }
 
     protected fun setTitle() {

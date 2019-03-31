@@ -2,13 +2,7 @@ package com.ivianuu.director.internal
 
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ChangeData
-import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.DefaultChangeHandler
-import com.ivianuu.director.Router
-import com.ivianuu.director.RouterListener
+import com.ivianuu.director.*
 
 internal object ControllerChangeManager {
 
@@ -47,7 +41,7 @@ internal object ControllerChangeManager {
         val fromChangeType =
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
-        val toView = to?.inflate(container)
+        val toView = to?.createView(container)
         to?.changeStarted(from, handlerToUse, toChangeType)
 
         val fromView = from?.view

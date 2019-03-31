@@ -19,7 +19,9 @@ package com.ivianuu.director.sample.controller
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.ivianuu.director.activitycallbacks.addPermissionResultListener
 import com.ivianuu.director.activitycallbacks.requestPermissions
@@ -42,15 +44,23 @@ class PermissionController : BaseController() {
         addPermissionResultListener(REQUEST_CODE_PERMISSION) { _, _, _ -> updateState() }
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-        grant.setOnClickListener {
-            requestPermissions(
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CODE_PERMISSION
-            )
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            grant.setOnClickListener {
+                requestPermissions(
+                    arrayOf(Manifest.permission.CAMERA),
+                    REQUEST_CODE_PERMISSION
+                )
+            }
         }
+    }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
         updateState()
     }
 

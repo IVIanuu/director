@@ -19,13 +19,7 @@ package com.ivianuu.director
 import android.os.Bundle
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.CallState
-import com.ivianuu.director.util.MockChangeHandler
-import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.defaultHandler
-import com.ivianuu.director.util.listeningChangeHandler
-import com.ivianuu.director.util.reportAttached
+import com.ivianuu.director.util.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -99,7 +93,7 @@ class ControllerLifecycleCallbacksTest {
         controller.view!!.reportAttached(false)
 
         expectedCallState.saveViewStateCalls++
-        expectedCallState.unbindViewCalls++
+        expectedCallState.destroyViewCalls++
         assertCalls(expectedCallState, controller)
     }*/
 
@@ -129,7 +123,7 @@ class ControllerLifecycleCallbacksTest {
 
         activityProxy.destroy()
 
-        expectedCallState.unbindViewCalls++
+        expectedCallState.destroyViewCalls++
         expectedCallState.destroyCalls++
         assertCalls(expectedCallState, controller)
     }
@@ -175,11 +169,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(1, callState.createCalls)
                 assertEquals(0, testController.currentCallState.createCalls)
 
-                assertEquals(0, callState.buildViewCalls)
-                assertEquals(0, testController.currentCallState.buildViewCalls)
-
-                assertEquals(0, callState.bindViewCalls)
-                assertEquals(0, testController.currentCallState.bindViewCalls)
+                assertEquals(0, callState.createViewCalls)
+                assertEquals(0, testController.currentCallState.createViewCalls)
 
                 assertEquals(0, callState.attachCalls)
                 assertEquals(0, testController.currentCallState.attachCalls)
@@ -187,8 +178,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -199,11 +190,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(0, callState.buildViewCalls)
-                assertEquals(0, testController.currentCallState.buildViewCalls)
-
-                assertEquals(0, callState.bindViewCalls)
-                assertEquals(0, testController.currentCallState.bindViewCalls)
+                assertEquals(0, callState.createViewCalls)
+                assertEquals(0, testController.currentCallState.createViewCalls)
 
                 assertEquals(0, callState.attachCalls)
                 assertEquals(0, testController.currentCallState.attachCalls)
@@ -211,23 +199,20 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun preBuildView(controller: Controller, savedViewState: Bundle?) {
-                callState.buildViewCalls++
+            override fun preCreateView(controller: Controller, savedViewState: Bundle?) {
+                callState.createViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(1, callState.buildViewCalls)
-                assertEquals(0, testController.currentCallState.buildViewCalls)
-
-                assertEquals(0, callState.bindViewCalls)
-                assertEquals(0, testController.currentCallState.bindViewCalls)
+                assertEquals(1, callState.createViewCalls)
+                assertEquals(0, testController.currentCallState.createViewCalls)
 
                 assertEquals(0, callState.attachCalls)
                 assertEquals(0, testController.currentCallState.attachCalls)
@@ -235,27 +220,24 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun postBuildView(
+            override fun postCreateView(
                 controller: Controller,
                 view: View,
                 savedViewState: Bundle?
             ) {
-                callState.buildViewCalls++
+                callState.createViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(0, callState.bindViewCalls)
-                assertEquals(0, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(0, callState.attachCalls)
                 assertEquals(0, testController.currentCallState.attachCalls)
@@ -263,56 +245,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
-
-                assertEquals(0, callState.destroyCalls)
-                assertEquals(0, testController.currentCallState.destroyCalls)
-            }
-
-            override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-                callState.bindViewCalls++
-                assertEquals(2, callState.createCalls)
-                assertEquals(1, testController.currentCallState.createCalls)
-
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(1, callState.bindViewCalls)
-                assertEquals(0, testController.currentCallState.bindViewCalls)
-
-                assertEquals(0, callState.attachCalls)
-                assertEquals(0, testController.currentCallState.attachCalls)
-
-                assertEquals(0, callState.detachCalls)
-                assertEquals(0, testController.currentCallState.detachCalls)
-
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
-
-                assertEquals(0, callState.destroyCalls)
-                assertEquals(0, testController.currentCallState.destroyCalls)
-            }
-
-            override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-                callState.bindViewCalls++
-                assertEquals(2, callState.createCalls)
-                assertEquals(1, testController.currentCallState.createCalls)
-
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
-
-                assertEquals(0, callState.attachCalls)
-                assertEquals(0, testController.currentCallState.attachCalls)
-
-                assertEquals(0, callState.detachCalls)
-                assertEquals(0, testController.currentCallState.detachCalls)
-
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -323,11 +257,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(1, callState.attachCalls)
                 assertEquals(0, testController.currentCallState.attachCalls)
@@ -335,8 +266,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -347,11 +278,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -359,8 +287,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(0, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -371,11 +299,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -383,8 +308,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(1, callState.detachCalls)
                 assertEquals(0, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -395,11 +320,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -407,23 +329,20 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.detachCalls)
                 assertEquals(1, testController.currentCallState.detachCalls)
 
-                assertEquals(0, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(0, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun preUnbindView(controller: Controller, view: View) {
-                callState.unbindViewCalls++
+            override fun preDestroyView(controller: Controller, view: View) {
+                callState.destroyViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -431,23 +350,20 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.detachCalls)
                 assertEquals(1, testController.currentCallState.detachCalls)
 
-                assertEquals(1, callState.unbindViewCalls)
-                assertEquals(0, testController.currentCallState.unbindViewCalls)
+                assertEquals(1, callState.destroyViewCalls)
+                assertEquals(0, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun postUnbindView(controller: Controller) {
-                callState.unbindViewCalls++
+            override fun postDestroyView(controller: Controller) {
+                callState.destroyViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -455,8 +371,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.detachCalls)
                 assertEquals(1, testController.currentCallState.detachCalls)
 
-                assertEquals(2, callState.unbindViewCalls)
-                assertEquals(1, testController.currentCallState.unbindViewCalls)
+                assertEquals(2, callState.destroyViewCalls)
+                assertEquals(1, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(0, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -467,11 +383,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -479,8 +392,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.detachCalls)
                 assertEquals(1, testController.currentCallState.detachCalls)
 
-                assertEquals(2, callState.unbindViewCalls)
-                assertEquals(1, testController.currentCallState.unbindViewCalls)
+                assertEquals(2, callState.destroyViewCalls)
+                assertEquals(1, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(1, callState.destroyCalls)
                 assertEquals(0, testController.currentCallState.destroyCalls)
@@ -491,11 +404,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
 
-                assertEquals(2, callState.buildViewCalls)
-                assertEquals(1, testController.currentCallState.buildViewCalls)
-
-                assertEquals(2, callState.bindViewCalls)
-                assertEquals(1, testController.currentCallState.bindViewCalls)
+                assertEquals(2, callState.createViewCalls)
+                assertEquals(1, testController.currentCallState.createViewCalls)
 
                 assertEquals(2, callState.attachCalls)
                 assertEquals(1, testController.currentCallState.attachCalls)
@@ -503,8 +413,8 @@ class ControllerLifecycleCallbacksTest {
                 assertEquals(2, callState.detachCalls)
                 assertEquals(1, testController.currentCallState.detachCalls)
 
-                assertEquals(2, callState.unbindViewCalls)
-                assertEquals(1, testController.currentCallState.unbindViewCalls)
+                assertEquals(2, callState.destroyViewCalls)
+                assertEquals(1, testController.currentCallState.destroyViewCalls)
 
                 assertEquals(2, callState.destroyCalls)
                 assertEquals(1, testController.currentCallState.destroyCalls)
@@ -519,11 +429,10 @@ class ControllerLifecycleCallbacksTest {
         router.pop(testController)
 
         assertEquals(2, callState.createCalls)
-        assertEquals(2, callState.buildViewCalls)
-        assertEquals(2, callState.bindViewCalls)
+        assertEquals(2, callState.createViewCalls)
         assertEquals(2, callState.attachCalls)
         assertEquals(2, callState.detachCalls)
-        assertEquals(2, callState.unbindViewCalls)
+        assertEquals(2, callState.destroyViewCalls)
         assertEquals(2, callState.destroyCalls)
     }
 
@@ -586,7 +495,7 @@ class ControllerLifecycleCallbacksTest {
         router.popTop()
 
         expectedCallState.detachCalls++
-        expectedCallState.unbindViewCalls++
+        expectedCallState.destroyViewCalls++
         expectedCallState.destroyCalls++
 
         assertCalls(expectedCallState, child)
@@ -634,8 +543,7 @@ class ControllerLifecycleCallbacksTest {
             override fun willStartChange() {
                 expectedCallState.createCalls++
                 expectedCallState.changeStartCalls++
-                expectedCallState.buildViewCalls++
-                expectedCallState.bindViewCalls++
+                expectedCallState.createViewCalls++
                 assertCalls(expectedCallState, controller)
             }
 
@@ -662,7 +570,7 @@ class ControllerLifecycleCallbacksTest {
             }
 
             override fun didAttachOrDetach() {
-                expectedCallState.unbindViewCalls++
+                expectedCallState.destroyViewCalls++
                 expectedCallState.detachCalls++
                 expectedCallState.destroyCalls++
                 assertCalls(expectedCallState, controller)
@@ -712,25 +620,21 @@ class ControllerLifecycleCallbacksTest {
                 currentCallState.createCalls++
             }
 
-            override fun postBuildView(
+            override fun postCreateView(
                 controller: Controller,
                 view: View,
                 savedViewState: Bundle?
             ) {
-                currentCallState.buildViewCalls++
-            }
-
-            override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-                currentCallState.bindViewCalls++
+                currentCallState.createViewCalls++
             }
 
             override fun postAttach(controller: Controller, view: View) {
                 currentCallState.attachCalls++
             }
 
-            override fun postUnbindView(controller: Controller) {
-                super.postUnbindView(controller)
-                currentCallState.unbindViewCalls++
+            override fun postDestroyView(controller: Controller) {
+                super.postDestroyView(controller)
+                currentCallState.destroyViewCalls++
             }
 
             override fun postDetach(controller: Controller, view: View) {
@@ -796,16 +700,8 @@ class ControllerLifecycleCallbacksTest {
         private val child: Controller
     ) : ControllerListener {
 
-        override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.preBindView(controller, view, savedViewState)
-            when (controller) {
-                parent -> assertNull(child.view)
-                child -> assertNotNull(parent.view)
-            }
-        }
-
-        override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.postBindView(controller, view, savedViewState)
+        override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
+            super.postCreateView(controller, view, savedViewState)
             when (controller) {
                 parent -> assertNull(child.view)
                 child -> assertNotNull(parent.view)
@@ -844,16 +740,16 @@ class ControllerLifecycleCallbacksTest {
             }
         }
 
-        override fun preUnbindView(controller: Controller, view: View) {
-            super.preUnbindView(controller, view)
+        override fun preDestroyView(controller: Controller, view: View) {
+            super.preDestroyView(controller, view)
             when (controller) {
                 parent -> assertNull(child.view)
                 child -> assertNotNull(parent.view)
             }
         }
 
-        override fun postUnbindView(controller: Controller) {
-            super.postUnbindView(controller)
+        override fun postDestroyView(controller: Controller) {
+            super.postDestroyView(controller)
             when (controller) {
                 parent -> assertNull(child.view)
                 child -> assertNotNull(parent.view)

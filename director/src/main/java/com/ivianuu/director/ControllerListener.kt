@@ -30,16 +30,10 @@ interface ControllerListener {
     fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
     }
 
-    fun preBuildView(controller: Controller, savedViewState: Bundle?) {
+    fun preCreateView(controller: Controller, savedViewState: Bundle?) {
     }
 
-    fun postBuildView(controller: Controller, view: View, savedViewState: Bundle?) {
-    }
-
-    fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-    }
-
-    fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
+    fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
     }
 
     fun preAttach(controller: Controller, view: View) {
@@ -54,10 +48,10 @@ interface ControllerListener {
     fun postDetach(controller: Controller, view: View) {
     }
 
-    fun preUnbindView(controller: Controller, view: View) {
+    fun preDestroyView(controller: Controller, view: View) {
     }
 
-    fun postUnbindView(controller: Controller) {
+    fun postDestroyView(controller: Controller) {
     }
 
     fun preDestroy(controller: Controller) {
@@ -101,16 +95,14 @@ interface ControllerListener {
 fun ControllerListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    postBuildView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     preDetach: ((controller: Controller, view: View) -> Unit)? = null,
     postDetach: ((controller: Controller, view: View) -> Unit)? = null,
-    preUnbindView: ((controller: Controller, view: View) -> Unit)? = null,
-    postUnbindView: ((controller: Controller) -> Unit)? = null,
+    preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
+    postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
     onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
@@ -121,11 +113,10 @@ fun ControllerListener(
     onChangeEnd: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerListener = LambdaControllerListener(
     preCreate = preCreate, postCreate = postCreate,
-    preBuildView = preBuildView, postBuildView = postBuildView,
-    preBindView = preBindView, postBindView = postBindView,
+    preCreateView = preCreateView, postCreateView = postCreateView,
     preAttach = preAttach, postAttach = postAttach,
     preDetach = preDetach, postDetach = postDetach,
-    preUnbindView = preUnbindView, postUnbindView = postUnbindView,
+    preDestroyView = preDestroyView, postDestroyView = postDestroyView,
     preDestroy = preDestroy, postDestroy = postDestroy,
     onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
     onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
@@ -138,17 +129,11 @@ fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState:
 fun Controller.doOnPostCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): ControllerListener =
     addListener(postCreate = block)
 
-fun Controller.doOnPreBuildView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addListener(preBuildView = block)
+fun Controller.doOnPreCreateView(block: (controller: Controller, savedViewState: Bundle?) -> Unit): ControllerListener =
+    addListener(preCreateView = block)
 
-fun Controller.doOnPostBuildView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addListener(postBuildView = block)
-
-fun Controller.doOnPreBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addListener(preBindView = block)
-
-fun Controller.doOnPostBindView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
-    addListener(postBindView = block)
+fun Controller.doOnPostCreateView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit): ControllerListener =
+    addListener(postCreateView = block)
 
 fun Controller.doOnPreAttach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
     addListener(preAttach = block)
@@ -162,11 +147,11 @@ fun Controller.doOnPreDetach(block: (controller: Controller, view: View) -> Unit
 fun Controller.doOnPostDetach(block: (controller: Controller, view: View) -> Unit): ControllerListener =
     addListener(postDetach = block)
 
-fun Controller.doOnPreUnbindView(block: (controller: Controller, view: View) -> Unit): ControllerListener =
-    addListener(preUnbindView = block)
+fun Controller.doOnpreDestroyView(block: (controller: Controller, view: View) -> Unit): ControllerListener =
+    addListener(preDestroyView = block)
 
-fun Controller.doOnPostUnbindView(block: (controller: Controller) -> Unit): ControllerListener =
-    addListener(postUnbindView = block)
+fun Controller.doOnpostDestroyView(block: (controller: Controller) -> Unit): ControllerListener =
+    addListener(postDestroyView = block)
 
 fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit): ControllerListener =
     addListener(preDestroy = block)
@@ -195,16 +180,14 @@ fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?,
 fun Controller.addListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    postBuildView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     preDetach: ((controller: Controller, view: View) -> Unit)? = null,
     postDetach: ((controller: Controller, view: View) -> Unit)? = null,
-    preUnbindView: ((controller: Controller, view: View) -> Unit)? = null,
-    postUnbindView: ((controller: Controller) -> Unit)? = null,
+    preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
+    postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
     onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
@@ -215,11 +198,10 @@ fun Controller.addListener(
     onChangeEnd: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerListener = ControllerListener(
     preCreate = preCreate, postCreate = postCreate,
-    preBuildView = preBuildView, postBuildView = postBuildView,
-    preBindView = preBindView, postBindView = postBindView,
+    preCreateView = preCreateView, postCreateView = postCreateView,
     preAttach = preAttach, postAttach = postAttach,
     preDetach = preDetach, postDetach = postDetach,
-    preUnbindView = preUnbindView, postUnbindView = postUnbindView,
+    preDestroyView = preDestroyView, postDestroyView = postDestroyView,
     preDestroy = preDestroy, postDestroy = postDestroy,
     onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
     onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
@@ -230,16 +212,14 @@ fun Router.addControllerListener(
     recursive: Boolean = false,
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    postBuildView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     preDetach: ((controller: Controller, view: View) -> Unit)? = null,
     postDetach: ((controller: Controller, view: View) -> Unit)? = null,
-    preUnbindView: ((controller: Controller, view: View) -> Unit)? = null,
-    postUnbindView: ((controller: Controller) -> Unit)? = null,
+    preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
+    postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
     onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
@@ -251,11 +231,10 @@ fun Router.addControllerListener(
 ): ControllerListener {
     return ControllerListener(
         preCreate = preCreate, postCreate = postCreate,
-        preBuildView = preBuildView, postBuildView = postBuildView,
-        preBindView = preBindView, postBindView = postBindView,
+        preCreateView = preCreateView, postCreateView = postCreateView,
         preAttach = preAttach, postAttach = postAttach,
         preDetach = preDetach, postDetach = postDetach,
-        preUnbindView = preUnbindView, postUnbindView = postUnbindView,
+        preDestroyView = preDestroyView, postDestroyView = postDestroyView,
         preDestroy = preDestroy, postDestroy = postDestroy,
         onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
         onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
@@ -266,16 +245,14 @@ fun Router.addControllerListener(
 private class LambdaControllerListener(
     private val preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     private val postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    private val preBuildView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    private val postBuildView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    private val preBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
-    private val postBindView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    private val preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
+    private val postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
     private val preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     private val postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     private val preDetach: ((controller: Controller, view: View) -> Unit)? = null,
     private val postDetach: ((controller: Controller, view: View) -> Unit)? = null,
-    private val preUnbindView: ((controller: Controller, view: View) -> Unit)? = null,
-    private val postUnbindView: ((controller: Controller) -> Unit)? = null,
+    private val preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
+    private val postDestroyView: ((controller: Controller) -> Unit)? = null,
     private val preDestroy: ((controller: Controller) -> Unit)? = null,
     private val postDestroy: ((controller: Controller) -> Unit)? = null,
     private val onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
@@ -293,20 +270,12 @@ private class LambdaControllerListener(
         postCreate?.invoke(controller, savedInstanceState)
     }
 
-    override fun preBuildView(controller: Controller, savedViewState: Bundle?) {
-        preBuildView?.invoke(controller, savedViewState)
+    override fun preCreateView(controller: Controller, savedViewState: Bundle?) {
+        preCreateView?.invoke(controller, savedViewState)
     }
 
-    override fun postBuildView(controller: Controller, view: View, savedViewState: Bundle?) {
-        postBuildView?.invoke(controller, view, savedViewState)
-    }
-
-    override fun preBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-        preBindView?.invoke(controller, view, savedViewState)
-    }
-
-    override fun postBindView(controller: Controller, view: View, savedViewState: Bundle?) {
-        postBindView?.invoke(controller, view, savedViewState)
+    override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
+        postCreateView?.invoke(controller, view, savedViewState)
     }
 
     override fun preAttach(controller: Controller, view: View) {
@@ -325,12 +294,12 @@ private class LambdaControllerListener(
         postDetach?.invoke(controller, view)
     }
 
-    override fun preUnbindView(controller: Controller, view: View) {
-        preUnbindView?.invoke(controller, view)
+    override fun preDestroyView(controller: Controller, view: View) {
+        preDestroyView?.invoke(controller, view)
     }
 
-    override fun postUnbindView(controller: Controller) {
-        postUnbindView?.invoke(controller)
+    override fun postDestroyView(controller: Controller) {
+        postDestroyView?.invoke(controller)
     }
 
     override fun preDestroy(controller: Controller) {

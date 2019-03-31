@@ -21,11 +21,11 @@ import com.ivianuu.director.ControllerState
 import com.ivianuu.director.addListener
 import com.ivianuu.director.common.ControllerEvent
 import com.ivianuu.director.common.ControllerEvent.ATTACH
-import com.ivianuu.director.common.ControllerEvent.BIND_VIEW
 import com.ivianuu.director.common.ControllerEvent.CREATE
+import com.ivianuu.director.common.ControllerEvent.CREATE_VIEW
 import com.ivianuu.director.common.ControllerEvent.DESTROY
+import com.ivianuu.director.common.ControllerEvent.DESTROY_VIEW
 import com.ivianuu.director.common.ControllerEvent.DETACH
-import com.ivianuu.director.common.ControllerEvent.UNBIND_VIEW
 import com.ivianuu.lifecycle.AbstractLifecycle
 
 /**
@@ -38,17 +38,17 @@ class ControllerLifecycle(
     init {
         controller.addListener(
             preCreate = { _, _ -> onEvent(CREATE) },
-            preBindView = { _, _, _ -> onEvent(BIND_VIEW) },
+            preCreateView = { _, _ -> onEvent(CREATE_VIEW) },
             preAttach = { _, _ -> onEvent(ATTACH) },
             postDetach = { _, _ -> onEvent(DETACH) },
-            postUnbindView = { onEvent(UNBIND_VIEW) },
+            postDestroyView = { onEvent(DESTROY_VIEW) },
             postDestroy = { onEvent(DESTROY) }
         )
 
         when (controller.state) {
             ControllerState.DESTROYED -> onEvent(DESTROY)
             ControllerState.CREATED -> onEvent(CREATE)
-            ControllerState.VIEW_BOUND -> onEvent(BIND_VIEW)
+            ControllerState.VIEW_CREATED -> onEvent(CREATE_VIEW)
             ControllerState.ATTACHED -> onEvent(ATTACH)
         }
     }

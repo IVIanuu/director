@@ -22,7 +22,7 @@ import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
-import com.ivianuu.director.ControllerState.VIEW_BOUND
+import com.ivianuu.director.ControllerState.VIEW_CREATED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.reportAttached
@@ -61,7 +61,7 @@ class ControllerTest {
     fun testAttachedToUnownedParent() {
         val controller = TestController()
 
-        controller.doOnPostBindView { _, view, _ ->
+        controller.doOnPostCreateView { _, view, _ ->
             view.setParent(FrameLayout(view.context))
         }
 
@@ -94,14 +94,14 @@ class ControllerTest {
         controller.addListener(
             preCreate = { _, _ -> assertEquals(INITIALIZED, controller.state) },
             postCreate = { _, _ -> assertEquals(CREATED, controller.state) },
-            preBindView = { _, _, _ -> assertEquals(CREATED, controller.state) },
-            postBindView = { _, _, _ -> assertEquals(VIEW_BOUND, controller.state) },
-            preAttach = { _, _ -> assertEquals(VIEW_BOUND, controller.state) },
+            preCreateView = { _, _ -> assertEquals(CREATED, controller.state) },
+            postCreateView = { _, _, _ -> assertEquals(VIEW_CREATED, controller.state) },
+            preAttach = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
             postAttach = { _, _ -> assertEquals(ATTACHED, controller.state) },
             preDetach = { _, _ -> assertEquals(ATTACHED, controller.state) },
-            postDetach = { _, _ -> assertEquals(VIEW_BOUND, controller.state) },
-            preUnbindView = { _, _ -> assertEquals(VIEW_BOUND, controller.state) },
-            postUnbindView = { assertEquals(CREATED, controller.state) },
+            postDetach = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
+            preDestroyView = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
+            postDestroyView = { assertEquals(CREATED, controller.state) },
             preDestroy = { assertEquals(CREATED, controller.state) },
             postDestroy = { assertEquals(DESTROYED, controller.state) }
         )

@@ -2,25 +2,19 @@ package com.ivianuu.director.sample.controller
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.Controller
-import com.ivianuu.director.Transaction
-import com.ivianuu.director.changeHandler
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
-import com.ivianuu.director.context
-import com.ivianuu.director.popToRoot
-import com.ivianuu.director.push
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_transition_demo.bg_view
 import kotlinx.android.synthetic.main.controller_transition_demo.btn_next
 import kotlinx.android.synthetic.main.controller_transition_demo.transition_root
@@ -38,36 +32,40 @@ class TransitionDemoController : BaseController() {
         toolbarTitle = "Transition Demos"
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-
-        if (transitionDemo.colorId != 0 && bg_view != null) {
-            bg_view.setBackgroundColor(
-                ContextCompat.getColor(
-                    context,
-                    transitionDemo.colorId
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            if (transitionDemo.colorId != 0 && bg_view != null) {
+                bg_view.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        transitionDemo.colorId
+                    )
                 )
-            )
-        }
+            }
 
-        val nextIndex = transitionDemo.ordinal + 1
-        var buttonColor = 0
-        if (nextIndex < TransitionDemo.values().size) {
-            buttonColor = TransitionDemo.fromIndex(nextIndex).colorId
-        }
-        if (buttonColor == 0) {
-            buttonColor = TransitionDemo.fromIndex(0).colorId
-        }
-
-        btn_next.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(context, buttonColor))
-        tv_title.text = transitionDemo.title
-
-        btn_next.setOnClickListener {
+            val nextIndex = transitionDemo.ordinal + 1
+            var buttonColor = 0
             if (nextIndex < TransitionDemo.values().size) {
-                router.push(getRouterTransaction(nextIndex, this))
-            } else {
-                router.popToRoot()
+                buttonColor = TransitionDemo.fromIndex(nextIndex).colorId
+            }
+            if (buttonColor == 0) {
+                buttonColor = TransitionDemo.fromIndex(0).colorId
+            }
+
+            btn_next.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(context, buttonColor))
+            tv_title.text = transitionDemo.title
+
+            btn_next.setOnClickListener {
+                if (nextIndex < TransitionDemo.values().size) {
+                    router.push(getRouterTransaction(nextIndex, this@TransitionDemoController))
+                } else {
+                    router.popToRoot()
+                }
             }
         }
     }

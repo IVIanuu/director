@@ -2,27 +2,20 @@ package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.changeHandler
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.context
 import com.ivianuu.director.dialog.show
-
-import com.ivianuu.director.push
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_home.recycler_view
 import kotlinx.android.synthetic.main.row_home.home_image
@@ -37,17 +30,21 @@ class HomeController : BaseController() {
         toolbarTitle = "Director Sample"
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-
-        recycler_view.layoutManager = LinearLayoutManager(context)
-        recycler_view.buildModels {
-            HomeItem.values().forEachIndexed { index, item ->
-                homeItem {
-                    id(index)
-                    item(item)
-                    position(index)
-                    onClick { onItemClicked(item, index) }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            recycler_view.layoutManager = LinearLayoutManager(context)
+            recycler_view.buildModels {
+                HomeItem.values().forEachIndexed { index, item ->
+                    homeItem {
+                        id(index)
+                        item(item)
+                        position(index)
+                        onClick { onItemClicked(item, index) }
+                    }
                 }
             }
         }

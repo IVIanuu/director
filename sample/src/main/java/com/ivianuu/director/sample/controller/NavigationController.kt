@@ -3,23 +3,15 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
 import android.view.View
-import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.Transaction
-import com.ivianuu.director.changeHandler
+import android.view.ViewGroup
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
-import com.ivianuu.director.parentController
-import com.ivianuu.director.popToRoot
-import com.ivianuu.director.popToTag
-import com.ivianuu.director.push
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.toTransaction
 import com.ivianuu.director.traveler.ControllerKey
 import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
@@ -47,52 +39,56 @@ class NavigationController : BaseController() {
         toolbarTitle = "Navigation Demos"
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            if (displayUpMode != DisplayUpMode.SHOW) {
+                btn_up.visibility = View.GONE
+            }
 
-        if (displayUpMode != DisplayUpMode.SHOW) {
-            view.btn_up.visibility = View.GONE
-        }
+            setBackgroundColor(ColorUtil.getMaterialColor(resources, index))
+            tv_title.text = resources.getString(R.string.navigation_title, index)
 
-        view.setBackgroundColor(ColorUtil.getMaterialColor(resources, index))
-        tv_title.text = resources.getString(R.string.navigation_title, index)
-
-        btn_next.setOnClickListener {
-            if (useTraveler) {
-                travelerRouter.navigate(
-                    NavigationControllerKey(
-                        index + 1,
-                        displayUpMode.displayUpModeForChild,
-                        useTraveler,
-                        animMode
+            btn_next.setOnClickListener {
+                if (useTraveler) {
+                    travelerRouter.navigate(
+                        NavigationControllerKey(
+                            index + 1,
+                            displayUpMode.displayUpModeForChild,
+                            useTraveler,
+                            animMode
+                        )
                     )
-                )
-            } else {
-                router.push(
-                    NavigationController.newInstance(
-                        index + 1,
-                        displayUpMode.displayUpModeForChild,
-                        useTraveler,
-                        animMode
-                    ).toTransaction()
-                        .changeHandler(animMode.createHandler())
-                )
+                } else {
+                    router.push(
+                        NavigationController.newInstance(
+                            index + 1,
+                            displayUpMode.displayUpModeForChild,
+                            useTraveler,
+                            animMode
+                        ).toTransaction()
+                            .changeHandler(animMode.createHandler())
+                    )
+                }
             }
-        }
 
-        btn_up.setOnClickListener {
-            if (useTraveler) {
-                // not required
-            } else {
-                router.popToTag(TAG_UP_TRANSACTION)
+            btn_up.setOnClickListener {
+                if (useTraveler) {
+                    // not required
+                } else {
+                    router.popToTag(TAG_UP_TRANSACTION)
+                }
             }
-        }
 
-        btn_pop_to_root.setOnClickListener {
-            if (useTraveler) {
-                travelerRouter.popToRoot()
-            } else {
-                router.popToRoot()
+            btn_pop_to_root.setOnClickListener {
+                if (useTraveler) {
+                    travelerRouter.popToRoot()
+                } else {
+                    router.popToRoot()
+                }
             }
         }
     }

@@ -17,16 +17,17 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
 import com.ivianuu.director.scopes.destroy
+import com.ivianuu.director.scopes.destroyView
 import com.ivianuu.director.scopes.detach
-import com.ivianuu.director.scopes.unbindView
 import com.ivianuu.director.toTransaction
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
@@ -52,38 +53,43 @@ class ScopesController : BaseController() {
             .disposeBy(destroy)
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
-        d { "onBindView() called" }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            d { "onCreateView() called" }
 
-        btn_next_release_view.setOnClickListener {
-            retainView = false
+            btn_next_release_view.setOnClickListener {
+                retainView = false
 
-            router.push(
-                TextController.newInstance(
-                    "Logcat should now report that the observables from onAttach() and onBindView() have been disposed of, while the onCreate() observable is still running."
-                ).toTransaction()
-                    .changeHandler(HorizontalChangeHandler())
-            )
-        }
-
-        btn_next_retain_view.setOnClickListener {
-            retainView = true
-
-            router.push(
-                TextController.newInstance(
-                    "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onBindView() observables are still running."
-                ).toTransaction()
-                    .changeHandler(HorizontalChangeHandler())
-            )
-        }
-
-        Observable.interval(1, TimeUnit.SECONDS)
-            .doOnDispose { d { "Disposing from onBindView()" } }
-            .subscribe {
-                d { "Started in onBindView(), running until onUnbindView(): $it" }
+                router.push(
+                    TextController.newInstance(
+                        "Logcat should now report that the observables from onAttach() and onCreateView() have been disposed of, while the onCreate() observable is still running."
+                    ).toTransaction()
+                        .changeHandler(HorizontalChangeHandler())
+                )
             }
-            .disposeBy(unbindView)
+
+            btn_next_retain_view.setOnClickListener {
+                retainView = true
+
+                router.push(
+                    TextController.newInstance(
+                        "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onCreateView() observables are still running."
+                    ).toTransaction()
+                        .changeHandler(HorizontalChangeHandler())
+                )
+            }
+
+            Observable.interval(1, TimeUnit.SECONDS)
+                .doOnDispose { d { "Disposing from onCreateView()" } }
+                .subscribe {
+                    d { "Started in onCreateView(), running until onDestroyView(): $it" }
+                }
+                .disposeBy(destroyView)
+        }
     }
 
     override fun onAttach(view: View) {
@@ -104,9 +110,9 @@ class ScopesController : BaseController() {
         d { "onDetach() called" }
     }
 
-    override fun onUnbindView(view: View) {
-        super.onUnbindView(view)
-        d { "onUnbindView() called" }
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        d { "onDestroyView() called" }
     }
 
     override fun onDestroy() {

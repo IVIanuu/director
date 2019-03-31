@@ -2,14 +2,14 @@ package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.changeHandler
-import com.ivianuu.director.context
-
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -37,28 +37,32 @@ class CityGridController : BaseController() {
         toolbarTitle = args.getString(KEY_TITLE)
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        return super.onCreateView(inflater, container, savedViewState).apply {
+            tv_title.text = toolbarTitle
+            img_dot.drawable.setColorFilter(
+                ContextCompat.getColor(context, dotColor),
+                Mode.SRC_ATOP
+            )
 
-        tv_title.text = toolbarTitle
-        img_dot.drawable.setColorFilter(
-            ContextCompat.getColor(context, dotColor),
-            Mode.SRC_ATOP
-        )
-
-        tv_title.transitionName =
+            tv_title.transitionName =
                 resources.getString(R.string.transition_tag_title_indexed, fromPosition)
 
-        img_dot.transitionName =
+            img_dot.transitionName =
                 resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
 
-        recycler_view.layoutManager = GridLayoutManager(context, 2)
-        recycler_view.buildModels {
-            CITIES.forEach { city ->
-                city {
-                    id(city.title)
-                    city(city)
-                    onClick { onCityClicked(city) }
+            recycler_view.layoutManager = GridLayoutManager(context, 2)
+            recycler_view.buildModels {
+                CITIES.forEach { city ->
+                    city {
+                        id(city.title)
+                        city(city)
+                        onClick { onCityClicked(city) }
+                    }
                 }
             }
         }

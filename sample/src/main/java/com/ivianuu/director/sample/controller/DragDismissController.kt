@@ -27,14 +27,13 @@ class DragDismissController : BaseController() {
         toolbarTitle = "Drag to Dismiss"
     }
 
-    override fun onBindView(view: View, savedViewState: Bundle?) {
-        super.onBindView(view, savedViewState)
+    override fun onAttach(view: View) {
+        super.onAttach(view)
         (view as ElasticDragDismissFrameLayout).addListener(dragDismissListener)
     }
 
-    override fun onUnbindView(view: View) {
-        super.onUnbindView(view)
-
+    override fun onDetach(view: View) {
         (view as ElasticDragDismissFrameLayout).removeListener(dragDismissListener)
+        super.onDetach(view)
     }
 }

@@ -9,13 +9,7 @@ import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerListener
-import com.ivianuu.director.ControllerState.ATTACHED
-import com.ivianuu.director.ControllerState.VIEW_BOUND
-import com.ivianuu.director.doOnPostUnbindView
-import com.ivianuu.director.hasView
-import com.ivianuu.director.isAtLeast
+import com.ivianuu.director.*
 
 /**
  * A [LifecycleOwner] for [Controller]s views
@@ -25,10 +19,8 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     private var lifecycleRegistry: LifecycleRegistry? = null
 
     private val listener = ControllerListener(
-        postBuildView = { _, _, _ ->
+        postCreateView = { _, _, _ ->
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
-        },
-        postBindView = { _, _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_CREATE)
             lifecycleRegistry?.handleLifecycleEvent(ON_START)
         },
@@ -38,28 +30,27 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
         preDetach = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_PAUSE)
         },
-        preUnbindView = { _, _ ->
+        preDestroyView = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_STOP)
             lifecycleRegistry?.handleLifecycleEvent(ON_DESTROY)
         },
-        postUnbindView = { lifecycleRegistry = null }
+        postDestroyView = { lifecycleRegistry = null }
     )
 
     init {
         controller.addListener(listener)
 
-        if (controller.state.isAtLeast(VIEW_BOUND)) {
-            listener.postBuildView(controller, controller.view!!, null)
-            listener.postBindView(controller, controller.view!!, null)
+        if (controller.isViewCreated) {
+            listener.postCreateView(controller, controller.view!!, null)
         }
 
-        if (controller.state.isAtLeast(ATTACHED)) {
+        if (controller.isAttached) {
             listener.postAttach(controller, controller.view!!)
         }
     }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
-        ?: error("only accessible between onBindView and onUnbindView")
+        ?: error("only accessible between onCreateView and onDestroyView")
 }
 
 private val viewLifecycleOwnersByController = mutableMapOf<Controller, LifecycleOwner>()
@@ -73,7 +64,7 @@ val Controller.viewLifecycleOwner: LifecycleOwner
         return viewLifecycleOwnersByController.getOrPut(this) {
             ControllerViewLifecycleOwner(this)
                 .also {
-                    doOnPostUnbindView { viewLifecycleOwnersByController.remove(this) }
+                    doOnpostDestroyView { viewLifecycleOwnersByController.remove(this) }
                 }
         }
     }
