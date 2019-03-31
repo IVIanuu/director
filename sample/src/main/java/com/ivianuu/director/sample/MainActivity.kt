@@ -6,16 +6,10 @@ import android.transition.TransitionManager
 import android.transition.TransitionSet
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.ivianuu.director.Router
-import com.ivianuu.director.backstackSize
-import com.ivianuu.director.doOnChangeStarted
+import com.ivianuu.director.*
 import com.ivianuu.director.fragmenthost.getRouter
-import com.ivianuu.director.hasRoot
-import com.ivianuu.director.popTop
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerListener
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.activity_main.controller_container
 
 class MainActivity : AppCompatActivity(), ToolbarProvider {
@@ -37,7 +31,6 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
                 setRoot(HomeController().toTransaction())
             }
         }
-
     }
 
     private fun Router.addToolbarHandling() {

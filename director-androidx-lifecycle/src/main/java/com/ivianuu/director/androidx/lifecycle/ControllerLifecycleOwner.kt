@@ -41,10 +41,14 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
         with(lifecycleRegistry) {
             controller.addListener(
                 postCreate = { _, _ -> handleLifecycleEvent(ON_CREATE) },
-                postCreateView = { _, _, _ -> handleLifecycleEvent(ON_START) },
-                postAttach = { _, _ -> handleLifecycleEvent(ON_RESUME) },
-                preDetach = { _, _ -> handleLifecycleEvent(ON_PAUSE) },
-                preDestroyView = { _, _ -> handleLifecycleEvent(ON_STOP) },
+                postAttach = { _, _ ->
+                    handleLifecycleEvent(ON_START)
+                    handleLifecycleEvent(ON_RESUME)
+                },
+                preDetach = { _, _ ->
+                    handleLifecycleEvent(ON_PAUSE)
+                    handleLifecycleEvent(ON_STOP)
+                },
                 preDestroy = { handleLifecycleEvent(ON_DESTROY) }
             )
 

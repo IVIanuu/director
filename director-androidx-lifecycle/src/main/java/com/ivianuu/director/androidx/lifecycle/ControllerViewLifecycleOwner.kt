@@ -22,18 +22,16 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
         postCreateView = { _, _, _ ->
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
             lifecycleRegistry?.handleLifecycleEvent(ON_CREATE)
-            lifecycleRegistry?.handleLifecycleEvent(ON_START)
         },
         postAttach = { _, _ ->
+            lifecycleRegistry?.handleLifecycleEvent(ON_START)
             lifecycleRegistry?.handleLifecycleEvent(ON_RESUME)
         },
         preDetach = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_PAUSE)
-        },
-        preDestroyView = { _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_STOP)
-            lifecycleRegistry?.handleLifecycleEvent(ON_DESTROY)
         },
+        preDestroyView = { _, _ -> lifecycleRegistry?.handleLifecycleEvent(ON_DESTROY) },
         postDestroyView = { lifecycleRegistry = null }
     )
 
