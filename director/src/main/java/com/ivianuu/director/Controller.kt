@@ -122,14 +122,19 @@ abstract class Controller {
 
     private var superCalled = false
 
-    private var awaitingHostStart = false
-
     /**
      * Will be called once when the router was set for the first time
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
         // restore the full instance state of child routers
         childRouterManager.startPostponedFullRestore()
+        superCalled = true
+    }
+
+    /**
+     * Called when this Controller has been destroyed.
+     */
+    protected open fun onDestroy() {
         superCalled = true
     }
 
@@ -143,6 +148,13 @@ abstract class Controller {
     ): View
 
     /**
+     * Called when the view of this controller gets destroyed
+     */
+    protected open fun onDestroyView(view: View) {
+        superCalled = true
+    }
+
+    /**
      * Called when this Controller is attached to its container
      */
     protected open fun onAttach(view: View) {
@@ -153,20 +165,6 @@ abstract class Controller {
      * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
-        superCalled = true
-    }
-
-    /**
-     * Called when the view of this controller gets destroyed
-     */
-    protected open fun onDestroyView(view: View) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller has been destroyed.
-     */
-    protected open fun onDestroy() {
         superCalled = true
     }
 
@@ -193,20 +191,6 @@ abstract class Controller {
     }
 
     /**
-     * Will be called when the view state gets restored
-     */
-    protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        superCalled = true
-    }
-
-    /**
-     * Called to save the view state of this controller
-     */
-    protected open fun onSaveViewState(view: View, outState: Bundle) {
-        superCalled = true
-    }
-
-    /**
      * Will be called when the instance state gets restores
      */
     protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -217,6 +201,20 @@ abstract class Controller {
      * Called to save the instance state of this controller
      */
     protected open fun onSaveInstanceState(outState: Bundle) {
+        superCalled = true
+    }
+
+    /**
+     * Will be called when the view state gets restored
+     */
+    protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        superCalled = true
+    }
+
+    /**
+     * Called to save the view state of this controller
+     */
+    protected open fun onSaveViewState(view: View, outState: Bundle) {
         superCalled = true
     }
 
@@ -363,12 +361,7 @@ abstract class Controller {
 
         if (!viewIsAttached) return
 
-        if (!routerManager.hostStarted) {
-            awaitingHostStart = true
-            return
-        } else {
-            awaitingHostStart = false
-        }
+        if (!routerManager.hostStarted) return
 
         notifyListeners { it.preAttach(this, view) }
 
@@ -512,7 +505,6 @@ abstract class Controller {
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
         (listeners + router.getControllerListeners()).forEach(block)
-
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {
