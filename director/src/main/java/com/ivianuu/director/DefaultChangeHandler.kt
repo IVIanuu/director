@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import android.os.Bundle
-import com.ivianuu.director.internal.moveView
 
 /**
  * A [ChangeHandler] that will instantly swap Views with no animations or transitions.
@@ -30,22 +29,9 @@ open class DefaultChangeHandler(
     private var _removesFromViewOnPush = removesFromViewOnPush
 
     override fun performChange(changeData: ChangeData) {
-        val (container, from, to, isPush,
-            onChangeComplete, toIndex, forceRemoveFromViewOnPush) = changeData
-
-        if (to != null) {
-            if (to.parent == null) {
-                container.addView(to, toIndex)
-            } else if (container.indexOfChild(to) != toIndex) {
-                container.moveView(to, toIndex)
-            }
-        }
-
-        if (from != null && (!isPush || removesFromViewOnPush || forceRemoveFromViewOnPush)) {
-            container.removeView(from)
-        }
-
-        onChangeComplete()
+        changeData.callback.addToView()
+        changeData.callback.removeFromView()
+        changeData.callback.onChangeCompleted()
     }
 
     override fun saveToBundle(bundle: Bundle) {

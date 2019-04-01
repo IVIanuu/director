@@ -46,7 +46,7 @@ class MockChangeHandler internal constructor(
 
     override fun performChange(changeData: ChangeData) {
         val (container, from, to, isPush,
-            onChangeComplete, toIndex) = changeData
+            callback, toIndex) = changeData
 
         this.from = from
         this.to = to
@@ -75,7 +75,7 @@ class MockChangeHandler internal constructor(
             }
         }
 
-        onChangeComplete()
+        callback.onChangeCompleted()
         listener.didEndChange()
     }
 
