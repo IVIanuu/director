@@ -25,7 +25,6 @@ import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
-import com.ivianuu.director.internal.moveView
 
 /**
  * A base [ChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
@@ -43,13 +42,7 @@ abstract class TransitionChangeHandler(
 
     override fun performChange(changeData: ChangeData) {
         val (container, _, _, _,
-            onChangeComplete) = changeData
-
-        if (canceled) {
-            executePropertyChanges(changeData, null)
-            onChangeComplete()
-            return
-        }
+            callback) = changeData
 
         val transition = getTransition(changeData)
         if (duration != NO_DURATION) {
@@ -67,11 +60,11 @@ abstract class TransitionChangeHandler(
             }
 
             override fun onTransitionCancel(transition: Transition) {
-                onChangeComplete()
+                callback.onChangeCompleted()
             }
 
             override fun onTransitionEnd(transition: Transition) {
-                onChangeComplete()
+                callback.onChangeCompleted()
             }
         })
 
@@ -82,7 +75,7 @@ abstract class TransitionChangeHandler(
                 executePropertyChanges(changeData, transition)
             } else {
                 executePropertyChanges(changeData, transition)
-                onChangeComplete()
+                callback.onChangeCompleted()
             }
         }
     }
@@ -129,20 +122,8 @@ abstract class TransitionChangeHandler(
         changeData: ChangeData,
         transition: Transition?
     ) {
-        val (container, from, to, isPush,
-            _, toIndex, forceRemoveFromViewOnPush) = changeData
-
-        if (to != null) {
-            if (to.parent == null) {
-                container.addView(to, toIndex)
-            } else if (container.indexOfChild(to) != toIndex) {
-                container.moveView(to, toIndex)
-            }
-        }
-
-        if (from != null && (removesFromViewOnPush || forceRemoveFromViewOnPush || !isPush)) {
-            container.removeView(from)
-        }
+        changeData.callback.addToView()
+        changeData.callback.removeFromView()
     }
 
     companion object {

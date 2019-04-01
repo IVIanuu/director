@@ -28,7 +28,8 @@ data class ChangeData(
     val to: View?,
     val isPush: Boolean,
 
-    val onChangeComplete: () -> Unit,
+    val callback: ChangeHandler.Callback,
+
     val toIndex: Int,
     val forceRemoveFromViewOnPush: Boolean
 )

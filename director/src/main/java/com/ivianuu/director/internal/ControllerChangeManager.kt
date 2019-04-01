@@ -47,23 +47,45 @@ internal object ControllerChangeManager {
         val fromView = from?.view
         from?.changeStarted(to, handlerToUse, fromChangeType)
 
-        val onChangeComplete: () -> Unit = {
-            from?.changeEnded(to, handlerToUse, fromChangeType)
+        val toIndex = getToIndex(router, container, toView, fromView, isPush)
 
-            if (to != null) {
-                handlers.remove(to.instanceId)
-                to.changeEnded(from, handlerToUse, toChangeType)
+        val callback = object : ChangeHandler.Callback {
+            override fun addToView() {
+                val addingToView = toView != null && toView.parent == null
+                val movingToView = toView != null && container.indexOfChild(toView) != toIndex
+                if (addingToView) {
+                    container.addView(toView, toIndex)
+                } else if (movingToView) {
+                    container.moveView(toView!!, toIndex)
+                }
             }
 
-            listeners.forEach {
-                it.onChangeCompleted(
-                    router,
-                    to,
-                    from,
-                    isPush,
-                    container,
-                    handlerToUse
-                )
+            override fun removeFromView() {
+                if (fromView != null && (!isPush || handlerToUse.removesFromViewOnPush
+                            || forceRemoveFromViewOnPush)
+                ) {
+                    container.removeView(fromView)
+                }
+            }
+
+            override fun onChangeCompleted() {
+                from?.changeEnded(to, handlerToUse, fromChangeType)
+
+                if (to != null) {
+                    handlers.remove(to.instanceId)
+                    to.changeEnded(from, handlerToUse, toChangeType)
+                }
+
+                listeners.forEach {
+                    it.onChangeCompleted(
+                        router,
+                        to,
+                        from,
+                        isPush,
+                        container,
+                        handlerToUse
+                    )
+                }
             }
         }
 
@@ -72,8 +94,8 @@ internal object ControllerChangeManager {
             fromView,
             toView,
             isPush,
-            onChangeComplete,
-            getToIndex(router, container, toView, fromView, isPush),
+            callback,
+            toIndex,
             forceRemoveFromViewOnPush
         )
 

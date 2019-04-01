@@ -40,6 +40,12 @@ abstract class ChangeHandler {
 
     internal open fun copy(): ChangeHandler = fromBundle(toBundle())
 
+    interface Callback {
+        fun addToView()
+        fun removeFromView()
+        fun onChangeCompleted()
+    }
+
     internal fun toBundle(): Bundle = Bundle().apply {
         putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
         putBundle(KEY_SAVED_STATE, Bundle().also(this@ChangeHandler::saveToBundle))

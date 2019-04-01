@@ -25,7 +25,6 @@ import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.common.OnReadyOrAbortedListener
 import com.ivianuu.director.defaultRemovesFromViewOnPush
-import com.ivianuu.director.internal.moveView
 
 /**
  * A base [ChangeHandler] that uses [android.animation.Animator]s to replace Controller Views
@@ -52,29 +51,16 @@ abstract class AnimatorChangeHandler(
     override fun performChange(changeData: ChangeData) {
         this.changeData = changeData
 
-        val (container, _, to, _,
-            _, toIndex) = changeData
+        changeData.callback.addToView()
 
-        var readyToAnimate = true
-        val addingToView = to != null && to.parent == null
-        val movingToView = to != null && container.indexOfChild(to) != toIndex
-
-        if (addingToView || movingToView) {
-            if (addingToView) {
-                container.addView(to, toIndex)
-            } else if (movingToView) {
-                container.moveView(to!!, toIndex)
+        if (changeData.to != null
+            && changeData.to!!.width <= 0
+            && changeData.to!!.height <= 0
+        ) {
+            onReadyOrAbortedListener = OnReadyOrAbortedListener(changeData.to!!) {
+                performAnimation(changeData)
             }
-
-            if (!canceled && !completed && to!!.width <= 0 && to.height <= 0) {
-                readyToAnimate = false
-                onReadyOrAbortedListener = OnReadyOrAbortedListener(to) {
-                    performAnimation(changeData)
-                }
-            }
-        }
-
-        if (readyToAnimate) {
+        } else {
             performAnimation(changeData)
         }
     }
@@ -139,18 +125,16 @@ abstract class AnimatorChangeHandler(
         if (completed) return
         completed = true
 
-        val (container, from, to, isPush,
-            onChangeComplete, _, forceRemoveFromViewOnPush) = changeData!!
+        val (_, from, _, isPush,
+            callback, _, _) = changeData!!
 
-        if (from != null && (!isPush || removesFromViewOnPush || forceRemoveFromViewOnPush)) {
-            container.removeView(from)
-        }
+        callback.removeFromView()
 
         if (isPush && from != null) {
             resetFromView(from)
         }
 
-        onChangeComplete()
+        callback.onChangeCompleted()
 
         animator?.let { animator ->
             animatorListener?.let(animator::removeListener)
