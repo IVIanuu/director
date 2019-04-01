@@ -317,20 +317,18 @@ abstract class Controller {
         }
 
         val viewState = viewState
-        val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
-        savedViewState?.classLoader = javaClass.classLoader
 
-        notifyListeners { it.preCreateView(this, savedViewState) }
+        notifyListeners { it.preCreateView(this, viewState) }
 
         view = onCreateView(
             LayoutInflater.from(container.context),
             container,
-            savedViewState
+            viewState
         ).also { this.view = it }
 
         state = VIEW_CREATED
 
-        notifyListeners { it.postCreateView(this, view, savedViewState) }
+        notifyListeners { it.postCreateView(this, view, viewState) }
 
         if (viewState != null) {
             view.restoreHierarchyState(
@@ -339,10 +337,8 @@ abstract class Controller {
                 )
             )
 
-            if (savedViewState != null) {
-                requireSuperCalled { onRestoreViewState(view, savedViewState) }
-                notifyListeners { it.onRestoreViewState(this, view, viewState) }
-            }
+            requireSuperCalled { onRestoreViewState(view, viewState) }
+            notifyListeners { it.onRestoreViewState(this, view, viewState) }
         }
 
         this.viewState = null
@@ -421,8 +417,7 @@ abstract class Controller {
     }
 
     internal fun saveInstanceState(): Bundle {
-        val view = view
-        if (!hasSavedViewState && view != null) {
+        if (view != null && !hasSavedViewState) {
             saveViewState()
         }
 
@@ -435,9 +430,7 @@ abstract class Controller {
 
         val savedState = Bundle(javaClass.classLoader)
         requireSuperCalled { onSaveInstanceState(savedState) }
-
         notifyListeners { it.onSaveInstanceState(this, savedState) }
-
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
         outState.putBundle(KEY_CHILD_ROUTER_STATES, childRouterManager.saveInstanceState())
@@ -488,9 +481,9 @@ abstract class Controller {
         changeHandler: ChangeHandler,
         changeType: ControllerChangeType
     ) {
+        isPerformingExitTransition = !changeType.isEnter
         requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
         notifyListeners { it.onChangeStart(this, other, changeHandler, changeType) }
-        isPerformingExitTransition = !changeType.isEnter
     }
 
     internal fun changeEnded(
