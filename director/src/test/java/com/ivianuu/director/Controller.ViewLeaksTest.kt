@@ -95,14 +95,14 @@ class ViewLeakTest {
 
     class NeverAddChangeHandler : ChangeHandler() {
         override fun performChange(changeData: ChangeData) {
-            changeData.from?.let(changeData.container::removeView)
+            changeData.callback.removeFromView()
         }
     }
 
     class NeverCompleteChangeHandler : ChangeHandler() {
         override fun performChange(changeData: ChangeData) {
-            changeData.from?.let(changeData.container::removeView)
-            changeData.container.addView(changeData.to, changeData.toIndex)
+            changeData.callback.addToView()
+            changeData.callback.removeFromView()
         }
     }
 }
