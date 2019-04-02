@@ -328,7 +328,7 @@ class Router internal constructor(
         _backstack.clear()
         _backstack.addAll(
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
-                .map { Transaction.fromBundle(it, routerManager._controllerFactory) }
+                .map { Transaction.fromBundle(it, routerManager.controllerFactory) }
         )
 
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)

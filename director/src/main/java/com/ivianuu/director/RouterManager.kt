@@ -52,17 +52,8 @@ class RouterManager(
     /**
      * Will be used to instantiate controllers after config changes or process death
      */
-    var controllerFactory: ControllerFactory?
-        get() = _controllerFactory
-        set(value) {
-            _controllerFactory = value
-                ?: DirectorPlugins.defaultControllerFactory
-                        ?: DefaultControllerFactory
-        }
-
-    internal var _controllerFactory: ControllerFactory =
+    var controllerFactory: ControllerFactory =
         DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
-        private set
 
     /**
      * Sets the root view for all routers
