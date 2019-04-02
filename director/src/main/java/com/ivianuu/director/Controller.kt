@@ -34,10 +34,15 @@ abstract class Controller {
      * The router of this controller
      */
     val router: Router
-        get() = if (routerSet) _router else error("router is only available after onCreate")
+        get() {
+            check(this::_router.isInitialized) {
+                "router is only available after onCreate"
+            }
+
+            return _router
+        }
 
     private lateinit var _router: Router
-    internal var routerSet = false
 
     /**
      * The view of this controller or null
@@ -55,6 +60,7 @@ abstract class Controller {
      * The current state of this controller
      */
     var state: ControllerState = INITIALIZED
+        private set
 
     /**
      * Whether or not this controller is in the process of being destroyed
@@ -66,11 +72,7 @@ abstract class Controller {
         }
 
     private var allState: Bundle? = null
-    private var instanceState: Bundle? = null
     private var viewState: Bundle? = null
-    private var hasSavedViewState = false
-
-    private var viewIsAttached = false
 
     private var isPerformingExitTransition = false
 
@@ -96,25 +98,19 @@ abstract class Controller {
 
     private val viewAttachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) {
-            if (!viewIsAttached) {
-                viewIsAttached = true
-                attach()
-            }
+            attach()
         }
 
         override fun onViewDetachedFromWindow(v: View) {
-            if (viewIsAttached) {
-                viewIsAttached = false
-                detach()
+            detach()
 
-                val removeViewRef = isPerformingExitTransition && !isBeingDestroyed
+            val removeViewRef = isPerformingExitTransition && !isBeingDestroyed
 
-                if (removeViewRef) {
-                    if (!retainView) {
-                        destroyView()
-                    } else {
-                        childRouterManager.removeContainers()
-                    }
+            if (removeViewRef) {
+                if (!retainView) {
+                    destroyView()
+                } else {
+                    childRouterManager.removeContainers()
                 }
             }
         }
@@ -238,13 +234,14 @@ abstract class Controller {
     }
 
     internal fun setRouter(router: Router) {
-        if (routerSet) return
-        routerSet = true
+        if (this::_router.isInitialized) return
         _router = router
 
         // restore the internal state
         allState?.let { restoreInstanceState() }
-        allState = null
+
+        val instanceState = allState?.getBundle(KEY_SAVED_STATE)
+            ?.also { it.classLoader = javaClass.classLoader }
 
         // create
         notifyListeners { it.preCreate(this, instanceState) }
@@ -256,12 +253,12 @@ abstract class Controller {
         notifyListeners { it.postCreate(this, instanceState) }
 
         // restore the instance state
-        instanceState?.let { instanceState ->
+        if (instanceState != null) {
             requireSuperCalled { onRestoreInstanceState(instanceState) }
             notifyListeners { it.onRestoreInstanceState(this, instanceState) }
         }
 
-        instanceState = null
+        allState = null
     }
 
     internal fun containerSet() {
@@ -355,7 +352,8 @@ abstract class Controller {
 
         val view = view ?: return
 
-        if (!viewIsAttached) return
+        // View.isAttached
+        if (view.windowToken == null) return
 
         if (!routerManager.hostStarted) return
 
@@ -367,7 +365,7 @@ abstract class Controller {
 
         notifyListeners { it.postAttach(this, view) }
 
-        hasSavedViewState = false
+        viewState = null
 
         childRouterManager.hostStarted()
     }
@@ -394,7 +392,7 @@ abstract class Controller {
 
     private fun destroyView() {
         val view = view ?: return
-        if (!isBeingDestroyed && !hasSavedViewState) {
+        if (!isBeingDestroyed && viewState == null) {
             saveViewState()
         }
 
@@ -405,7 +403,6 @@ abstract class Controller {
         requireSuperCalled { onDestroyView(view) }
 
         view.removeOnAttachStateChangeListener(viewAttachListener)
-        viewIsAttached = false
 
         this.view = null
 
@@ -417,7 +414,7 @@ abstract class Controller {
     }
 
     internal fun saveInstanceState(): Bundle {
-        if (view != null && !hasSavedViewState) {
+        if (view != null && viewState == null) {
             saveViewState()
         }
 
@@ -445,9 +442,6 @@ abstract class Controller {
             args = bundle.apply { classLoader = this@Controller.javaClass.classLoader }
         }
 
-        instanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)
-            ?.also { it.classLoader = javaClass.classLoader }
-
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
             ?.also { it.classLoader = javaClass.classLoader }
 
@@ -460,8 +454,6 @@ abstract class Controller {
 
     private fun saveViewState() {
         val view = view ?: return
-
-        hasSavedViewState = true
 
         val viewState = Bundle(javaClass.classLoader).also { this.viewState = it }
 

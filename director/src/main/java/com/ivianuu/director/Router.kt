@@ -368,9 +368,7 @@ class Router internal constructor(
     }
 
     private fun moveControllerToCorrectState(controller: Controller) {
-        if (!controller.routerSet) {
-            controller.setRouter(this)
-        }
+        controller.setRouter(this)
 
         if (hasContainer) {
             controller.containerSet()
