@@ -58,7 +58,7 @@ private val viewLifecycleOwnersByController = mutableMapOf<Controller, Lifecycle
  */
 val Controller.viewLifecycleOwner: LifecycleOwner
     get() {
-        require(hasView) { "Cannot access viewLifecycleOwner while view is null" }
+        require(isViewCreated) { "Cannot access viewLifecycleOwner while view is not created" }
         return viewLifecycleOwnersByController.getOrPut(this) {
             ControllerViewLifecycleOwner(this)
                 .also {
