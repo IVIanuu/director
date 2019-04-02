@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
+import com.ivianuu.stdlibx.safeAs
 import com.ivianuu.stdlibx.takeLastUntil
 
 /**
@@ -49,8 +50,6 @@ class Router internal constructor(
         mutableListOf<ListenerEntry<RouterListener>>()
     private val controllerListeners =
         mutableListOf<ListenerEntry<ControllerListener>>()
-
-    private val hostRouter get() = (routerManager.host as? Controller)?.router
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -390,16 +389,17 @@ class Router internal constructor(
     internal fun getListeners(recursiveOnly: Boolean = false): List<RouterListener> {
         return listeners
             .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<RouterListener>::listener) + (hostRouter?.getListeners(true)
-            ?: emptyList())
+            .map(ListenerEntry<RouterListener>::listener) +
+                (routerManager.host.safeAs<Controller>()?.router?.getListeners(true)
+                    ?: emptyList())
     }
 
     internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
         return controllerListeners
             .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<ControllerListener>::listener) + (hostRouter?.getControllerListeners(
-            true
-        ) ?: emptyList())
+            .map(ListenerEntry<ControllerListener>::listener) +
+                (routerManager.host.safeAs<Controller>()?.router?.getControllerListeners(true)
+                    ?: emptyList())
     }
 
     private fun List<Transaction>.filterVisible(): List<Transaction> =
