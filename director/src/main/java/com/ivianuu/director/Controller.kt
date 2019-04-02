@@ -368,8 +368,16 @@ abstract class Controller {
 
         notifyListeners { it.postDetach(this, view) }
 
-        if (isBeingDestroyed || isPerformingExitTransition) {
-            containerRemoved()
+        if (isPerformingExitTransition) {
+            if (isBeingDestroyed) {
+                containerRemoved()
+            } else {
+                if (!retainView) {
+                    destroyView()
+                } else {
+                    childRouterManager.removeContainers()
+                }
+            }
         }
     }
 
