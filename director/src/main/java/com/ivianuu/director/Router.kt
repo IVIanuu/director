@@ -298,11 +298,11 @@ class Router internal constructor(
         prepareForContainerRemoval()
 
         return Bundle().apply {
+            putInt(KEY_CONTAINER_ID, containerId)
+            putString(KEY_TAG, tag)
             val backstack = _backstack.map(Transaction::saveInstanceState)
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
-            putInt(KEY_CONTAINER_ID, containerId)
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
-            putString(KEY_TAG, tag)
         }
     }
 
@@ -310,20 +310,6 @@ class Router internal constructor(
      * Restores the previously saved state state
      */
     fun restoreInstanceState(savedInstanceState: Bundle) {
-        val oldContainerId = containerId
-        containerId = savedInstanceState.getInt(KEY_CONTAINER_ID)
-
-        check(oldContainerId == containerId) {
-            "Instance state does not belong to this router container id was $oldContainerId but is $containerId"
-        }
-
-        val oldTag = tag
-        tag = savedInstanceState.getString(KEY_TAG)
-
-        check(oldTag == tag) {
-            "Instance state does not belong to this router tag was $oldTag but is $tag"
-        }
-
         _backstack.clear()
         _backstack.addAll(
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
