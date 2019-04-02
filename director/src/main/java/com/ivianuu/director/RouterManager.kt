@@ -257,7 +257,7 @@ class RouterManager(
 
     private companion object {
         private const val KEY_ROUTER_STATES = "RouterManager.routerState"
-        private const val KEY_TRANSACTION_INDEXER = "Router.transactionIndexer"
+        private const val KEY_TRANSACTION_INDEXER = "RouterManager.transactionIndexer"
     }
 }
 
