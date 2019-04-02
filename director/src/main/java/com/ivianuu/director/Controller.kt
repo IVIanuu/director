@@ -301,32 +301,30 @@ abstract class Controller {
             return view
         }
 
-        val viewState = viewState
+        val viewHierarchyState =
+            viewState?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
+        val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
 
-        notifyListeners { it.preCreateView(this, viewState) }
+        notifyListeners { it.preCreateView(this, savedViewState) }
 
         view = onCreateView(
             LayoutInflater.from(container.context),
             container,
-            viewState
+            savedViewState
         ).also { this.view = it }
 
         state = VIEW_CREATED
 
-        notifyListeners { it.postCreateView(this, view, viewState) }
+        notifyListeners { it.postCreateView(this, view, savedViewState) }
 
-        if (viewState != null) {
-            view.restoreHierarchyState(
-                viewState.getSparseParcelableArray(
-                    KEY_VIEW_STATE_HIERARCHY
-                )
-            )
+        if (savedViewState != null) {
+            view.restoreHierarchyState(viewHierarchyState)
 
-            requireSuperCalled { onRestoreViewState(view, viewState) }
-            notifyListeners { it.onRestoreViewState(this, view, viewState) }
+            requireSuperCalled { onRestoreViewState(view, savedViewState) }
+            notifyListeners { it.onRestoreViewState(this, view, savedViewState) }
         }
 
-        this.viewState = null
+        viewState = null
 
         view.addOnAttachStateChangeListener(viewAttachListener)
 
@@ -499,7 +497,6 @@ abstract class Controller {
 
         internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
-
             val cls = classForNameOrThrow(className)
 
             val args = bundle.getBundle(KEY_ARGS)!!.apply {
