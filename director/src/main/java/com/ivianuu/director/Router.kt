@@ -76,6 +76,11 @@ class Router internal constructor(
         check(newBackstack.size == newBackstack.distinctBy(Transaction::controller).size) {
             "Trying to push the same controller to the backstack more than once."
         }
+        newBackstack.forEach {
+            check(it.controller.state != DESTROYED) {
+                "Trying to push a controller that has already been destroyed ${it.controller.javaClass.simpleName}"
+            }
+        }
 
         val oldTransactions = _backstack.toList()
         val oldVisibleTransactions = oldTransactions.filterVisible()
@@ -153,11 +158,8 @@ class Router internal constructor(
                     else oldTopTransaction?.popChangeHandler?.copy())
                     ?: DefaultChangeHandler()
 
-                val forceRemoveFromView = if (oldTopTransaction != null) {
-                    !newVisibleTransactions.contains(oldTopTransaction)
-                } else {
-                    false
-                }
+                val forceRemoveFromView =
+                    oldTopTransaction != null && !newVisibleTransactions.contains(oldTopTransaction)
 
                 performControllerChange(
                     oldTopTransaction,
@@ -328,25 +330,14 @@ class Router internal constructor(
         handler: ChangeHandler? = null,
         forceRemoveFromViewOnPush: Boolean
     ) {
-        check(!isPush || to == null || to.controller.state != DESTROYED) {
-            "Trying to push a controller that has already been destroyed ${to!!.javaClass.simpleName}"
-        }
-
         val container = container ?: return
-
-        val handlerToUse = handler ?: when {
-            isPush -> to?.pushChangeHandler
-            from != null -> from.popChangeHandler
-            else -> null
-        }
-
         ControllerChangeManager.executeChange(
             this,
             from?.controller,
             to?.controller,
             isPush,
             container,
-            handlerToUse,
+            handler,
             forceRemoveFromViewOnPush,
             getListeners()
         )
