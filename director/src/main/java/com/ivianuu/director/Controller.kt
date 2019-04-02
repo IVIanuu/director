@@ -48,7 +48,7 @@ abstract class Controller {
      * The view of this controller or null
      */
     var view: View? = null
-        internal set
+        private set
 
     /**
      * The instance id of this controller
@@ -71,10 +71,10 @@ abstract class Controller {
             field = value
         }
 
+    private var isPerformingExitTransition = false
+
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
-
-    private var isPerformingExitTransition = false
 
     /**
      * Whether or not the view should be retained while being detached
@@ -107,7 +107,7 @@ abstract class Controller {
     private var superCalled = false
 
     /**
-     * Will be called once when the router was set for the first time
+     * Will be called when this controller gets attached to its router
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
         superCalled = true
@@ -123,7 +123,7 @@ abstract class Controller {
     }
 
     /**
-     * Returns the view for this controller
+     * Creates the view for this controller
      */
     protected abstract fun onCreateView(
         inflater: LayoutInflater,
