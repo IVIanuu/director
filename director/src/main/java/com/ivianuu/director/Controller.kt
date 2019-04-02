@@ -463,7 +463,7 @@ abstract class Controller {
     ) {
         isPerformingExitTransition = !changeType.isEnter
         requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
-        notifyListeners { it.onChangeStart(this, other, changeHandler, changeType) }
+        notifyListeners { it.onChangeStarted(this, other, changeHandler, changeType) }
     }
 
     internal fun changeEnded(
@@ -472,7 +472,7 @@ abstract class Controller {
         changeType: ControllerChangeType
     ) {
         requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
-        notifyListeners { it.onChangeEnd(this, other, changeHandler, changeType) }
+        notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
         isPerformingExitTransition = false
     }
 

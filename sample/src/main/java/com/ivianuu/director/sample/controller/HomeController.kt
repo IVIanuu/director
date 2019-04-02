@@ -19,6 +19,8 @@ import kotlinx.android.synthetic.main.controller_home.recycler_view
 import kotlinx.android.synthetic.main.row_home.home_image
 import kotlinx.android.synthetic.main.row_home.home_title
 
+class CustomViewModel
+
 class HomeController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_home

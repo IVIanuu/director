@@ -64,7 +64,7 @@ class LoggingControllerListener : ControllerListener {
         controller.d { "post destroy" }
     }
 
-    override fun onChangeStart(
+    override fun onChangeStarted(
         controller: Controller,
         other: Controller?,
         changeHandler: ChangeHandler,
@@ -73,7 +73,7 @@ class LoggingControllerListener : ControllerListener {
         controller.d { "on change start -> $changeType, $changeHandler" }
     }
 
-    override fun onChangeEnd(
+    override fun onChangeEnded(
         controller: Controller,
         other: Controller?,
         changeHandler: ChangeHandler,
