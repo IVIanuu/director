@@ -7,7 +7,7 @@ import java.util.*
 fun <T : Any> newInstanceOrThrow(className: String): T = try {
     classForNameOrThrow(className).newInstance() as T
 } catch (e: Exception) {
-    throw RuntimeException("could not instantiate $className, $e")
+    throw RuntimeException("couldn't instantiate $className, $e")
 }
 
 fun classForNameOrThrow(className: String): Class<*> = try {
