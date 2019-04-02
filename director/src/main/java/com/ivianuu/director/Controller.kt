@@ -101,16 +101,6 @@ abstract class Controller {
 
         override fun onViewDetachedFromWindow(v: View) {
             detach()
-
-            val removeViewRef = isPerformingExitTransition && !isBeingDestroyed
-
-            if (removeViewRef) {
-                if (!retainView) {
-                    destroyView()
-                } else {
-                    childRouterManager.removeContainers()
-                }
-            }
         }
     }
 
@@ -120,9 +110,9 @@ abstract class Controller {
      * Will be called once when the router was set for the first time
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
+        superCalled = true
         // restore the full instance state of child routers
         childRouterManager.startPostponedFullRestore()
-        superCalled = true
     }
 
     /**
@@ -383,7 +373,7 @@ abstract class Controller {
 
         notifyListeners { it.postDetach(this, view) }
 
-        if (isBeingDestroyed && isPerformingExitTransition) {
+        if (isBeingDestroyed || isPerformingExitTransition) {
             containerRemoved()
         }
     }
@@ -531,8 +521,6 @@ val Controller.isViewCreated: Boolean get() = state.isAtLeast(VIEW_CREATED)
 val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
 
 val Controller.isDestroyed: Boolean get() = state == DESTROYED
-
-val Controller.hasView: Boolean get() = view != null
 
 val Controller.transaction: Transaction
     get() = router.backstack.first { it.controller == this }
