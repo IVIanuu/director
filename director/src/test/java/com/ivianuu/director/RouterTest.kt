@@ -471,40 +471,6 @@ class RouterTest {
     }
 
     @Test
-    fun testChildRouterRearrangeTransactionBackstack() {
-        val parent = TestController()
-        router.setRoot(parent.toTransaction())
-
-        val childRouter =
-            parent.getChildRouter(parent.childContainer1!!)
-
-        childRouter.popsLastView = true
-
-        val transaction1 = TestController().toTransaction()
-        val transaction2 = TestController().toTransaction()
-
-        var backstack = listOf(transaction1, transaction2)
-        childRouter.setBackstack(backstack, true)
-
-        assertEquals(2, transaction1.transactionIndex)
-        assertEquals(3, transaction2.transactionIndex)
-
-        backstack = listOf(transaction2, transaction1)
-        childRouter.setBackstack(backstack, true)
-
-        assertEquals(2, transaction2.transactionIndex)
-        assertEquals(3, transaction1.transactionIndex)
-
-        childRouter.handleBack()
-
-        assertEquals(1, childRouter.backstackSize)
-        assertEquals(transaction2, childRouter.backstack[0])
-
-        childRouter.handleBack()
-        assertEquals(0, childRouter.backstackSize)
-    }
-
-    @Test
     fun testIsBeingDestroyed() {
         val listener = ControllerListener(
             preDestroyView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }

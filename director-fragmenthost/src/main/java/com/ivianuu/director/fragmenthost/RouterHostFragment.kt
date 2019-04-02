@@ -27,7 +27,7 @@ import com.ivianuu.director.RouterManager
 class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     private val manager by lazy(LazyThreadSafetyMode.NONE) {
-        RouterManager(requireActivity(), null)
+        RouterManager(requireActivity())
     }
 
     override fun onAttach(context: Context) {

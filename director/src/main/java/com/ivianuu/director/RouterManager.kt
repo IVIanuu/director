@@ -27,7 +27,6 @@ import com.ivianuu.stdlibx.firstNotNullResultOrNull
  */
 class RouterManager(
     val host: Any,
-    val hostRouterManager: RouterManager? = null,
     private var postponeFullRestore: Boolean = false
 ) {
 
@@ -48,9 +47,7 @@ class RouterManager(
 
     private var routerStates: Map<Router, Bundle>? = null
 
-    internal val transactionIndexer: TransactionIndexer by lazy(LazyThreadSafetyMode.NONE) {
-        hostRouterManager?.transactionIndexer ?: TransactionIndexer()
-    }
+    internal val transactionIndexer = TransactionIndexer()
 
     /**
      * Will be used to instantiate controllers after config changes or process death
@@ -135,11 +132,9 @@ class RouterManager(
         savedInstanceState?.let {
             restoreBasicState(it)
 
-            if (hostRouterManager == null) {
-                transactionIndexer.restoreInstanceState(
-                    it.getBundle(KEY_TRANSACTION_INDEXER)!!
-                )
-            }
+            transactionIndexer.restoreInstanceState(
+                it.getBundle(KEY_TRANSACTION_INDEXER)!!
+            )
 
             if (!postponeFullRestore) {
                 restoreFullState()
@@ -151,12 +146,10 @@ class RouterManager(
      * Saves the instance state of all containing routers
      */
     fun saveInstanceState(): Bundle = Bundle().apply {
-        if (hostRouterManager == null) {
-            putBundle(
-                KEY_TRANSACTION_INDEXER,
-                transactionIndexer.saveInstanceState()
-            )
-        }
+        putBundle(
+            KEY_TRANSACTION_INDEXER,
+            transactionIndexer.saveInstanceState()
+        )
         val routerStates = _routers.map(Router::saveInstanceState)
         putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
@@ -267,9 +260,6 @@ class RouterManager(
         private const val KEY_TRANSACTION_INDEXER = "Router.transactionIndexer"
     }
 }
-
-internal val RouterManager.rootRouterManager: RouterManager
-    get() = hostRouterManager?.rootRouterManager ?: this
 
 fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? {
     return getRouterOrNull(container.id, tag)?.also {
