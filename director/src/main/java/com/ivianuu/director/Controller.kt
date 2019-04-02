@@ -502,7 +502,7 @@ abstract class Controller {
         private const val KEY_CLASS_NAME = "Controller.className"
         private const val KEY_VIEW_STATE = "Controller.viewState"
         private const val KEY_CHILD_ROUTER_STATES = "Controller.childRouterStates"
-        private const val KEY_SAVED_STATE = "Controller.instanceState"
+        private const val KEY_SAVED_STATE = "Controller.savedState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_ARGS = "Controller.args"
         private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"
