@@ -225,9 +225,6 @@ abstract class Controller {
         if (this::_router.isInitialized) return
         _router = router
 
-        // restore the internal state
-        allState?.let { restoreInstanceState() }
-
         val instanceState = allState?.getBundle(KEY_SAVED_STATE)
             ?.also { it.classLoader = javaClass.classLoader }
 
@@ -301,7 +298,7 @@ abstract class Controller {
             return view
         }
 
-        val viewHierarchyState =
+        val hierarchyState =
             viewState?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
 
@@ -318,7 +315,7 @@ abstract class Controller {
         notifyListeners { it.postCreateView(this, view, savedViewState) }
 
         if (savedViewState != null) {
-            view.restoreHierarchyState(viewHierarchyState)
+            view.restoreHierarchyState(hierarchyState)
 
             requireSuperCalled { onRestoreViewState(view, savedViewState) }
             notifyListeners { it.onRestoreViewState(this, view, savedViewState) }
@@ -425,7 +422,7 @@ abstract class Controller {
         val savedInstanceState = allState ?: return
 
         savedInstanceState.getBundle(KEY_ARGS)?.let { bundle ->
-            args = bundle.apply { classLoader = this@Controller.javaClass.classLoader }
+            args = bundle.also { it.classLoader = javaClass.classLoader }
         }
 
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
@@ -506,6 +503,7 @@ abstract class Controller {
             return factory.createController(cls.classLoader!!, className).apply {
                 this.args = args
                 this.allState = bundle
+                restoreInstanceState()
             }
         }
     }
