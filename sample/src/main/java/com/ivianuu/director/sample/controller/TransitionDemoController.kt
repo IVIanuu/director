@@ -2,9 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
@@ -32,40 +30,35 @@ class TransitionDemoController : BaseController() {
         toolbarTitle = "Transition Demos"
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            if (transitionDemo.colorId != 0 && bg_view != null) {
-                bg_view.setBackgroundColor(
-                    ContextCompat.getColor(
-                        context,
-                        transitionDemo.colorId
-                    )
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+        if (transitionDemo.colorId != 0 && bg_view != null) {
+            bg_view.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    transitionDemo.colorId
                 )
-            }
+            )
+        }
 
-            val nextIndex = transitionDemo.ordinal + 1
-            var buttonColor = 0
+        val nextIndex = transitionDemo.ordinal + 1
+        var buttonColor = 0
+        if (nextIndex < TransitionDemo.values().size) {
+            buttonColor = TransitionDemo.fromIndex(nextIndex).colorId
+        }
+        if (buttonColor == 0) {
+            buttonColor = TransitionDemo.fromIndex(0).colorId
+        }
+
+        btn_next.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(context, buttonColor))
+        tv_title.text = transitionDemo.title
+
+        btn_next.setOnClickListener {
             if (nextIndex < TransitionDemo.values().size) {
-                buttonColor = TransitionDemo.fromIndex(nextIndex).colorId
-            }
-            if (buttonColor == 0) {
-                buttonColor = TransitionDemo.fromIndex(0).colorId
-            }
-
-            btn_next.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(context, buttonColor))
-            tv_title.text = transitionDemo.title
-
-            btn_next.setOnClickListener {
-                if (nextIndex < TransitionDemo.values().size) {
-                    router.push(getRouterTransaction(nextIndex, this@TransitionDemoController))
-                } else {
-                    router.popToRoot()
-                }
+                router.push(getRouterTransaction(nextIndex, this@TransitionDemoController))
+            } else {
+                router.popToRoot()
             }
         }
     }

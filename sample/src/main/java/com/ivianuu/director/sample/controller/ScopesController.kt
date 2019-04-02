@@ -17,9 +17,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.push
@@ -53,43 +51,39 @@ class ScopesController : BaseController() {
             .disposeBy(destroy)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            d { "onCreateView() called" }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
 
-            btn_next_release_view.setOnClickListener {
-                retainView = false
+        d { "onCreateView() called" }
 
-                router.push(
-                    TextController.newInstance(
-                        "Logcat should now report that the observables from onAttach() and onCreateView() have been disposed of, while the onCreate() observable is still running."
-                    ).toTransaction()
-                        .changeHandler(HorizontalChangeHandler())
-                )
-            }
+        btn_next_release_view.setOnClickListener {
+            retainView = false
 
-            btn_next_retain_view.setOnClickListener {
-                retainView = true
-
-                router.push(
-                    TextController.newInstance(
-                        "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onCreateView() observables are still running."
-                    ).toTransaction()
-                        .changeHandler(HorizontalChangeHandler())
-                )
-            }
-
-            Observable.interval(1, TimeUnit.SECONDS)
-                .doOnDispose { d { "Disposing from onCreateView()" } }
-                .subscribe {
-                    d { "Started in onCreateView(), running until onDestroyView(): $it" }
-                }
-                .disposeBy(destroyView)
+            router.push(
+                TextController.newInstance(
+                    "Logcat should now report that the observables from onAttach() and onCreateView() have been disposed of, while the onCreate() observable is still running."
+                ).toTransaction()
+                    .changeHandler(HorizontalChangeHandler())
+            )
         }
+
+        btn_next_retain_view.setOnClickListener {
+            retainView = true
+
+            router.push(
+                TextController.newInstance(
+                    "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onCreateView() observables are still running."
+                ).toTransaction()
+                    .changeHandler(HorizontalChangeHandler())
+            )
+        }
+
+        Observable.interval(1, TimeUnit.SECONDS)
+            .doOnDispose { d { "Disposing from onCreateView()" } }
+            .subscribe {
+                d { "Started in onCreateView(), running until onDestroyView(): $it" }
+            }
+            .disposeBy(destroyView)
     }
 
     override fun onAttach(view: View) {

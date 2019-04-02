@@ -5,14 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.ivianuu.director.activitycallbacks.addActivityResultListener
 import com.ivianuu.director.activitycallbacks.startActivityForResult
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
-
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
@@ -50,34 +47,30 @@ class TargetDisplayController : BaseController(),
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            btn_pick_title.setOnClickListener {
-                router.push(
-                    TargetTitleEntryController.newInstance(this@TargetDisplayController)
-                        .toTransaction()
-                        .changeHandler(HorizontalChangeHandler())
-                )
-            }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
 
-            btn_pick_image.setOnClickListener {
-                val intent =
-                    Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-                startActivityForResult(
-                    Intent.createChooser(intent, "Select Image"),
-                    REQUEST_SELECT_IMAGE
-                )
-            }
-
-            setTextView()
-            setImageView()
+        btn_pick_title.setOnClickListener {
+            router.push(
+                TargetTitleEntryController.newInstance(this@TargetDisplayController)
+                    .toTransaction()
+                    .changeHandler(HorizontalChangeHandler())
+            )
         }
+
+        btn_pick_image.setOnClickListener {
+            val intent =
+                Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            startActivityForResult(
+                Intent.createChooser(intent, "Select Image"),
+                REQUEST_SELECT_IMAGE
+            )
+        }
+
+        setTextView()
+        setImageView()
     }
 
     override fun onTitlePicked(option: String) {

@@ -1,9 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.sample.R
@@ -33,40 +31,35 @@ class BottomNavController : BaseController() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            bottom_nav_view.setOnNavigationItemSelectedListener { item ->
-                val i = (0 until bottom_nav_view.menu.size())
-                    .map(bottom_nav_view.menu::getItem)
-                    .indexOfFirst { it == item }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+        bottom_nav_view.setOnNavigationItemSelectedListener { item ->
+            val i = (0 until bottom_nav_view.menu.size())
+                .map(bottom_nav_view.menu::getItem)
+                .indexOfFirst { it == item }
 
-                swapTo(i)
+            swapTo(i)
 
-                true
+            true
+        }
+
+        bottom_nav_view.setOnNavigationItemReselectedListener { item ->
+            val i = (0 until bottom_nav_view.menu.size())
+                .map(bottom_nav_view.menu::getItem)
+                .indexOfFirst { it == item }
+
+            // pop to root on re selections
+            if (i != -1) {
+                bottomNavContainer.currentTransaction
+                    ?.controller
+                    ?.childRouters
+                    ?.first()
+                    ?.popToRoot()
             }
+        }
 
-            bottom_nav_view.setOnNavigationItemReselectedListener { item ->
-                val i = (0 until bottom_nav_view.menu.size())
-                    .map(bottom_nav_view.menu::getItem)
-                    .indexOfFirst { it == item }
-
-                // pop to root on re selections
-                if (i != -1) {
-                    bottomNavContainer.currentTransaction
-                        ?.controller
-                        ?.childRouters
-                        ?.first()
-                        ?.popToRoot()
-                }
-            }
-
-            if (currentIndex == -1) {
-                swapTo(0)
-            }
+        if (currentIndex == -1) {
+            swapTo(0)
         }
     }
 

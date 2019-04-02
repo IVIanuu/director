@@ -2,9 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
@@ -30,21 +28,16 @@ class HomeController : BaseController() {
         toolbarTitle = "Director Sample"
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            recycler_view.layoutManager = LinearLayoutManager(context)
-            recycler_view.buildModels {
-                HomeItem.values().forEachIndexed { index, item ->
-                    homeItem {
-                        id(index)
-                        item(item)
-                        position(index)
-                        onClick { onItemClicked(item, index) }
-                    }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+        recycler_view.layoutManager = LinearLayoutManager(context)
+        recycler_view.buildModels {
+            HomeItem.values().forEachIndexed { index, item ->
+                homeItem {
+                    id(index)
+                    item(item)
+                    position(index)
+                    onClick { onItemClicked(item, index) }
                 }
             }
         }

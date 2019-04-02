@@ -2,22 +2,17 @@ package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.push
-import com.ivianuu.director.resources
+import com.ivianuu.director.*
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_grid.img_dot
 import kotlinx.android.synthetic.main.controller_city_grid.recycler_view
@@ -37,32 +32,28 @@ class CityGridController : BaseController() {
         toolbarTitle = args.getString(KEY_TITLE)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            tv_title.text = toolbarTitle
-            img_dot.drawable.setColorFilter(
-                ContextCompat.getColor(context, dotColor),
-                Mode.SRC_ATOP
-            )
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
 
-            tv_title.transitionName =
-                resources.getString(R.string.transition_tag_title_indexed, fromPosition)
+        tv_title.text = toolbarTitle
+        img_dot.drawable.setColorFilter(
+            ContextCompat.getColor(context, dotColor),
+            Mode.SRC_ATOP
+        )
 
-            img_dot.transitionName =
-                resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
+        tv_title.transitionName =
+            resources.getString(R.string.transition_tag_title_indexed, fromPosition)
 
-            recycler_view.layoutManager = GridLayoutManager(context, 2)
-            recycler_view.buildModels {
-                CITIES.forEach { city ->
-                    city {
-                        id(city.title)
-                        city(city)
-                        onClick { onCityClicked(city) }
-                    }
+        img_dot.transitionName =
+            resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
+
+        recycler_view.layoutManager = GridLayoutManager(context, 2)
+        recycler_view.buildModels {
+            CITIES.forEach { city ->
+                city {
+                    id(city.title)
+                    city(city)
+                    onClick { onCityClicked(city) }
                 }
             }
         }

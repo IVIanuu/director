@@ -2,9 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import com.ivianuu.director.Controller
 import com.ivianuu.director.getControllerByInstanceId
@@ -24,19 +22,15 @@ class TargetTitleEntryController : BaseController() {
         toolbarTitle = "Target Controller Demo"
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            btn_use_title.setOnClickListener {
-                val targetInstanceId = args.getString(KEY_TARGET_INSTANCE_ID)!!
-                val targetController = routerManager.getControllerByInstanceId(targetInstanceId)
-                (targetController as? TargetTitleEntryControllerListener)
-                    ?.onTitlePicked(edit_text.text.toString())
-                router.popTop()
-            }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+
+        btn_use_title.setOnClickListener {
+            val targetInstanceId = args.getString(KEY_TARGET_INSTANCE_ID)!!
+            val targetController = routerManager.getControllerByInstanceId(targetInstanceId)
+            (targetController as? TargetTitleEntryControllerListener)
+                ?.onTitlePicked(edit_text.text.toString())
+            router.popTop()
         }
     }
 

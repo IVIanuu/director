@@ -1,9 +1,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.ivianuu.director.Router
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.pager.RouterPagerAdapter
@@ -46,15 +44,11 @@ class PagerController : BaseController() {
         toolbarTitle = "ViewPager Demo"
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            view_pager.adapter = pagerAdapter
-            tab_layout.setupWithViewPager(view_pager)
-        }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+
+        view_pager.adapter = pagerAdapter
+        tab_layout.setupWithViewPager(view_pager)
     }
 
     private companion object {

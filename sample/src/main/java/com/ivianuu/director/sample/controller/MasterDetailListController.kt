@@ -2,20 +2,15 @@ package com.ivianuu.director.sample.controller
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.childRouter
-import com.ivianuu.director.hasRoot
+import com.ivianuu.director.*
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.simpleController
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
 import kotlinx.android.synthetic.main.row_detail_item.item_title
@@ -51,24 +46,20 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            recycler_view.layoutManager = LinearLayoutManager(context)
-            recycler_view.adapter = epoxyController.adapter
-            isTwoPane = context.resources.configuration.orientation ==
-                    Configuration.ORIENTATION_LANDSCAPE
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
 
-            childRouter.popsLastView = !isTwoPane
+        recycler_view.layoutManager = LinearLayoutManager(context)
+        recycler_view.adapter = epoxyController.adapter
+        isTwoPane = resources.configuration.orientation ==
+                Configuration.ORIENTATION_LANDSCAPE
 
-            epoxyController.requestModelBuild()
+        childRouter.popsLastView = !isTwoPane
 
-            if (isTwoPane && !childRouter.hasRoot) {
-                onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
-            }
+        epoxyController.requestModelBuild()
+
+        if (isTwoPane && !childRouter.hasRoot) {
+            onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
         }
     }
 

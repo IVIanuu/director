@@ -19,14 +19,12 @@ package com.ivianuu.director.sample.controller
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.ivianuu.director.activitycallbacks.addPermissionResultListener
 import com.ivianuu.director.activitycallbacks.requestPermissions
 import com.ivianuu.director.context
-import com.ivianuu.director.hasView
+import com.ivianuu.director.isViewCreated
 import com.ivianuu.director.sample.R
 import kotlinx.android.synthetic.main.controller_permission.grant
 import kotlinx.android.synthetic.main.controller_permission.msg
@@ -44,18 +42,13 @@ class PermissionController : BaseController() {
         addPermissionResultListener(REQUEST_CODE_PERMISSION) { _, _, _ -> updateState() }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            grant.setOnClickListener {
-                requestPermissions(
-                    arrayOf(Manifest.permission.CAMERA),
-                    REQUEST_CODE_PERMISSION
-                )
-            }
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+        grant.setOnClickListener {
+            requestPermissions(
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CODE_PERMISSION
+            )
         }
     }
 
@@ -65,7 +58,7 @@ class PermissionController : BaseController() {
     }
 
     private fun updateState() {
-        if (!hasView) return
+        if (!isViewCreated) return
         val hasPermissions = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.CAMERA

@@ -1,12 +1,12 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
+import com.ivianuu.director.context
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.arg
@@ -30,38 +30,34 @@ class CityDetailController : BaseController() {
         toolbarTitle = title
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
-    ): View {
-        return super.onCreateView(inflater, container, savedViewState).apply {
-            val imageViewTransitionName = resources.getString(
-                R.string.transition_tag_image_named,
-                title
-            )
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
 
-            val textViewTransitionName = resources.getString(
-                R.string.transition_tag_title_named,
-                title
-            )
+        val imageViewTransitionName = resources.getString(
+            R.string.transition_tag_image_named,
+            title
+        )
 
-            recycler_view.layoutManager = LinearLayoutManager(context)
+        val textViewTransitionName = resources.getString(
+            R.string.transition_tag_title_named,
+            title
+        )
 
-            recycler_view.buildModels {
-                cityHeader {
-                    id("header")
-                    imageDrawableRes(image)
-                    title(title)
-                    imageTransitionName(imageViewTransitionName)
-                    textViewTransitionName(textViewTransitionName)
-                }
+        recycler_view.layoutManager = LinearLayoutManager(context)
 
-                LIST_ROWS.forEach { listRow ->
-                    cityDetail {
-                        id("city_detail_$listRow")
-                        text(listRow)
-                    }
+        recycler_view.buildModels {
+            cityHeader {
+                id("header")
+                imageDrawableRes(image)
+                title(title)
+                imageTransitionName(imageViewTransitionName)
+                textViewTransitionName(textViewTransitionName)
+            }
+
+            LIST_ROWS.forEach { listRow ->
+                cityDetail {
+                    id("city_detail_$listRow")
+                    text(listRow)
                 }
             }
         }

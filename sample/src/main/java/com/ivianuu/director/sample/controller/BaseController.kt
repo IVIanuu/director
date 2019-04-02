@@ -27,8 +27,12 @@ abstract class BaseController : Controller(), LayoutContainer {
         savedViewState: Bundle?
     ): View {
         check(layoutRes != 0) { "no layout res provided" }
-        return inflater.inflate(layoutRes, container, false)
+        val view = inflater.inflate(layoutRes, container, false)
             .also { _containerView = it }
+
+        onViewCreated(view, savedViewState)
+
+        return view
     }
 
     override fun onAttach(view: View) {
@@ -52,6 +56,9 @@ abstract class BaseController : Controller(), LayoutContainer {
         }
 
         (activity as? ToolbarProvider)?.toolbar?.title = toolbarTitle
+    }
+
+    protected open fun onViewCreated(view: View, savedViewState: Bundle?) {
     }
 
 }
