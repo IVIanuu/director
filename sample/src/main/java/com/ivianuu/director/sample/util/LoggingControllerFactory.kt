@@ -17,11 +17,15 @@
 package com.ivianuu.director.sample.util
 
 import com.ivianuu.director.ControllerFactory
+import com.ivianuu.director.ReflectiveControllerFactory
 
 class LoggingControllerFactory : ControllerFactory {
+
+    private val wrapped = ReflectiveControllerFactory()
+
     override fun createController(
         classLoader: ClassLoader,
         className: String
-    ) = super.createController(classLoader, className)
+    ) = wrapped.createController(classLoader, className)
         .also { d { "instantiated $it for $className" } }
 }

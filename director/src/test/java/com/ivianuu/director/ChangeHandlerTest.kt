@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import org.junit.Assert.assertEquals
@@ -43,7 +42,7 @@ class ChangeHandlerTest {
         router.push(transaction)
 
         val restoredTransaction = Transaction.fromBundle(
-            transaction.saveInstanceState(), DefaultControllerFactory
+            transaction.saveInstanceState(), router.routerManager.controllerFactory
         )
 
         val restored1 = restoredTransaction.pushChangeHandler

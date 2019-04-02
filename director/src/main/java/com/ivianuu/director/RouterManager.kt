@@ -18,7 +18,6 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 
@@ -53,7 +52,7 @@ class RouterManager(
      * Will be used to instantiate controllers after config changes or process death
      */
     var controllerFactory: ControllerFactory =
-        DirectorPlugins.defaultControllerFactory ?: DefaultControllerFactory
+        DirectorPlugins.defaultControllerFactory ?: ReflectiveControllerFactory()
 
     /**
      * Sets the root view for all routers

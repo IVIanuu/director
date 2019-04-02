@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.internal.DefaultControllerFactory
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import org.junit.Assert.assertEquals
@@ -44,7 +43,8 @@ class TransactionTest {
 
         val bundle = transaction.saveInstanceState()
 
-        val restoredTransaction = Transaction.fromBundle(bundle, DefaultControllerFactory)
+        val restoredTransaction =
+            Transaction.fromBundle(bundle, router.routerManager.controllerFactory)
 
         assertEquals(transaction.controller.javaClass, restoredTransaction.controller.javaClass)
         assertEquals(
