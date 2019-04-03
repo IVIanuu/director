@@ -19,6 +19,7 @@ package com.ivianuu.director.activitycallbacks
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
+import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.Controller
 import com.ivianuu.director.doOnPostDestroy
 
@@ -33,7 +34,7 @@ typealias ActivityResultListener = (requestCode: Int, resultCode: Int, data: Int
 fun Controller.addActivityResultListener(
     requestCode: Int,
     listener: ActivityResultListener
-) {
+): Closeable {
     // remove the listener on controller destruction
     doOnPostDestroy {
         activityCallbacks
@@ -41,6 +42,8 @@ fun Controller.addActivityResultListener(
     }
 
     activityCallbacks.addActivityResultListener(requestCode, listener)
+
+    return Closeable { removeActivityResultListener(requestCode, listener) }
 }
 
 /**

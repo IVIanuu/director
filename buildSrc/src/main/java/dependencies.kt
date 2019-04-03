@@ -15,7 +15,7 @@ object Build {
 object Publishing {
     const val groupId = "com.ivianuu.director"
     const val vcsUrl = "https://github.com/IVIanuu/director"
-    const val version = "${Build.versionName}-dev-22"
+    const val version = "${Build.versionName}-dev-23"
 }
 
 object Versions {
@@ -29,7 +29,7 @@ object Versions {
 
     const val bintray = "1.8.4"
 
-    const val dagger = "2.19"
+    const val closeable = "0.0.1-dev-2"
 
     const val epoxy = "3.0.0"
     const val epoxyKtx = "0.0.1-dev-1"
@@ -47,11 +47,11 @@ object Versions {
 
     const val rxJava = "2.2.6"
 
-    const val scopes = "0.0.1-dev-3"
+    const val scopes = "0.0.1-dev-4"
 
     const val stdlibx = "0.0.1-dev-3"
 
-    const val traveler = "0.0.1-dev-1"
+    const val traveler = "0.0.1-dev-4"
 }
 
 object Deps {
@@ -67,8 +67,7 @@ object Deps {
     const val bintrayGradlePlugin =
         "com.jfrog.bintray.gradle:gradle-bintray-plugin:${Versions.bintray}"
 
-    const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
-    const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+    const val closeable = "com.ivianuu.closeable:closeable:${Versions.closeable}"
 
     const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
     const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
@@ -90,7 +89,7 @@ object Deps {
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
 
     const val scopes = "com.ivianuu.scopes:scopes:${Versions.scopes}"
-    const val scopesCache = "com.ivianuu.scopes:scopes-cache:${Versions.scopes}"
+    const val scopesCommon = "com.ivianuu.scopes:scopes-common:${Versions.scopes}"
     const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
     const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
 

@@ -25,11 +25,11 @@ import com.ivianuu.director.common.ControllerEvent.DESTROY
 import com.ivianuu.director.common.ControllerEvent.DESTROY_VIEW
 import com.ivianuu.director.common.ControllerEvent.DETACH
 import com.ivianuu.scopes.Scope
-import com.ivianuu.scopes.cache.LifecycleScopesStore
+import com.ivianuu.scopes.common.LifecycleScopesCache
 import com.ivianuu.scopes.lifecycle.LifecycleScopes
 
 private val lifecycleScopesStore =
-    LifecycleScopesStore<Controller, ControllerEvent>(DESTROY) {
+    LifecycleScopesCache<Controller, ControllerEvent>(DESTROY) {
     LifecycleScopes(ControllerLifecycle(it))
 }
 

@@ -2,6 +2,7 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
+import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
@@ -219,8 +220,9 @@ class Router internal constructor(
     /**
      * Notifies the [listener] on controller changes
      */
-    fun addListener(listener: RouterListener, recursive: Boolean = false) {
+    fun addListener(listener: RouterListener, recursive: Boolean = false): Closeable {
         listeners.add(ListenerEntry(listener, recursive))
+        return Closeable { removeListener(listener) }
     }
 
     /**
@@ -233,8 +235,9 @@ class Router internal constructor(
     /**
      * Adds the [listener] to all controllers
      */
-    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false) {
+    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false): Closeable {
         controllerListeners.add(ListenerEntry(listener, recursive))
+        return Closeable { removeControllerListener(listener) }
     }
 
     /**

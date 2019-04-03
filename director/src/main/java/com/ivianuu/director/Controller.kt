@@ -11,6 +11,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
@@ -210,8 +211,9 @@ abstract class Controller {
     /**
      * Adds a listener for all of this Controller's lifecycle events
      */
-    fun addListener(listener: ControllerListener) {
+    fun addListener(listener: ControllerListener): Closeable {
         listeners.add(listener)
+        return Closeable { removeListener(listener) }
     }
 
     /**

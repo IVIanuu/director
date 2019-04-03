@@ -26,6 +26,6 @@ dependencies {
     api(project(":director"))
     api(project(":director-common"))
     api(Deps.scopes)
-    api(Deps.scopesCache)
+    api(Deps.scopesCommon)
     api(Deps.scopesLifecycle)
 }

@@ -35,9 +35,6 @@ android {
 dependencies {
     implementation(Deps.androidxAppCompat)
 
-    implementation(Deps.dagger)
-    kapt(Deps.daggerCompiler)
-
     implementation(project(":director"))
     implementation(project(":director-activitycallbacks"))
     implementation(project(":director-androidx-lifecycle"))
