@@ -60,12 +60,4 @@ dependencies {
     implementation(Deps.scopesRx)
 
     implementation("com.afollestad.material-dialogs:core:0.9.6.0")
-
-    testImplementation(Deps.androidxTestCore)
-    testImplementation(Deps.androidxTestJunit)
-    testImplementation(Deps.androidxTestRules)
-    testImplementation(Deps.androidxTestRunner)
-    testImplementation(Deps.junit)
-    testImplementation(Deps.mockitoKotlin)
-    testImplementation(Deps.roboelectric)
 }

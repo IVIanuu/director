@@ -24,11 +24,8 @@ object Versions {
     const val androidxAppCompat = "1.1.0-alpha01"
     const val androidxFragment = "1.1.0-alpha03"
     const val androidxLifecycle = "2.0.0"
-    const val androidxTestCore = "1.0.0"
-    const val androidxTestJunit = "1.0.0"
-    const val androidxTestRules = "1.1.0"
-    const val androidxTestRunner = "1.1.0"
     const val androidxViewPager = "1.0.0"
+    const val androidxTestJunit = "1.0.0"
 
     const val bintray = "1.8.4"
 
@@ -45,8 +42,6 @@ object Versions {
 
     const val mavenGradlePlugin = "2.1"
     const val materialComponents = "1.0.0"
-
-    const val mockitoKotlin = "2.0.0"
 
     const val roboelectric = "4.0.2"
 
@@ -67,11 +62,7 @@ object Deps {
     const val androidxLifecycleExtensions =
         "androidx.lifecycle:lifecycle-extensions:${Versions.androidxLifecycle}"
     const val androidxViewPager = "androidx.viewpager:viewpager:${Versions.androidxViewPager}"
-
-    const val androidxTestCore = "androidx.test:core:${Versions.androidxTestCore}"
     const val androidxTestJunit = "androidx.test.ext:junit:${Versions.androidxTestJunit}"
-    const val androidxTestRules = "androidx.test:rules:${Versions.androidxTestRules}"
-    const val androidxTestRunner = "androidx.test:runner:${Versions.androidxTestRunner}"
 
     const val bintrayGradlePlugin =
         "com.jfrog.bintray.gradle:gradle-bintray-plugin:${Versions.bintray}"
@@ -93,8 +84,6 @@ object Deps {
 
     const val materialComponents =
         "com.google.android.material:material:${Versions.materialComponents}"
-
-    const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
 
     const val roboelectric = "org.robolectric:robolectric:${Versions.roboelectric}"
 
