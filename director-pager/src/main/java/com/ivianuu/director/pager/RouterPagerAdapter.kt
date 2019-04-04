@@ -38,7 +38,7 @@ abstract class RouterPagerAdapter(
     private val savedStates = SparseArray<Bundle>()
 
     /**
-     * Called when a router is instantiated. Here the router's root should be set if needed.
+     * Configure the router e.g. set the root controller
      */
     abstract fun configureRouter(router: Router, position: Int)
 

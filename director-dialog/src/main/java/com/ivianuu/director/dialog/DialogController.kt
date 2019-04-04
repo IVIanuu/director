@@ -55,6 +55,9 @@ abstract class DialogController : Controller(),
         return view
     }
 
+    /**
+     * Creates dialog which should be shown in this controller
+     */
     protected abstract fun onCreateDialog(savedViewState: Bundle?): Dialog
 
     override fun onAttach(view: View) {
