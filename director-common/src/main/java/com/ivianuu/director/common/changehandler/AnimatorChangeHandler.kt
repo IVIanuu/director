@@ -44,10 +44,6 @@ abstract class AnimatorChangeHandler(
     private var canceled = false
     private var completed = false
 
-    init {
-        this.duration = duration
-    }
-
     override fun performChange(changeData: ChangeData) {
         this.changeData = changeData
 
@@ -84,7 +80,7 @@ abstract class AnimatorChangeHandler(
         when {
             animator != null -> animator?.cancel()
             onReadyOrAbortedListener != null -> onReadyOrAbortedListener?.onReadyOrAborted()
-            changeData != null -> complete(null)
+            changeData != null -> complete()
         }
     }
 
@@ -94,15 +90,14 @@ abstract class AnimatorChangeHandler(
     protected abstract fun getAnimator(changeData: ChangeData): Animator
 
     /**
-     * Resets the from view of an animation to the pre animation state
-     * This will be called after a animation was finished
+     * Called after the animation was finished this should reset the view to the pre anim state
      */
     protected open fun resetFromView(from: View) {
     }
 
     private fun performAnimation(changeData: ChangeData) {
         if (canceled) {
-            complete(null)
+            complete()
             return
         }
 
@@ -113,7 +108,7 @@ abstract class AnimatorChangeHandler(
 
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    complete(this)
+                    complete()
                 }
             })
         }
@@ -121,7 +116,7 @@ abstract class AnimatorChangeHandler(
         animator?.start()
     }
 
-    private fun complete(animatorListener: Animator.AnimatorListener?) {
+    private fun complete() {
         if (completed) return
         completed = true
 
@@ -135,11 +130,6 @@ abstract class AnimatorChangeHandler(
         }
 
         callback.onChangeCompleted()
-
-        animator?.let { animator ->
-            animatorListener?.let(animator::removeListener)
-            animator.cancel()
-        }
 
         animator = null
         onReadyOrAbortedListener = null
