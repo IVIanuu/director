@@ -16,7 +16,7 @@
 
 package com.ivianuu.director.retained
 
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.Controller
@@ -56,8 +56,8 @@ internal class RetainedObjectsHolder : ViewModel() {
 
     companion object {
         internal fun get(controller: Controller): RetainedObjects {
-            val activity = (controller.activity as? FragmentActivity)
-                ?: error("controller is not attached to a FragmentActivity")
+            val activity = (controller.activity as? ComponentActivity)
+                ?: error("controller is not attached to a ComponentActivity")
             return ViewModelProvider(activity, Factory)
                 .get(RetainedObjectsHolder::class.java).getRetainedObjects(controller)
         }
