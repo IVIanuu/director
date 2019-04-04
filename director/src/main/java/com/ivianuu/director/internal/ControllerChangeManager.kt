@@ -35,7 +35,7 @@ internal object ControllerChangeManager {
 
         listeners.forEach { it.onChangeStarted(router, to, from, isPush, container, handlerToUse) }
 
-        val toView = to?.createView(container)
+        val toView = to?.view ?: to?.createView(container)
         val fromView = from?.view
 
         val toIndex = getToIndex(router, container, toView, fromView, isPush)

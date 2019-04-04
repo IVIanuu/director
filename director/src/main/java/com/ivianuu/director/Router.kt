@@ -57,6 +57,11 @@ class Router internal constructor(
             if (destroyingControllers.contains(controller)) {
                 controller.containerRemoved()
             }
+
+            if (toBeInvisibleControllers.contains(controller)) {
+                controller.containerRemoved()
+                toBeInvisibleControllers.remove(controller)
+            }
         },
         postDestroyView = { controller ->
             if (destroyingControllers.remove(controller)) {
@@ -66,6 +71,7 @@ class Router internal constructor(
     )
 
     private val destroyingControllers = mutableListOf<Controller>()
+    private val toBeInvisibleControllers = mutableListOf<Controller>()
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -142,10 +148,13 @@ class Router internal constructor(
                 .reversed()
                 .filterNot { old -> newVisibleTransactions.any { it.controller == old.controller } }
                 .forEach { transaction ->
+                    toBeInvisibleControllers.add(transaction.controller)
+
                     ControllerChangeManager.cancelChange(transaction.controller.instanceId)
                     val localHandler = handler?.copy()
                         ?: transaction.popChangeHandler?.copy()
                         ?: DefaultChangeHandler()
+
                     performControllerChange(
                         transaction,
                         null,
@@ -172,6 +181,8 @@ class Router internal constructor(
 
             // Replace the old visible top with the new one
             if (replacingTopTransactions) {
+                oldTopTransaction?.let { toBeInvisibleControllers.add(it.controller) }
+
                 val localHandler = handler?.copy()
                     ?: (if (isPush) newTopTransaction?.pushChangeHandler?.copy()
                     else oldTopTransaction?.popChangeHandler?.copy())
