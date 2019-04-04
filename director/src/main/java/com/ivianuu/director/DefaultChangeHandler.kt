@@ -34,14 +34,14 @@ open class DefaultChangeHandler(
         changeData.callback.onChangeCompleted()
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
+    override fun saveInstanceState(outState: Bundle) {
+        super.saveInstanceState(outState)
+        outState.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
     }
 
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        _removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        super.restoreInstanceState(savedInstanceState)
+        _removesFromViewOnPush = savedInstanceState.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     companion object {

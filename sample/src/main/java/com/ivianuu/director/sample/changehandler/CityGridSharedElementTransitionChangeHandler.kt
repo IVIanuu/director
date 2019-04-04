@@ -3,13 +3,7 @@ package com.ivianuu.director.sample.changehandler
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
-import android.transition.ChangeBounds
-import android.transition.ChangeClipBounds
-import android.transition.ChangeTransform
-import android.transition.Explode
-import android.transition.Slide
-import android.transition.Transition
-import android.transition.TransitionSet
+import android.transition.*
 import android.view.Gravity
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
@@ -26,12 +20,12 @@ class CityGridSharedElementTransitionChangeHandler(
         this.names.addAll(names)
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        bundle.putStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES, ArrayList(names))
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES, ArrayList(names))
     }
 
-    override fun restoreFromBundle(bundle: Bundle) {
-        val savedNames = bundle.getStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES)
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        val savedNames = savedInstanceState.getStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES)
         if (savedNames != null) {
             names.addAll(savedNames)
         }

@@ -3,14 +3,8 @@ package com.ivianuu.director.sample.changehandler
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
-import android.transition.ArcMotion
-import android.transition.ChangeBounds
-import android.transition.ChangeClipBounds
-import android.transition.ChangeTransform
-import android.transition.Fade
-import android.transition.Transition
+import android.transition.*
 import android.transition.Transition.TransitionListener
-import android.transition.TransitionSet
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
@@ -28,15 +22,15 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         this.sharedElementNames.addAll(sharedElementNames)
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putStringArrayList(KEY_SHARED_ELEMENT_NAMES, ArrayList(sharedElementNames))
+    override fun saveInstanceState(outState: Bundle) {
+        super.saveInstanceState(outState)
+        outState.putStringArrayList(KEY_SHARED_ELEMENT_NAMES, ArrayList(sharedElementNames))
     }
 
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        super.restoreInstanceState(savedInstanceState)
 
-        sharedElementNames.addAll(bundle.getStringArrayList(KEY_SHARED_ELEMENT_NAMES)!!)
+        sharedElementNames.addAll(savedInstanceState.getStringArrayList(KEY_SHARED_ELEMENT_NAMES)!!)
     }
 
     override fun getExitTransition(changeData: ChangeData): Transition? {

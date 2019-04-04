@@ -29,13 +29,13 @@ abstract class ChangeHandler {
     /**
      * Saves any data about this changeHandler to a Bundle in case the application is killed.
      */
-    open fun saveToBundle(bundle: Bundle) {
+    open fun saveInstanceState(outState: Bundle) {
     }
 
     /**
-     * Restores data that was saved in [saveToBundle].
+     * Restores data that was saved in [saveInstanceState].
      */
-    open fun restoreFromBundle(bundle: Bundle) {
+    open fun restoreInstanceState(savedInstanceState: Bundle) {
     }
 
     internal open fun copy(): ChangeHandler = fromBundle(toBundle())
@@ -48,7 +48,7 @@ abstract class ChangeHandler {
 
     internal fun toBundle(): Bundle = Bundle().apply {
         putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
-        putBundle(KEY_SAVED_STATE, Bundle().also(this@ChangeHandler::saveToBundle))
+        putBundle(KEY_SAVED_STATE, Bundle().also(this@ChangeHandler::saveInstanceState))
     }
 
     companion object {
@@ -58,7 +58,7 @@ abstract class ChangeHandler {
         internal fun fromBundle(bundle: Bundle): ChangeHandler {
             val className = bundle.getString(KEY_CLASS_NAME)!!
             return newInstanceOrThrow<ChangeHandler>(className).apply {
-                restoreFromBundle(bundle.getBundle(KEY_SAVED_STATE)!!)
+                restoreInstanceState(bundle.getBundle(KEY_SAVED_STATE)!!)
             }
         }
     }
