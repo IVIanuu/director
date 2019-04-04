@@ -63,15 +63,6 @@ abstract class Controller {
     var state: ControllerState = INITIALIZED
         private set
 
-    /**
-     * Whether or not this controller is in the process of being destroyed
-     */
-    var isBeingDestroyed = false
-        internal set(value) {
-            if (value) childRouterManager.hostIsBeingDestroyed()
-            field = value
-        }
-
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
 
@@ -284,9 +275,9 @@ abstract class Controller {
         notifyListeners { it.postDetach(this, view) }
     }
 
-    internal fun destroyView() {
+    internal fun destroyView(saveViewState: Boolean) {
         val view = view ?: return
-        if (!isBeingDestroyed && viewState == null) {
+        if (saveViewState && viewState == null) {
             saveViewState()
         }
 

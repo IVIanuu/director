@@ -55,11 +55,11 @@ class Router internal constructor(
     internal val internalControllerListener = ControllerListener(
         postDetach = { controller, _ ->
             if (destroyingControllers.contains(controller)) {
-                controller.destroyView()
+                controller.destroyView(false)
             }
 
             if (toBeInvisibleControllers.contains(controller)) {
-                controller.destroyView()
+                controller.destroyView(true)
                 toBeInvisibleControllers.remove(controller)
             }
         },
@@ -113,11 +113,6 @@ class Router internal constructor(
         // find destroyed transactions
         val destroyedTransactions = oldTransactions
             .filter { old -> newBackstack.none { it.controller == old.controller } }
-
-        // Inform the controller that it will be destroyed soon
-        destroyedTransactions.forEach {
-            it.controller.isBeingDestroyed = true
-        }
 
         val (destroyedVisibleTransactions, destroyedInvisibleTransactions) =
             destroyedTransactions
@@ -203,7 +198,7 @@ class Router internal constructor(
 
         // destroy all invisible transactions here
         destroyedInvisibleTransactions.reversed().forEach {
-            it.controller.destroyView()
+            it.controller.destroyView(false)
             it.controller.destroy()
         }
     }
@@ -296,7 +291,7 @@ class Router internal constructor(
     fun removeContainer() {
         if (container == null) return
         prepareForContainerRemoval()
-        _backstack.reversed().forEach { it.controller.destroyView() }
+        _backstack.reversed().forEach { it.controller.destroyView(false) }
         container = null
     }
 
@@ -307,10 +302,6 @@ class Router internal constructor(
     internal fun hostStopped() {
         prepareForContainerRemoval()
         _backstack.reversed().forEach { it.controller.detach() }
-    }
-
-    internal fun hostIsBeingDestroyed() {
-        _backstack.reversed().forEach { it.controller.isBeingDestroyed = true }
     }
 
     internal fun hostDestroyed() {
@@ -379,10 +370,6 @@ class Router internal constructor(
 
         if (routerManager.hostStarted) {
             controller.attach()
-        }
-
-        if (routerManager.hostIsBeingDestroyed) {
-            controller.isBeingDestroyed = true
         }
 
         if (routerManager.hostDestroyed) {

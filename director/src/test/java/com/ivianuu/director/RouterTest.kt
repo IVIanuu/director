@@ -471,36 +471,6 @@ class RouterTest {
     }
 
     @Test
-    fun testIsBeingDestroyed() {
-        val listener = ControllerListener(
-            preDestroyView = { controller, _ -> assertTrue(controller.isBeingDestroyed) }
-        )
-
-        val controller1 = TestController()
-        val controller2 = TestController()
-        controller2.addListener(listener)
-
-        router.setRoot(controller1.toTransaction())
-        router.push(controller2.toTransaction())
-        assertFalse(controller1.isBeingDestroyed)
-        assertFalse(controller2.isBeingDestroyed)
-
-        router.popTop()
-        assertFalse(controller1.isBeingDestroyed)
-        assertTrue(controller2.isBeingDestroyed)
-
-        val controller3 = TestController()
-        controller3.addListener(listener)
-        router.push(controller3.toTransaction())
-        assertFalse(controller1.isBeingDestroyed)
-        assertFalse(controller3.isBeingDestroyed)
-
-        router.popToRoot()
-        assertFalse(controller1.isBeingDestroyed)
-        assertTrue(controller3.isBeingDestroyed)
-    }
-
-    @Test
     fun testRecursivelySettingRouterListener() {
         val routerRecursiveListener = EmptyChangeListener()
         val routerNonRecursiveListener = EmptyChangeListener()
