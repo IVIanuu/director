@@ -19,8 +19,10 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
     private var lifecycleRegistry: LifecycleRegistry? = null
 
     private val listener = ControllerListener(
-        postCreateView = { _, _, _ ->
+        preCreateView = { _, _ ->
             lifecycleRegistry = LifecycleRegistry(this@ControllerViewLifecycleOwner)
+        },
+        postCreateView = { _, _, _ ->
             lifecycleRegistry?.handleLifecycleEvent(ON_CREATE)
         },
         postAttach = { _, _ ->
