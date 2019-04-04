@@ -188,7 +188,7 @@ abstract class Controller {
         listeners.remove(listener)
     }
 
-    internal fun setRouter(router: Router) {
+    internal fun create(router: Router) {
         if (this::_router.isInitialized) return
         _router = router
 
@@ -211,35 +211,6 @@ abstract class Controller {
         }
 
         allState = null
-    }
-
-    internal fun containerSet() {
-    }
-
-    internal fun hostStarted() {
-        attach()
-    }
-
-    internal fun hostStopped() {
-        detach()
-    }
-
-    internal fun containerRemoved() {
-        destroyView()
-    }
-
-    internal fun hostDestroyed() {
-        if (state == DESTROYED) return
-
-        childRouterManager.hostDestroyed()
-
-        notifyListeners { it.preDestroy(this) }
-
-        state = DESTROYED
-
-        requireSuperCalled(this::onDestroy)
-
-        notifyListeners { it.postDestroy(this) }
     }
 
     internal fun createView(container: ViewGroup): View {
@@ -274,7 +245,7 @@ abstract class Controller {
         return view
     }
 
-    private fun attach() {
+    internal fun attach() {
         if (isAttached) return
 
         val view = view ?: return
@@ -297,7 +268,7 @@ abstract class Controller {
         childRouterManager.hostStarted()
     }
 
-    private fun detach() {
+    internal fun detach() {
         if (!isAttached) return
 
         val view = view ?: return
@@ -313,7 +284,7 @@ abstract class Controller {
         notifyListeners { it.postDetach(this, view) }
     }
 
-    private fun destroyView() {
+    internal fun destroyView() {
         val view = view ?: return
         if (!isBeingDestroyed && viewState == null) {
             saveViewState()
@@ -330,6 +301,20 @@ abstract class Controller {
         this.view = null
 
         notifyListeners { it.postDestroyView(this) }
+    }
+
+    internal fun destroy() {
+        if (state == DESTROYED) return
+
+        childRouterManager.hostDestroyed()
+
+        notifyListeners { it.preDestroy(this) }
+
+        state = DESTROYED
+
+        requireSuperCalled(this::onDestroy)
+
+        notifyListeners { it.postDestroy(this) }
     }
 
     internal fun saveInstanceState(): Bundle {

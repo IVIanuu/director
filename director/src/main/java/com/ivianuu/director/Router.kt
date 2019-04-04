@@ -55,17 +55,17 @@ class Router internal constructor(
     internal val internalControllerListener = ControllerListener(
         postDetach = { controller, _ ->
             if (destroyingControllers.contains(controller)) {
-                controller.containerRemoved()
+                controller.destroyView()
             }
 
             if (toBeInvisibleControllers.contains(controller)) {
-                controller.containerRemoved()
+                controller.destroyView()
                 toBeInvisibleControllers.remove(controller)
             }
         },
         postDestroyView = { controller ->
             if (destroyingControllers.remove(controller)) {
-                controller.hostDestroyed()
+                controller.destroy()
             }
         }
     )
@@ -203,8 +203,8 @@ class Router internal constructor(
 
         // destroy all invisible transactions here
         destroyedInvisibleTransactions.reversed().forEach {
-            it.controller.containerRemoved()
-            it.controller.hostDestroyed()
+            it.controller.destroyView()
+            it.controller.destroy()
         }
     }
 
@@ -287,7 +287,6 @@ class Router internal constructor(
         if (this.container != container) {
             removeContainer()
             this.container = container
-            _backstack.forEach { it.controller.containerSet() }
         }
     }
 
@@ -297,17 +296,17 @@ class Router internal constructor(
     fun removeContainer() {
         if (container == null) return
         prepareForContainerRemoval()
-        _backstack.reversed().forEach { it.controller.containerRemoved() }
+        _backstack.reversed().forEach { it.controller.destroyView() }
         container = null
     }
 
     internal fun hostStarted() {
-        _backstack.forEach { it.controller.hostStarted() }
+        _backstack.forEach { it.controller.attach() }
     }
 
     internal fun hostStopped() {
         prepareForContainerRemoval()
-        _backstack.reversed().forEach { it.controller.hostStopped() }
+        _backstack.reversed().forEach { it.controller.detach() }
     }
 
     internal fun hostIsBeingDestroyed() {
@@ -315,7 +314,7 @@ class Router internal constructor(
     }
 
     internal fun hostDestroyed() {
-        _backstack.reversed().forEach { it.controller.hostDestroyed() }
+        _backstack.reversed().forEach { it.controller.destroy() }
         removeContainer()
     }
 
@@ -376,14 +375,10 @@ class Router internal constructor(
     }
 
     private fun moveControllerToCorrectState(controller: Controller) {
-        controller.setRouter(this)
-
-        if (hasContainer) {
-            controller.containerSet()
-        }
+        controller.create(this)
 
         if (routerManager.hostStarted) {
-            controller.hostStarted()
+            controller.attach()
         }
 
         if (routerManager.hostIsBeingDestroyed) {
@@ -391,7 +386,7 @@ class Router internal constructor(
         }
 
         if (routerManager.hostDestroyed) {
-            controller.hostDestroyed()
+            controller.destroy()
         }
     }
 
