@@ -300,8 +300,6 @@ abstract class Controller {
             return view
         }
 
-        val hierarchyState =
-            viewState?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
 
         notifyListeners { it.preCreateView(this, savedViewState) }
@@ -316,9 +314,10 @@ abstract class Controller {
 
         notifyListeners { it.postCreateView(this, view, savedViewState) }
 
-        if (savedViewState != null) {
-            view.restoreHierarchyState(hierarchyState)
+        viewState?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
+            ?.let(view::restoreHierarchyState)
 
+        if (savedViewState != null) {
             requireSuperCalled { onRestoreViewState(view, savedViewState) }
             notifyListeners { it.onRestoreViewState(this, view, savedViewState) }
         }
