@@ -148,10 +148,10 @@ fun Controller.doOnPreDetach(block: (controller: Controller, view: View) -> Unit
 fun Controller.doOnPostDetach(block: (controller: Controller, view: View) -> Unit): Closeable =
     addListener(postDetach = block)
 
-fun Controller.doOnpreDestroyView(block: (controller: Controller, view: View) -> Unit): Closeable =
+fun Controller.doOnPreDestroyView(block: (controller: Controller, view: View) -> Unit): Closeable =
     addListener(preDestroyView = block)
 
-fun Controller.doOnpostDestroyView(block: (controller: Controller) -> Unit): Closeable =
+fun Controller.doOnPostDestroyView(block: (controller: Controller) -> Unit): Closeable =
     addListener(postDestroyView = block)
 
 fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit): Closeable =

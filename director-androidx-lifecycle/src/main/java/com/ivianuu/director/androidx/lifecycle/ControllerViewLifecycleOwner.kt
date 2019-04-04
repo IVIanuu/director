@@ -65,7 +65,7 @@ val Controller.viewLifecycleOwner: LifecycleOwner
         return viewLifecycleOwnersByController.getOrPut(this) {
             ControllerViewLifecycleOwner(this)
                 .also {
-                    doOnpostDestroyView { viewLifecycleOwnersByController.remove(this) }
+                    doOnPostDestroyView { viewLifecycleOwnersByController.remove(this) }
                 }
         }
     }
