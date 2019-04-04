@@ -41,6 +41,7 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
         controller.addListener(listener)
 
         if (controller.isViewCreated) {
+            listener.preCreateView(controller, null)
             listener.postCreateView(controller, controller.view!!, null)
         }
 

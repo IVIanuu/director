@@ -56,8 +56,10 @@ class ControllerLifecycleOwner(controller: Controller) : LifecycleOwner {
                 ControllerState.DESTROYED -> markState(Lifecycle.State.DESTROYED)
                 ControllerState.INITIALIZED -> markState(Lifecycle.State.INITIALIZED)
                 ControllerState.CREATED -> markState(Lifecycle.State.CREATED)
-                ControllerState.VIEW_CREATED -> markState(Lifecycle.State.STARTED)
-                ControllerState.ATTACHED -> markState(Lifecycle.State.RESUMED)
+                ControllerState.ATTACHED -> {
+                    markState(Lifecycle.State.STARTED)
+                    markState(Lifecycle.State.RESUMED)
+                }
             }
         }
     }
