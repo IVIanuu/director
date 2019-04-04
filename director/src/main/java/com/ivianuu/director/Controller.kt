@@ -72,8 +72,6 @@ abstract class Controller {
             field = value
         }
 
-    private var isPerformingExitTransition = false
-
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
 
@@ -150,28 +148,6 @@ abstract class Controller {
      * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller begins the process of being swapped in or out of the host view.
-     */
-    protected open fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller completes the process of being swapped in or out of the host view.
-     */
-    protected open fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
         superCalled = true
     }
 
@@ -368,18 +344,6 @@ abstract class Controller {
         requireSuperCalled { onDetach(view) }
 
         notifyListeners { it.postDetach(this, view) }
-
-        if (isPerformingExitTransition) {
-            if (isBeingDestroyed) {
-                containerRemoved()
-            } else {
-                if (!retainView) {
-                    destroyView()
-                } else {
-                    childRouterManager.removeContainers()
-                }
-            }
-        }
     }
 
     private fun destroyView() {
@@ -399,10 +363,6 @@ abstract class Controller {
         this.view = null
 
         notifyListeners { it.postDestroyView(this) }
-
-        if (isBeingDestroyed && isPerformingExitTransition) {
-            hostDestroyed()
-        }
     }
 
     internal fun saveInstanceState(): Bundle {
@@ -460,28 +420,9 @@ abstract class Controller {
         notifyListeners { it.onSaveViewState(this, view, viewState) }
     }
 
-    internal fun changeStarted(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        isPerformingExitTransition = !changeType.isEnter
-        requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
-        notifyListeners { it.onChangeStarted(this, other, changeHandler, changeType) }
-    }
-
-    internal fun changeEnded(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
-        notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
-        isPerformingExitTransition = false
-    }
-
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
         (listeners + router.getControllerListeners()).forEach(block)
+        block(router.internalControllerListener)
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {

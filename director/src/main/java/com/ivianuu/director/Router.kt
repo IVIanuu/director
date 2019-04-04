@@ -52,6 +52,21 @@ class Router internal constructor(
     private val controllerListeners =
         mutableListOf<ListenerEntry<ControllerListener>>()
 
+    internal val internalControllerListener = ControllerListener(
+        postDetach = { controller, _ ->
+            if (destroyingControllers.contains(controller)) {
+                controller.containerRemoved()
+            }
+        },
+        postDestroyView = { controller ->
+            if (destroyingControllers.remove(controller)) {
+                controller.hostDestroyed()
+            }
+        }
+    )
+
+    private val destroyingControllers = mutableListOf<Controller>()
+
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ChangeHandler]
@@ -98,8 +113,11 @@ class Router internal constructor(
             it.controller.isBeingDestroyed = true
         }
 
-        val destroyedInvisibleTransactions = destroyedTransactions
-            .filterNot { it.controller.isAttached }
+        val (destroyedVisibleTransactions, destroyedInvisibleTransactions) =
+            destroyedTransactions
+                .partition { it.controller.isAttached }
+
+        destroyingControllers.addAll(destroyedVisibleTransactions.map(Transaction::controller))
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach {

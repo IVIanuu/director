@@ -35,17 +35,8 @@ internal object ControllerChangeManager {
 
         listeners.forEach { it.onChangeStarted(router, to, from, isPush, container, handlerToUse) }
 
-        val toChangeType =
-            if (isPush) ControllerChangeType.PUSH_ENTER else ControllerChangeType.POP_ENTER
-
-        val fromChangeType =
-            if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
-
         val toView = to?.createView(container)
-        to?.changeStarted(from, handlerToUse, toChangeType)
-
         val fromView = from?.view
-        from?.changeStarted(to, handlerToUse, fromChangeType)
 
         val toIndex = getToIndex(router, container, toView, fromView, isPush)
 
@@ -69,11 +60,8 @@ internal object ControllerChangeManager {
             }
 
             override fun onChangeCompleted() {
-                from?.changeEnded(to, handlerToUse, fromChangeType)
-
                 if (to != null) {
                     handlers.remove(to.instanceId)
-                    to.changeEnded(from, handlerToUse, toChangeType)
                 }
 
                 listeners.forEach {

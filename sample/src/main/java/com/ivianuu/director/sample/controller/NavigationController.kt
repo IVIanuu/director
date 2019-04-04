@@ -86,24 +86,6 @@ class NavigationController : BaseController() {
         }
     }
 
-    override fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeStarted(other, changeHandler, changeType)
-        setButtonsEnabled(false)
-    }
-
-    override fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(other, changeHandler, changeType)
-        setButtonsEnabled(true)
-    }
-
     private fun setButtonsEnabled(enabled: Boolean) {
         if (view == null) return
         btn_next.isEnabled = enabled

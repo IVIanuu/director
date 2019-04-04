@@ -501,40 +501,6 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, child)
     }
 
-    @Test
-    fun testChildLifecycleOrderingAfterUnexpectedAttach() {
-        val parent = TestController()
-        parent.retainView = true
-        router.push(
-            parent.toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        val child = TestController()
-        child.retainView = true
-        parent.getChildRouter(parent.childContainer1!!).apply {
-            setRoot(
-                child.toTransaction()
-                    .changeHandler(DefaultChangeHandler())
-            )
-        }
-
-        assertTrue(parent.isAttached)
-        assertTrue(child.isAttached)
-
-        parent.view!!.reportAttached(attached = false, applyOnChildren = true)
-        assertFalse(parent.isAttached)
-        assertFalse(child.isAttached)
-
-        child.view!!.reportAttached(true)
-        assertFalse(parent.isAttached)
-        assertFalse(child.isAttached)
-
-        parent.view!!.reportAttached(true)
-        assertTrue(parent.isAttached)
-        assertTrue(child.isAttached)
-    }
-
     private fun getPushHandler(
         expectedCallState: CallState,
         controller: TestController
@@ -542,7 +508,6 @@ class ControllerLifecycleCallbacksTest {
         return listeningChangeHandler(object : MockChangeHandler.Listener {
             override fun willStartChange() {
                 expectedCallState.createCalls++
-                expectedCallState.changeStartCalls++
                 expectedCallState.createViewCalls++
                 assertCalls(expectedCallState, controller)
             }
@@ -553,7 +518,6 @@ class ControllerLifecycleCallbacksTest {
             }
 
             override fun didEndChange() {
-                expectedCallState.changeEndCalls++
                 assertCalls(expectedCallState, controller)
             }
         })
@@ -565,7 +529,6 @@ class ControllerLifecycleCallbacksTest {
     ): MockChangeHandler {
         return listeningChangeHandler(object : MockChangeHandler.Listener {
             override fun willStartChange() {
-                expectedCallState.changeStartCalls++
                 assertCalls(expectedCallState, controller)
             }
 
@@ -577,7 +540,6 @@ class ControllerLifecycleCallbacksTest {
             }
 
             override fun didEndChange() {
-                expectedCallState.changeEndCalls++
                 assertCalls(expectedCallState, controller)
             }
         })
@@ -598,24 +560,6 @@ class ControllerLifecycleCallbacksTest {
 
     private fun attachControllerListener(controller: Controller) {
         controller.addListener(object : ControllerListener {
-            override fun onChangeStarted(
-                controller: Controller,
-                other: Controller?,
-                changeHandler: ChangeHandler,
-                changeType: ControllerChangeType
-            ) {
-                currentCallState.changeStartCalls++
-            }
-
-            override fun onChangeEnded(
-                controller: Controller,
-                other: Controller?,
-                changeHandler: ChangeHandler,
-                changeType: ControllerChangeType
-            ) {
-                currentCallState.changeEndCalls++
-            }
-
             override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
                 currentCallState.createCalls++
             }

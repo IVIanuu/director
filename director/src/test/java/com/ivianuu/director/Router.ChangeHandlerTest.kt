@@ -16,20 +16,7 @@
 
 package com.ivianuu.director
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.defaultHandler
-import com.ivianuu.director.util.taggedHandler
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.annotation.Config
-
+/**
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
 class RouterChangeHandlerTest {
@@ -493,4 +480,4 @@ class RouterChangeHandlerTest {
         assertEquals(pushHandler1, controller1.changeHandlerHistory.latestChangeHandler())
         assertEquals(pushHandler1, controller2.changeHandlerHistory.latestChangeHandler())
     }*/
-}
+}*/

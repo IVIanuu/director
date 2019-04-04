@@ -46,7 +46,7 @@ abstract class BaseController : Controller(), LayoutContainer {
         super.onDestroyView(view)
     }
 
-    protected fun setTitle() {
+    private fun setTitle() {
         var parentController = parentController
         while (parentController != null) {
             if (parentController is BaseController && parentController.toolbarTitle != null) {

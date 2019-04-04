@@ -20,14 +20,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeType
 
 class TestController : Controller() {
 
     var currentCallState = CallState()
-    var changeHandlerHistory = ChangeHandlerHistory()
 
     val childContainer1: ViewGroup? get() = view?.findViewById(CHILD_VIEW_ID_1)
     val childContainer2: ViewGroup? get() = view?.findViewById(CHILD_VIEW_ID_2)
@@ -58,35 +55,6 @@ class TestController : Controller() {
         view.addView(childContainer2)
 
         return view
-    }
-
-    override fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeStarted(other, changeHandler, changeType)
-        currentCallState.changeStartCalls++
-    }
-
-    override fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(other, changeHandler, changeType)
-        currentCallState.changeEndCalls++
-
-        if (changeHandler is MockChangeHandler) {
-            changeHandlerHistory.addEntry(
-                changeHandler.from,
-                changeHandler.to,
-                changeType.isPush,
-                changeHandler
-            )
-        } else {
-            changeHandlerHistory.isValidHistory = false
-        }
     }
 
     override fun onAttach(view: View) {

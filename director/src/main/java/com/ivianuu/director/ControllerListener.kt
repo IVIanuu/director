@@ -73,21 +73,6 @@ interface ControllerListener {
     fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
     }
 
-    fun onChangeStarted(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-    }
-
-    fun onChangeEnded(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-    }
 }
 
 /**
@@ -109,9 +94,7 @@ fun ControllerListener(
     onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null
 ): ControllerListener = LambdaControllerListener(
     preCreate = preCreate, postCreate = postCreate,
     preCreateView = preCreateView, postCreateView = postCreateView,
@@ -120,8 +103,7 @@ fun ControllerListener(
     preDestroyView = preDestroyView, postDestroyView = postDestroyView,
     preDestroy = preDestroy, postDestroy = postDestroy,
     onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
-    onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
-    onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
+    onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState
 )
 
 fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit): Closeable =
@@ -172,12 +154,6 @@ fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, 
 fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit): Closeable =
     addListener(onSaveViewState = block)
 
-fun Controller.doOnChangeStart(block: (controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): Closeable =
-    addListener(onChangeStarted = block)
-
-fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit): Closeable =
-    addListener(onChangeEnded = block)
-
 fun Controller.addListener(
     preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
     postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
@@ -194,9 +170,7 @@ fun Controller.addListener(
     onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null
 ): Closeable = ControllerListener(
     preCreate = preCreate, postCreate = postCreate,
     preCreateView = preCreateView, postCreateView = postCreateView,
@@ -205,8 +179,7 @@ fun Controller.addListener(
     preDestroyView = preDestroyView, postDestroyView = postDestroyView,
     preDestroy = preDestroy, postDestroy = postDestroy,
     onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
-    onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
-    onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
+    onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState
 ).let(this::addListener)
 
 fun Router.addControllerListener(
@@ -226,9 +199,7 @@ fun Router.addControllerListener(
     onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null
 ): Closeable {
     return addControllerListener(
         ControllerListener(
@@ -239,8 +210,7 @@ fun Router.addControllerListener(
         preDestroyView = preDestroyView, postDestroyView = postDestroyView,
         preDestroy = preDestroy, postDestroy = postDestroy,
         onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
-        onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
-        onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
+            onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState
         ), recursive
     )
 }
@@ -261,9 +231,7 @@ private class LambdaControllerListener(
     private val onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
     private val onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     private val onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    private val onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    private val onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    private val onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    private val onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null
 ) : ControllerListener {
     override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
         preCreate?.invoke(controller, savedInstanceState)
@@ -327,23 +295,5 @@ private class LambdaControllerListener(
 
     override fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
         onSaveViewState?.invoke(controller, view, outState)
-    }
-
-    override fun onChangeStarted(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        onChangeStarted?.invoke(controller, other, changeHandler, changeType)
-    }
-
-    override fun onChangeEnded(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        onChangeEnded?.invoke(controller, other, changeHandler, changeType)
     }
 }

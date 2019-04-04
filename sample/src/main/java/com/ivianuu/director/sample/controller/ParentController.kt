@@ -1,25 +1,12 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.Router
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.childRouters
+import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.context
-import com.ivianuu.director.doOnChangeEnd
-import com.ivianuu.director.getChildRouter
-import com.ivianuu.director.hasRoot
-import com.ivianuu.director.pop
-import com.ivianuu.director.removeChildRouter
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 
 class ParentController : BaseController() {
 
@@ -31,18 +18,12 @@ class ParentController : BaseController() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         toolbarTitle = "Parent/Child Demo"
+        error("broken")
     }
 
-    override fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(other, changeHandler, changeType)
-
-        if (changeType == ControllerChangeType.PUSH_ENTER) {
-            addChild(0)
-        }
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        //   addChild(0)
     }
 
     private fun addChild(index: Int) {
@@ -64,23 +45,23 @@ class ParentController : BaseController() {
                     false
                 )
 
-                childController.doOnChangeEnd { _, _, _, changeType ->
-                    if (!isBeingDestroyed) {
-                        if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
-                            if (index < NUMBER_OF_CHILDREN - 1) {
-                                addChild(index + 1)
-                            } else {
-                                hasShownAll = true
-                            }
-                        } else if (changeType == ControllerChangeType.POP_EXIT) {
-                            if (index > 0) {
-                                removeChild(index - 1)
-                            } else {
-                                router.pop(this@ParentController)
-                            }
-                        }
-                    }
-                }
+                /* childController.doOnChangeEnd { _, _, _, changeType ->
+                     if (!isBeingDestroyed) {
+                         if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
+                             if (index < NUMBER_OF_CHILDREN - 1) {
+                                 addChild(index + 1)
+                             } else {
+                                 hasShownAll = true
+                             }
+                         } else if (changeType == ControllerChangeType.POP_EXIT) {
+                             if (index > 0) {
+                                 removeChild(index - 1)
+                             } else {
+                                 router.pop(this@ParentController)
+                             }
+                         }
+                     }
+                 }*/
 
                 childRouter.setRoot(
                     childController.toTransaction()

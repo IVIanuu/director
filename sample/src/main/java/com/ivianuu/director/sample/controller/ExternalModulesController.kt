@@ -23,10 +23,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
+import com.ivianuu.director.context
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_external_modules.recycler_view
 import kotlinx.android.synthetic.main.row_home.home_image
@@ -54,17 +56,6 @@ class ExternalModulesController : BaseController() {
                     onClick { onItemClicked(item) }
                 }
             }
-        }
-    }
-
-    override fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeStarted(other, changeHandler, changeType)
-        if (changeType.isEnter) {
-            setTitle()
         }
     }
 

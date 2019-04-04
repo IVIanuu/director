@@ -32,6 +32,7 @@ class HomeController : BaseController() {
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)
+
         recycler_view.layoutManager = LinearLayoutManager(context)
         recycler_view.buildModels {
             HomeItem.values().forEachIndexed { index, item ->
@@ -42,17 +43,6 @@ class HomeController : BaseController() {
                     onClick { onItemClicked(item, index) }
                 }
             }
-        }
-    }
-
-    override fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeStarted(other, changeHandler, changeType)
-        if (changeType.isEnter) {
-            setTitle()
         }
     }
 

@@ -21,9 +21,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class CallState(
-    var changeStartCalls: Int = 0,
-    var changeEndCalls: Int = 0,
-
     var createCalls: Int = 0,
     var destroyCalls: Int = 0,
 
