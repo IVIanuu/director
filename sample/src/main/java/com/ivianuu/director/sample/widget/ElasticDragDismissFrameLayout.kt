@@ -97,7 +97,7 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
 
     override fun onStopNestedScroll(child: View) {
         if (totalDrag.absoluteValue >= dragDismissDistance) {
-            callbacks.toList().forEach { it.onDragDismissed() }
+            callbacks.toList().forEach(ElasticDragDismissCallback::onDragDismissed)
         } else { // settle back to natural position
             animate()
                 .translationY(0f)

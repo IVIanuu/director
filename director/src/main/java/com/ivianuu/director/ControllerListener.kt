@@ -230,7 +230,8 @@ fun Router.addControllerListener(
     onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): Closeable {
-    return ControllerListener(
+    return addControllerListener(
+        ControllerListener(
         preCreate = preCreate, postCreate = postCreate,
         preCreateView = preCreateView, postCreateView = postCreateView,
         preAttach = preAttach, postAttach = postAttach,
@@ -240,7 +241,8 @@ fun Router.addControllerListener(
         onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
         onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
         onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
-    ).let { addControllerListener(it, recursive) }
+        ), recursive
+    )
 }
 
 private class LambdaControllerListener(
