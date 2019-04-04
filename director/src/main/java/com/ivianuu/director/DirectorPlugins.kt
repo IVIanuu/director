@@ -39,15 +39,6 @@ var DirectorPlugins.defaultPopsLastView: Boolean
         _defaultPopsLastView = value
     }
 
-private var _defaultRetainView = false
-
-/** Default retain view */
-var DirectorPlugins.defaultRetainView: Boolean
-    get() = _defaultRetainView
-    set(value) {
-        _defaultRetainView = value
-    }
-
 private var _defaultPushHandler: ChangeHandler? = null
 
 /** The default push handler to use in all transactions */
