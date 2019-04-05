@@ -305,7 +305,6 @@ class Router internal constructor(
 
     internal fun onDestroy() {
         _backstack.reversed().forEach(Controller::destroy)
-        removeContainer()
     }
 
     /**
