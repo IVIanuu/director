@@ -21,14 +21,11 @@ import kotlinx.android.synthetic.main.row_city_header.header_title
 class CityDetailController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_city_detail
+    override val toolbarTitle: String?
+        get() = title
 
     private val title by arg<String>(KEY_TITLE)
     private val image by arg<Int>(KEY_IMAGE)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = title
-    }
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)

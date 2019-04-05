@@ -17,11 +17,7 @@
 package com.ivianuu.director.sample.controller
 
 import android.view.View
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.ivianuu.director.androidx.lifecycle.lifecycleOwner
 import com.ivianuu.director.androidx.lifecycle.viewModelStore
 import com.ivianuu.director.sample.R
@@ -38,6 +34,8 @@ import java.util.concurrent.TimeUnit
 class ArchController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_arch
+    override val toolbarTitle: String?
+        get() = "Arch"
 
     private val viewModel by lazy {
         ViewModelProvider(

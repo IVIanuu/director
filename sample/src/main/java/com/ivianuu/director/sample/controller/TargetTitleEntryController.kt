@@ -16,11 +16,8 @@ import kotlinx.android.synthetic.main.controller_target_title_entry.edit_text
 class TargetTitleEntryController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_target_title_entry
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Target Controller Demo"
-    }
+    override val toolbarTitle: String?
+        get() = "Target Controller Demo"
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)

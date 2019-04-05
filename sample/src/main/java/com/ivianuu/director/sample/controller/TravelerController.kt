@@ -31,6 +31,8 @@ class TravelerController : BaseController() {
 
     override val layoutRes: Int
         get() = R.layout.controller_traveler
+    override val toolbarTitle: String?
+        get() = "Traveler Demo"
 
     private val childRouter by childRouter(R.id.traveler_container)
 
@@ -42,7 +44,6 @@ class TravelerController : BaseController() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbarTitle = "Traveler Demo"
         if (!childRouter.hasRoot) {
             travelerRouter.setRoot(
                 NavigationControllerKey(

@@ -15,6 +15,8 @@ import java.util.*
 class PagerController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_pager
+    override val toolbarTitle: String?
+        get() = "ViewPager Demo"
 
     private val pagerAdapter by lazy {
         object : RouterPagerAdapter(childRouterManager) {
@@ -37,11 +39,6 @@ class PagerController : BaseController() {
 
             override fun getCount() = PAGE_COLORS.size
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "ViewPager Demo"
     }
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {

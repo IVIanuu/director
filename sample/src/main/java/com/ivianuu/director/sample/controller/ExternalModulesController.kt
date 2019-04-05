@@ -38,11 +38,8 @@ class ExternalModulesController : BaseController() {
 
     override val layoutRes: Int
         get() = R.layout.controller_external_modules
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "External Module Demo"
-    }
+    override val toolbarTitle: String?
+        get() = "External Module Demo"
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)

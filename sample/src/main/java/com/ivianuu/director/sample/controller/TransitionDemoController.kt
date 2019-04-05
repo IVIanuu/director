@@ -22,13 +22,10 @@ class TransitionDemoController : BaseController() {
 
     override val layoutRes: Int
         get() = transitionDemo.layoutId
+    override val toolbarTitle: String?
+        get() = "Transition Demos"
 
     private val transitionDemo by lazy { TransitionDemo.fromIndex(args.getInt(KEY_INDEX)) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Transition Demos"
-    }
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)

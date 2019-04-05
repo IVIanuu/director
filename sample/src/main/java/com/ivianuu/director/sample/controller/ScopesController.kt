@@ -37,11 +37,11 @@ class ScopesController : BaseController() {
 
     override val layoutRes: Int
         get() = R.layout.controller_scopes
+    override val toolbarTitle: String?
+        get() = "Scopes Demo"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        toolbarTitle = "Scopes Demo"
 
         Observable.interval(1, TimeUnit.SECONDS)
             .doOnDispose { d { "Disposing from onCreate()" } }

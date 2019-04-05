@@ -35,10 +35,11 @@ import kotlinx.android.synthetic.main.controller_permission.msg
 class PermissionController : BaseController() {
 
     override val layoutRes = R.layout.controller_permission
+    override val toolbarTitle: String?
+        get() = "Permission"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbarTitle = "Permission"
         addPermissionResultListener(REQUEST_CODE_PERMISSION) { _, _, _ -> updateState() }
     }
 

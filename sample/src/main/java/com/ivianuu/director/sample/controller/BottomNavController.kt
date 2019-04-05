@@ -15,20 +15,13 @@ import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
 class BottomNavController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_bottom_nav
+    override val toolbarTitle: String?
+        get() = "Bottom Nav Demo"
 
     private var currentIndex = -1
 
     private val bottomNavContainer by lazy {
         SingleContainer(getChildRouter(R.id.bottom_nav_container))
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Bottom Nav Demo"
-
-        if (savedInstanceState != null) {
-            currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
-        }
     }
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
@@ -84,6 +77,11 @@ class BottomNavController : BaseController() {
         } else {
             false
         }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

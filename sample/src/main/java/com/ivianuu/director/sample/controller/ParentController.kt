@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.*
@@ -10,20 +9,16 @@ import com.ivianuu.director.sample.util.ColorUtil
 
 class ParentController : BaseController() {
 
+    override val layoutRes get() = R.layout.controller_parent
+    override val toolbarTitle: String?
+        get() = "Parent/Child Demo"
+
     private var finishing = false
     private var hasShownAll = false
 
-    override val layoutRes get() = R.layout.controller_parent
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Parent/Child Demo"
-        error("broken")
-    }
-
     override fun onAttach(view: View) {
         super.onAttach(view)
-        //   addChild(0)
+        addChild(0)
     }
 
     private fun addChild(index: Int) {
@@ -45,23 +40,21 @@ class ParentController : BaseController() {
                     false
                 )
 
-                /* childController.doOnChangeEnd { _, _, _, changeType ->
-                     if (!isBeingDestroyed) {
-                         if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
-                             if (index < NUMBER_OF_CHILDREN - 1) {
-                                 addChild(index + 1)
-                             } else {
-                                 hasShownAll = true
-                             }
-                         } else if (changeType == ControllerChangeType.POP_EXIT) {
-                             if (index > 0) {
-                                 removeChild(index - 1)
-                             } else {
-                                 router.pop(this@ParentController)
-                             }
-                         }
-                     }
-                 }*/
+                childRouter.doOnChangeEnded { router, to, from, isPush, container, handler ->
+                    if (isPush && !hasShownAll) {
+                        if (index < NUMBER_OF_CHILDREN - 1) {
+                            addChild(index + 1)
+                        } else {
+                            hasShownAll = true
+                        }
+                    } else if (!isPush) {
+                        if (index > 0) {
+                            removeChild(index - 1)
+                        } else {
+                            router.pop(this@ParentController)
+                        }
+                    }
+                }
 
                 childRouter.setRoot(
                     childController

@@ -19,7 +19,8 @@ abstract class BaseController : Controller(), LayoutContainer {
     private var _containerView: View? = null
 
     protected open val layoutRes = 0
-    var toolbarTitle: String? = null
+
+    protected open val toolbarTitle: String? get() = null
 
     override fun onCreateView(
         inflater: LayoutInflater,

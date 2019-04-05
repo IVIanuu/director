@@ -22,13 +22,14 @@ class TargetDisplayController : BaseController(),
     TargetTitleEntryController.TargetTitleEntryControllerListener {
 
     override val layoutRes get() = R.layout.controller_target_display
+    override val toolbarTitle: String?
+        get() = "Target Controller Demo"
 
     private var selectedText: String? = null
     private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbarTitle = "Target Controller Demo"
 
         if (savedInstanceState != null) {
             selectedText = savedInstanceState.getString(KEY_SELECTED_TEXT)

@@ -24,11 +24,8 @@ class CustomViewModel
 class HomeController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_home
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Director Sample"
-    }
+    override val toolbarTitle: String?
+        get() = "Director Sample"
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)

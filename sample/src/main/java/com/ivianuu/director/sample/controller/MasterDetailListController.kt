@@ -17,10 +17,12 @@ import kotlinx.android.synthetic.main.row_detail_item.item_title
 
 class MasterDetailListController : BaseController() {
 
+    override val layoutRes get() = R.layout.controller_master_detail_list
+    override val toolbarTitle: String?
+        get() = "Master/Detail Flow"
+
     private var selectedIndex = 0
     private var isTwoPane = false
-
-    override val layoutRes get() = R.layout.controller_master_detail_list
 
     private val epoxyController = simpleController {
         DetailItem.values().forEachIndexed { index, item ->
@@ -37,15 +39,6 @@ class MasterDetailListController : BaseController() {
 
     private val childRouter by childRouter(R.id.detail_container)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        toolbarTitle = "Master/Detail Flow"
-        if (savedInstanceState != null) {
-            selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
-        }
-    }
-
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)
 
@@ -61,6 +54,11 @@ class MasterDetailListController : BaseController() {
         if (isTwoPane && !childRouter.hasRoot) {
             onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
         }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

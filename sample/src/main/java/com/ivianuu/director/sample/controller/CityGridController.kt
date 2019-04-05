@@ -25,15 +25,12 @@ import kotlinx.android.synthetic.main.row_city_grid.grid_title
 
 class CityGridController : BaseController() {
 
+    override val layoutRes get() = R.layout.controller_city_grid
+    override val toolbarTitle: String?
+        get() = args.getString(KEY_TITLE)
+
     private val dotColor by lazy { args.getInt(KEY_DOT_COLOR) }
     private val fromPosition by lazy { args.getInt(KEY_FROM_POSITION) }
-
-    override val layoutRes get() = R.layout.controller_city_grid
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = args.getString(KEY_TITLE)
-    }
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)

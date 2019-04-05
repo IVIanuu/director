@@ -2,7 +2,6 @@ package com.ivianuu.director.sample.controller
 
 import android.annotation.TargetApi
 import android.os.Build.VERSION_CODES
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.pop
 import com.ivianuu.director.sample.R
@@ -14,17 +13,14 @@ import com.ivianuu.director.sample.widget.ElasticDragDismissFrameLayout.ElasticD
 class DragDismissController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_drag_dismiss
+    override val toolbarTitle: String?
+        get() = "Drag to Dismiss"
 
     private val dragDismissListener = object : ElasticDragDismissCallback {
         override fun onDragDismissed() {
             (view as ElasticDragDismissFrameLayout).removeListener(this)
             router.pop(this@DragDismissController, ScaleFadeChangeHandler())
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Drag to Dismiss"
     }
 
     override fun onAttach(view: View) {

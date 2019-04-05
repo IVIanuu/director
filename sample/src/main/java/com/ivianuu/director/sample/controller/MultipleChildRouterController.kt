@@ -10,11 +10,11 @@ import com.ivianuu.director.setRoot
 class MultipleChildRouterController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_multiple_child_routers
+    override val toolbarTitle: String?
+        get() = "Child Router Demo"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toolbarTitle = "Child Router Demo"
-
         listOf(R.id.container_0, R.id.container_1, R.id.container_2)
             .map { getChildRouter(it) }
             .filter { !it.hasRoot }

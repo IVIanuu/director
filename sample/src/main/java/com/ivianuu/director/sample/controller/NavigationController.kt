@@ -23,6 +23,8 @@ import kotlinx.android.synthetic.main.controller_navigation.tv_title
 class NavigationController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_navigation
+    override val toolbarTitle: String?
+        get() = "Navigation Demos"
 
     private val index by lazy { args.getInt(KEY_INDEX) }
     private val displayUpMode by lazy { args.getParcelable<DisplayUpMode>(KEY_DISPLAY_UP_MODE)!! }
@@ -30,11 +32,6 @@ class NavigationController : BaseController() {
     private val animMode by lazy { args.getParcelable<AnimMode>(KEY_ANIM_MODE)!! }
 
     private val travelerRouter get() = (parentController as TravelerController).travelerRouter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolbarTitle = "Navigation Demos"
-    }
 
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)
