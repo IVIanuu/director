@@ -65,7 +65,7 @@ class CityGridController : BaseController() {
             resources.getString(R.string.transition_tag_title_named, city.title)
         )
 
-        router.push(
+        stackRouter.push(
             CityDetailController.newInstance(city.drawableRes, city.title)
                 .toTransaction()
                 .changeHandler(CityGridSharedElementTransitionChangeHandler(names))

@@ -1,11 +1,8 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import com.ivianuu.director.getChildRouter
-import com.ivianuu.director.hasRoot
+import com.ivianuu.director.*
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 
 class MultipleChildRouterController : BaseController() {
 
@@ -16,7 +13,7 @@ class MultipleChildRouterController : BaseController() {
         toolbarTitle = "Child Router Demo"
 
         listOf(R.id.container_0, R.id.container_1, R.id.container_2)
-            .map { getChildRouter(it) }
+            .map { getChildRouter(it, factory = ::StackRouter) as StackRouter }
             .filter { !it.hasRoot }
             .forEach {
                 it.setRoot(

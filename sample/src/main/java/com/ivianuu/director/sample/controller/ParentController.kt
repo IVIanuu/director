@@ -35,7 +35,8 @@ class ParentController : BaseController() {
 
         val container = view!!.findViewById<ViewGroup>(frameId)
 
-        getChildRouter(container).let { childRouter ->
+        getChildRouter(container, factory = ::StackRouter).let { childRouter ->
+            childRouter as StackRouter // todo
             childRouter.popsLastView = true
 
             if (!childRouter.hasRoot) {
@@ -72,14 +73,16 @@ class ParentController : BaseController() {
     }
 
     private fun removeChild(index: Int) {
-        val childRouters = childRouters.toList()
+        val childRouters = childRouterManager.routers.toList()
         if (index < childRouters.size) {
             removeChildRouter(childRouters[index])
         }
     }
 
     override fun handleBack(): Boolean {
-        val childControllers = childRouters.count(Router::hasRoot)
+        // todo
+        val childControllers = childRouterManager.routers
+            .filterIsInstance<StackRouter>().count(StackRouter::hasRoot)
 
         return if (childControllers != NUMBER_OF_CHILDREN || finishing) {
             true

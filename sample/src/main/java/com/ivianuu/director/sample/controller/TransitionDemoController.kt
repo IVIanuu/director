@@ -56,9 +56,9 @@ class TransitionDemoController : BaseController() {
 
         btn_next.setOnClickListener {
             if (nextIndex < TransitionDemo.values().size) {
-                router.push(getRouterTransaction(nextIndex, this@TransitionDemoController))
+                stackRouter.push(getRouterTransaction(nextIndex, this@TransitionDemoController))
             } else {
-                router.popToRoot()
+                stackRouter.popToRoot()
             }
         }
     }

@@ -57,7 +57,7 @@ class ScopesController : BaseController() {
         d { "onCreateView() called" }
 
         btn_next_release_view.setOnClickListener {
-            router.push(
+            stackRouter.push(
                 TextController.newInstance(
                     "Logcat should now report that the observables from onAttach() and onCreateView() have been disposed of, while the onCreate() observable is still running."
                 ).toTransaction()
@@ -66,7 +66,7 @@ class ScopesController : BaseController() {
         }
 
         btn_next_retain_view.setOnClickListener {
-            router.push(
+            stackRouter.push(
                 TextController.newInstance(
                     "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onCreateView() observables are still running."
                 ).toTransaction()

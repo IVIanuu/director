@@ -5,13 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
+import com.ivianuu.director.StackRouter
 import com.ivianuu.director.activity
 import com.ivianuu.director.parentController
 import com.ivianuu.director.sample.ToolbarProvider
+import com.ivianuu.stdlibx.cast
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
 abstract class BaseController : Controller(), LayoutContainer {
+
+    // todo
+    val stackRouter get() = router.cast<StackRouter>()
 
     override val containerView: View?
         get() = _containerView

@@ -361,8 +361,8 @@ abstract class Controller {
     }
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
+        listeners.forEach(block)
         (listeners + router.getControllerListeners()).forEach(block)
-        block(router.internalControllerListener)
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {
@@ -407,7 +407,7 @@ val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
 val Controller.isDestroyed: Boolean get() = state == DESTROYED
 
 val Controller.transaction: Transaction
-    get() = router.backstack.first { it.controller == this }
+    get() = router.transactions.first { it.controller == this }
 
 val Controller.routerManager: RouterManager
     get() = router.routerManager
@@ -439,8 +439,6 @@ fun Controller.startActivity(intent: Intent) {
     context.startActivity(intent)
 }
 
-val Controller.childRouters: List<Router> get() = childRouterManager.routers
-
 fun Controller.getChildRouterOrNull(
     containerId: Int,
     tag: String?
@@ -448,8 +446,9 @@ fun Controller.getChildRouterOrNull(
 
 fun Controller.getChildRouter(
     containerId: Int,
-    tag: String? = null
-): Router = childRouterManager.getRouter(containerId, tag)
+    tag: String? = null,
+    factory: () -> Router
+): Router = childRouterManager.getRouter(containerId, tag, factory)
 
 fun Controller.removeChildRouter(childRouter: Router) {
     childRouterManager.removeRouter(childRouter)
@@ -462,12 +461,14 @@ fun Controller.getChildRouterOrNull(
 
 fun Controller.getChildRouter(
     container: ViewGroup,
-    tag: String? = null
-): Router = getChildRouter(container.id, tag)
+    tag: String? = null,
+    factory: () -> Router
+): Router = getChildRouter(container.id, tag, factory)
 
 fun Controller.childRouter(
     containerId: Int,
-    tag: String? = null
-): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }
+    tag: String? = null,
+    factory: () -> Router
+): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag, factory) }
 
 fun Controller.toTransaction(): Transaction = Transaction(this)

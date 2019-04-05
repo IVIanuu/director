@@ -22,7 +22,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
 
 /**
  * A controller counterpart for dialog fragments
@@ -101,7 +101,7 @@ abstract class DialogController : Controller(),
      */
     open fun dismiss() {
         dialog?.dismiss()
-        router.pop(this)
+        // todo router.pop(this)
     }
 
     companion object {
@@ -109,10 +109,11 @@ abstract class DialogController : Controller(),
     }
 }
 
+/* // todo
 fun DialogController.show(router: Router, tag: String? = null) {
     router.push(
         toTransaction()
             .changeHandler(DefaultChangeHandler(removesFromViewOnPush = false))
             .tag(tag)
     )
-}
+}*/

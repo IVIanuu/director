@@ -29,18 +29,29 @@ fun FragmentActivity.getRouterOrNull(containerId: Int, tag: String? = null): Rou
 fun FragmentActivity.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
     routerManager.getRouterOrNull(container, tag)
 
-fun FragmentActivity.getRouter(containerId: Int, tag: String? = null): Router =
-    routerManager.getRouter(containerId, tag)
+fun FragmentActivity.getRouter(
+    containerId: Int,
+    tag: String? = null,
+    factory: () -> Router
+): Router =
+    routerManager.getRouter(containerId, tag, factory)
 
-fun FragmentActivity.getRouter(container: ViewGroup, tag: String? = null): Router =
-    routerManager.getRouter(container, tag)
+fun FragmentActivity.getRouter(
+    container: ViewGroup,
+    tag: String? = null,
+    factory: () -> Router
+): Router = routerManager.getRouter(container, tag, factory)
 
 fun FragmentActivity.removeRouter(router: Router) {
     routerManager.removeRouter(router)
 }
 
-fun FragmentActivity.router(containerId: Int, tag: String? = null): Lazy<Router> =
-    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
+fun FragmentActivity.router(
+    containerId: Int,
+    tag: String? = null,
+    factory: () -> Router
+): Lazy<Router> =
+    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag, factory) }
 
 fun FragmentActivity.postponeFullRestore() {
     RouterHostFragment.postponeFullRestore(this)

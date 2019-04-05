@@ -2,7 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.Router
+import com.ivianuu.director.StackRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.pager.RouterPagerAdapter
 import com.ivianuu.director.sample.R
@@ -19,7 +19,7 @@ class PagerController : BaseController() {
     private val pagerAdapter by lazy {
         object : RouterPagerAdapter(childRouterManager) {
 
-            override fun configureRouter(router: Router, position: Int) {
+            override fun configureRouter(router: StackRouter, position: Int) {
                 if (!router.hasRoot) {
                     router.setRoot(
                         ChildController.newInstance(

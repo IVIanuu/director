@@ -68,7 +68,7 @@ class RouterManager(
     fun hostStarted() {
         if (!hostStarted) {
             hostStarted = true
-            _routers.forEach(Router::hostStarted)
+            _routers.forEach(Router::start)
         }
     }
 
@@ -78,7 +78,7 @@ class RouterManager(
     fun hostStopped() {
         if (hostStarted) {
             hostStarted = false
-            _routers.reversed().forEach(Router::hostStopped)
+            _routers.reversed().forEach(Router::stop)
         }
     }
 
@@ -99,8 +99,9 @@ class RouterManager(
         if (!hostDestroyed) {
             hostDestroyed = true
             _routers.reversed().forEach {
+                it.stop()
                 it.removeContainer()
-                it.hostDestroyed()
+                it.destroy()
             }
         }
     }
@@ -138,14 +139,7 @@ class RouterManager(
      * Let routers handle the back press
      */
     fun handleBack(): Boolean {
-        return _routers
-            .flatMap(Router::backstack)
-            .asSequence()
-            .sortedByDescending(Transaction::transactionIndex)
-            .map(Transaction::controller)
-            .filter(Controller::isAttached)
-            .map(Controller::router)
-            .any(Router::handleBack)
+        return _routers.any(Router::handleBack)
     }
 
     /**
@@ -157,16 +151,25 @@ class RouterManager(
     /**
      * Returns the router for [containerId] and [tag] or creates a new one
      */
-    fun getRouter(containerId: Int, tag: String? = null): Router {
+    fun getRouter(
+        containerId: Int,
+        tag: String? = null,
+        factory: () -> Router
+    ): Router {
         var router = getRouterOrNull(containerId, tag)
         if (router == null) {
-            router = Router(containerId, tag, this)
+            router = factory()
+            router.containerId = containerId
+            router.tag = tag
             _routers.add(router)
+
+            router.create(this)
+
             if (hostStarted) {
-                router.hostStarted()
+                router.start()
             }
             if (hostDestroyed) {
-                router.hostDestroyed()
+                router.destroy()
             }
         }
 
@@ -180,10 +183,9 @@ class RouterManager(
      */
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
-            router.setBackstack(emptyList(), false)
-            router.hostStopped()
+            router.stop()
             router.removeContainer()
-            router.hostDestroyed()
+            router.destroy()
         }
     }
 
@@ -206,7 +208,7 @@ class RouterManager(
 
         this.routerStates = routerStates
             .map { routerState ->
-                Router.fromBundle(routerState, this) to routerState
+                Router.fromBundle(routerState) to routerState
             }
             .onEach { _routers.add(it.first) }
             .toMap()
@@ -215,19 +217,13 @@ class RouterManager(
     private fun restoreFullState() {
         routerStates
             ?.filterKeys(_routers::contains)
-            ?.forEach {
-                it.key.restoreInstanceState(it.value)
-                it.key.rebind()
-            }
+            ?.forEach { it.key.restoreInstanceState(it.value) }
         routerStates = null
     }
 
     private fun Router.restoreContainer() {
         if (!hasContainer) {
-            rootView?.findViewById<ViewGroup>(containerId)?.let {
-                setContainer(it)
-                rebind()
-            }
+            rootView?.findViewById<ViewGroup>(containerId)?.let(this::setContainer)
         }
     }
 
@@ -237,26 +233,35 @@ class RouterManager(
     }
 }
 
-fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? {
+fun RouterManager.getRouterOrNull(
+    container: ViewGroup,
+    tag: String? = null
+): Router? {
     return getRouterOrNull(container.id, tag)?.also {
         if (!it.hasContainer) {
             it.setContainer(container)
-            it.rebind()
         }
     }
 }
 
-fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router {
-    return getRouter(container.id, tag).also {
+fun RouterManager.getRouter(
+    container: ViewGroup,
+    tag: String? = null,
+    factory: () -> Router
+): Router {
+    return getRouter(container.id, tag, factory).also {
         if (!it.hasContainer) {
             it.setContainer(container)
-            it.rebind()
         }
     }
 }
 
-fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
-    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
+fun RouterManager.router(
+    containerId: Int,
+    tag: String? = null,
+    factory: () -> Router
+): Lazy<Router> =
+    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag, factory) }
 
 fun RouterManager.getControllerByTagOrNull(tag: String): Controller? =
     routers.firstNotNullResultOrNull { it.getControllerByTagOrNull(tag) }

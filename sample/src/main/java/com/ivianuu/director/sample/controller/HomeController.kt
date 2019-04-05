@@ -9,7 +9,6 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.dialog.show
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
@@ -49,7 +48,7 @@ class HomeController : BaseController() {
     private fun onItemClicked(item: HomeItem, position: Int) {
         when (item) {
             HomeItem.NAVIGATION -> {
-                router.push(
+                stackRouter.push(
                     NavigationController.newInstance(
                         0,
                         NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
@@ -59,22 +58,22 @@ class HomeController : BaseController() {
                 )
             }
             HomeItem.TRANSITIONS -> {
-                router.push(
+                stackRouter.push(
                     TransitionDemoController
                         .getRouterTransaction(0, this)
                 )
             }
             HomeItem.TARGET_CONTROLLER -> {
-                router.push(TargetDisplayController().toTransaction())
+                stackRouter.push(TargetDisplayController().toTransaction())
             }
             HomeItem.VIEW_PAGER -> {
-                router.push(PagerController().toTransaction())
+                stackRouter.push(PagerController().toTransaction())
             }
             HomeItem.BOTTOM_NAV -> {
-                router.push(BottomNavController().toTransaction())
+                stackRouter.push(BottomNavController().toTransaction())
             }
             HomeItem.CHILD_CONTROLLERS -> {
-                router.push(ParentController().toTransaction())
+                stackRouter.push(ParentController().toTransaction())
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
@@ -82,7 +81,7 @@ class HomeController : BaseController() {
                 val dotSharedElementName =
                     resources.getString(R.string.transition_tag_dot_indexed, position)
 
-                router.push(
+                stackRouter.push(
                     CityGridController.newInstance(item.title, item.color, position)
                         .toTransaction()
                         .changeHandler(
@@ -94,25 +93,25 @@ class HomeController : BaseController() {
                 )
             }
             HomeItem.DRAG_DISMISS -> {
-                router.push(
+                stackRouter.push(
                     DragDismissController().toTransaction()
                         .changeHandler(FadeChangeHandler(removesFromViewOnPush = false))
                 )
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
-                router.push(MultipleChildRouterController().toTransaction())
+                stackRouter.push(MultipleChildRouterController().toTransaction())
             }
             HomeItem.PERMISSION -> {
-                router.push(PermissionController().toTransaction())
+                stackRouter.push(PermissionController().toTransaction())
             }
             HomeItem.MASTER_DETAIL -> {
-                router.push(MasterDetailListController().toTransaction())
+                stackRouter.push(MasterDetailListController().toTransaction())
             }
             HomeItem.DIALOG -> {
-                SimpleDialogController().show(router)
+                // todo SimpleDialogController().show(stackRouter)
             }
             HomeItem.EXTERNAL_MODULES -> {
-                router.push(ExternalModulesController().toTransaction())
+                stackRouter.push(ExternalModulesController().toTransaction())
             }
         }
     }

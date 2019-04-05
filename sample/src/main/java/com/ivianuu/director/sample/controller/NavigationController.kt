@@ -57,7 +57,7 @@ class NavigationController : BaseController() {
                     )
                 )
             } else {
-                router.push(
+                stackRouter.push(
                     NavigationController.newInstance(
                         index + 1,
                         displayUpMode.displayUpModeForChild,
@@ -73,7 +73,7 @@ class NavigationController : BaseController() {
             if (useTraveler) {
                 // not required
             } else {
-                router.popToTag(TAG_UP_TRANSACTION)
+                stackRouter.popToTag(TAG_UP_TRANSACTION)
             }
         }
 
@@ -81,7 +81,7 @@ class NavigationController : BaseController() {
             if (useTraveler) {
                 travelerRouter.popToRoot()
             } else {
-                router.popToRoot()
+                stackRouter.popToRoot()
             }
         }
     }

@@ -62,13 +62,13 @@ class ExternalModulesController : BaseController() {
     private fun onItemClicked(item: AdditionalModuleItem) {
         when (item) {
             AdditionalModuleItem.ARCH -> {
-                router.push(ArchController().toTransaction())
+                stackRouter.push(ArchController().toTransaction())
             }
             AdditionalModuleItem.SCOPES -> {
-                router.push(ScopesController().toTransaction())
+                stackRouter.push(ScopesController().toTransaction())
             }
             AdditionalModuleItem.TRAVELER -> {
-                router.push(TravelerController().toTransaction())
+                stackRouter.push(TravelerController().toTransaction())
             }
         }
     }

@@ -16,30 +16,14 @@
 
 package com.ivianuu.director.traveler
 
-import com.ivianuu.director.Controller
-import com.ivianuu.director.Router
-import com.ivianuu.director.Transaction
-import com.ivianuu.director.backstackSize
-import com.ivianuu.director.getControllerByTagOrNull
-import com.ivianuu.director.pop
-import com.ivianuu.director.popToRoot
-import com.ivianuu.director.popTop
-import com.ivianuu.director.push
-import com.ivianuu.director.replaceTop
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
-import com.ivianuu.traveler.Back
-import com.ivianuu.traveler.BackTo
-import com.ivianuu.traveler.Command
-import com.ivianuu.traveler.Forward
-import com.ivianuu.traveler.Navigator
-import com.ivianuu.traveler.Replace
+import com.ivianuu.director.*
+import com.ivianuu.traveler.*
 import com.ivianuu.traveler.common.ResultNavigator
 
 /**
  * A [Navigator] for [Controller]s
  */
-open class ControllerNavigator(private val router: Router) : ResultNavigator() {
+open class ControllerNavigator(private val router: StackRouter) : ResultNavigator() {
 
     override fun applyCommandWithResult(command: Command): Boolean = when (command) {
         is Forward -> forward(command)

@@ -22,10 +22,7 @@ import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
-import com.ivianuu.director.Router
-import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getRouter
-import com.ivianuu.director.hasRoot
+import com.ivianuu.director.*
 
 /**
  * An adapter for ViewPagers that uses Routers as pages
@@ -40,12 +37,12 @@ abstract class RouterPagerAdapter(
     /**
      * Configure the router e.g. set the root controller
      */
-    abstract fun configureRouter(router: Router, position: Int)
+    abstract fun configureRouter(router: StackRouter, position: Int)
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val name = (container.id + position).toString()
 
-        val router = manager.getRouter(container, name)
+        val router = manager.getRouter(container, name, ::StackRouter) as StackRouter
         if (!router.hasRoot) {
             val routerSavedState = savedStates.get(position)
 
@@ -55,7 +52,6 @@ abstract class RouterPagerAdapter(
             }
         }
 
-        router.rebind()
         configureRouter(router, position)
 
         visibleRouters.put(position, router)
@@ -73,7 +69,7 @@ abstract class RouterPagerAdapter(
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean =
-        (`object` as Router).backstack.any { it.controller.view == view }
+        (`object` as StackRouter).backstack.any { it.controller.view == view }
 
     override fun saveState(): Parcelable {
         val bundle = Bundle()

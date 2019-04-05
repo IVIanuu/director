@@ -7,6 +7,7 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.SingleContainer
 import com.ivianuu.director.sample.util.setByTag
+import com.ivianuu.stdlibx.safeAs
 import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
 
 /**
@@ -19,7 +20,12 @@ class BottomNavController : BaseController() {
     private var currentIndex = -1
 
     private val bottomNavContainer by lazy {
-        SingleContainer(getChildRouter(R.id.bottom_nav_container))
+        SingleContainer(
+            getChildRouter(
+                R.id.bottom_nav_container,
+                factory = ::StackRouter
+            ) as StackRouter
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +58,10 @@ class BottomNavController : BaseController() {
             if (i != -1) {
                 bottomNavContainer.currentTransaction
                     ?.controller
-                    ?.childRouters
+                    ?.childRouterManager
+                    ?.routers
                     ?.first()
+                    ?.safeAs<StackRouter>()
                     ?.popToRoot()
             }
         }
@@ -72,7 +80,8 @@ class BottomNavController : BaseController() {
         }
 
         return if (currentIndex != 0) {
-            val currentChildRouter = currentController.childRouters.first()
+            val currentChildRouter =
+                currentController.childRouterManager.routers.first() as StackRouter
 
             if (currentChildRouter.backstackSize == 1) {
                 swapTo(0)

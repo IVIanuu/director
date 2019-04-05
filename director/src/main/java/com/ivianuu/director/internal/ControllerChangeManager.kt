@@ -1,6 +1,5 @@
 package com.ivianuu.director.internal
 
-import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.*
 
@@ -16,6 +15,7 @@ internal object ControllerChangeManager {
         container: ViewGroup,
         handler: ChangeHandler?,
         forceRemoveFromViewOnPush: Boolean,
+        toIndex: Int,
         listeners: List<RouterListener>
     ) {
         val handlerToUse = when {
@@ -37,8 +37,6 @@ internal object ControllerChangeManager {
 
         val toView = to?.view ?: to?.createView(container)
         val fromView = from?.view
-
-        val toIndex = getToIndex(router, container, toView, fromView, isPush)
 
         val callback = object : ChangeHandler.Callback {
             override fun addToView() {
@@ -92,36 +90,6 @@ internal object ControllerChangeManager {
 
     fun cancelChange(instanceId: String) {
         handlers.remove(instanceId)?.cancel()
-    }
-
-    private fun getToIndex(
-        router: Router,
-        container: ViewGroup,
-        to: View?,
-        from: View?,
-        isPush: Boolean
-    ): Int {
-        if (to == null) return -1
-        return if (isPush || from == null) {
-            if (container.childCount == 0) return -1
-            val backstackIndex = router.backstack.indexOfFirst { it.controller.view == to }
-            (0 until container.childCount)
-                .map(container::getChildAt)
-                .indexOfFirst { v ->
-                    router.backstack.indexOfFirst {
-                        it.controller.view == v
-                    } > backstackIndex
-                }
-        } else {
-            val currentToIndex = container.indexOfChild(to)
-            val currentFromIndex = container.indexOfChild(from)
-
-            if (currentToIndex == -1 || currentToIndex > currentFromIndex) {
-                container.indexOfChild(from)
-            } else {
-                currentToIndex
-            }
-        }
     }
 
 }

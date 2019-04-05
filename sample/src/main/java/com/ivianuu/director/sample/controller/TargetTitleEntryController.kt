@@ -30,7 +30,7 @@ class TargetTitleEntryController : BaseController() {
             val targetController = routerManager.getControllerByInstanceId(targetInstanceId)
             (targetController as? TargetTitleEntryControllerListener)
                 ?.onTitlePicked(edit_text.text.toString())
-            router.popTop()
+            stackRouter.popTop() // todo
         }
     }
 

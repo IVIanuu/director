@@ -12,6 +12,7 @@ import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.simpleController
 import com.ivianuu.epoxyktx.KtEpoxyHolder
+import com.ivianuu.stdlibx.cast
 import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
 import kotlinx.android.synthetic.main.row_detail_item.item_title
 
@@ -35,7 +36,8 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    private val childRouter by childRouter(R.id.detail_container)
+    // todo
+    private val childRouter by childRouter(R.id.detail_container, factory = ::StackRouter)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,11 +56,13 @@ class MasterDetailListController : BaseController() {
         isTwoPane = resources.configuration.orientation ==
                 Configuration.ORIENTATION_LANDSCAPE
 
-        childRouter.popsLastView = !isTwoPane
+        // todo
+        childRouter.cast<StackRouter>().popsLastView = !isTwoPane
 
         epoxyController.requestModelBuild()
 
-        if (isTwoPane && !childRouter.hasRoot) {
+        // todo
+        if (isTwoPane && !childRouter.cast<StackRouter>().hasRoot) {
             onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
         }
     }
@@ -75,7 +79,7 @@ class MasterDetailListController : BaseController() {
             item.detail, item.backgroundColor, true
         ).toTransaction()
 
-        childRouter.setRoot(transaction)
+        childRouter.cast<StackRouter>().setRoot(transaction)
         epoxyController.requestModelBuild()
     }
 

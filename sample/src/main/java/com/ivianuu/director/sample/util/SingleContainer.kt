@@ -16,13 +16,9 @@
 
 package com.ivianuu.director.sample.util
 
-import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.Controller
-import com.ivianuu.director.Router
-import com.ivianuu.director.Transaction
-import com.ivianuu.director.hasRoot
+import com.ivianuu.director.*
 
-class SingleContainer(val router: Router) {
+class SingleContainer(val router: StackRouter) {
 
     val isEmpty get() = router.hasRoot
 
@@ -57,7 +53,7 @@ class SingleContainer(val router: Router) {
     }
 }
 
-inline fun Router.moveToTop(tag: String, create: () -> Transaction) {
+inline fun StackRouter.moveToTop(tag: String, create: () -> Transaction) {
     val backstack = backstack.toMutableList()
     var transaction = backstack.firstOrNull { it.tag == tag }
     if (transaction != null) {

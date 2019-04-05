@@ -17,13 +17,8 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.childRouter
-import com.ivianuu.director.hasRoot
-import com.ivianuu.director.push
+import com.ivianuu.director.*
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -33,10 +28,11 @@ class BottomNavChildController : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_bottom_nav_child
 
-    private val childRouter by childRouter(R.id.bottom_nav_child_container)
+    private val childRouter by childRouter(R.id.bottom_nav_child_container, factory = ::StackRouter)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val childRouter = childRouter as StackRouter // todo
         if (!childRouter.hasRoot) {
             (1..args.getInt(KEY_START_INDEX))
                 .map {

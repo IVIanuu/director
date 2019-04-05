@@ -17,10 +17,12 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import com.ivianuu.director.StackRouter
 import com.ivianuu.director.childRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
+import com.ivianuu.stdlibx.cast
 import com.ivianuu.traveler.Router
 import com.ivianuu.traveler.setRoot
 
@@ -32,18 +34,18 @@ class TravelerController : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_traveler
 
-    private val childRouter by childRouter(R.id.traveler_container)
+    private val childRouter by childRouter(R.id.traveler_container, factory = ::StackRouter)
 
     val travelerRouter by lazy {
         Router().apply {
-            setNavigator(ControllerNavigator(childRouter))
+            setNavigator(ControllerNavigator(childRouter.cast()))
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         toolbarTitle = "Traveler Demo"
-        if (!childRouter.hasRoot) {
+        if (!childRouter.cast<StackRouter>().hasRoot) {
             travelerRouter.setRoot(
                 NavigationControllerKey(
                     0, NavigationController.DisplayUpMode.HIDE,

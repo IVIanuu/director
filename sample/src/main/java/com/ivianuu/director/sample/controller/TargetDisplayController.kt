@@ -51,7 +51,7 @@ class TargetDisplayController : BaseController(),
         super.onViewCreated(view, savedViewState)
 
         btn_pick_title.setOnClickListener {
-            router.push(
+            stackRouter.push(
                 TargetTitleEntryController.newInstance(this@TargetDisplayController)
                     .toTransaction()
                     .changeHandler(HorizontalChangeHandler())

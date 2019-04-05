@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
 
         setContentView(R.layout.activity_main)
 
-        with(getRouter(controller_container)) {
+        with(getRouter(controller_container, factory = ::StackRouter) as StackRouter) {
             addControllerListener(LoggingControllerListener())
 
             addToolbarHandling()
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         }
     }
 
-    private fun Router.addToolbarHandling() {
+    private fun StackRouter.addToolbarHandling() {
         fun updateToolbarVisibility() {
             TransitionManager.beginDelayedTransition(
                 toolbar,
