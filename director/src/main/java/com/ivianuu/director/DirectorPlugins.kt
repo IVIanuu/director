@@ -30,15 +30,6 @@ var DirectorPlugins.defaultControllerFactory: ControllerFactory?
         _defaultControllerFactory = value
     }
 
-private var _defaultPopsLastView = false
-
-/** Default pops last view */
-var DirectorPlugins.defaultPopsLastView: Boolean
-    get() = _defaultPopsLastView
-    set(value) {
-        _defaultPopsLastView = value
-    }
-
 private var _defaultPushHandler: ChangeHandler? = null
 
 /** The default push handler to use in all transactions */

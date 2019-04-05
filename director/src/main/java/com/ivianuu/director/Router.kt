@@ -27,7 +27,7 @@ class Router internal constructor(
     /**
      * Whether or not the last view should be popped
      */
-    var popsLastView = DirectorPlugins.defaultPopsLastView
+    var popsLastView = false
 
     /**
      * The tag of this router
