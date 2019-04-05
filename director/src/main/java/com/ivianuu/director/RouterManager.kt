@@ -35,9 +35,9 @@ class RouterManager(
     val routers: List<Router> get() = _routers
     private val _routers = mutableListOf<Router>()
 
-    internal var hostStarted = false
+    internal var isStarted = false
         private set
-    internal var hostDestroyed = false
+    internal var isDestroyed = false
         private set
 
     private var rootView: ViewGroup? = null
@@ -55,7 +55,7 @@ class RouterManager(
     /**
      * Sets the root view for all routers
      */
-    fun setContainers(rootView: ViewGroup) {
+    fun setRootView(rootView: ViewGroup) {
         if (this.rootView != rootView) {
             this.rootView = rootView
             _routers.forEach { it.restoreContainer() }
@@ -63,29 +63,9 @@ class RouterManager(
     }
 
     /**
-     * Notifies that the host was started
-     */
-    fun hostStarted() {
-        if (!hostStarted) {
-            hostStarted = true
-            _routers.forEach(Router::hostStarted)
-        }
-    }
-
-    /**
-     * Notifies that the host was stopped
-     */
-    fun hostStopped() {
-        if (hostStarted) {
-            hostStarted = false
-            _routers.reversed().forEach(Router::hostStopped)
-        }
-    }
-
-    /**
      * Removes the previously added [rootView]
      */
-    fun removeContainers() {
+    fun removeRootView() {
         if (rootView != null) {
             _routers.reversed().forEach(Router::removeContainer)
             rootView = null
@@ -93,14 +73,30 @@ class RouterManager(
     }
 
     /**
+     * Notifies that the host was started
+     */
+    fun onStart() {
+        isStarted = true
+        _routers.forEach(Router::onStart)
+    }
+
+    /**
+     * Notifies that the host was stopped
+     */
+    fun onStop() {
+        isStarted = false
+        _routers.reversed().forEach(Router::onStop)
+    }
+
+    /**
      * Notifies that the host was destroyed
      */
-    fun hostDestroyed() {
-        if (!hostDestroyed) {
-            hostDestroyed = true
+    fun onDestroy() {
+        if (!isDestroyed) {
+            isDestroyed = true
             _routers.reversed().forEach {
                 it.removeContainer()
-                it.hostDestroyed()
+                it.onDestroy()
             }
         }
     }
@@ -161,11 +157,10 @@ class RouterManager(
         if (router == null) {
             router = Router(containerId, tag, this)
             _routers.add(router)
-            if (hostStarted) {
-                router.hostStarted()
-            }
-            if (hostDestroyed) {
-                router.hostDestroyed()
+            if (isDestroyed) {
+                router.onDestroy()
+            } else if (isStarted) {
+                router.onStart()
             }
         }
 
@@ -180,9 +175,9 @@ class RouterManager(
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
             router.setBackstack(emptyList(), false)
-            router.hostStopped()
+            router.onStop()
             router.removeContainer()
-            router.hostDestroyed()
+            router.onDestroy()
         }
     }
 

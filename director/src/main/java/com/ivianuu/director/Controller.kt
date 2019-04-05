@@ -246,7 +246,7 @@ abstract class Controller {
     internal fun destroy() {
         if (state == DESTROYED) return
 
-        childRouterManager.hostDestroyed()
+        childRouterManager.onDestroy()
 
         notifyListeners { it.preDestroy(this) }
 
@@ -284,7 +284,7 @@ abstract class Controller {
 
         view.addOnAttachStateChangeListener(viewAttachListener)
 
-        view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
+        view.safeAs<ViewGroup>()?.let(childRouterManager::setRootView)
 
         return view
     }
@@ -295,7 +295,7 @@ abstract class Controller {
             saveViewState()
         }
 
-        childRouterManager.removeContainers()
+        childRouterManager.removeRootView()
 
         notifyListeners { it.preDestroyView(this, view) }
 
@@ -316,7 +316,7 @@ abstract class Controller {
         // View.isAttached
         if (view.windowToken == null) return
 
-        if (!routerManager.hostStarted) return
+        if (!routerManager.isStarted) return
 
         notifyListeners { it.preAttach(this, view) }
 
@@ -328,7 +328,7 @@ abstract class Controller {
 
         viewState = null
 
-        childRouterManager.hostStarted()
+        childRouterManager.onStart()
     }
 
     internal fun detach() {
@@ -336,7 +336,7 @@ abstract class Controller {
 
         val view = view ?: return
 
-        childRouterManager.hostStopped()
+        childRouterManager.onStop()
 
         notifyListeners { it.preDetach(this, view) }
 

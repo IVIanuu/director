@@ -253,6 +253,22 @@ class Router internal constructor(
         controllerListeners.removeAll { it.listener == listener }
     }
 
+    internal fun getListeners(recursiveOnly: Boolean = false): List<RouterListener> {
+        return listeners
+            .filter { !recursiveOnly || it.recursive }
+            .map(ListenerEntry<RouterListener>::listener) +
+                (routerManager.host.safeAs<Controller>()?.router?.getListeners(true)
+                    ?: emptyList())
+    }
+
+    internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
+        return controllerListeners
+            .filter { !recursiveOnly || it.recursive }
+            .map(ListenerEntry<ControllerListener>::listener) +
+                (routerManager.host.safeAs<Controller>()?.router?.getControllerListeners(true)
+                    ?: emptyList())
+    }
+
     /**
      * Sets the container of this router
      */
@@ -278,24 +294,18 @@ class Router internal constructor(
         container = null
     }
 
-    internal fun hostStarted() {
+    internal fun onStart() {
         _backstack.forEach(Controller::attach)
     }
 
-    internal fun hostStopped() {
+    internal fun onStop() {
         prepareForContainerRemoval()
         _backstack.reversed().forEach(Controller::detach)
     }
 
-    internal fun hostDestroyed() {
+    internal fun onDestroy() {
         _backstack.reversed().forEach(Controller::destroy)
         removeContainer()
-    }
-
-    private fun prepareForContainerRemoval() {
-        _backstack.reversed().forEach {
-            ControllerChangeManager.cancelChange(it.instanceId)
-        }
     }
 
     /**
@@ -352,29 +362,19 @@ class Router internal constructor(
     private fun moveControllerToCorrectState(controller: Controller) {
         controller.create(this)
 
-        if (routerManager.hostStarted) {
+        if (routerManager.isStarted) {
             controller.attach()
         }
 
-        if (routerManager.hostDestroyed) {
+        if (routerManager.isDestroyed) {
             controller.destroy()
         }
     }
 
-    internal fun getListeners(recursiveOnly: Boolean = false): List<RouterListener> {
-        return listeners
-            .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<RouterListener>::listener) +
-                (routerManager.host.safeAs<Controller>()?.router?.getListeners(true)
-                    ?: emptyList())
-    }
-
-    internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
-        return controllerListeners
-            .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<ControllerListener>::listener) +
-                (routerManager.host.safeAs<Controller>()?.router?.getControllerListeners(true)
-                    ?: emptyList())
+    private fun prepareForContainerRemoval() {
+        _backstack.reversed().forEach {
+            ControllerChangeManager.cancelChange(it.instanceId)
+        }
     }
 
     private fun List<Controller>.filterVisible(): List<Controller> =

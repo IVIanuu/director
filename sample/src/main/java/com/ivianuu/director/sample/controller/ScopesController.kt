@@ -46,7 +46,7 @@ class ScopesController : BaseController() {
         Observable.interval(1, TimeUnit.SECONDS)
             .doOnDispose { d { "Disposing from onCreate()" } }
             .subscribe {
-                d { "Started in onCreate(), running until hostDestroyed(): $it" }
+                d { "Started in onCreate(), running until onDestroy(): $it" }
             }
             .disposeBy(destroy)
     }
@@ -107,6 +107,6 @@ class ScopesController : BaseController() {
 
     override fun onDestroy() {
         super.onDestroy()
-        d { "hostDestroyed() called" }
+        d { "onDestroy() called" }
     }
 }

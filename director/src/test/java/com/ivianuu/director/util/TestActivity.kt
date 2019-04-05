@@ -41,7 +41,7 @@ class TestActivity : Activity() {
 
     override fun onStart() {
         super.onStart()
-        manager.hostStarted()
+        manager.onStart()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -51,12 +51,12 @@ class TestActivity : Activity() {
 
     override fun onStop() {
         super.onStop()
-        manager.hostStopped()
+        manager.onStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        manager.hostDestroyed()
+        manager.onDestroy()
     }
 
     fun getRouter(

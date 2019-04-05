@@ -47,7 +47,7 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun onStart() {
         super.onStart()
-        manager.hostStarted()
+        manager.onStart()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -57,13 +57,13 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun onStop() {
         super.onStop()
-        manager.hostStopped()
+        manager.onStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         requireActivity().removeOnBackPressedCallback(this)
-        manager.hostDestroyed()
+        manager.onDestroy()
     }
 
     override fun handleOnBackPressed(): Boolean = manager.handleBack()

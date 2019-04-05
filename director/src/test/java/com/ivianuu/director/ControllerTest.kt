@@ -81,7 +81,7 @@ class ControllerTest {
         assertTrue(controller.isAttached)
         router.hostStopped()
         assertFalse(controller.isAttached)
-        router.hostStarted()
+        router.onStart()
         assertTrue(controller.isAttached)
     }
 
