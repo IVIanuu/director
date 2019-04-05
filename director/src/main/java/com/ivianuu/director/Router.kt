@@ -56,9 +56,7 @@ class Router internal constructor(
         postDetach = { controller, _ ->
             if (destroyingControllers.contains(controller)) {
                 controller.destroyView(false)
-            }
-
-            if (toBeInvisibleControllers.contains(controller)) {
+            } else if (toBeInvisibleControllers.contains(controller)) {
                 controller.destroyView(true)
                 toBeInvisibleControllers.remove(controller)
             }
