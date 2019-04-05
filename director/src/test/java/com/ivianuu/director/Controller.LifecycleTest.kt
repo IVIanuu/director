@@ -460,6 +460,7 @@ class ControllerLifecycleCallbacksTest {
 
         assertCalls(expectedCallState, child)
 
+        childRouter.setBackstack(emptyList(), false)
         parent.removeChildRouter(childRouter)
 
         assertCalls(expectedCallState, child)

@@ -173,7 +173,6 @@ class RouterManager(
      */
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
-            router.setBackstack(emptyList(), false)
             router.onStop()
             router.removeContainer()
             router.onDestroy()

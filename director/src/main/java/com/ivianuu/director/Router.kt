@@ -139,7 +139,7 @@ class Router internal constructor(
 
                             val willBeDestroyed = !newBackstack.contains(controller)
 
-                            controller.destroyView(willBeDestroyed)
+                            controller.destroyView(!willBeDestroyed)
 
                             if (willBeDestroyed) {
                                 controller.destroy()

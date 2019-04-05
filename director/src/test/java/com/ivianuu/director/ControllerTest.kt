@@ -16,7 +16,6 @@
 
 package com.ivianuu.director
 
-import android.widget.FrameLayout
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
@@ -25,8 +24,6 @@ import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_CREATED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
-import com.ivianuu.director.util.reportAttached
-import com.ivianuu.director.util.setParent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -55,22 +52,6 @@ class ControllerTest {
             .push(child)
 
         assertEquals(parent, child.parentController)
-    }
-
-    @Test
-    fun testAttachedToUnownedParent() {
-        val controller = TestController()
-
-        controller.doOnPostCreateView { _, view, _ ->
-            view.setParent(FrameLayout(view.context))
-        }
-
-        router.push(controller)
-
-        assertFalse(controller.isAttached)
-        controller.view!!.setParent(router.container)
-        controller.view!!.reportAttached(true)
-        assertTrue(controller.isAttached)
     }
 
     @Test
