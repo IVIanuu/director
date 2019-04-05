@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.moveView
 
 private object NoopListener : MockChangeHandler.Listener
 
@@ -46,33 +45,17 @@ class MockChangeHandler internal constructor(
 
     override fun performChange(changeData: ChangeData) {
         val (container, from, to, isPush,
-            callback, toIndex) = changeData
+            callback) = changeData
 
         this.from = from
         this.to = to
 
         listener.willStartChange()
 
-        if (isPush) {
-            if (to != null) {
-                if (to.parent == null) {
-                    container.addView(to, toIndex)
-                    listener.didAttachOrDetach()
-                } else if (container.indexOfChild(to) != toIndex) {
-                    container.moveView(to, toIndex)
-                }
-            }
-
-            if ((removesFromViewOnPush || changeData.forceRemoveFromViewOnPush) && from != null) {
-                container.removeView(from)
-            }
-        } else {
-            container.removeView(from)
+        changeData.callback.addToView()
+        changeData.callback.removeFromView()
+        if (changeData.from != null || changeData.to != null) {
             listener.didAttachOrDetach()
-
-            if (to != null) {
-                container.addView(to)
-            }
         }
 
         callback.onChangeCompleted()

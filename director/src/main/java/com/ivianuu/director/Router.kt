@@ -51,28 +51,8 @@ class Router internal constructor(
     private val controllerListeners =
         mutableListOf<ListenerEntry<ControllerListener>>()
 
-    internal val internalControllerListener = ControllerListener(
-        postDetach = { controller, _ ->
-            if (destroyingControllers.contains(controller)) {
-                controller.destroyView(false)
-            } else if (toBeInvisibleControllers.contains(controller)) {
-                controller.destroyView(true)
-                toBeInvisibleControllers.remove(controller)
-            }
-        },
-        postDestroyView = { controller ->
-            if (destroyingControllers.remove(controller)) {
-                controller.destroy()
-            }
-        }
-    )
-
-    private val destroyingControllers = mutableListOf<Controller>()
-    private val toBeInvisibleControllers = mutableListOf<Controller>()
-
-    private val handlersByController =
+    private val runningHandlers =
         mutableMapOf<Controller, ChangeHandler>()
-
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -119,11 +99,8 @@ class Router internal constructor(
         val destroyedControllers = oldBackstack
             .filter { old -> newBackstack.none { it == old } }
 
-        val (destroyedVisibleControllers, destroyedInvisibleControllers) =
-            destroyedControllers
-                .partition(Controller::isAttached)
-
-        destroyingControllers.addAll(destroyedVisibleControllers)
+        val destroyedInvisibleControllers = destroyedControllers
+            .filterNot(Controller::isAttached)
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach(this::moveControllerToCorrectState)
@@ -145,18 +122,24 @@ class Router internal constructor(
                 .reversed()
                 .filterNot(newVisibleControllers::contains)
                 .forEach { controller ->
-                    toBeInvisibleControllers.add(controller)
                     cancelChange(controller)
+
                     val localHandler = handler?.copy()
                         ?: controller.popChangeHandler?.copy()
                         ?: DefaultChangeHandler()
 
                     performControllerChange(
-                        controller,
-                        null,
-                        isPush,
-                        localHandler,
-                        true
+                        from = controller,
+                        to = null,
+                        isPush = isPush,
+                        handler = localHandler,
+                        forceRemoveFromViewOnPush = true,
+                        fromDetached = {
+                            controller.destroyView(false)
+                            if (!newBackstack.contains(controller)) {
+                                controller.destroy()
+                            }
+                        }
                     )
                 }
 
@@ -177,22 +160,34 @@ class Router internal constructor(
 
             // Replace the old visible top with the new one
             if (replacingTopControllers) {
-                oldTopController?.let(toBeInvisibleControllers::add)
-
                 val localHandler = handler?.copy()
                     ?: (if (isPush) newTopController?.pushChangeHandler?.copy()
                     else oldTopController?.popChangeHandler?.copy())
                     ?: DefaultChangeHandler()
 
-                val forceRemoveFromView =
+                val forceRemoveFromViewOnPush =
                     oldTopController != null && !newVisibleControllers.contains(oldTopController)
 
                 performControllerChange(
-                    oldTopController,
-                    newTopController,
-                    isPush,
-                    localHandler,
-                    forceRemoveFromView
+                    from = oldTopController,
+                    to = newTopController,
+                    isPush = isPush,
+                    handler = localHandler,
+                    forceRemoveFromViewOnPush = forceRemoveFromViewOnPush,
+                    fromDetached = {
+                        if (oldTopController != null) {
+                            val willBeDestroyed = !newBackstack.contains(oldTopController)
+
+                            // destroy the view
+                            if (forceRemoveFromViewOnPush) {
+                                oldTopController.destroyView(!willBeDestroyed)
+                            }
+
+                            if (willBeDestroyed) {
+                                oldTopController.destroy()
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -345,7 +340,10 @@ class Router internal constructor(
         to: Controller?,
         isPush: Boolean,
         handler: ChangeHandler? = null,
-        forceRemoveFromViewOnPush: Boolean
+        forceRemoveFromViewOnPush: Boolean,
+        toAttached: (() -> Unit)? = null,
+        fromDetached: (() -> Unit)? = null,
+        onComplete: (() -> Unit?)? = null
     ) {
         val container = container ?: return
         val listeners = getListeners()
@@ -358,7 +356,7 @@ class Router internal constructor(
         handlerToUse.hasBeenUsed = true
 
         from?.let(this::cancelChange)
-        to?.let { handlersByController[it] = handlerToUse }
+        to?.let { runningHandlers[it] = handlerToUse }
 
         listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
 
@@ -373,8 +371,10 @@ class Router internal constructor(
                 val movingToView = toView != null && container.indexOfChild(toView) != toIndex
                 if (addingToView) {
                     container.addView(toView, toIndex)
+                    toAttached?.invoke()
                 } else if (movingToView) {
                     container.moveView(toView!!, toIndex)
+                    toAttached?.invoke()
                 }
             }
 
@@ -383,11 +383,13 @@ class Router internal constructor(
                             || forceRemoveFromViewOnPush)
                 ) {
                     container.removeView(fromView)
+                    fromDetached?.invoke()
                 }
             }
 
             override fun onChangeCompleted() {
-                to?.let(handlersByController::remove)
+                to?.let(runningHandlers::remove)
+                onComplete?.invoke()
                 listeners.forEach {
                     it.onChangeCompleted(
                         this@Router,
@@ -451,7 +453,7 @@ class Router internal constructor(
     }
 
     private fun cancelChange(controller: Controller) {
-        handlersByController.remove(controller)?.cancel()
+        runningHandlers.remove(controller)?.cancel()
     }
 
     private fun getToIndex(

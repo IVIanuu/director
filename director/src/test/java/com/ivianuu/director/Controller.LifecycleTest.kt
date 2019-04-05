@@ -60,8 +60,6 @@ class ControllerLifecycleCallbacksTest {
 
         router.popTop()
 
-        assertNull(controller.view)
-
         assertCalls(expectedCallState, controller)
     }
 
