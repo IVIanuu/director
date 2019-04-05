@@ -80,7 +80,7 @@ abstract class SharedElementTransitionChangeHandler(
 
         if (to != null && to.parent == null && waitForTransitionNames.isNotEmpty()) {
             waitOnAllTransitionNames(to, listener)
-            changeData.container.addView(to, changeData.toIndex)
+            changeData.callback.addToView()
         } else {
             listener()
         }
