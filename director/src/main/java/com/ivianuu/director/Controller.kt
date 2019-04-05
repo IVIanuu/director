@@ -204,6 +204,20 @@ abstract class Controller {
         allState = null
     }
 
+    internal fun destroy() {
+        if (state == DESTROYED) return
+
+        childRouterManager.hostDestroyed()
+
+        notifyListeners { it.preDestroy(this) }
+
+        state = DESTROYED
+
+        requireSuperCalled(this::onDestroy)
+
+        notifyListeners { it.postDestroy(this) }
+    }
+
     internal fun createView(container: ViewGroup): View {
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
 
@@ -234,6 +248,25 @@ abstract class Controller {
         view.safeAs<ViewGroup>()?.let(childRouterManager::setContainers)
 
         return view
+    }
+
+    internal fun destroyView(saveViewState: Boolean) {
+        val view = view ?: return
+        if (saveViewState && viewState == null) {
+            saveViewState()
+        }
+
+        childRouterManager.removeContainers()
+
+        notifyListeners { it.preDestroyView(this, view) }
+
+        requireSuperCalled { onDestroyView(view) }
+
+        view.removeOnAttachStateChangeListener(viewAttachListener)
+
+        this.view = null
+
+        notifyListeners { it.postDestroyView(this) }
     }
 
     internal fun attach() {
@@ -273,39 +306,6 @@ abstract class Controller {
         requireSuperCalled { onDetach(view) }
 
         notifyListeners { it.postDetach(this, view) }
-    }
-
-    internal fun destroyView(saveViewState: Boolean) {
-        val view = view ?: return
-        if (saveViewState && viewState == null) {
-            saveViewState()
-        }
-
-        childRouterManager.removeContainers()
-
-        notifyListeners { it.preDestroyView(this, view) }
-
-        requireSuperCalled { onDestroyView(view) }
-
-        view.removeOnAttachStateChangeListener(viewAttachListener)
-
-        this.view = null
-
-        notifyListeners { it.postDestroyView(this) }
-    }
-
-    internal fun destroy() {
-        if (state == DESTROYED) return
-
-        childRouterManager.hostDestroyed()
-
-        notifyListeners { it.preDestroy(this) }
-
-        state = DESTROYED
-
-        requireSuperCalled(this::onDestroy)
-
-        notifyListeners { it.postDestroy(this) }
     }
 
     internal fun saveInstanceState(): Bundle {
