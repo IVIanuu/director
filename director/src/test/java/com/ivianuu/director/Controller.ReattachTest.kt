@@ -35,7 +35,7 @@ class ReattachTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRoot) {
-            setRoot(TestController().toTransaction())
+            setRoot(TestController())
         }
     }
 
@@ -45,7 +45,7 @@ class ReattachTest {
         val controllerB = TestController()
 
         router.push(
-            controllerA.toTransaction()
+            controllerA
                 .changeHandler(defaultHandler())
         )
 
@@ -58,7 +58,7 @@ class ReattachTest {
         assertFalse(controllerB.isAttached)
 
         router.push(
-            controllerB.toTransaction()
+            controllerB
                 .changeHandler(defaultHandler())
         )
 
@@ -73,14 +73,14 @@ class ReattachTest {
         val controllerB = TestController()
 
         router.push(
-            controllerA.toTransaction()
+            controllerA
                 .changeHandler(defaultHandler())
         )
 
         val childRouter =
             controllerA.getChildRouter(controllerA.childContainer1!!)
         childRouter.push(
-            childController.toTransaction()
+            childController
                 .changeHandler(defaultHandler())
         )
 
@@ -95,7 +95,7 @@ class ReattachTest {
         assertFalse(controllerB.isAttached)
 
         router.push(
-            controllerB.toTransaction()
+            controllerB
                 .changeHandler(defaultHandler())
         )
 
@@ -111,7 +111,7 @@ class ReattachTest {
         val childController = TestController()
 
         router.push(
-            controllerA.toTransaction()
+            controllerA
                 .changeHandler(defaultHandler())
         )
 
@@ -120,7 +120,7 @@ class ReattachTest {
         assertFalse(childController.isAttached)
 
         router.push(
-            controllerB.toTransaction()
+            controllerB
                 .changeHandler(defaultHandler())
         )
 
@@ -129,7 +129,7 @@ class ReattachTest {
                 .apply { popsLastView = true }
 
         childRouter.push(
-            childController.toTransaction()
+            childController
                 .changeHandler(defaultHandler())
         )
 
@@ -146,7 +146,7 @@ class ReattachTest {
         var childController = TestController()
 
         router.push(
-            controllerA.toTransaction()
+            controllerA
                 .changeHandler(defaultHandler())
         )
 
@@ -155,7 +155,7 @@ class ReattachTest {
         assertFalse(childController.isAttached)
 
         router.push(
-            controllerB.toTransaction()
+            controllerB
                 .changeHandler(defaultHandler())
         )
 
@@ -164,7 +164,7 @@ class ReattachTest {
                 .apply { popsLastView = true }
 
         childRouter.push(
-            childController.toTransaction()
+            childController
                 .changeHandler(defaultHandler())
         )
 
@@ -180,7 +180,7 @@ class ReattachTest {
 
         childController = TestController()
         childRouter.push(
-            childController.toTransaction()
+            childController
                 .changeHandler(defaultHandler())
         )
 
@@ -195,9 +195,9 @@ class ReattachTest {
         var controller2: Controller = TestController()
         var controller3: Controller = TestController()
 
-        router.setRoot(controller1.toTransaction())
-        router.push(controller2.toTransaction())
-        router.push(controller3.toTransaction())
+        router.setRoot(controller1)
+        router.push(controller2)
+        router.push(controller3)
         router.pop(controller2)
 
         assertFalse(controller1.isAttached)
@@ -208,10 +208,10 @@ class ReattachTest {
         controller2 = TestController()
         controller3 = TestController()
 
-        router.setRoot(controller1.toTransaction())
-        router.push(controller2.toTransaction())
+        router.setRoot(controller1)
+        router.push(controller2)
         router.push(
-            controller3.toTransaction()
+            controller3
                 .pushChangeHandler(noRemoveViewOnPushHandler())
         )
         router.pop(controller2)

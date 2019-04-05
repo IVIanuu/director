@@ -56,7 +56,7 @@ class TransitionDemoController : BaseController() {
 
         btn_next.setOnClickListener {
             if (nextIndex < TransitionDemo.values().size) {
-                router.push(getRouterTransaction(nextIndex, this@TransitionDemoController))
+                router.push(getNextController(nextIndex, this@TransitionDemoController))
             } else {
                 router.popToRoot()
             }
@@ -130,9 +130,9 @@ class TransitionDemoController : BaseController() {
             args = bundleOf(KEY_INDEX to index)
         }
 
-        fun getRouterTransaction(index: Int, fromController: Controller): Transaction {
+        fun getNextController(index: Int, fromController: Controller): Controller {
             val toController = newInstance(index)
-            return toController.toTransaction()
+            return toController
                 .changeHandler(toController.getChangeHandler(fromController))
         }
     }

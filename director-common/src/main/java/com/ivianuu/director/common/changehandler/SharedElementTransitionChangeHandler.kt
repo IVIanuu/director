@@ -28,14 +28,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnPreDrawListener
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
-import com.ivianuu.director.common.addTargets
-import com.ivianuu.director.common.findNamedView
-import com.ivianuu.director.common.findNamedViews
-import com.ivianuu.director.common.getBoundsOnScreen
-import com.ivianuu.director.common.replaceTargets
-import com.ivianuu.director.common.setEpicenter
-import com.ivianuu.director.common.setTargets
-import com.ivianuu.director.common.transitionSetOf
+import com.ivianuu.director.common.*
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 
 /**
@@ -65,7 +58,7 @@ abstract class SharedElementTransitionChangeHandler(
         enterTransitionCallback = getEnterTransitionCallback(changeData)
 
         check(enterTransition != null || sharedElementTransition != null || exitTransition != null) {
-            "SharedElementTransitionChangeHandler must have at least one transaction."
+            "SharedElementTransitionChangeHandler must have at least one transition."
         }
 
         return mergeTransitions(changeData.isPush)

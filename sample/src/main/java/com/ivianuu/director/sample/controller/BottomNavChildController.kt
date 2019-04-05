@@ -17,13 +17,9 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import com.ivianuu.director.changeHandler
-import com.ivianuu.director.childRouter
-import com.ivianuu.director.hasRoot
-import com.ivianuu.director.push
+import com.ivianuu.director.*
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
+
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -48,12 +44,12 @@ class BottomNavChildController : BaseController() {
                 .forEach { (controller, i) ->
                     if (i == 1) {
                         childRouter.setRoot(
-                            controller.toTransaction()
+                            controller
                                 .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
                         )
                     } else {
                         childRouter.push(
-                            controller.toTransaction()
+                            controller
                                 .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
                         )
                     }

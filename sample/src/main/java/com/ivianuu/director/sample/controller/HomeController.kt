@@ -53,28 +53,26 @@ class HomeController : BaseController() {
                     NavigationController.newInstance(
                         0,
                         NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
-                    )
-                        .toTransaction()
-                        .tag(NavigationController.TAG_UP_TRANSACTION)
+                    ).tag(NavigationController.TAG_UP_TRANSACTION)
                 )
             }
             HomeItem.TRANSITIONS -> {
                 router.push(
                     TransitionDemoController
-                        .getRouterTransaction(0, this)
+                        .getNextController(0, this)
                 )
             }
             HomeItem.TARGET_CONTROLLER -> {
-                router.push(TargetDisplayController().toTransaction())
+                router.push(TargetDisplayController())
             }
             HomeItem.VIEW_PAGER -> {
-                router.push(PagerController().toTransaction())
+                router.push(PagerController())
             }
             HomeItem.BOTTOM_NAV -> {
-                router.push(BottomNavController().toTransaction())
+                router.push(BottomNavController())
             }
             HomeItem.CHILD_CONTROLLERS -> {
-                router.push(ParentController().toTransaction())
+                router.push(ParentController())
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
@@ -84,7 +82,7 @@ class HomeController : BaseController() {
 
                 router.push(
                     CityGridController.newInstance(item.title, item.color, position)
-                        .toTransaction()
+
                         .changeHandler(
                             ArcFadeMoveChangeHandler(
                                 titleSharedElementName,
@@ -95,24 +93,24 @@ class HomeController : BaseController() {
             }
             HomeItem.DRAG_DISMISS -> {
                 router.push(
-                    DragDismissController().toTransaction()
+                    DragDismissController()
                         .changeHandler(FadeChangeHandler(removesFromViewOnPush = false))
                 )
             }
             HomeItem.MULTIPLE_CHILD_ROUTERS -> {
-                router.push(MultipleChildRouterController().toTransaction())
+                router.push(MultipleChildRouterController())
             }
             HomeItem.PERMISSION -> {
-                router.push(PermissionController().toTransaction())
+                router.push(PermissionController())
             }
             HomeItem.MASTER_DETAIL -> {
-                router.push(MasterDetailListController().toTransaction())
+                router.push(MasterDetailListController())
             }
             HomeItem.DIALOG -> {
                 SimpleDialogController().show(router)
             }
             HomeItem.EXTERNAL_MODULES -> {
-                router.push(ExternalModulesController().toTransaction())
+                router.push(ExternalModulesController())
             }
         }
     }

@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
             addToolbarHandling()
 
             if (!hasRoot) {
-                setRoot(HomeController().toTransaction())
+                setRoot(HomeController())
             }
         }
     }

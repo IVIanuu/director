@@ -36,17 +36,17 @@ class ChangeHandlerTest {
         val changeHandler1 = DefaultChangeHandler(false)
         val changeHandler2 = DefaultChangeHandler(true)
 
-        val transaction = TestController().toTransaction()
+        val transaction = TestController()
             .pushChangeHandler(changeHandler1).popChangeHandler(changeHandler2)
 
         router.push(transaction)
 
-        val restoredTransaction = Transaction.fromBundle(
+        val restoredController = Controller.fromBundle(
             transaction.saveInstanceState(), router.routerManager.controllerFactory
         )
 
-        val restored1 = restoredTransaction.pushChangeHandler
-        val restored2 = restoredTransaction.popChangeHandler
+        val restored1 = restoredController.pushChangeHandler
+        val restored2 = restoredController.popChangeHandler
 
         assertEquals(changeHandler1.javaClass, restored1?.javaClass)
         assertEquals(changeHandler2.javaClass, restored2?.javaClass)

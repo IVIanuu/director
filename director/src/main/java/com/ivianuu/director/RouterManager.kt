@@ -141,8 +141,7 @@ class RouterManager(
         return _routers
             .flatMap(Router::backstack)
             .asSequence()
-            .sortedByDescending(Transaction::transactionIndex)
-            .map(Transaction::controller)
+            .sortedByDescending(Controller::transactionIndex)
             .filter(Controller::isAttached)
             .map(Controller::router)
             .any(Router::handleBack)

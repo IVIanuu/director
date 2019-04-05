@@ -19,34 +19,33 @@ package com.ivianuu.director.sample.util
 import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.director.Transaction
 import com.ivianuu.director.hasRoot
 
 class SingleContainer(val router: Router) {
 
     val isEmpty get() = router.hasRoot
 
-    val currentTransaction: Transaction? get() = router.backstack.lastOrNull()
-    val detachedTransactions: List<Transaction>? get() = router.backstack.dropLast(1)
+    val currentController: Controller? get() = router.backstack.lastOrNull()
+    val detachedControllers: List<Controller>? get() = router.backstack.dropLast(1)
 
-    fun set(transaction: Transaction) {
-        if (transaction == currentTransaction) return
+    fun set(controller: Controller) {
+        if (controller == currentController) return
 
-        transaction.pushChangeHandler.check()
-        transaction.popChangeHandler.check()
+        controller.pushChangeHandler.check()
+        controller.popChangeHandler.check()
 
         val newBackstack = router.backstack.toMutableList()
-        val index = newBackstack.indexOfFirst { it == transaction }
+        val index = newBackstack.indexOf(controller)
 
         if (index != -1) newBackstack.removeAt(index)
-        newBackstack.add(transaction)
+        newBackstack.add(controller)
 
         router.setBackstack(newBackstack, isPush = true)
     }
 
     fun remove(controller: Controller) {
         val newBackstack = router.backstack.toMutableList()
-        newBackstack.removeAll { it.controller == controller }
+        newBackstack.remove(controller)
         router.setBackstack(newBackstack, false)
     }
 
@@ -57,27 +56,27 @@ class SingleContainer(val router: Router) {
     }
 }
 
-inline fun Router.moveToTop(tag: String, create: () -> Transaction) {
+inline fun Router.moveToTop(tag: String, create: () -> Controller) {
     val backstack = backstack.toMutableList()
-    var transaction = backstack.firstOrNull { it.tag == tag }
-    if (transaction != null) {
-        backstack.remove(transaction)
+    var controller = backstack.firstOrNull { it.tag == tag }
+    if (controller != null) {
+        backstack.remove(controller)
     } else {
-        transaction = create()
+        controller = create()
     }
 
-    backstack.add(transaction)
+    backstack.add(controller)
     setBackstack(backstack, true)
 }
 
-inline fun SingleContainer.setIfEmpty(create: () -> Transaction) {
+inline fun SingleContainer.setIfEmpty(create: () -> Controller) {
     if (isEmpty) set(create())
 }
 
-inline fun SingleContainer.setByTag(tag: String, create: () -> Transaction) {
+inline fun SingleContainer.setByTag(tag: String, create: () -> Controller) {
     set(router.backstack.firstOrNull { it.tag == tag } ?: create())
 }
 
 fun SingleContainer.removeByTag(tag: String) {
-    router.backstack.firstOrNull { it.tag == tag }?.let { remove(it.controller) }
+    router.backstack.firstOrNull { it.tag == tag }?.let(this::remove)
 }

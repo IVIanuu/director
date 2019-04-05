@@ -12,7 +12,7 @@ import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.toTransaction
+
 import kotlinx.android.synthetic.main.controller_target_display.btn_pick_image
 import kotlinx.android.synthetic.main.controller_target_display.btn_pick_title
 import kotlinx.android.synthetic.main.controller_target_display.image_view
@@ -53,7 +53,7 @@ class TargetDisplayController : BaseController(),
         btn_pick_title.setOnClickListener {
             router.push(
                 TargetTitleEntryController.newInstance(this@TargetDisplayController)
-                    .toTransaction()
+
                     .changeHandler(HorizontalChangeHandler())
             )
         }

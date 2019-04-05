@@ -16,24 +16,9 @@
 
 package com.ivianuu.director.traveler
 
-import com.ivianuu.director.Controller
+import com.ivianuu.director.*
 import com.ivianuu.director.Router
-import com.ivianuu.director.Transaction
-import com.ivianuu.director.backstackSize
-import com.ivianuu.director.getControllerByTagOrNull
-import com.ivianuu.director.pop
-import com.ivianuu.director.popToRoot
-import com.ivianuu.director.popTop
-import com.ivianuu.director.push
-import com.ivianuu.director.replaceTop
-import com.ivianuu.director.tag
-import com.ivianuu.director.toTransaction
-import com.ivianuu.traveler.Back
-import com.ivianuu.traveler.BackTo
-import com.ivianuu.traveler.Command
-import com.ivianuu.traveler.Forward
-import com.ivianuu.traveler.Navigator
-import com.ivianuu.traveler.Replace
+import com.ivianuu.traveler.*
 import com.ivianuu.traveler.common.ResultNavigator
 
 /**
@@ -55,18 +40,12 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val tag = getControllerTag(command.key)
 
-        val currentController = router.backstack.lastOrNull()?.controller
+        val currentController = router.backstack.lastOrNull()
 
-        val transaction = controller.toTransaction()
-            .also {
-                setupTransaction(
-                    command,
-                    currentController, controller, it
-                )
-            }
-            .tag(tag)
+        setupController(command, currentController, controller)
+        controller.tag = tag
 
-        router.push(transaction)
+        router.push(controller)
 
         return true
     }
@@ -77,18 +56,12 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val tag = getControllerTag(command.key)
 
-        val currentController = router.backstack.lastOrNull()?.controller
+        val currentController = router.backstack.lastOrNull()
 
-        val transaction = controller.toTransaction()
-            .also {
-                setupTransaction(
-                    command,
-                    currentController, controller, it
-                )
-            }
-            .tag(tag)
+        setupController(command, currentController, controller)
+        controller.tag = tag
 
-        router.replaceTop(transaction)
+        router.replaceTop(controller)
 
         return true
     }
@@ -153,11 +126,10 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     /**
      * Add change handlers etc
      */
-    protected open fun setupTransaction(
+    protected open fun setupController(
         command: Command,
         currentController: Controller?,
-        nextController: Controller,
-        transaction: Transaction
+        nextController: Controller
     ) {
         val key = when (command) {
             is Forward -> command.key
@@ -165,7 +137,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
             else -> null
         } as? ControllerKey ?: return
 
-        return key.setupTransaction(command, currentController, nextController, transaction)
+        return key.setupController(command, currentController, nextController)
     }
 
     /**

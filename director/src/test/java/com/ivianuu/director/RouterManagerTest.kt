@@ -44,16 +44,16 @@ class RouterManagerTest {
         val router2 =
             manager.getRouter(activityProxy.view2)
 
-        router1.setRoot(controller1.toTransaction())
-        router2.setRoot(controller2.toTransaction())
+        router1.setRoot(controller1)
+        router2.setRoot(controller2)
 
         assertEquals(2, manager.routers.size)
         assertEquals(router1, manager.routers[0])
         assertEquals(router2, manager.routers[1])
         assertEquals(1, router1.backstackSize)
         assertEquals(1, router2.backstackSize)
-        assertEquals(controller1, router1.backstack.firstOrNull()?.controller)
-        assertEquals(controller2, router2.backstack.firstOrNull()?.controller)
+        assertEquals(controller1, router1.backstack.firstOrNull())
+        assertEquals(controller2, router2.backstack.firstOrNull())
 
         manager.removeRouter(router2)
 
@@ -61,7 +61,7 @@ class RouterManagerTest {
         assertEquals(router1, manager.routers[0])
         assertEquals(1, router1.backstackSize)
         assertEquals(0, router2.backstackSize)
-        assertEquals(controller1, router1.backstack.firstOrNull()?.controller)
+        assertEquals(controller1, router1.backstack.firstOrNull())
 
         manager.removeRouter(router1)
 
@@ -72,8 +72,8 @@ class RouterManagerTest {
 
     @Test
     fun testRestoredRouterBackstack() {
-        val transaction1 = TestController().toTransaction()
-        val transaction2 = TestController().toTransaction()
+        val transaction1 = TestController()
+        val transaction2 = TestController()
 
         var router = manager.getRouter(activityProxy.view1)
             .apply { popsLastView = true }
@@ -92,30 +92,30 @@ class RouterManagerTest {
 
         assertEquals(2, router.backstackSize)
 
-        val restoredChildTransaction1 = router.backstack.first()
-        val restoredChildTransaction2 = router.backstack[1]
+        val restoredChildController1 = router.backstack.first()
+        val restoredChildController2 = router.backstack[1]
 
         assertEquals(
             transaction1.transactionIndex,
-            restoredChildTransaction1.transactionIndex
+            restoredChildController1.transactionIndex
         )
         assertEquals(
-            transaction1.controller.instanceId,
-            restoredChildTransaction1.controller.instanceId
+            transaction1.instanceId,
+            restoredChildController1.instanceId
         )
 
         assertEquals(
             transaction2.transactionIndex,
-            restoredChildTransaction2.transactionIndex
+            restoredChildController2.transactionIndex
         )
         assertEquals(
-            transaction2.controller.instanceId,
-            restoredChildTransaction2.controller.instanceId
+            transaction2.instanceId,
+            restoredChildController2.instanceId
         )
 
         assertTrue(router.handleBack())
         assertEquals(1, router.backstackSize)
-        assertEquals(restoredChildTransaction1, router.backstack[0])
+        assertEquals(restoredChildController1, router.backstack[0])
 
         assertTrue(router.handleBack())
         assertEquals(0, router.backstackSize)

@@ -64,7 +64,7 @@ class ParentController : BaseController() {
                  }*/
 
                 childRouter.setRoot(
-                    childController.toTransaction()
+                    childController
                         .changeHandler(FadeChangeHandler())
                 )
             }

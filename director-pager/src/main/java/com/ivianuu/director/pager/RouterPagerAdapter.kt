@@ -73,7 +73,7 @@ abstract class RouterPagerAdapter(
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean =
-        (`object` as Router).backstack.any { it.controller.view == view }
+        (`object` as Router).backstack.any { it.view == view }
 
     override fun saveState(): Parcelable {
         val bundle = Bundle()

@@ -5,7 +5,7 @@ import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
-import com.ivianuu.director.toTransaction
+
 
 class MultipleChildRouterController : BaseController() {
 
@@ -24,7 +24,7 @@ class MultipleChildRouterController : BaseController() {
                         0,
                         NavigationController.DisplayUpMode.HIDE,
                         false
-                    ).toTransaction()
+                    )
                 )
             }
     }

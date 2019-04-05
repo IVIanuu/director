@@ -28,7 +28,7 @@ class RouterChangeHandlerTest {
     fun testSetRootHandler() {
         val handler = taggedHandler("root", true)
         val rootController = TestController()
-        router.setRoot(rootController.toTransaction().pushChangeHandler(handler))
+router.setRoot(rootController.pushChangeHandler(handler))
 
         assertTrue(rootController.changeHandlerHistory.isValidHistory)
         assertNull(rootController.changeHandlerHistory.latestFromView())
@@ -42,7 +42,7 @@ class RouterChangeHandlerTest {
     fun testPushPopHandlers() {
         val rootController = TestController()
         router.setRoot(
-            rootController.toTransaction()
+rootController
                 .pushChangeHandler(defaultHandler())
         )
         val rootView = rootController.view
@@ -51,7 +51,7 @@ class RouterChangeHandlerTest {
         val popHandler = taggedHandler("pop", true)
         val pushController = TestController()
         router.push(
-            pushController.toTransaction()
+pushController
                 .pushChangeHandler(pushHandler)
                 .popChangeHandler(popHandler)
         )
@@ -83,7 +83,7 @@ class RouterChangeHandlerTest {
         val initialPushHandler1 = taggedHandler("initialPush1", true)
         val initialPopHandler1 = taggedHandler("initialPop1", true)
         router.setRoot(
-            initialController1.toTransaction()
+initialController1
                 .pushChangeHandler(initialPushHandler1)
                 .popChangeHandler(initialPopHandler1)
         )
@@ -92,7 +92,7 @@ class RouterChangeHandlerTest {
         val initialPushHandler2 = taggedHandler("initialPush2", false)
         val initialPopHandler2 = taggedHandler("initialPop2", false)
         router.push(
-            initialController2.toTransaction()
+initialController2
                 .pushChangeHandler(initialPushHandler2)
                 .popChangeHandler(initialPopHandler2)
         )
@@ -103,7 +103,7 @@ class RouterChangeHandlerTest {
         val newRootController = TestController()
         val newRootHandler = taggedHandler("newRootHandler", true)
 
-        router.setRoot(newRootController.toTransaction().changeHandler(newRootHandler))
+router.setRoot(newRootController.changeHandler(newRootHandler))
 
         assertTrue(initialController1.changeHandlerHistory.isValidHistory)
         assertTrue(initialController2.changeHandlerHistory.isValidHistory)
@@ -152,7 +152,7 @@ class RouterChangeHandlerTest {
         val initialPushHandler1 = taggedHandler("initialPush1", true)
         val initialPopHandler1 = taggedHandler("initialPop1", true)
         router.setRoot(
-            initialController1.toTransaction()
+initialController1
                 .pushChangeHandler(initialPushHandler1)
                 .popChangeHandler(initialPopHandler1)
         )
@@ -161,7 +161,7 @@ class RouterChangeHandlerTest {
         val initialPushHandler2 = taggedHandler("initialPush2", false)
         val initialPopHandler2 = taggedHandler("initialPop2", false)
         router.push(
-            initialController2.toTransaction()
+initialController2
                 .pushChangeHandler(initialPushHandler2)
                 .popChangeHandler(initialPopHandler2)
         )
@@ -174,8 +174,8 @@ class RouterChangeHandlerTest {
         val setBackstackHandler = taggedHandler("setBackstackHandler", true)
 
         val newBackstack = listOf(
-            newController1.toTransaction(),
-            newController2.toTransaction()
+newController1,
+newController2
         )
 
         router.setBackstack(newBackstack, true, setBackstackHandler)
@@ -239,7 +239,7 @@ class RouterChangeHandlerTest {
         val setBackstackHandler = taggedHandler("setBackstackHandler", true)
         val pushController2Handler = noRemoveViewOnPushHandler("pushController2")
         val newBackstack = listOf(
-            newController1.toTransaction(),
+newController1,
             newController2.toTransaction(pushController2Handler)
         )
 
@@ -304,20 +304,20 @@ class RouterChangeHandlerTest {
         val initialController = TestController()
         val initialPushHandler = taggedHandler("initialPush1", true)
         val initialPopHandler = taggedHandler("initialPop1", true)
-        val initialTransaction = initialController
-            .toTransaction()
+val initialController = initialController
+
             .pushChangeHandler(initialPushHandler)
             .popChangeHandler(initialPopHandler)
 
-        router.setRoot(initialTransaction)
+router.setRoot(initialController)
         val initialView = initialController.view
 
         val newController = TestController()
         val setBackstackHandler = taggedHandler("setBackstackHandler", true)
 
         val newBackstack = listOf(
-            initialTransaction,
-            newController.toTransaction()
+initialController,
+newController
         )
 
         router.setBackstack(newBackstack, true, setBackstackHandler)
@@ -344,25 +344,25 @@ class RouterChangeHandlerTest {
         val initialController1 = TestController()
         val initialPushHandler1 = taggedHandler("initialPush1", true)
         val initialPopHandler1 = taggedHandler("initialPop1", true)
-        val initialTransaction1 = initialController1.toTransaction()
+val initialController1 = initialController1
             .pushChangeHandler(initialPushHandler1)
             .popChangeHandler(initialPopHandler1)
-        router.setRoot(initialTransaction1)
+router.setRoot(initialController1)
 
         val initialController2 = TestController()
         val initialPushHandler2 = taggedHandler("initialPush2", true)
         val initialPopHandler2 = taggedHandler("initialPop2", true)
-        val initialTransaction2 = initialController2.toTransaction()
+val initialController2 = initialController2
             .pushChangeHandler(initialPushHandler2)
             .popChangeHandler(initialPopHandler2)
-        router.push(initialTransaction2)
+router.push(initialController2)
 
         val initialView2 = initialController2.view
 
         val setBackstackHandler = taggedHandler("setBackstackHandler", true)
         val newBackstack = listOf(
-            initialTransaction2,
-            initialTransaction1
+initialController2,
+initialController1
         )
 
         router.setBackstack(newBackstack, false, setBackstackHandler)
@@ -395,26 +395,26 @@ class RouterChangeHandlerTest {
         val initialController1 = TestController()
         val initialPushHandler1 = taggedHandler("initialPush1", true)
         val initialPopHandler1 = taggedHandler("initialPop1", true)
-        val initialTransaction1 = initialController1.toTransaction()
+val initialController1 = initialController1
             .pushChangeHandler(initialPushHandler1)
             .popChangeHandler(initialPopHandler1)
-        router.setRoot(initialTransaction1)
+router.setRoot(initialController1)
 
         val initialController2 = TestController()
         val initialPushHandler2 = taggedHandler("initialPush2", false)
         val initialPopHandler2 = taggedHandler("initialPop2", false)
-        val initialTransaction2 = initialController2.toTransaction()
+val initialController2 = initialController2
             .pushChangeHandler(initialPushHandler2)
             .popChangeHandler(initialPopHandler2)
-        router.push(initialTransaction2)
+router.push(initialController2)
 
         val initialView1 = initialController1.view
         val initialView2 = initialController2.view
 
         val setBackstackHandler = taggedHandler("setBackstackHandler", true)
         val newBackstack = listOf(
-            initialTransaction2,
-            initialTransaction1
+initialController2,
+initialController1
         )
 
         router.setBackstack(newBackstack, true, setBackstackHandler)
@@ -451,10 +451,10 @@ class RouterChangeHandlerTest {
         val popHandler2 = taggedHandler("popHandler2", true)
 
         val controller1 = TestController()
-        val transaction1 = controller1.toTransaction(pushHandler1, popHandler1)
+val transaction1 = controller1.toController(pushHandler1, popHandler1)
 
         val controller2 = TestController()
-        val transaction2 = controller2.toTransaction(pushHandler2, popHandler2)
+val transaction2 = controller2.toController(pushHandler2, popHandler2)
 
         var backstack = listOf(transaction1, transaction2)
 

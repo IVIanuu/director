@@ -70,12 +70,11 @@ class MasterDetailListController : BaseController() {
 
     private fun onItemClicked(item: DetailItem, index: Int) {
         selectedIndex = index
-
-        val transaction = ChildController.newInstance(
-            item.detail, item.backgroundColor, true
-        ).toTransaction()
-
-        childRouter.setRoot(transaction)
+        childRouter.setRoot(
+            ChildController.newInstance(
+                item.detail, item.backgroundColor, true
+            )
+        )
         epoxyController.requestModelBuild()
     }
 

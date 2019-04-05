@@ -111,8 +111,6 @@ abstract class DialogController : Controller(),
 
 fun DialogController.show(router: Router, tag: String? = null) {
     router.push(
-        toTransaction()
-            .changeHandler(DefaultChangeHandler(removesFromViewOnPush = false))
-            .tag(tag)
+        changeHandler(DefaultChangeHandler(removesFromViewOnPush = false)).tag(tag)
     )
 }
