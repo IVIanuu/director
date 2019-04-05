@@ -329,12 +329,12 @@ abstract class Controller {
         return outState
     }
 
-    private fun restoreInstanceState() {
+    private fun restoreInternalState() {
         val savedInstanceState = allState ?: return
 
-        savedInstanceState.getBundle(KEY_ARGS)?.let { bundle ->
-            args = bundle.also { it.classLoader = javaClass.classLoader }
-        }
+        args = savedInstanceState.getBundle(KEY_ARGS)
+            ?.also { it.classLoader = javaClass.classLoader }
+            ?: args
 
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
             ?.also { it.classLoader = javaClass.classLoader }
@@ -385,14 +385,9 @@ abstract class Controller {
             val className = bundle.getString(KEY_CLASS_NAME)!!
             val cls = classForNameOrThrow(className)
 
-            val args = bundle.getBundle(KEY_ARGS)!!.apply {
-                classLoader = cls.classLoader
-            }
-
             return factory.createController(cls.classLoader!!, className).apply {
-                this.args = args
                 this.allState = bundle
-                restoreInstanceState()
+                restoreInternalState()
             }
         }
     }
