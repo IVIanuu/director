@@ -32,8 +32,8 @@ class RouterManager(
     /**
      * All routers of this router manager
      */
-    val routers: List<Router> get() = _routers
-    private val _routers = mutableListOf<Router>()
+    val routers: List<BaseRouter> get() = _routers
+    private val _routers = mutableListOf<BaseRouter>()
 
     internal var isStarted = false
         private set
@@ -42,7 +42,7 @@ class RouterManager(
 
     private var rootView: ViewGroup? = null
 
-    private var routerStates: Map<Router, Bundle>? = null
+    private var routerStates: Map<BaseRouter, Bundle>? = null
 
     internal val transactionIndexer = TransactionIndexer()
 
@@ -67,7 +67,9 @@ class RouterManager(
      */
     fun removeRootView() {
         if (rootView != null) {
-            _routers.reversed().forEach(Router::removeContainer)
+            _routers.reversed()
+                .filterIsInstance<ViewGroupRouter>()
+                .forEach(ViewGroupRouter::removeContainer)
             rootView = null
         }
     }
@@ -77,7 +79,7 @@ class RouterManager(
      */
     fun onStart() {
         isStarted = true
-        _routers.forEach(Router::onStart)
+        _routers.forEach(BaseRouter::start)
     }
 
     /**
@@ -85,7 +87,7 @@ class RouterManager(
      */
     fun onStop() {
         isStarted = false
-        _routers.reversed().forEach(Router::onStop)
+        _routers.reversed().forEach(BaseRouter::stop)
     }
 
     /**
@@ -94,10 +96,7 @@ class RouterManager(
     fun onDestroy() {
         if (!isDestroyed) {
             isDestroyed = true
-            _routers.reversed().forEach {
-                it.removeContainer()
-                it.onDestroy()
-            }
+            _routers.reversed().forEach(BaseRouter::destroy)
         }
     }
 
@@ -126,7 +125,7 @@ class RouterManager(
             KEY_TRANSACTION_INDEXER,
             transactionIndexer.saveInstanceState()
         )
-        val routerStates = _routers.map(Router::saveInstanceState)
+        val routerStates = _routers.map(BaseRouter::saveInstanceState)
         putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
@@ -134,33 +133,27 @@ class RouterManager(
      * Let routers handle the back press
      */
     fun handleBack(): Boolean {
-        return _routers
-            .flatMap(Router::backstack)
-            .asSequence()
-            .sortedByDescending(Controller::transactionIndex)
-            .filter(Controller::isAttached)
-            .map(Controller::router)
-            .any(Router::handleBack)
+        return _routers.any(BaseRouter::handleBack)
     }
 
     /**
-     * Returns the router for [containerId] and [tag] or null
+     * Returns the router for [id] and [tag] or null
      */
-    fun getRouterOrNull(containerId: Int, tag: String? = null): Router? =
-        _routers.firstOrNull { it.containerId == containerId && it.tag == tag }
+    fun getRouterOrNull(id: Int, tag: String? = null): BaseRouter? =
+        _routers.firstOrNull { it.id == id && it.tag == tag }
 
     /**
-     * Returns the router for [containerId] and [tag] or creates a new one
+     * Returns the router for [id] and [tag] or creates a new one
      */
-    fun getRouter(containerId: Int, tag: String? = null): Router {
-        var router = getRouterOrNull(containerId, tag)
+    fun getRouter(id: Int, tag: String? = null): BaseRouter {
+        var router = getRouterOrNull(id, tag)
         if (router == null) {
-            router = Router(containerId, tag, this)
+            router = Router(id, tag, this)
             _routers.add(router)
             if (isDestroyed) {
-                router.onDestroy()
+                router.destroy()
             } else if (isStarted) {
-                router.onStart()
+                router.start()
             }
         }
 
@@ -172,12 +165,10 @@ class RouterManager(
     /**
      * Removes the previously added [router]
      */
-    fun removeRouter(router: Router) {
+    fun removeRouter(router: BaseRouter) {
         if (_routers.remove(router)) {
-            router.setBackstack(emptyList(), false)
-            router.onStop()
-            router.removeContainer()
-            router.onDestroy()
+            router.stop()
+            router.destroy()
         }
     }
 
@@ -200,9 +191,11 @@ class RouterManager(
 
         this.routerStates = routerStates
             .map { routerState ->
-                Router.fromBundle(routerState, this) to routerState
+                BaseRouter.fromBundle(routerState) to routerState
             }
-            .onEach { _routers.add(it.first) }
+            .onEach {
+                _routers.add(it.first)
+            }
             .toMap()
     }
 
@@ -213,9 +206,11 @@ class RouterManager(
         routerStates = null
     }
 
-    private fun Router.restoreContainer() {
+    private fun BaseRouter.restoreContainer() {
+        if (this !is ViewGroupRouter) return
+
         if (!hasContainer) {
-            rootView?.findViewById<ViewGroup>(containerId)?.let(this::setContainer)
+            rootView?.findViewById<ViewGroup>(id)?.let(this::setContainer)
         }
     }
 
@@ -225,16 +220,8 @@ class RouterManager(
     }
 }
 
-fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? {
-    return getRouterOrNull(container.id, tag)?.also { it.setContainer(container) }
-}
-
-fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router {
-    return getRouter(container.id, tag).also { it.setContainer(container) }
-}
-
-fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
-    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
+fun RouterManager.router(id: Int, tag: String? = null): Lazy<BaseRouter> =
+    lazy(LazyThreadSafetyMode.NONE) { getRouter(id, tag) }
 
 fun RouterManager.getControllerByTagOrNull(tag: String): Controller? =
     routers.firstNotNullResultOrNull { it.getControllerByTagOrNull(tag) }

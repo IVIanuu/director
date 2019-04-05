@@ -2,21 +2,21 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.ControllerChangeManager
-import com.ivianuu.stdlibx.firstNotNullResultOrNull
-import com.ivianuu.stdlibx.safeAs
 import com.ivianuu.stdlibx.takeLastUntil
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s
  */
-class Router internal constructor(
-    containerId: Int,
-    tag: String? = null,
-    val routerManager: RouterManager
-) {
+class Router(
+    id: Int,
+    tag: String?,
+    routerManager: RouterManager
+) : ViewGroupRouter(id, tag, routerManager) {
+
+    override val controllers: List<Controller>
+        get() = backstack
 
     /**
      * The current backstack
@@ -28,29 +28,6 @@ class Router internal constructor(
      * Whether or not the last view should be popped
      */
     var popsLastView = false
-
-    /**
-     * The tag of this router
-     */
-    var tag: String? = tag
-        private set
-
-    /**
-     * The container id of this router
-     */
-    var containerId: Int = containerId
-        private set
-
-    /**
-     * The container of this router
-     */
-    var container: ViewGroup? = null
-        private set
-
-    private val listeners =
-        mutableListOf<ListenerEntry<RouterListener>>()
-    private val controllerListeners =
-        mutableListOf<ListenerEntry<ControllerListener>>()
 
     internal val internalControllerListener = ControllerListener(
         postDetach = { controller, _ ->
@@ -202,131 +179,34 @@ class Router internal constructor(
         }
     }
 
-    /**
-     * Let the current controller handles back click or pops the top controller if possible
-     * Returns whether or not the back click was handled
-     */
-    fun handleBack(): Boolean {
-        val topController = backstack.lastOrNull()
-
-        return if (topController != null) {
-            if (topController.handleBack()) {
-                true
-            } else if (hasRoot && (popsLastView || backstackSize > 1)) {
-                popTop()
-                true
-            } else {
-                false
-            }
-        } else {
-            false
-        }
+    override fun onContainerSet(container: ViewGroup) {
+        super.onContainerSet(container)
+        rebind()
     }
 
-    /**
-     * Notifies the [listener] on controller changes
-     */
-    fun addListener(listener: RouterListener, recursive: Boolean = false): Closeable {
-        listeners.add(ListenerEntry(listener, recursive))
-        return Closeable { removeListener(listener) }
-    }
-
-    /**
-     * Removes the previously added [listener]
-     */
-    fun removeListener(listener: RouterListener) {
-        listeners.removeAll { it.listener == listener }
-    }
-
-    /**
-     * Adds the [listener] to all controllers
-     */
-    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false): Closeable {
-        controllerListeners.add(ListenerEntry(listener, recursive))
-        return Closeable { removeControllerListener(listener) }
-    }
-
-    /**
-     * Removes the previously added [listener]
-     */
-    fun removeControllerListener(listener: ControllerListener) {
-        controllerListeners.removeAll { it.listener == listener }
-    }
-
-    internal fun getListeners(recursiveOnly: Boolean = false): List<RouterListener> {
-        return listeners
-            .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<RouterListener>::listener) +
-                (routerManager.host.safeAs<Controller>()?.router?.getListeners(true)
-                    ?: emptyList())
-    }
-
-    internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
-        return controllerListeners
-            .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<ControllerListener>::listener) +
-                (routerManager.host.safeAs<Controller>()?.router?.getControllerListeners(true)
-                    ?: emptyList())
-    }
-
-    /**
-     * Sets the container of this router
-     */
-    fun setContainer(container: ViewGroup) {
-        require(container.id == containerId) {
-            "container id of the container must match the container id of this router"
-        }
-
-        if (this.container != container) {
-            removeContainer()
-            this.container = container
-            rebind()
-        }
-    }
-
-    /**
-     * Removes the current container if set
-     */
-    fun removeContainer() {
-        if (container == null) return
-        prepareForContainerRemoval()
+    override fun onContainerRemoved(container: ViewGroup) {
+        super.onContainerRemoved(container)
         _backstack.reversed().forEach { it.destroyView(false) }
-        container = null
     }
 
-    internal fun onStart() {
+    override fun onStart() {
+        super.onStart()
         _backstack.forEach(Controller::attach)
     }
 
-    internal fun onStop() {
+    override fun onStop() {
+        super.onStop()
         prepareForContainerRemoval()
         _backstack.reversed().forEach(Controller::detach)
     }
 
-    internal fun onDestroy() {
+    override fun onDestroy() {
+        super.onDestroy()
         _backstack.reversed().forEach(Controller::destroy)
-        removeContainer()
     }
 
-    /**
-     * Saves the state of this router
-     */
-    fun saveInstanceState(): Bundle {
-        prepareForContainerRemoval()
-
-        return Bundle().apply {
-            putInt(KEY_CONTAINER_ID, containerId)
-            putString(KEY_TAG, tag)
-            val backstack = _backstack.map(Controller::saveInstanceState)
-            putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
-            putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
-        }
-    }
-
-    /**
-     * Restores the previously saved state state
-     */
-    fun restoreInstanceState(savedInstanceState: Bundle) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
         _backstack.clear()
         _backstack.addAll(
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
@@ -337,6 +217,15 @@ class Router internal constructor(
 
         _backstack.forEach(this::moveControllerToCorrectState)
         rebind()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        prepareForContainerRemoval()
+
+        val backstack = _backstack.map(Controller::saveInstanceState)
+        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
+        outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
     }
 
     private fun performControllerChange(
@@ -397,60 +286,15 @@ class Router internal constructor(
             }
     }
 
-    private data class ListenerEntry<T>(
-        val listener: T,
-        val recursive: Boolean
-    )
-
     companion object {
         private const val KEY_BACKSTACK = "Router.backstack"
-        private const val KEY_CONTAINER_ID = "Router.containerId"
         private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
-        private const val KEY_TAG = "Router.tag"
-
-        fun fromBundle(
-            bundle: Bundle,
-            routerManager: RouterManager
-        ): Router = Router(
-            bundle.getInt(KEY_CONTAINER_ID),
-            bundle.getString(KEY_TAG),
-            routerManager
-        )
     }
 }
-
-val Router.hasContainer: Boolean get() = container != null
 
 val Router.backstackSize: Int get() = backstack.size
 
 val Router.hasRoot: Boolean get() = backstackSize > 0
-
-fun Router.getControllerByTagOrNull(tag: String): Controller? =
-    backstack.firstNotNullResultOrNull {
-        if (it.tag == tag) {
-            it
-        } else {
-            it.childRouterManager
-                .getControllerByTagOrNull(tag)
-        }
-    }
-
-fun Router.getControllerByTag(tag: String): Controller =
-    getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
-
-fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
-    backstack.firstNotNullResultOrNull {
-        if (it.instanceId == instanceId) {
-            it
-        } else {
-            it.childRouterManager
-                .getControllerByInstanceIdOrNull(instanceId)
-        }
-    }
-
-fun Router.getControllerByInstanceId(instanceId: String): Controller =
-    getControllerByInstanceIdOrNull(instanceId)
-        ?: error("couldn't find controller with instanceId: $instanceId")
 
 /**
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.

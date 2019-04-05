@@ -122,13 +122,10 @@ abstract class Controller {
         }
     }
 
-    private var superCalled = false
-
     /**
      * Will be called when this controller gets attached to its router
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
-        superCalled = true
         // restore the full instance state of child routers
         childRouterManager.startPostponedFullRestore()
     }
@@ -137,7 +134,6 @@ abstract class Controller {
      * Called when this Controller has been destroyed.
      */
     protected open fun onDestroy() {
-        superCalled = true
     }
 
     /**
@@ -153,49 +149,42 @@ abstract class Controller {
      * Called when the view of this controller gets destroyed
      */
     protected open fun onDestroyView(view: View) {
-        superCalled = true
     }
 
     /**
      * Called when this Controller is attached to its container
      */
     protected open fun onAttach(view: View) {
-        superCalled = true
     }
 
     /**
      * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
-        superCalled = true
     }
 
     /**
      * Will be called when the instance state gets restores
      */
     protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        superCalled = true
     }
 
     /**
      * Called to save the instance state of this controller
      */
     protected open fun onSaveInstanceState(outState: Bundle) {
-        superCalled = true
     }
 
     /**
      * Will be called when the view state gets restored
      */
     protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        superCalled = true
     }
 
     /**
      * Called to save the view state of this controller
      */
     protected open fun onSaveViewState(view: View, outState: Bundle) {
-        superCalled = true
     }
 
     /**
@@ -230,13 +219,13 @@ abstract class Controller {
 
         state = CREATED
 
-        requireSuperCalled { onCreate(instanceState) }
+        onCreate(instanceState)
 
         notifyListeners { it.postCreate(this, instanceState) }
 
         // restore the instance state
         if (instanceState != null) {
-            requireSuperCalled { onRestoreInstanceState(instanceState) }
+            onRestoreInstanceState(instanceState)
             notifyListeners { it.onRestoreInstanceState(this, instanceState) }
         }
 
@@ -252,7 +241,7 @@ abstract class Controller {
 
         state = DESTROYED
 
-        requireSuperCalled(this::onDestroy)
+        onDestroy()
 
         notifyListeners { it.postDestroy(this) }
     }
@@ -276,7 +265,7 @@ abstract class Controller {
             ?.let(view::restoreHierarchyState)
 
         if (savedViewState != null) {
-            requireSuperCalled { onRestoreViewState(view, savedViewState) }
+            onRestoreViewState(view, savedViewState)
             notifyListeners { it.onRestoreViewState(this, view, savedViewState) }
         }
 
@@ -299,7 +288,7 @@ abstract class Controller {
 
         notifyListeners { it.preDestroyView(this, view) }
 
-        requireSuperCalled { onDestroyView(view) }
+        onDestroyView(view)
 
         view.removeOnAttachStateChangeListener(viewAttachListener)
 
@@ -322,7 +311,7 @@ abstract class Controller {
 
         state = ATTACHED
 
-        requireSuperCalled { onAttach(view) }
+        onAttach(view)
 
         notifyListeners { it.postAttach(this, view) }
 
@@ -342,7 +331,7 @@ abstract class Controller {
 
         state = VIEW_CREATED
 
-        requireSuperCalled { onDetach(view) }
+        onDetach(view)
 
         notifyListeners { it.postDetach(this, view) }
     }
@@ -364,7 +353,7 @@ abstract class Controller {
         popChangeHandler?.let { outState.putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
 
         val savedState = Bundle(javaClass.classLoader)
-        requireSuperCalled { onSaveInstanceState(savedState) }
+        onSaveInstanceState(savedState)
         notifyListeners { it.onSaveInstanceState(this, savedState) }
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
@@ -405,7 +394,7 @@ abstract class Controller {
         viewState.putSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY, hierarchyState)
 
         val stateBundle = Bundle(javaClass.classLoader)
-        requireSuperCalled { onSaveViewState(view, stateBundle) }
+        onSaveViewState(view, stateBundle)
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
         notifyListeners { it.onSaveViewState(this, view, viewState) }
@@ -414,12 +403,6 @@ abstract class Controller {
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
         (listeners + router.getControllerListeners()).forEach(block)
         block(router.internalControllerListener)
-    }
-
-    private inline fun requireSuperCalled(block: () -> Unit) {
-        superCalled = false
-        block()
-        check(superCalled) { "super not called ${javaClass.name}" }
     }
 
     companion object {
@@ -489,14 +472,14 @@ fun Controller.startActivity(intent: Intent) {
 val Controller.childRouters: List<Router> get() = childRouterManager.routers
 
 fun Controller.getChildRouterOrNull(
-    containerId: Int,
+    id: Int,
     tag: String?
-): Router? = childRouterManager.getRouterOrNull(containerId, tag)
+): Router? = childRouterManager.getRouterOrNull(id, tag)
 
 fun Controller.getChildRouter(
-    containerId: Int,
+    id: Int,
     tag: String? = null
-): Router = childRouterManager.getRouter(containerId, tag)
+): Router = childRouterManager.getRouter(id, tag)
 
 fun Controller.removeChildRouter(childRouter: Router) {
     childRouterManager.removeRouter(childRouter)
@@ -513,9 +496,9 @@ fun Controller.getChildRouter(
 ): Router = getChildRouter(container.id, tag)
 
 fun Controller.childRouter(
-    containerId: Int,
+    id: Int,
     tag: String? = null
-): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }
+): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(id, tag) }
 
 fun Controller.tag(tag: String?): Controller = apply { this.tag = tag }
 

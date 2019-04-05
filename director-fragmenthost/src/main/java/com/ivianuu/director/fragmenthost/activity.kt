@@ -20,17 +20,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getRouter
-import com.ivianuu.director.getRouterOrNull
 
-fun FragmentActivity.getRouterOrNull(containerId: Int, tag: String? = null): Router? =
-    routerManager.getRouterOrNull(containerId, tag)
+fun FragmentActivity.getRouterOrNull(id: Int, tag: String? = null): Router? =
+    routerManager.getRouterOrNull(id, tag)
 
 fun FragmentActivity.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? =
     routerManager.getRouterOrNull(container, tag)
 
-fun FragmentActivity.getRouter(containerId: Int, tag: String? = null): Router =
-    routerManager.getRouter(containerId, tag)
+fun FragmentActivity.getRouter(id: Int, tag: String? = null): Router =
+    routerManager.getRouter(id, tag)
 
 fun FragmentActivity.getRouter(container: ViewGroup, tag: String? = null): Router =
     routerManager.getRouter(container, tag)
@@ -39,8 +37,8 @@ fun FragmentActivity.removeRouter(router: Router) {
     routerManager.removeRouter(router)
 }
 
-fun FragmentActivity.router(containerId: Int, tag: String? = null): Lazy<Router> =
-    lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
+fun FragmentActivity.router(id: Int, tag: String? = null): Lazy<Router> =
+    lazy(LazyThreadSafetyMode.NONE) { getRouter(id, tag) }
 
 fun FragmentActivity.postponeFullRestore() {
     RouterHostFragment.postponeFullRestore(this)
