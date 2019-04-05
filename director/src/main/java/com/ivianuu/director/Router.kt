@@ -224,23 +224,6 @@ class Router internal constructor(
     }
 
     /**
-     * Attaches this Routers [backstack] to its [container] if one exists.
-     */
-    fun rebind() {
-        if (container == null) return
-
-        _backstack
-            .filterVisible()
-            .forEach {
-                performControllerChange(
-                    null, it, true,
-                    DefaultChangeHandler(false),
-                    false
-                )
-            }
-    }
-
-    /**
      * Notifies the [listener] on controller changes
      */
     fun addListener(listener: RouterListener, recursive: Boolean = false): Closeable {
@@ -281,6 +264,7 @@ class Router internal constructor(
         if (this.container != container) {
             removeContainer()
             this.container = container
+            rebind()
         }
     }
 
@@ -342,6 +326,7 @@ class Router internal constructor(
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
         _backstack.forEach(this::moveControllerToCorrectState)
+        rebind()
     }
 
     private fun performControllerChange(
@@ -397,6 +382,20 @@ class Router internal constructor(
             it.pushChangeHandler != null
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
+
+    private fun rebind() {
+        if (container == null) return
+
+        _backstack
+            .filterVisible()
+            .forEach {
+                performControllerChange(
+                    null, it, true,
+                    DefaultChangeHandler(false),
+                    false
+                )
+            }
+    }
 
     private data class ListenerEntry<T>(
         val listener: T,

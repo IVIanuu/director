@@ -55,7 +55,6 @@ abstract class RouterPagerAdapter(
             }
         }
 
-        router.rebind()
         configureRouter(router, position)
 
         visibleRouters.put(position, router)

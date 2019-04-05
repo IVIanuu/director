@@ -88,7 +88,6 @@ class RouterManagerTest {
         assertEquals(0, router.backstackSize)
 
         router.restoreInstanceState(savedState)
-        router.rebind()
 
         assertEquals(2, router.backstackSize)
 

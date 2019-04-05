@@ -43,7 +43,6 @@ class ControllerStateTest {
 
         val savedState = router.saveInstanceState()
         router.restoreInstanceState(savedState)
-        router.rebind()
         controller = router.backstack.first() as StateController
 
         assertEquals("my_state", controller.instanceStateValue)
@@ -58,7 +57,6 @@ class ControllerStateTest {
 
         val savedState = router.saveInstanceState()
         router.restoreInstanceState(savedState)
-        router.rebind()
         controller = router.backstack.first() as StateController
 
         assertEquals("my_state", controller.viewStateValue)

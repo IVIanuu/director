@@ -214,19 +214,13 @@ class RouterManager(
     private fun restoreFullState() {
         routerStates
             ?.filterKeys(_routers::contains)
-            ?.forEach {
-                it.key.restoreInstanceState(it.value)
-                it.key.rebind()
-            }
+            ?.forEach { it.key.restoreInstanceState(it.value) }
         routerStates = null
     }
 
     private fun Router.restoreContainer() {
         if (!hasContainer) {
-            rootView?.findViewById<ViewGroup>(containerId)?.let {
-                setContainer(it)
-                rebind()
-            }
+            rootView?.findViewById<ViewGroup>(containerId)?.let(this::setContainer)
         }
     }
 
@@ -237,21 +231,11 @@ class RouterManager(
 }
 
 fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? {
-    return getRouterOrNull(container.id, tag)?.also {
-        if (!it.hasContainer) {
-            it.setContainer(container)
-            it.rebind()
-        }
-    }
+    return getRouterOrNull(container.id, tag)?.also { it.setContainer(container) }
 }
 
 fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router {
-    return getRouter(container.id, tag).also {
-        if (!it.hasContainer) {
-            it.setContainer(container)
-            it.rebind()
-        }
-    }
+    return getRouter(container.id, tag).also { it.setContainer(container) }
 }
 
 fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
