@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ChangeHandler
-import com.ivianuu.director.internal.moveView
+import com.ivianuu.director.moveView
 
 private object NoopListener : MockChangeHandler.Listener
 

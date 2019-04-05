@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.ControllerState.DESTROYED
-import com.ivianuu.director.internal.ControllerChangeManager
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 import com.ivianuu.stdlibx.safeAs
 import com.ivianuu.stdlibx.takeLastUntil
@@ -70,6 +69,10 @@ class Router internal constructor(
 
     private val destroyingControllers = mutableListOf<Controller>()
     private val toBeInvisibleControllers = mutableListOf<Controller>()
+
+    private val handlersByController =
+        mutableMapOf<Controller, ChangeHandler>()
+
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
@@ -143,8 +146,7 @@ class Router internal constructor(
                 .filterNot(newVisibleControllers::contains)
                 .forEach { controller ->
                     toBeInvisibleControllers.add(controller)
-
-                    ControllerChangeManager.cancelChange(controller.instanceId)
+                    cancelChange(controller)
                     val localHandler = handler?.copy()
                         ?: controller.popChangeHandler?.copy()
                         ?: DefaultChangeHandler()
@@ -346,16 +348,70 @@ class Router internal constructor(
         forceRemoveFromViewOnPush: Boolean
     ) {
         val container = container ?: return
-        ControllerChangeManager.executeChange(
-            this,
-            from,
-            to,
-            isPush,
+        val listeners = getListeners()
+
+        val handlerToUse = when {
+            handler == null -> DefaultChangeHandler()
+            handler.hasBeenUsed -> handler.copy()
+            else -> handler
+        }
+        handlerToUse.hasBeenUsed = true
+
+        from?.let(this::cancelChange)
+        to?.let { handlersByController[it] = handlerToUse }
+
+        listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
+
+        val toView = to?.view ?: to?.createView(container)
+        val fromView = from?.view
+
+        val toIndex = getToIndex(to, from, isPush)
+
+        val callback = object : ChangeHandler.Callback {
+            override fun addToView() {
+                val addingToView = toView != null && toView.parent == null
+                val movingToView = toView != null && container.indexOfChild(toView) != toIndex
+                if (addingToView) {
+                    container.addView(toView, toIndex)
+                } else if (movingToView) {
+                    container.moveView(toView!!, toIndex)
+                }
+            }
+
+            override fun removeFromView() {
+                if (fromView != null && (!isPush || handlerToUse.removesFromViewOnPush
+                            || forceRemoveFromViewOnPush)
+                ) {
+                    container.removeView(fromView)
+                }
+            }
+
+            override fun onChangeCompleted() {
+                to?.let(handlersByController::remove)
+                listeners.forEach {
+                    it.onChangeCompleted(
+                        this@Router,
+                        to,
+                        from,
+                        isPush,
+                        container,
+                        handlerToUse
+                    )
+                }
+            }
+        }
+
+        val changeData = ChangeData(
             container,
-            handler,
-            forceRemoveFromViewOnPush,
-            getListeners()
+            fromView,
+            toView,
+            isPush,
+            callback,
+            toIndex,
+            forceRemoveFromViewOnPush
         )
+
+        handlerToUse.performChange(changeData)
     }
 
     private fun moveControllerToCorrectState(controller: Controller) {
@@ -371,9 +427,7 @@ class Router internal constructor(
     }
 
     private fun prepareForContainerRemoval() {
-        _backstack.reversed().forEach {
-            ControllerChangeManager.cancelChange(it.instanceId)
-        }
+        _backstack.reversed().forEach(this::cancelChange)
     }
 
     private fun List<Controller>.filterVisible(): List<Controller> =
@@ -394,6 +448,37 @@ class Router internal constructor(
                     false
                 )
             }
+    }
+
+    private fun cancelChange(controller: Controller) {
+        handlersByController.remove(controller)?.cancel()
+    }
+
+    private fun getToIndex(
+        to: Controller?,
+        from: Controller?,
+        isPush: Boolean
+    ): Int {
+        val container = container ?: return -1
+        if (to == null) return -1
+        return if (isPush || from == null) {
+            if (container.childCount == 0) return -1
+            val backstackIndex = backstack.indexOfFirst { it == to }
+            (0 until container.childCount)
+                .map(container::getChildAt)
+                .indexOfFirst { v ->
+                    backstack.indexOfFirst { it.view == v } > backstackIndex
+                }
+        } else {
+            val currentToIndex = container.indexOfChild(to.view)
+            val currentFromIndex = container.indexOfChild(from.view)
+
+            if (currentToIndex == -1 || currentToIndex > currentFromIndex) {
+                container.indexOfChild(from.view)
+            } else {
+                currentToIndex
+            }
+        }
     }
 
     private data class ListenerEntry<T>(

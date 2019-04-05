@@ -16,8 +16,6 @@
 
 package com.ivianuu.director
 
-import com.ivianuu.director.internal.newInstanceOrThrow
-
 /**
  * A factory for [Controller]s
  */

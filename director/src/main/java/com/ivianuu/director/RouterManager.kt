@@ -18,7 +18,6 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.director.internal.TransactionIndexer
 import com.ivianuu.stdlibx.firstNotNullResultOrNull
 
 /**

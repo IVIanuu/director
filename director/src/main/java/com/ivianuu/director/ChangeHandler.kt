@@ -1,7 +1,6 @@
 package com.ivianuu.director
 
 import android.os.Bundle
-import com.ivianuu.director.internal.newInstanceOrThrow
 
 /**
  * Swaps views on controller changes
