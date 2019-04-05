@@ -135,8 +135,13 @@ class Router internal constructor(
                         handler = localHandler,
                         forceRemoveFromViewOnPush = true,
                         fromDetached = {
-                            controller.destroyView(false)
-                            if (!newBackstack.contains(controller)) {
+                            controller.detach()
+
+                            val willBeDestroyed = !newBackstack.contains(controller)
+
+                            controller.destroyView(willBeDestroyed)
+
+                            if (willBeDestroyed) {
                                 controller.destroy()
                             }
                         }
@@ -149,12 +154,18 @@ class Router internal constructor(
                 .filterNot(oldVisibleControllers::contains)
                 .forEachIndexed { i, controller ->
                     val localHandler = handler?.copy() ?: controller.pushChangeHandler
+                    val prevController = newVisibleControllers.getOrNull(i - 1)
                     performControllerChange(
-                        newVisibleControllers.getOrNull(i - 1),
-                        controller,
-                        true,
-                        localHandler,
-                        false
+                        from = prevController,
+                        to = controller,
+                        isPush = true,
+                        handler = localHandler,
+                        forceRemoveFromViewOnPush = false,
+                        toAttached = {
+                            if (routerManager.isStarted) {
+                                controller.attach()
+                            }
+                        }
                     )
                 }
 
@@ -165,21 +176,29 @@ class Router internal constructor(
                     else oldTopController?.popChangeHandler?.copy())
                     ?: DefaultChangeHandler()
 
-                val forceRemoveFromViewOnPush =
-                    oldTopController != null && !newVisibleControllers.contains(oldTopController)
+                val willBeVisible =
+                    oldTopController != null && newVisibleControllers.contains(oldTopController)
 
                 performControllerChange(
                     from = oldTopController,
                     to = newTopController,
                     isPush = isPush,
                     handler = localHandler,
-                    forceRemoveFromViewOnPush = forceRemoveFromViewOnPush,
+                    forceRemoveFromViewOnPush = !willBeVisible,
+                    toAttached = {
+                        if (routerManager.isStarted) {
+                            newTopController?.attach()
+                        }
+                    },
                     fromDetached = {
                         if (oldTopController != null) {
+                            if (!willBeVisible) {
+                                oldTopController.detach()
+                            }
+
                             val willBeDestroyed = !newBackstack.contains(oldTopController)
 
-                            // destroy the view
-                            if (forceRemoveFromViewOnPush) {
+                            if (!willBeVisible) {
                                 oldTopController.destroyView(!willBeDestroyed)
                             }
 
@@ -292,12 +311,18 @@ class Router internal constructor(
     }
 
     internal fun onStart() {
-        _backstack.forEach(Controller::attach)
+        // attach visible controllers
+        _backstack
+            .filterVisible()
+            .forEach(Controller::attach)
     }
 
     internal fun onStop() {
         prepareForContainerRemoval()
-        _backstack.reversed().forEach(Controller::detach)
+        _backstack
+            .filterVisible()
+            .reversed()
+            .forEach(Controller::detach)
     }
 
     internal fun onDestroy() {
@@ -371,11 +396,15 @@ class Router internal constructor(
                 val movingToView = toView != null && container.indexOfChild(toView) != toIndex
                 if (addingToView) {
                     container.addView(toView, toIndex)
-                    toAttached?.invoke()
+                    toViewAdded()
                 } else if (movingToView) {
                     container.moveView(toView!!, toIndex)
-                    toAttached?.invoke()
+                    toViewAdded()
                 }
+            }
+
+            override fun toViewAdded() {
+                toAttached?.invoke()
             }
 
             override fun removeFromView() {
@@ -383,8 +412,12 @@ class Router internal constructor(
                             || forceRemoveFromViewOnPush)
                 ) {
                     container.removeView(fromView)
-                    fromDetached?.invoke()
+                    fromViewRemoved()
                 }
+            }
+
+            override fun fromViewRemoved() {
+                fromDetached?.invoke()
             }
 
             override fun onChangeCompleted() {
@@ -419,7 +452,7 @@ class Router internal constructor(
     private fun moveControllerToCorrectState(controller: Controller) {
         controller.create(this)
 
-        if (routerManager.isStarted) {
+        if (routerManager.isStarted && controller.view?.windowToken != null) {
             controller.attach()
         }
 
@@ -445,9 +478,16 @@ class Router internal constructor(
             .filterVisible()
             .forEach {
                 performControllerChange(
-                    null, it, true,
-                    DefaultChangeHandler(false),
-                    false
+                    from = null,
+                    to = it,
+                    isPush = true,
+                    handler = DefaultChangeHandler(false),
+                    forceRemoveFromViewOnPush = false,
+                    toAttached = {
+                        if (routerManager.isStarted) {
+                            it.attach()
+                        }
+                    }
                 )
             }
     }

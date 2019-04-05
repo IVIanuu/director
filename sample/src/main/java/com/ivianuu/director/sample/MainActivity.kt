@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ivianuu.director.*
 import com.ivianuu.director.fragmenthost.getRouter
+import com.ivianuu.director.fragmenthost.postponeFullRestore
+import com.ivianuu.director.fragmenthost.startPostponedFullRestore
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerListener
 import kotlinx.android.synthetic.main.activity_main.controller_container
@@ -18,6 +20,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         get() = findViewById(R.id.toolbar)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        postponeFullRestore()
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
@@ -26,6 +29,8 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
             addControllerListener(LoggingControllerListener())
 
             addToolbarHandling()
+
+            startPostponedFullRestore()
 
             if (!hasRoot) {
                 setRoot(HomeController())

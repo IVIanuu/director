@@ -41,7 +41,9 @@ abstract class ChangeHandler {
 
     interface Callback {
         fun addToView()
+        fun toViewAdded()
         fun removeFromView()
+        fun fromViewRemoved()
         fun onChangeCompleted()
     }
 

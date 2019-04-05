@@ -111,16 +111,6 @@ abstract class Controller {
 
     private val listeners = mutableListOf<ControllerListener>()
 
-    private val viewAttachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
-            attach()
-        }
-
-        override fun onViewDetachedFromWindow(v: View) {
-            detach()
-        }
-    }
-
     private var superCalled = false
 
     /**
@@ -281,8 +271,6 @@ abstract class Controller {
 
         viewState = null
 
-        view.addOnAttachStateChangeListener(viewAttachListener)
-
         view.safeAs<ViewGroup>()?.let(childRouterManager::setRootView)
 
         return view
@@ -300,8 +288,6 @@ abstract class Controller {
 
         requireSuperCalled { onDestroyView(view) }
 
-        view.removeOnAttachStateChangeListener(viewAttachListener)
-
         this.view = null
 
         notifyListeners { it.postDestroyView(this) }
@@ -311,11 +297,6 @@ abstract class Controller {
         if (isAttached) return
 
         val view = view ?: return
-
-        // View.isAttached
-        if (view.windowToken == null) return
-
-        if (!routerManager.isStarted) return
 
         notifyListeners { it.preAttach(this, view) }
 
