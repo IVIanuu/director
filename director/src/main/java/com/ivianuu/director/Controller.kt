@@ -222,6 +222,7 @@ abstract class Controller {
 
         notifyListeners { it.postCreate(this, instanceState) }
 
+        allState?.let(this::restoreUserInstanceState)
         allState = null
     }
 
@@ -346,8 +347,11 @@ abstract class Controller {
 
     internal fun restoreInstanceState(savedInstanceState: Bundle) {
         restoreInternalState(savedInstanceState)
+        restoreUserInstanceState(savedInstanceState)
+    }
 
-        val instanceState = allState?.getBundle(KEY_SAVED_STATE)
+    private fun restoreUserInstanceState(savedInstanceState: Bundle) {
+        val instanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)
             ?.also { it.classLoader = this::class.java.classLoader }
 
         // restore the instance state
