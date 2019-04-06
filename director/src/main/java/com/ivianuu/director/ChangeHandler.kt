@@ -48,8 +48,12 @@ abstract class ChangeHandler {
     }
 
     internal fun toBundle(): Bundle = Bundle().apply {
+        classLoader = this@ChangeHandler::class.java.classLoader
+
         putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
-        putBundle(KEY_SAVED_STATE, Bundle().also(this@ChangeHandler::saveInstanceState))
+        putBundle(KEY_SAVED_STATE, Bundle()
+            .also { it.classLoader = this@ChangeHandler::class.java.classLoader }
+            .also(this@ChangeHandler::saveInstanceState))
     }
 
     companion object {

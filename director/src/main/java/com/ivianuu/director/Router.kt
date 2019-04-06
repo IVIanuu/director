@@ -337,7 +337,7 @@ class Router internal constructor(
         // attach visible controllers
         _backstack
             .filterVisible()
-            .filter { it.view?.windowToken != null }
+            .filter { it.view?.parent != null }
             .filterNot(Controller::isAttached)
             .forEach(Controller::attach)
     }
@@ -478,7 +478,7 @@ class Router internal constructor(
     private fun moveControllerToCorrectState(controller: Controller) {
         controller.create(this)
 
-        if (routerManager.isStarted && controller.view?.windowToken != null) {
+        if (routerManager.isStarted && controller.view?.parent != null) {
             controller.attach()
         }
 

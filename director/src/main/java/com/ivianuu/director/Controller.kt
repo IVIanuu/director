@@ -211,7 +211,7 @@ abstract class Controller {
         _router = router
 
         val instanceState = allState?.getBundle(KEY_SAVED_STATE)
-            ?.also { it.classLoader = javaClass.classLoader }
+            ?.also { it.classLoader = this::class.java.classLoader }
 
         // create
         notifyListeners { it.preCreate(this, instanceState) }
@@ -221,12 +221,6 @@ abstract class Controller {
         requireSuperCalled { onCreate(instanceState) }
 
         notifyListeners { it.postCreate(this, instanceState) }
-
-        // restore the instance state
-        if (instanceState != null) {
-            requireSuperCalled { onRestoreInstanceState(instanceState) }
-            notifyListeners { it.onRestoreInstanceState(this, instanceState) }
-        }
 
         allState = null
     }
@@ -245,6 +239,7 @@ abstract class Controller {
 
     internal fun createView(container: ViewGroup): View {
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
+            ?.also { it.classLoader = this::class.java.classLoader }
 
         notifyListeners { it.preCreateView(this, savedViewState) }
 
@@ -258,7 +253,9 @@ abstract class Controller {
 
         notifyListeners { it.postCreateView(this, view, savedViewState) }
 
-        viewState?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
+        // restore hierarchy
+        viewState
+            ?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
             ?.let(view::restoreHierarchyState)
 
         if (savedViewState != null) {
@@ -326,7 +323,7 @@ abstract class Controller {
             saveViewState()
         }
 
-        val outState = Bundle()
+        val outState = Bundle(this::class.java.classLoader)
         outState.putString(KEY_CLASS_NAME, javaClass.name)
         outState.putBundle(KEY_VIEW_STATE, viewState)
         outState.putBundle(KEY_ARGS, args)
@@ -337,7 +334,7 @@ abstract class Controller {
         pushChangeHandler?.let { outState.putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
         popChangeHandler?.let { outState.putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
 
-        val savedState = Bundle(javaClass.classLoader)
+        val savedState = Bundle(this::class.java.classLoader)
         requireSuperCalled { onSaveInstanceState(savedState) }
         notifyListeners { it.onSaveInstanceState(this, savedState) }
         outState.putBundle(KEY_SAVED_STATE, savedState)
@@ -347,15 +344,26 @@ abstract class Controller {
         return outState
     }
 
-    private fun restoreInternalState() {
-        val savedInstanceState = allState!!
+    internal fun restoreInstanceState(savedInstanceState: Bundle) {
+        restoreInternalState(savedInstanceState)
 
+        val instanceState = allState?.getBundle(KEY_SAVED_STATE)
+            ?.also { it.classLoader = this::class.java.classLoader }
+
+        // restore the instance state
+        if (instanceState != null) {
+            requireSuperCalled { onRestoreInstanceState(instanceState) }
+            notifyListeners { it.onRestoreInstanceState(this, instanceState) }
+        }
+    }
+
+    private fun restoreInternalState(savedInstanceState: Bundle) {
         args = savedInstanceState.getBundle(KEY_ARGS)
-            ?.also { it.classLoader = javaClass.classLoader }
+            ?.also { it.classLoader = this::class.java.classLoader }
             ?: args
 
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
-            ?.also { it.classLoader = javaClass.classLoader }
+            ?.also { it.classLoader = this::class.java.classLoader }
 
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
         tag = savedInstanceState.getString(KEY_TAG)
@@ -372,13 +380,16 @@ abstract class Controller {
     private fun saveViewState() {
         val view = view ?: error("cannot save save view state while view == null")
 
-        val viewState = Bundle(javaClass.classLoader).also { this.viewState = it }
+        val viewState = Bundle()
+            .also { it.classLoader = this::class.java.classLoader }
+            .also { this.viewState = it }
 
         val hierarchyState = SparseArray<Parcelable>()
         view.saveHierarchyState(hierarchyState)
         viewState.putSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY, hierarchyState)
 
-        val stateBundle = Bundle(javaClass.classLoader)
+        val stateBundle = Bundle()
+            .also { it.classLoader = this::class.java.classLoader }
         requireSuperCalled { onSaveViewState(view, stateBundle) }
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
@@ -415,7 +426,7 @@ abstract class Controller {
 
             return factory.createController(cls.classLoader!!, className).apply {
                 this.allState = bundle
-                restoreInternalState()
+                restoreInternalState(bundle)
             }
         }
     }
