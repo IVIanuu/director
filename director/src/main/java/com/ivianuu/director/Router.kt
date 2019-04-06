@@ -65,6 +65,29 @@ class Router internal constructor(
     ) {
         if (newBackstack == _backstack) return
 
+        // do not allow pushing the same controller twice
+        newBackstack
+            .groupBy { it }
+            .forEach {
+                check(it.value.size == 1) {
+                    "Trying to push the same controller to the backstack more than once. $it"
+                }
+            }
+
+        // do not allow pushing destroyed controllers
+        newBackstack.forEach {
+            check(it.state != DESTROYED) {
+                "Trying to push a controller that has already been destroyed $it"
+            }
+        }
+
+        // do not allow pushing controllers which are already attached to another router
+        newBackstack.forEach {
+            check(!it.isCreated || it.router == this) {
+                "Trying to push a controller which is attached to another router $it"
+            }
+        }
+
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
@@ -78,15 +101,6 @@ class Router internal constructor(
 
         newBackstack.forEachIndexed { i, controller ->
             controller.transactionIndex = indices[i]
-        }
-
-        check(newBackstack.size == newBackstack.distinct().size) {
-            "Trying to push the same controller to the backstack more than once."
-        }
-        newBackstack.forEach {
-            check(it.state != DESTROYED) {
-                "Trying to push a controller that has already been destroyed ${it.javaClass.simpleName}"
-            }
         }
 
         val oldBackstack = _backstack.toList()
@@ -290,7 +304,7 @@ class Router internal constructor(
      */
     fun setContainer(container: ViewGroup) {
         require(container.id == containerId) {
-            "container id of the container must match the container id of this router"
+            "Container id of the container must match the container id of this router $containerId"
         }
 
         if (this.container != container) {
