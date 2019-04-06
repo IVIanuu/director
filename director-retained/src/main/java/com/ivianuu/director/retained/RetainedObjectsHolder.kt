@@ -32,17 +32,21 @@ internal class RetainedObjectsHolder : ViewModel() {
         mutableMapOf<String, RetainedObjects>()
     private val registeredControllers = mutableSetOf<String>()
 
-    internal fun getRetainedObjects(controller: Controller): RetainedObjects {
+    internal fun getRetainedObjects(controller: Controller): RetainedObjects = synchronized(this) {
         controller.removeRetainedObjectsOnPostDestroy()
-        return retainedObjects.getOrPut(controller.instanceId, ::RetainedObjects)
+        return@getRetainedObjects retainedObjects.getOrPut(controller.instanceId, ::RetainedObjects)
     }
 
     private fun Controller.removeRetainedObjectsOnPostDestroy() {
-        if (registeredControllers.add(instanceId)) {
-            doOnPostDestroy {
-                if (!activity.isChangingConfigurations) {
-                    this@RetainedObjectsHolder.retainedObjects.remove(instanceId)
-                    this@RetainedObjectsHolder.registeredControllers.remove(instanceId)
+        synchronized(this) {
+            if (registeredControllers.add(instanceId)) {
+                doOnPostDestroy {
+                    if (!activity.isChangingConfigurations) {
+                        synchronized(this) {
+                            this@RetainedObjectsHolder.retainedObjects.remove(instanceId)
+                            this@RetainedObjectsHolder.registeredControllers.remove(instanceId)
+                        }
+                    }
                 }
             }
         }
