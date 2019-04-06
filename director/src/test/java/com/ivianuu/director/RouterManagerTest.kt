@@ -34,9 +34,6 @@ class RouterManagerTest {
 
     @Test
     fun testAddRemoveRouters() {
-        val controller1 = TestController()
-        val controller2 = TestController()
-
         assertEquals(0, manager.routers.size)
 
         val router1 =
@@ -44,30 +41,18 @@ class RouterManagerTest {
         val router2 =
             manager.getRouter(activityProxy.view2)
 
-        router1.setRoot(controller1)
-        router2.setRoot(controller2)
-
         assertEquals(2, manager.routers.size)
         assertEquals(router1, manager.routers[0])
         assertEquals(router2, manager.routers[1])
-        assertEquals(1, router1.backstackSize)
-        assertEquals(1, router2.backstackSize)
-        assertEquals(controller1, router1.backstack.firstOrNull())
-        assertEquals(controller2, router2.backstack.firstOrNull())
 
         manager.removeRouter(router2)
 
         assertEquals(1, manager.routers.size)
         assertEquals(router1, manager.routers[0])
-        assertEquals(1, router1.backstackSize)
-        assertEquals(0, router2.backstackSize)
-        assertEquals(controller1, router1.backstack.firstOrNull())
 
         manager.removeRouter(router1)
 
         assertEquals(0, manager.routers.size)
-        assertEquals(0, router1.backstackSize)
-        assertEquals(0, router2.backstackSize)
     }
 
     @Test
