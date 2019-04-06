@@ -134,7 +134,7 @@ class Router internal constructor(
                         isPush = isPush,
                         handler = localHandler,
                         forceRemoveFromViewOnPush = true,
-                        fromDetached = {
+                        onFromDetached = {
                             controller.detach()
 
                             val willBeDestroyed = !newBackstack.contains(controller)
@@ -161,7 +161,7 @@ class Router internal constructor(
                         isPush = true,
                         handler = localHandler,
                         forceRemoveFromViewOnPush = false,
-                        toAttached = {
+                        onToAttached = {
                             if (routerManager.isStarted) {
                                 controller.attach()
                             }
@@ -185,12 +185,12 @@ class Router internal constructor(
                     isPush = isPush,
                     handler = localHandler,
                     forceRemoveFromViewOnPush = !willBeVisible,
-                    toAttached = {
+                    onToAttached = {
                         if (routerManager.isStarted) {
                             newTopController?.attach()
                         }
                     },
-                    fromDetached = {
+                    onFromDetached = {
                         if (oldTopController != null) {
                             if (!willBeVisible) {
                                 oldTopController.detach()
@@ -366,8 +366,8 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ChangeHandler? = null,
         forceRemoveFromViewOnPush: Boolean,
-        toAttached: (() -> Unit)? = null,
-        fromDetached: (() -> Unit)? = null,
+        onToAttached: (() -> Unit)? = null,
+        onFromDetached: (() -> Unit)? = null,
         onComplete: (() -> Unit?)? = null
     ) {
         val container = container ?: return
@@ -404,7 +404,7 @@ class Router internal constructor(
             }
 
             override fun toViewAdded() {
-                toAttached?.invoke()
+                onToAttached?.invoke()
             }
 
             override fun removeFromView() {
@@ -417,7 +417,7 @@ class Router internal constructor(
             }
 
             override fun fromViewRemoved() {
-                fromDetached?.invoke()
+                onFromDetached?.invoke()
             }
 
             override fun onChangeCompleted() {
@@ -483,7 +483,7 @@ class Router internal constructor(
                     isPush = true,
                     handler = DefaultChangeHandler(false),
                     forceRemoveFromViewOnPush = false,
-                    toAttached = {
+                    onToAttached = {
                         if (routerManager.isStarted) {
                             it.attach()
                         }
