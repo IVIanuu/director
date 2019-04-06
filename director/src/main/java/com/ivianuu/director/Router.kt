@@ -116,7 +116,7 @@ class Router internal constructor(
             .filter { old -> newBackstack.none { it == old } }
 
         val destroyedInvisibleControllers = destroyedControllers
-            .filterNot(Controller::isAttached)
+            .filterNot(Controller::isViewCreated)
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach(this::moveControllerToCorrectState)
@@ -228,10 +228,7 @@ class Router internal constructor(
         }
 
         // destroy all invisible transactions here
-        destroyedInvisibleControllers.reversed().forEach {
-            it.destroyView(false)
-            it.destroy()
-        }
+        destroyedInvisibleControllers.reversed().forEach(Controller::destroy)
     }
 
     /**
@@ -323,7 +320,16 @@ class Router internal constructor(
     fun removeContainer() {
         if (container == null) return
         prepareForContainerRemoval()
-        _backstack.reversed().forEach { it.destroyView(false) }
+        _backstack.reversed()
+            .forEach {
+                if (it.isAttached) {
+                    it.detach()
+                }
+
+                if (it.isViewCreated) {
+                    it.destroyView(false)
+                }
+            }
         container = null
     }
 
@@ -331,19 +337,22 @@ class Router internal constructor(
         // attach visible controllers
         _backstack
             .filterVisible()
+            .filter { it.view?.windowToken != null }
+            .filterNot(Controller::isAttached)
             .forEach(Controller::attach)
     }
 
     internal fun onStop() {
         prepareForContainerRemoval()
         _backstack
-            .filterVisible()
+            .filter(Controller::isAttached)
             .reversed()
             .forEach(Controller::detach)
     }
 
     internal fun onDestroy() {
-        _backstack.reversed().forEach(Controller::destroy)
+        _backstack.reversed()
+            .forEach(Controller::destroy)
     }
 
     /**

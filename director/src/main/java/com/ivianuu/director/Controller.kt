@@ -114,7 +114,7 @@ abstract class Controller {
     private var superCalled = false
 
     /**
-     * Will be called when this controller gets attached to its router
+     * Will be called once when this controller gets attached to its router
      */
     protected open fun onCreate(savedInstanceState: Bundle?) {
         superCalled = true
@@ -208,7 +208,6 @@ abstract class Controller {
     }
 
     internal fun create(router: Router) {
-        if (this::_router.isInitialized) return
         _router = router
 
         val instanceState = allState?.getBundle(KEY_SAVED_STATE)
@@ -233,8 +232,6 @@ abstract class Controller {
     }
 
     internal fun destroy() {
-        if (state == DESTROYED) return
-
         childRouterManager.onDestroy()
 
         notifyListeners { it.preDestroy(this) }
@@ -277,7 +274,7 @@ abstract class Controller {
     }
 
     internal fun destroyView(saveViewState: Boolean) {
-        val view = view ?: return
+        val view = view ?: error("cannot destroy non existing view")
         if (saveViewState && viewState == null) {
             saveViewState()
         }
@@ -289,14 +286,13 @@ abstract class Controller {
         requireSuperCalled { onDestroyView(view) }
 
         this.view = null
+        state = CREATED
 
         notifyListeners { it.postDestroyView(this) }
     }
 
     internal fun attach() {
-        if (isAttached) return
-
-        val view = view ?: return
+        val view = view ?: error("cannot attach while view == null")
 
         notifyListeners { it.preAttach(this, view) }
 
@@ -312,9 +308,7 @@ abstract class Controller {
     }
 
     internal fun detach() {
-        if (!isAttached) return
-
-        val view = view ?: return
+        val view = view ?: error("cannot detach non existing view")
 
         childRouterManager.onStop()
 
@@ -354,7 +348,7 @@ abstract class Controller {
     }
 
     private fun restoreInternalState() {
-        val savedInstanceState = allState ?: return
+        val savedInstanceState = allState!!
 
         args = savedInstanceState.getBundle(KEY_ARGS)
             ?.also { it.classLoader = javaClass.classLoader }
@@ -376,7 +370,7 @@ abstract class Controller {
     }
 
     private fun saveViewState() {
-        val view = view ?: return
+        val view = view ?: error("cannot save save view state while view == null")
 
         val viewState = Bundle(javaClass.classLoader).also { this.viewState = it }
 
