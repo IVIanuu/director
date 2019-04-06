@@ -63,6 +63,8 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ChangeHandler? = null
     ) {
+        if (routerManager.isDestroyed) return
+
         if (newBackstack == _backstack) return
 
         // do not allow pushing the same controller twice
@@ -237,6 +239,7 @@ class Router internal constructor(
      * Returns whether or not the back click was handled
      */
     fun handleBack(): Boolean {
+        if (routerManager.isDestroyed) return false
         val topController = backstack.lastOrNull()
 
         return if (topController != null) {
