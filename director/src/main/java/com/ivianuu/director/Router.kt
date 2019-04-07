@@ -317,7 +317,7 @@ class Router internal constructor(
      */
     fun removeContainer() {
         if (container == null) return
-        prepareForContainerRemoval()
+        endAllChanges()
         _backstack.reversed()
             .forEach {
                 if (it.isAttached) {
@@ -341,7 +341,7 @@ class Router internal constructor(
     }
 
     internal fun onStop() {
-        prepareForContainerRemoval()
+        endAllChanges()
         _backstack
             .filter(Controller::isAttached)
             .reversed()
@@ -357,7 +357,7 @@ class Router internal constructor(
      * Saves the state of this router
      */
     fun saveInstanceState(): Bundle {
-        prepareForContainerRemoval()
+        endAllChanges()
 
         return Bundle().apply {
             putInt(KEY_CONTAINER_ID, containerId)
@@ -501,7 +501,7 @@ class Router internal constructor(
         }
     }
 
-    private fun prepareForContainerRemoval() {
+    private fun endAllChanges() {
         _backstack.reversed().forEach(this::cancelChange)
     }
 

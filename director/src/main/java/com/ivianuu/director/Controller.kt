@@ -294,7 +294,7 @@ abstract class Controller {
     }
 
     internal fun destroyView(saveViewState: Boolean) {
-        val view = view ?: error("cannot destroy non existing view")
+        val view = requireView()
         if (saveViewState && viewState == null) {
             saveViewState()
         }
@@ -305,14 +305,14 @@ abstract class Controller {
 
         requireSuperCalled { onDestroyView(view) }
 
-        this.view = null
         state = CREATED
+        this.view = null
 
         notifyListeners { it.postDestroyView(this) }
     }
 
     internal fun attach() {
-        val view = view ?: error("cannot attach while view == null")
+        val view = requireView()
 
         notifyListeners { it.preAttach(this, view) }
 
@@ -328,7 +328,7 @@ abstract class Controller {
     }
 
     internal fun detach() {
-        val view = view ?: error("cannot detach non existing view")
+        val view = requireView()
 
         childRouterManager.onStop()
 
@@ -384,15 +384,14 @@ abstract class Controller {
     }
 
     private fun restoreInternalState(savedInstanceState: Bundle) {
-        args = savedInstanceState.getBundle(KEY_ARGS)
-            ?.also { it.classLoader = this::class.java.classLoader }
-            ?: args
+        args = savedInstanceState.getBundle(KEY_ARGS)!!
+            .also { it.classLoader = this::class.java.classLoader }
 
         viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
             ?.also { it.classLoader = this::class.java.classLoader }
 
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
-        tag = savedInstanceState.getString(KEY_TAG)
+        tag = savedInstanceState.getString(KEY_TAG)!!
         transactionIndex = savedInstanceState.getInt(KEY_TRANSACTION_INDEX)
 
         pushChangeHandler = savedInstanceState.getBundle(KEY_PUSH_CHANGE_HANDLER)
@@ -400,11 +399,13 @@ abstract class Controller {
         popChangeHandler = savedInstanceState.getBundle(KEY_POP_CHANGE_HANDLER)
             ?.let(ChangeHandler.Companion::fromBundle)
 
-        childRouterManager.restoreInstanceState(savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES))
+        childRouterManager.restoreInstanceState(
+            savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES)!!
+        )
     }
 
     private fun saveViewState() {
-        val view = view ?: error("cannot save save view state while view == null")
+        val view = requireView()
 
         val viewState = Bundle()
             .also { it.classLoader = this::class.java.classLoader }
@@ -513,6 +514,9 @@ val Controller.resources: Resources get() = context.resources
 fun Controller.startActivity(intent: Intent) {
     context.startActivity(intent)
 }
+
+fun Controller.requireView(): View =
+    view ?: error("view is only accessible between onCreateView and onDestroyView")
 
 val Controller.childRouters: List<Router> get() = childRouterManager.routers
 

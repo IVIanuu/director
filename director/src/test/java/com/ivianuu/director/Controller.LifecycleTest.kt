@@ -88,7 +88,7 @@ class ControllerLifecycleCallbacksTest {
         assertCalls(expectedCallState, controller)
 
         assertNotNull(controller.view)
-        controller.view!!.reportAttached(false)
+        controller.requireView().reportAttached(false)
 
         expectedCallState.saveViewStateCalls++
         expectedCallState.destroyViewCalls++

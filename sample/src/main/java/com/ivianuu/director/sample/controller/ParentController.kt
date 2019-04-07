@@ -28,7 +28,7 @@ class ParentController : BaseController() {
             context.packageName
         )
 
-        val container = view!!.findViewById<ViewGroup>(frameId)
+        val container = requireView().findViewById<ViewGroup>(frameId)
 
         getChildRouter(container).let { childRouter ->
             childRouter.popsLastView = true

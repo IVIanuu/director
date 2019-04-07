@@ -42,11 +42,11 @@ class ControllerViewLifecycleOwner(controller: Controller) : LifecycleOwner {
 
         if (controller.isViewCreated) {
             listener.preCreateView(controller, null)
-            listener.postCreateView(controller, controller.view!!, null)
+            listener.postCreateView(controller, controller.requireView(), null)
         }
 
         if (controller.isAttached) {
-            listener.postAttach(controller, controller.view!!)
+            listener.postAttach(controller, controller.requireView())
         }
     }
 
