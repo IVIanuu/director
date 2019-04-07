@@ -34,9 +34,9 @@ class RouterManager(
     val routers: List<Router> get() = _routers
     private val _routers = mutableListOf<Router>()
 
-    internal var isStarted = false
+    var isStarted = false
         private set
-    internal var isDestroyed = false
+    var isDestroyed = false
         private set
 
     private var rootView: ViewGroup? = null
@@ -76,7 +76,7 @@ class RouterManager(
      */
     fun onStart() {
         isStarted = true
-        _routers.forEach(Router::onStart)
+        _routers.forEach(Router::start)
     }
 
     /**
@@ -84,19 +84,20 @@ class RouterManager(
      */
     fun onStop() {
         isStarted = false
-        _routers.reversed().forEach(Router::onStop)
+        _routers.reversed().forEach(Router::stop)
     }
 
     /**
      * Notifies that the host was destroyed
      */
     fun onDestroy() {
-        if (!isDestroyed) {
-            isDestroyed = true
-            _routers.reversed().forEach {
+        isDestroyed = true
+        _routers.reversed().forEach {
+            if (it.hasContainer) {
                 it.removeContainer()
-                it.onDestroy()
             }
+
+            it.destroy()
         }
     }
 
@@ -157,9 +158,9 @@ class RouterManager(
             router = Router(containerId, tag, this)
             _routers.add(router)
             if (isDestroyed) {
-                router.onDestroy()
+                router.destroy()
             } else if (isStarted) {
-                router.onStart()
+                router.start()
             }
         }
 
@@ -173,9 +174,13 @@ class RouterManager(
      */
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
-            router.onStop()
-            router.removeContainer()
-            router.onDestroy()
+            if (router.isStarted) {
+                router.stop()
+            }
+            if (router.hasContainer) {
+                router.removeContainer()
+            }
+            router.destroy()
         }
     }
 

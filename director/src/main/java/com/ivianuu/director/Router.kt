@@ -18,6 +18,12 @@ class Router internal constructor(
 ) {
 
     /**
+     * The tag of this router
+     */
+    var tag: String? = tag
+        private set
+
+    /**
      * The current backstack
      */
     val backstack: List<Controller> get() = _backstack
@@ -29,9 +35,15 @@ class Router internal constructor(
     var popsLastView = false
 
     /**
-     * The tag of this router
+     * Whether or not this router is started
      */
-    var tag: String? = tag
+    var isStarted = false
+        private set
+
+    /**
+     * Whether or not this router has been destroyed
+     */
+    var isDestroyed = false
         private set
 
     /**
@@ -63,7 +75,7 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ChangeHandler? = null
     ) {
-        if (routerManager.isDestroyed) return
+        if (isDestroyed) return
 
         if (newBackstack == _backstack) return
 
@@ -177,7 +189,7 @@ class Router internal constructor(
                         handler = localHandler,
                         forceRemoveFromViewOnPush = false,
                         onToAttached = {
-                            if (routerManager.isStarted) {
+                            if (isStarted) {
                                 controller.attach()
                             }
                         }
@@ -200,7 +212,7 @@ class Router internal constructor(
                     handler = localHandler,
                     forceRemoveFromViewOnPush = removesFromView,
                     onToAttached = {
-                        if (routerManager.isStarted) {
+                        if (isStarted) {
                             newTopController?.attach()
                         }
                     },
@@ -234,7 +246,7 @@ class Router internal constructor(
      * Returns whether or not the back click was handled
      */
     fun handleBack(): Boolean {
-        if (routerManager.isDestroyed) return false
+        if (isDestroyed) return false
         val topController = backstack.lastOrNull()
 
         return if (topController != null) {
@@ -305,18 +317,14 @@ class Router internal constructor(
             "Container id of the container must match the container id of this router $containerId"
         }
 
-        if (this.container != container) {
-            removeContainer()
-            this.container = container
-            rebind()
-        }
+        this.container = container
+        rebind()
     }
 
     /**
      * Removes the current container if set
      */
     fun removeContainer() {
-        if (container == null) return
         endAllChanges()
         _backstack.reversed()
             .forEach {
@@ -331,7 +339,8 @@ class Router internal constructor(
         container = null
     }
 
-    internal fun onStart() {
+    internal fun start() {
+        isStarted = true
         // attach visible controllers
         _backstack
             .filterVisible()
@@ -340,7 +349,9 @@ class Router internal constructor(
             .forEach(Controller::attach)
     }
 
-    internal fun onStop() {
+    internal fun stop() {
+        isStarted = false
+
         endAllChanges()
         _backstack
             .filter(Controller::isAttached)
@@ -348,7 +359,9 @@ class Router internal constructor(
             .forEach(Controller::detach)
     }
 
-    internal fun onDestroy() {
+    internal fun destroy() {
+        isDestroyed = true
+
         _backstack.reversed()
             .forEach(Controller::destroy)
     }
@@ -492,11 +505,11 @@ class Router internal constructor(
     private fun moveControllerToCorrectState(controller: Controller) {
         controller.create(this)
 
-        if (routerManager.isStarted && controller.view?.parent != null) {
+        if (isStarted && controller.view?.parent != null) {
             controller.attach()
         }
 
-        if (routerManager.isDestroyed) {
+        if (isDestroyed) {
             controller.destroy()
         }
     }
@@ -525,7 +538,7 @@ class Router internal constructor(
                     handler = DefaultChangeHandler(false),
                     forceRemoveFromViewOnPush = false,
                     onToAttached = {
-                        if (routerManager.isStarted) {
+                        if (isStarted) {
                             it.attach()
                         }
                     }
