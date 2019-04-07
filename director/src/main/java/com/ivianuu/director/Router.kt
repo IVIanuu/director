@@ -687,3 +687,10 @@ fun Router.popTo(
     val newBackstack = backstack.dropLastWhile { it != controller }
     setBackstack(newBackstack, false, handler)
 }
+
+/**
+ * Clears out the backstack
+ */
+fun Router.clear(handler: ChangeHandler? = null) {
+    setBackstack(emptyList(), false, handler)
+}

@@ -22,10 +22,7 @@ import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
-import com.ivianuu.director.Router
-import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getRouter
-import com.ivianuu.director.hasRoot
+import com.ivianuu.director.*
 
 /**
  * An adapter for ViewPagers that uses Routers as pages
@@ -66,6 +63,7 @@ abstract class RouterPagerAdapter(
 
         savedStates.put(position, router.saveInstanceState())
 
+        router.clear()
         manager.removeRouter(router)
 
         visibleRouters.remove(position)
