@@ -391,7 +391,7 @@ abstract class Controller {
             ?.also { it.classLoader = this::class.java.classLoader }
 
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
-        tag = savedInstanceState.getString(KEY_TAG)!!
+        tag = savedInstanceState.getString(KEY_TAG)
         transactionIndex = savedInstanceState.getInt(KEY_TRANSACTION_INDEX)
 
         pushChangeHandler = savedInstanceState.getBundle(KEY_PUSH_CHANGE_HANDLER)
