@@ -409,8 +409,17 @@ class Router internal constructor(
 
         listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
 
+        val toChangeType =
+            if (isPush) ControllerChangeType.PUSH_ENTER else ControllerChangeType.POP_ENTER
+
+        val fromChangeType =
+            if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
+
         val toView = to?.view ?: to?.createView(container)
+        to?.changeStarted(from, handlerToUse, toChangeType)
+
         val fromView = from?.view
+        from?.changeStarted(to, handlerToUse, fromChangeType)
 
         val toIndex = getToIndex(to, from, isPush)
 
@@ -445,10 +454,17 @@ class Router internal constructor(
             }
 
             override fun onChangeCompleted() {
-                to?.let(runningHandlers::remove)
+                from?.changeEnded(to, handlerToUse, fromChangeType)
+
+                if (to != null) {
+                    runningHandlers.remove(to)
+                    to.changeEnded(from, handlerToUse, toChangeType)
+                }
+
                 onComplete?.invoke()
+
                 listeners.forEach {
-                    it.onChangeCompleted(
+                    it.onChangeEnded(
                         this@Router,
                         to,
                         from,

@@ -2,7 +2,9 @@ package com.ivianuu.director.sample.util
 
 import android.os.Bundle
 import android.view.View
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerListener
 
 /**
@@ -76,5 +78,25 @@ class LoggingControllerListener : ControllerListener {
 
     override fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
         controller.d { "on save view state" }
+    }
+
+    override fun onChangeStarted(
+        controller: Controller,
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeStarted(controller, other, changeHandler, changeType)
+        controller.d { "on change started" }
+    }
+
+    override fun onChangeEnded(
+        controller: Controller,
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeEnded(controller, other, changeHandler, changeType)
+        controller.d { "on change ended" }
     }
 }

@@ -40,7 +40,7 @@ interface RouterListener {
     /**
      * Called when a [ChangeHandler] has completed changing [Controller]s
      */
-    fun onChangeCompleted(
+    fun onChangeEnded(
         router: Router,
         to: Controller?,
         from: Controller?,
@@ -98,7 +98,7 @@ private class LambdaRouterListener(
         onChangeStarted?.invoke(router, to, from, isPush, container, handler)
     }
 
-    override fun onChangeCompleted(
+    override fun onChangeEnded(
         router: Router,
         to: Controller?,
         from: Controller?,

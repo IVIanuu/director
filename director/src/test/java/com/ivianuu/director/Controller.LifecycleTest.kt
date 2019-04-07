@@ -508,6 +508,7 @@ class ControllerLifecycleCallbacksTest {
             override fun willStartChange() {
                 expectedCallState.createCalls++
                 expectedCallState.createViewCalls++
+                expectedCallState.changeStartCalls++
                 assertCalls(expectedCallState, controller)
             }
 
@@ -517,6 +518,7 @@ class ControllerLifecycleCallbacksTest {
             }
 
             override fun didEndChange() {
+                expectedCallState.changeEndCalls++
                 assertCalls(expectedCallState, controller)
             }
         })
@@ -528,6 +530,7 @@ class ControllerLifecycleCallbacksTest {
     ): MockChangeHandler {
         return listeningChangeHandler(object : MockChangeHandler.Listener {
             override fun willStartChange() {
+                expectedCallState.changeStartCalls++
                 assertCalls(expectedCallState, controller)
             }
 
@@ -539,6 +542,7 @@ class ControllerLifecycleCallbacksTest {
             }
 
             override fun didEndChange() {
+                expectedCallState.changeEndCalls++
                 assertCalls(expectedCallState, controller)
             }
         })
@@ -613,6 +617,25 @@ class ControllerLifecycleCallbacksTest {
                 currentCallState.saveViewStateCalls++
             }
 
+            override fun onChangeStarted(
+                controller: Controller,
+                other: Controller?,
+                changeHandler: ChangeHandler,
+                changeType: ControllerChangeType
+            ) {
+                super.onChangeStarted(controller, other, changeHandler, changeType)
+                currentCallState.changeStartCalls++
+            }
+
+            override fun onChangeEnded(
+                controller: Controller,
+                other: Controller?,
+                changeHandler: ChangeHandler,
+                changeType: ControllerChangeType
+            ) {
+                super.onChangeEnded(controller, other, changeHandler, changeType)
+                currentCallState.changeEndCalls++
+            }
         })
     }
 

@@ -20,7 +20,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.ChangeHandler
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeType
 
 class TestController : Controller() {
 
@@ -77,6 +79,17 @@ class TestController : Controller() {
         currentCallState.destroyCalls++
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        currentCallState.restoreInstanceStateCalls++
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        currentCallState.saveInstanceStateCalls++
+        outState.putParcelable(KEY_CALL_STATE, currentCallState)
+    }
+
     override fun onRestoreViewState(view: View, savedViewState: Bundle) {
         super.onRestoreViewState(view, savedViewState)
         currentCallState.restoreViewStateCalls++
@@ -87,15 +100,22 @@ class TestController : Controller() {
         currentCallState.saveViewStateCalls++
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentCallState.restoreInstanceStateCalls++
+    override fun onChangeStarted(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeStarted(other, changeHandler, changeType)
+        currentCallState.changeStartCalls++
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        currentCallState.saveInstanceStateCalls++
-        outState.putParcelable(KEY_CALL_STATE, currentCallState)
+    override fun onChangeEnded(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeEnded(other, changeHandler, changeType)
+        currentCallState.changeEndCalls++
     }
 
     companion object {

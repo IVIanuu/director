@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.util
+package com.ivianuu.director
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
-
-@Parcelize
-data class CallState(
-    var createCalls: Int = 0,
-    var destroyCalls: Int = 0,
-
-    var createViewCalls: Int = 0,
-    var destroyViewCalls: Int = 0,
-
-    var attachCalls: Int = 0,
-    var detachCalls: Int = 0,
-
-    var restoreInstanceStateCalls: Int = 0,
-    var saveInstanceStateCalls: Int = 0,
-
-    var restoreViewStateCalls: Int = 0,
-    var saveViewStateCalls: Int = 0,
-
-    var changeStartCalls: Int = 0,
-    var changeEndCalls: Int = 0
-) : Parcelable
+/**
+ * All possible types of [Controller] changes to be used in [ChangeHandler]s
+ */
+enum class ControllerChangeType(val isPush: Boolean, val isEnter: Boolean) {
+    PUSH_ENTER(true, true),
+    PUSH_EXIT(true, false),
+    POP_ENTER(false, true),
+    POP_EXIT(false, false)
+}

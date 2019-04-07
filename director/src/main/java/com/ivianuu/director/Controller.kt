@@ -188,6 +188,28 @@ abstract class Controller {
     }
 
     /**
+     * Called when this Controller begins the process of being swapped in or out of the host view.
+     */
+    protected open fun onChangeStarted(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        superCalled = true
+    }
+
+    /**
+     * Called when this Controller completes the process of being swapped in or out of the host view.
+     */
+    protected open fun onChangeEnded(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        superCalled = true
+    }
+
+    /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
     open fun handleBack(): Boolean = childRouterManager.handleBack()
@@ -398,6 +420,24 @@ abstract class Controller {
         viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
 
         notifyListeners { it.onSaveViewState(this, view, viewState) }
+    }
+
+    internal fun changeStarted(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
+        notifyListeners { it.onChangeStarted(this, other, changeHandler, changeType) }
+    }
+
+    internal fun changeEnded(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
+        notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
     }
 
     private inline fun notifyListeners(block: (ControllerListener) -> Unit) {

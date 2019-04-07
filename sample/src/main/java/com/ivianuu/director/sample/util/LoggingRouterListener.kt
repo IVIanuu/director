@@ -37,7 +37,7 @@ class LoggingRouterListener : RouterListener {
         d { "on change started: to $to, from $from, is push $isPush, container ${container.childCount}, changeHandler $handler" }
     }
 
-    override fun onChangeCompleted(
+    override fun onChangeEnded(
         router: Router,
         to: Controller?,
         from: Controller?,
