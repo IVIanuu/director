@@ -451,12 +451,12 @@ initialController1
         val popHandler2 = taggedHandler("popHandler2", true)
 
         val controller1 = TestController()
-val transaction1 = controller1.toController(pushHandler1, popHandler1)
+val controller1 = controller1.toController(pushHandler1, popHandler1)
 
         val controller2 = TestController()
-val transaction2 = controller2.toController(pushHandler2, popHandler2)
+val controller2 = controller2.toController(pushHandler2, popHandler2)
 
-        var backstack = listOf(transaction1, transaction2)
+var backstack = listOf(controller1, controller2)
 
         router.setBackstack(backstack, true)
 
@@ -468,7 +468,7 @@ val transaction2 = controller2.toController(pushHandler2, popHandler2)
 
         assertEquals(pushHandler2, controller2.changeHandlerHistory.latestChangeHandler())
 
-        backstack = listOf(transaction2, transaction1)
+backstack = listOf(controller2, controller1)
         router.setBackstack(backstack, isPush = true)
 
         assertTrue(controller1.changeHandlerHistory.isValidHistory)

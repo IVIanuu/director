@@ -57,14 +57,14 @@ class RouterManagerTest {
 
     @Test
     fun testRestoredRouterBackstack() {
-        val transaction1 = TestController()
-        val transaction2 = TestController()
+        val controller1 = TestController()
+        val controller2 = TestController()
 
         var router = manager.getRouter(activityProxy.view1)
             .apply { popsLastView = true }
 
-        router.setRoot(transaction1)
-        router.push(transaction2)
+        router.setRoot(controller1)
+        router.push(controller2)
 
         val savedState = router.saveInstanceState()
         manager.removeRouter(router)
@@ -80,20 +80,20 @@ class RouterManagerTest {
         val restoredChildController2 = router.backstack[1]
 
         assertEquals(
-            transaction1.transactionIndex,
+            controller1.transactionIndex,
             restoredChildController1.transactionIndex
         )
         assertEquals(
-            transaction1.instanceId,
+            controller1.instanceId,
             restoredChildController1.instanceId
         )
 
         assertEquals(
-            transaction2.transactionIndex,
+            controller2.transactionIndex,
             restoredChildController2.transactionIndex
         )
         assertEquals(
-            transaction2.instanceId,
+            controller2.instanceId,
             restoredChildController2.instanceId
         )
 

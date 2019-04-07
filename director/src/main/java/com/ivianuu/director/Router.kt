@@ -142,7 +142,6 @@ class Router internal constructor(
 
                     val localHandler = handler?.copy()
                         ?: controller.popChangeHandler?.copy()
-                        ?: DefaultChangeHandler()
 
                     performControllerChange(
                         from = controller,
@@ -190,17 +189,16 @@ class Router internal constructor(
                 val localHandler = handler?.copy()
                     ?: (if (isPush) newTopController?.pushChangeHandler?.copy()
                     else oldTopController?.popChangeHandler?.copy())
-                    ?: DefaultChangeHandler()
 
-                val willBeVisible =
-                    oldTopController != null && newVisibleControllers.contains(oldTopController)
+                val removesFromView =
+                    oldTopController != null && !newVisibleControllers.contains(oldTopController)
 
                 performControllerChange(
                     from = oldTopController,
                     to = newTopController,
                     isPush = isPush,
                     handler = localHandler,
-                    forceRemoveFromViewOnPush = !willBeVisible,
+                    forceRemoveFromViewOnPush = removesFromView,
                     onToAttached = {
                         if (routerManager.isStarted) {
                             newTopController?.attach()
@@ -208,13 +206,13 @@ class Router internal constructor(
                     },
                     onFromDetached = {
                         if (oldTopController != null) {
-                            if (!willBeVisible) {
+                            if (removesFromView && oldTopController.isAttached) {
                                 oldTopController.detach()
                             }
 
                             val willBeDestroyed = !newBackstack.contains(oldTopController)
 
-                            if (!willBeVisible) {
+                            if (removesFromView) {
                                 oldTopController.destroyView(!willBeDestroyed)
                             }
 
@@ -491,11 +489,12 @@ class Router internal constructor(
         _backstack.reversed().forEach(this::cancelChange)
     }
 
-    private fun List<Controller>.filterVisible(): List<Controller> =
-        takeLastUntil {
+    private fun List<Controller>.filterVisible(): List<Controller> {
+        return takeLastUntil {
             it.pushChangeHandler != null
                     && !it.pushChangeHandler!!.removesFromViewOnPush
         }
+    }
 
     private fun rebind() {
         if (container == null) return
@@ -632,10 +631,7 @@ fun Router.replaceTop(
     handler: ChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
-    val from = newBackstack.lastOrNull()
-    if (from != null) {
-        newBackstack.removeAt(newBackstack.lastIndex)
-    }
+    newBackstack.lastOrNull()?.let(newBackstack::remove)
     newBackstack.add(controller)
     setBackstack(newBackstack, true, handler)
 }
@@ -647,8 +643,7 @@ fun Router.pop(
     controller: Controller,
     handler: ChangeHandler? = null
 ) {
-    val oldBackstack = backstack
-    val newBackstack = oldBackstack.toMutableList()
+    val newBackstack = backstack.toMutableList()
     newBackstack.remove(controller)
     setBackstack(newBackstack, false, handler)
 }
@@ -673,11 +668,10 @@ fun Router.popToRoot(handler: ChangeHandler? = null) {
  * Pops all [Controller]s until the [Controller] with the passed tag is at the top
  */
 fun Router.popToTag(tag: String, handler: ChangeHandler? = null) {
-    backstack.firstOrNull { it.tag == tag }
-        ?.let { popTo(it, handler) }
+    backstack.firstOrNull { it.tag == tag }?.let { popTo(it, handler) }
 }
 
-/***
+/**
  * Pops all [Controller]s until the [controller] is at the top
  */
 fun Router.popTo(
