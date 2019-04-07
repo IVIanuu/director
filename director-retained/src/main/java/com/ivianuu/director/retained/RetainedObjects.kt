@@ -60,6 +60,10 @@ class RetainedObjects {
      * Whether or not contains a value for [key]
      */
     fun contains(key: String): Boolean = _entries.contains(key)
+
+    override fun toString(): String {
+        return "RetainedObjects($_entries)"
+    }
 }
 
 /**
