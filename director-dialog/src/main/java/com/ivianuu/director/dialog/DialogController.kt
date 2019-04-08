@@ -109,6 +109,8 @@ abstract class DialogController : Controller(),
     }
 }
 
+fun DialogController.requireDialog(): Dialog = dialog ?: error("dialog == null")
+
 fun DialogController.show(router: Router, tag: String? = null) {
     router.push(
         changeHandler(DefaultChangeHandler(removesFromViewOnPush = false)).tag(tag)
