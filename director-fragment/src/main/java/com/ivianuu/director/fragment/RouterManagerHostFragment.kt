@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.fragmenthost
+package com.ivianuu.director.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -24,7 +24,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.hasHost
 import com.ivianuu.director.RouterManager
 
-class RouterHostFragment : Fragment(), OnBackPressedCallback {
+class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
 
     private val manager by lazy(LazyThreadSafetyMode.NONE) {
         RouterManager(requireActivity())
@@ -69,9 +69,10 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
     override fun handleOnBackPressed(): Boolean = manager.handleBack()
 
     companion object {
-        private const val FRAGMENT_TAG = "com.ivianuu.director.fragmenthost.RouterHostFragment"
+        private const val FRAGMENT_TAG =
+            "com.ivianuu.director.fragmenthost.RouterManagerHostFragment"
 
-        private const val KEY_ROUTER_STATES = "RouterHostFragment.routerState"
+        private const val KEY_ROUTER_STATES = "RouterManagerHostFragment.routerState"
 
         private val postponedActivities = mutableListOf<FragmentActivity>()
 
@@ -94,9 +95,9 @@ class RouterHostFragment : Fragment(), OnBackPressedCallback {
         fun getManager(activity: FragmentActivity): RouterManager =
             get(activity).manager
 
-        private fun get(activity: FragmentActivity): RouterHostFragment {
-            return (activity.supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? RouterHostFragment)
-                ?: RouterHostFragment().also {
+        private fun get(activity: FragmentActivity): RouterManagerHostFragment {
+            return (activity.supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? RouterManagerHostFragment)
+                ?: RouterManagerHostFragment().also {
                     activity.supportFragmentManager.beginTransaction()
                     .add(it, FRAGMENT_TAG)
                     .commitNow()

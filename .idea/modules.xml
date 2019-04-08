@@ -9,7 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/director-androidx-lifecycle/director-androidx-lifecycle.iml" filepath="$PROJECT_DIR$/director-androidx-lifecycle/director-androidx-lifecycle.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-common/director-common.iml" filepath="$PROJECT_DIR$/director-common/director-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-fragmenthost/director-fragmenthost.iml" filepath="$PROJECT_DIR$/director-fragmenthost/director-fragmenthost.iml" />
+      <module fileurl="file://$PROJECT_DIR$/director-fragment/director-fragment.iml" filepath="$PROJECT_DIR$/director-fragment/director-fragment.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-pager/director-pager.iml" filepath="$PROJECT_DIR$/director-pager/director-pager.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-retained/director-retained.iml" filepath="$PROJECT_DIR$/director-retained/director-retained.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-scopes/director-scopes.iml" filepath="$PROJECT_DIR$/director-scopes/director-scopes.iml" />

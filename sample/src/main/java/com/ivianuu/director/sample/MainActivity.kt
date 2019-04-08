@@ -7,9 +7,9 @@ import android.transition.TransitionSet
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ivianuu.director.*
-import com.ivianuu.director.fragmenthost.getRouter
-import com.ivianuu.director.fragmenthost.postponeFullRestore
-import com.ivianuu.director.fragmenthost.startPostponedFullRestore
+import com.ivianuu.director.fragment.getRouter
+import com.ivianuu.director.fragment.postponeFullRestore
+import com.ivianuu.director.fragment.startPostponedFullRestore
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerListener
 import kotlinx.android.synthetic.main.activity_main.controller_container

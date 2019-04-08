@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.fragmenthost
+package com.ivianuu.director.fragment
 
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
@@ -43,12 +43,12 @@ fun FragmentActivity.router(containerId: Int, tag: String? = null): Lazy<Router>
     lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
 
 fun FragmentActivity.postponeFullRestore() {
-    RouterHostFragment.postponeFullRestore(this)
+    RouterManagerHostFragment.postponeFullRestore(this)
 }
 
 fun FragmentActivity.startPostponedFullRestore() {
-    RouterHostFragment.startPostponedFullRestore(this)
+    RouterManagerHostFragment.startPostponedFullRestore(this)
 }
 
 val FragmentActivity.routerManager: RouterManager
-    get() = RouterHostFragment.getManager(this)
+    get() = RouterManagerHostFragment.getManager(this)

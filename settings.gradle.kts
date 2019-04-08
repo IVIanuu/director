@@ -4,7 +4,7 @@ include(
     ":director-androidx-lifecycle",
     ":director-common",
     ":director-dialog",
-    ":director-fragmenthost",
+    ":director-fragment",
     ":director-pager",
     ":director-retained",
     ":director-scopes",

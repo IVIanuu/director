@@ -40,7 +40,7 @@ dependencies {
     implementation(project(":director-androidx-lifecycle"))
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
-    implementation(project(":director-fragmenthost"))
+    implementation(project(":director-fragment"))
     implementation(project(":director-pager"))
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
