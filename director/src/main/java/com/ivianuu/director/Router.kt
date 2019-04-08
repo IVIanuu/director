@@ -344,7 +344,6 @@ class Router internal constructor(
         // attach visible controllers
         _backstack
             .filterVisible()
-            .filter { it.view?.parent != null }
             .filterNot(Controller::isAttached)
             .forEach(Controller::attach)
     }
@@ -503,13 +502,18 @@ class Router internal constructor(
     }
 
     private fun moveControllerToCorrectState(controller: Controller) {
-        controller.create(this)
+        if (!controller.isCreated) {
+            controller.create(this)
+        }
 
-        if (isStarted && controller.view?.parent != null) {
+        if (isStarted
+            && _backstack.filterVisible().contains(controller)
+            && !controller.isAttached
+        ) {
             controller.attach()
         }
 
-        if (isDestroyed) {
+        if (isDestroyed && !controller.isDestroyed) {
             controller.destroy()
         }
     }
