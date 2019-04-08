@@ -17,7 +17,6 @@
 package com.ivianuu.director.activitycallbacks
 
 import android.content.Intent
-import android.content.IntentSender
 import android.os.Bundle
 import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.Controller
@@ -65,27 +64,4 @@ fun Controller.startActivityForResult(
     options: Bundle? = null
 ) {
     activityCallbacks.startActivityForResult(intent, requestCode, options)
-}
-
-/**
- * Starts the intent sender for result
- */
-fun Controller.startIntentSenderForResult(
-    intent: IntentSender,
-    requestCode: Int,
-    fillInIntent: Intent?,
-    flagsMask: Int,
-    flagsValues: Int,
-    extraFlags: Int,
-    options: Bundle? = null
-) {
-    activityCallbacks.startIntentSenderForResult(
-        intent,
-        requestCode,
-        fillInIntent,
-        flagsMask,
-        flagsValues,
-        extraFlags,
-        options
-    )
 }
