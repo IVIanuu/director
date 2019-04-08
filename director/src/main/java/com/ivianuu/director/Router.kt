@@ -344,6 +344,7 @@ class Router internal constructor(
         // attach visible controllers
         _backstack
             .filterVisible()
+            .filter { it.view?.parent != null }
             .filterNot(Controller::isAttached)
             .forEach(Controller::attach)
     }
@@ -507,7 +508,7 @@ class Router internal constructor(
         }
 
         if (isStarted
-            && _backstack.filterVisible().contains(controller)
+            && controller.view?.parent != null
             && !controller.isAttached
         ) {
             controller.attach()
