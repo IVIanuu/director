@@ -27,8 +27,7 @@ import com.ivianuu.director.*
 /**
  * A controller counterpart for dialog fragments
  */
-abstract class DialogController : Controller(),
-    DialogInterface.OnShowListener, DialogInterface.OnCancelListener,
+abstract class DialogController : Controller(), DialogInterface.OnCancelListener,
     DialogInterface.OnDismissListener {
 
     /**
@@ -46,7 +45,6 @@ abstract class DialogController : Controller(),
 
         val dialog = onCreateDialog(savedViewState).also { this.dialog = it }
 
-        dialog.setOnShowListener(this)
         dialog.setOnCancelListener(this)
         dialog.setOnDismissListener(this)
 
@@ -72,21 +70,13 @@ abstract class DialogController : Controller(),
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
-        dialog?.let {
-            it.setOnShowListener(null)
-            it.setOnCancelListener(null)
-            it.setOnDismissListener(null)
-            it.dismiss()
-        }
+        dialog?.let(Dialog::dismiss)
         dialog = null
     }
 
     override fun onSaveViewState(view: View, outState: Bundle) {
         super.onSaveViewState(view, outState)
         dialog?.onSaveInstanceState()?.let { outState.putBundle(KEY_DIALOG_STATE, it) }
-    }
-
-    override fun onShow(dialogInterface: DialogInterface) {
     }
 
     override fun onCancel(dialog: DialogInterface) {
