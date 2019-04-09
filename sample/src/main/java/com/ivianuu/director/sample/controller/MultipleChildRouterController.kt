@@ -1,8 +1,11 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 
@@ -29,4 +32,8 @@ class MultipleChildRouterController : BaseController() {
             }
     }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        Handler().postDelayed(Runnable { router.push(HomeController()) }, 1000)
+    }
 }

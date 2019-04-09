@@ -293,9 +293,9 @@ abstract class Controller {
         return view
     }
 
-    internal fun destroyView(saveViewState: Boolean) {
+    internal fun destroyView() {
         val view = requireView()
-        if (saveViewState && viewState == null) {
+        if (viewState == null) {
             saveViewState()
         }
 

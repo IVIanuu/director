@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
@@ -16,9 +15,16 @@ class ParentController : BaseController() {
     private var finishing = false
     private var hasShownAll = false
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        addChild(0)
+    override fun onChangeEnded(
+        other: Controller?,
+        changeHandler: ChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        super.onChangeEnded(other, changeHandler, changeType)
+
+        if (changeType == ControllerChangeType.PUSH_ENTER) {
+            addChild(0)
+        }
     }
 
     private fun addChild(index: Int) {
@@ -28,7 +34,7 @@ class ParentController : BaseController() {
             context.packageName
         )
 
-        val container = requireView().findViewById<ViewGroup>(frameId)
+        val container = view!!.findViewById<ViewGroup>(frameId)
 
         getChildRouter(container).let { childRouter ->
             childRouter.popsLastView = true
@@ -40,18 +46,20 @@ class ParentController : BaseController() {
                     false
                 )
 
-                childRouter.doOnChangeEnded { router, to, from, isPush, container, handler ->
-                    if (isPush && !hasShownAll) {
-                        if (index < NUMBER_OF_CHILDREN - 1) {
-                            addChild(index + 1)
-                        } else {
-                            hasShownAll = true
-                        }
-                    } else if (!isPush) {
-                        if (index > 0) {
-                            removeChild(index - 1)
-                        } else {
-                            router.pop(this@ParentController)
+                childController.doOnChangeEnd { _, _, _, changeType ->
+                    if (!isDestroyed) {
+                        if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
+                            if (index < NUMBER_OF_CHILDREN - 1) {
+                                addChild(index + 1)
+                            } else {
+                                hasShownAll = true
+                            }
+                        } else if (changeType == ControllerChangeType.POP_EXIT) {
+                            if (index > 0) {
+                                removeChild(index - 1)
+                            } else {
+                                router.pop(this@ParentController)
+                            }
                         }
                     }
                 }

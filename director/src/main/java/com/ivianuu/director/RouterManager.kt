@@ -93,6 +93,10 @@ class RouterManager(
     fun onDestroy() {
         isDestroyed = true
         _routers.reversed().forEach {
+            if (it.isStarted) {
+                it.stop()
+            }
+
             if (it.hasContainer) {
                 it.removeContainer()
             }

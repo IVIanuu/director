@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         setContentView(R.layout.activity_main)
 
         with(getRouter(controller_container)) {
-            addControllerListener(LoggingControllerListener())
+            addControllerListener(LoggingControllerListener(), recursive = true)
 
             addToolbarHandling()
 
