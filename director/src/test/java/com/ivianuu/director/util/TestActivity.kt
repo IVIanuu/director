@@ -36,7 +36,7 @@ class TestActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         manager = RouterManager(this)
-        savedInstanceState?.getBundle(KEY_ROUTER_STATES)?.let(manager::restoreInstanceState)
+        savedInstanceState?.getBundle(KEY_ROUTER_STATES)?.let { manager.restoreInstanceState(it) }
     }
 
     override fun onStart() {

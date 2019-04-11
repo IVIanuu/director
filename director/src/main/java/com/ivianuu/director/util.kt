@@ -39,9 +39,9 @@ fun ViewGroup.moveView(view: View, to: Int) {
     }
     val index = indexOfChild(view)
     if (index == -1 || index == to) return
-    val allViews = (0 until childCount).map(this::getChildAt).toMutableList()
+    val allViews = (0 until childCount).map { getChildAt(it) }.toMutableList()
     Collections.swap(allViews, index, to)
-    allViews.forEach(View::bringToFront)
+    allViews.forEach { it.bringToFront() }
     requestLayout()
     invalidate()
 }

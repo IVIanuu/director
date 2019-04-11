@@ -32,8 +32,4 @@ class MultipleChildRouterController : BaseController() {
             }
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        Handler().postDelayed(Runnable { router.push(HomeController()) }, 1000)
-    }
 }

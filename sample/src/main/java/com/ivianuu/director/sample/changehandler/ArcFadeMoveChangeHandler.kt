@@ -50,7 +50,7 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
             override fun onTransitionStart(transition: Transition) {
                 if (changeData.from != null) {
                     sharedElementNames
-                        .mapNotNull(changeData.from!!::findNamedView)
+                        .mapNotNull { changeData.from!!.findNamedView(it) }
                         .forEach { it.visibility = View.INVISIBLE }
                 }
             }
@@ -76,7 +76,7 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
     }
 
     override fun configureSharedElements(changeData: ChangeData) {
-        sharedElementNames.forEach(this::addSharedElement)
+        sharedElementNames.forEach { addSharedElement(it) }
     }
 
     override fun allowTransitionOverlap(isPush: Boolean): Boolean = false

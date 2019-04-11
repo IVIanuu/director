@@ -66,7 +66,7 @@ class RouterManager(
      */
     fun removeRootView() {
         if (rootView != null) {
-            _routers.reversed().forEach(Router::removeContainer)
+            _routers.reversed().forEach { it.removeContainer() }
             rootView = null
         }
     }
@@ -76,7 +76,7 @@ class RouterManager(
      */
     fun onStart() {
         isStarted = true
-        _routers.forEach(Router::start)
+        _routers.forEach { it.start() }
     }
 
     /**
@@ -84,7 +84,7 @@ class RouterManager(
      */
     fun onStop() {
         isStarted = false
-        _routers.reversed().forEach(Router::stop)
+        _routers.reversed().forEach { it.stop() }
     }
 
     /**
@@ -130,7 +130,7 @@ class RouterManager(
             KEY_TRANSACTION_INDEXER,
             transactionIndexer.saveInstanceState()
         )
-        val routerStates = _routers.map(Router::saveInstanceState)
+        val routerStates = _routers.map { it.saveInstanceState() }
         putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
@@ -139,12 +139,12 @@ class RouterManager(
      */
     fun handleBack(): Boolean {
         return _routers
-            .flatMap(Router::backstack)
+            .flatMap { it.backstack }
             .asSequence()
-            .sortedByDescending(Controller::transactionIndex)
-            .filter(Controller::isAttached)
-            .map(Controller::router)
-            .any(Router::handleBack)
+            .sortedByDescending { it.transactionIndex }
+            .filter { it.isAttached }
+            .map { it.router }
+            .any { it.handleBack() }
     }
 
     /**
@@ -215,14 +215,14 @@ class RouterManager(
 
     private fun restoreFullState() {
         routerStates
-            ?.filterKeys(_routers::contains)
+            ?.filterKeys { _routers.contains(it) }
             ?.forEach { it.key.restoreInstanceState(it.value) }
         routerStates = null
     }
 
     private fun Router.restoreContainer() {
         if (!hasContainer) {
-            rootView?.findViewById<ViewGroup>(containerId)?.let(this::setContainer)
+            rootView?.findViewById<ViewGroup>(containerId)?.let { setContainer(it) }
         }
     }
 

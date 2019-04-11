@@ -61,7 +61,7 @@ class AttachFakingFrameLayout(context: Context) : FrameLayout(context) {
             }
 
             (0 until childCount)
-                .map(this::getChildAt)
+                .map { getChildAt(it) }
                 .forEach { it.reportAttached(attached) }
         }
     }

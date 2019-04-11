@@ -486,7 +486,7 @@ abstract class SharedElementTransitionChangeHandler(
                     transitioningViews.add(this)
                 } else {
                     (0 until childCount)
-                        .map(this::getChildAt)
+                        .map { getChildAt(it) }
                         .forEach { it.captureTransitioningViews(transitioningViews) }
                 }
             } else {

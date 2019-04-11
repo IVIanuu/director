@@ -244,7 +244,7 @@ abstract class Controller {
 
         notifyListeners { it.postCreate(this, instanceState) }
 
-        allState?.let(this::restoreUserInstanceState)
+        allState?.let { restoreUserInstanceState(it) }
         allState = null
     }
 
@@ -255,7 +255,7 @@ abstract class Controller {
 
         state = DESTROYED
 
-        requireSuperCalled(this::onDestroy)
+        requireSuperCalled { onDestroy() }
 
         notifyListeners { it.postDestroy(this) }
     }
@@ -279,7 +279,7 @@ abstract class Controller {
         // restore hierarchy
         viewState
             ?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
-            ?.let(view::restoreHierarchyState)
+            ?.let { view.restoreHierarchyState(it) }
 
         if (savedViewState != null) {
             requireSuperCalled { onRestoreViewState(view, savedViewState) }
@@ -288,7 +288,7 @@ abstract class Controller {
 
         viewState = null
 
-        view.safeAs<ViewGroup>()?.let(childRouterManager::setRootView)
+        view.safeAs<ViewGroup>()?.let { childRouterManager.setRootView(it) }
 
         return view
     }
@@ -395,9 +395,9 @@ abstract class Controller {
         transactionIndex = savedInstanceState.getInt(KEY_TRANSACTION_INDEX)
 
         pushChangeHandler = savedInstanceState.getBundle(KEY_PUSH_CHANGE_HANDLER)
-            ?.let(ChangeHandler.Companion::fromBundle)
+            ?.let { ChangeHandler.fromBundle(it) }
         popChangeHandler = savedInstanceState.getBundle(KEY_POP_CHANGE_HANDLER)
-            ?.let(ChangeHandler.Companion::fromBundle)
+            ?.let { ChangeHandler.fromBundle(it) }
 
         childRouterManager.restoreInstanceState(
             savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES)!!

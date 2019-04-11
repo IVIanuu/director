@@ -34,7 +34,7 @@ fun View.findNamedViews(namedViews: MutableMap<String, View>) {
 
     if (this is ViewGroup) {
         (0 until childCount)
-            .map(this::getChildAt)
+            .map { getChildAt(it) }
             .forEach { it.findNamedViews(namedViews) }
     }
 }
@@ -47,7 +47,7 @@ fun View.findNamedView(transitionName: String): View? {
 }
 
 fun Transition.setEpicenter(view: View) {
-    val viewEpicenter = Rect().also(view::getBoundsOnScreen)
+    val viewEpicenter = Rect().also { view.getBoundsOnScreen(it) }
     epicenterCallback = object : Transition.EpicenterCallback() {
         override fun onGetEpicenter(transition: Transition): Rect = viewEpicenter
     }
@@ -76,7 +76,7 @@ fun Transition.setTargets(nonExistentView: View, sharedViews: MutableList<View>)
 fun Transition.addTargets(views: List<View>) {
     if (this is TransitionSet) {
         (0 until transitionCount)
-            .map(this::getTransitionAt)
+            .map { getTransitionAt(it) }
             .forEach { it.addTargets(views) }
     } else if (!hasSimpleTarget && targets.isNullOrEmpty()) {
         views.forEach { addTarget(it) }
@@ -86,7 +86,7 @@ fun Transition.addTargets(views: List<View>) {
 fun Transition.replaceTargets(oldTargets: List<View>, newTargets: List<View>) {
     if (this is TransitionSet) {
         (0 until transitionCount)
-            .map(this::getTransitionAt)
+            .map { getTransitionAt(it) }
             .forEach {
                 it.replaceTargets(
                     oldTargets,
@@ -117,7 +117,7 @@ private fun bfsAddViewChildren(views: MutableList<View>, startView: View) {
     (startIndex until views.size)
         .map { views[it] }
         .filterIsInstance<ViewGroup>()
-        .flatMap { viewGroup -> (0 until viewGroup.childCount).map(viewGroup::getChildAt) }
+        .flatMap { viewGroup -> (0 until viewGroup.childCount).map { viewGroup.getChildAt(it) } }
         .filterNot {
             containedBeforeIndex(
                 views,

@@ -62,7 +62,7 @@ class ArchViewModel : ViewModel() {
 
         Observable.interval(1, TimeUnit.SECONDS)
             .startWith(0)
-            .subscribe(_count::postValue)
+            .subscribe { _count.postValue(it) }
             .disposeBy(scope)
     }
 

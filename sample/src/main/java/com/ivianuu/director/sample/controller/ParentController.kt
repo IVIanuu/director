@@ -80,7 +80,7 @@ class ParentController : BaseController() {
     }
 
     override fun handleBack(): Boolean {
-        val childControllers = childRouters.count(Router::hasRoot)
+        val childControllers = childRouters.count { it.hasRoot }
 
         return if (childControllers != NUMBER_OF_CHILDREN || finishing) {
             true

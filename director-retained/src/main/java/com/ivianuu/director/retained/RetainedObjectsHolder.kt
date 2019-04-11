@@ -34,7 +34,7 @@ internal class RetainedObjectsHolder : ViewModel() {
 
     internal fun getRetainedObjects(controller: Controller): RetainedObjects = synchronized(this) {
         controller.removeRetainedObjectsOnPostDestroy()
-        return@getRetainedObjects retainedObjects.getOrPut(controller.instanceId, ::RetainedObjects)
+        return@getRetainedObjects retainedObjects.getOrPut(controller.instanceId) { RetainedObjects() }
     }
 
     private fun Controller.removeRetainedObjectsOnPostDestroy() {

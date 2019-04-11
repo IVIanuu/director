@@ -78,5 +78,5 @@ inline fun SingleContainer.setByTag(tag: String, create: () -> Controller) {
 }
 
 fun SingleContainer.removeByTag(tag: String) {
-    router.backstack.firstOrNull { it.tag == tag }?.let(this::remove)
+    router.backstack.firstOrNull { it.tag == tag }?.let { remove(it) }
 }

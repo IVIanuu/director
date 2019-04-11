@@ -53,7 +53,7 @@ abstract class ChangeHandler {
         putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
         putBundle(KEY_SAVED_STATE, Bundle()
             .also { it.classLoader = this@ChangeHandler::class.java.classLoader }
-            .also(this@ChangeHandler::saveInstanceState))
+            .also { this@ChangeHandler.saveInstanceState(it) })
     }
 
     companion object {

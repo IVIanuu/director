@@ -207,7 +207,7 @@ fun Controller.addListener(
     onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
     onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
     onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
-).let(this::addListener)
+).let { addListener(it) }
 
 fun Router.addControllerListener(
     recursive: Boolean = false,

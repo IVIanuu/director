@@ -110,7 +110,7 @@ class Router internal constructor(
                     it.transactionIndex = routerManager.transactionIndexer.nextIndex()
                 }
             }
-            .map(Controller::transactionIndex)
+            .map { it.transactionIndex }
             .sorted()
 
         newBackstack.forEachIndexed { i, controller ->
@@ -128,10 +128,10 @@ class Router internal constructor(
             .filter { old -> newBackstack.none { it == old } }
 
         val destroyedInvisibleControllers = destroyedControllers
-            .filterNot(Controller::isViewCreated)
+            .filterNot { it.isViewCreated }
 
         // Ensure all new controllers have a valid router set
-        newBackstack.forEach(this::moveControllerToCorrectState)
+        newBackstack.forEach { moveControllerToCorrectState(it) }
 
         val newVisibleControllers = newBackstack.filterVisible()
 
@@ -148,7 +148,7 @@ class Router internal constructor(
             oldVisibleControllers
                 .dropLast(if (replacingTopControllers) 1 else 0)
                 .reversed()
-                .filterNot(newVisibleControllers::contains)
+                .filterNot { newVisibleControllers.contains(it) }
                 .forEach { controller ->
                     cancelChange(controller)
 
@@ -178,7 +178,7 @@ class Router internal constructor(
             // Add any new controllers to the backstack from bottom to top
             newVisibleControllers
                 .dropLast(if (replacingTopControllers) 1 else 0)
-                .filterNot(oldVisibleControllers::contains)
+                .filterNot { oldVisibleControllers.contains(it) }
                 .forEachIndexed { i, controller ->
                     val localHandler = handler?.copy() ?: controller.pushChangeHandler
                     val prevController = newVisibleControllers.getOrNull(i - 1)
@@ -238,7 +238,7 @@ class Router internal constructor(
         }
 
         // destroy all invisible transactions here
-        destroyedInvisibleControllers.reversed().forEach(Controller::destroy)
+        destroyedInvisibleControllers.reversed().forEach { it.destroy() }
     }
 
     /**
@@ -296,7 +296,7 @@ class Router internal constructor(
     internal fun getListeners(recursiveOnly: Boolean = false): List<RouterListener> {
         return listeners
             .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<RouterListener>::listener) +
+            .map { it.listener } +
                 (routerManager.host.safeAs<Controller>()?.router?.getListeners(true)
                     ?: emptyList())
     }
@@ -304,7 +304,7 @@ class Router internal constructor(
     internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
         return controllerListeners
             .filter { !recursiveOnly || it.recursive }
-            .map(ListenerEntry<ControllerListener>::listener) +
+            .map { it.listener } +
                 (routerManager.host.safeAs<Controller>()?.router?.getControllerListeners(true)
                     ?: emptyList())
     }
@@ -345,8 +345,8 @@ class Router internal constructor(
         _backstack
             .filterVisible()
             .filter { it.view?.parent != null }
-            .filterNot(Controller::isAttached)
-            .forEach(Controller::attach)
+            .filterNot { it.isAttached }
+            .forEach { it.attach() }
     }
 
     internal fun stop() {
@@ -354,16 +354,16 @@ class Router internal constructor(
 
         endAllChanges()
         _backstack
-            .filter(Controller::isAttached)
+            .filter { it.isAttached }
             .reversed()
-            .forEach(Controller::detach)
+            .forEach { it.detach() }
     }
 
     internal fun destroy() {
         isDestroyed = true
 
         _backstack.reversed()
-            .forEach(Controller::destroy)
+            .forEach { it.destroy() }
     }
 
     /**
@@ -375,7 +375,7 @@ class Router internal constructor(
         return Bundle().apply {
             putInt(KEY_CONTAINER_ID, containerId)
             putString(KEY_TAG, tag)
-            val backstack = _backstack.map(Controller::saveInstanceState)
+            val backstack = _backstack.map { it.saveInstanceState() }
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
         }
@@ -393,7 +393,7 @@ class Router internal constructor(
 
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
-        _backstack.forEach(this::moveControllerToCorrectState)
+        _backstack.forEach { moveControllerToCorrectState(it) }
         rebind()
     }
 
@@ -417,7 +417,7 @@ class Router internal constructor(
         }
         handlerToUse.hasBeenUsed = true
 
-        from?.let(this::cancelChange)
+        from?.let { cancelChange(it) }
         to?.let { runningHandlers[it] = handlerToUse }
 
         listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
@@ -520,7 +520,7 @@ class Router internal constructor(
     }
 
     private fun endAllChanges() {
-        _backstack.reversed().forEach(this::cancelChange)
+        _backstack.reversed().forEach { cancelChange(it) }
     }
 
     private fun List<Controller>.filterVisible(): List<Controller> {
@@ -566,7 +566,7 @@ class Router internal constructor(
             if (container.childCount == 0) return -1
             val backstackIndex = backstack.indexOfFirst { it == to }
             (0 until container.childCount)
-                .map(container::getChildAt)
+                .map { container.getChildAt(it) }
                 .indexOfFirst { v ->
                     backstack.indexOfFirst { it.view == v } > backstackIndex
                 }
@@ -665,7 +665,7 @@ fun Router.replaceTop(
     handler: ChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
-    newBackstack.lastOrNull()?.let(newBackstack::remove)
+    newBackstack.lastOrNull()?.let { newBackstack.remove(it) }
     newBackstack.add(controller)
     setBackstack(newBackstack, true, handler)
 }

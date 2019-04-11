@@ -48,7 +48,7 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
         dialog.setOnCancelListener(this)
         dialog.setOnDismissListener(this)
 
-        savedViewState?.getBundle(KEY_DIALOG_STATE)?.let(dialog::onRestoreInstanceState)
+        savedViewState?.getBundle(KEY_DIALOG_STATE)?.let { dialog.onRestoreInstanceState(it) }
 
         return view
     }
@@ -70,7 +70,7 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
-        dialog?.let(Dialog::dismiss)
+        dialog?.let { it.dismiss() }
         dialog = null
     }
 
