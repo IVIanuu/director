@@ -21,11 +21,11 @@ object Publishing {
 object Versions {
     const val androidGradlePlugin = "3.3.0"
 
-    const val androidxAppCompat = "1.1.0-alpha01"
-    const val androidxFragment = "1.1.0-alpha03"
-    const val androidxLifecycle = "2.0.0"
+    const val androidxAppCompat = "1.1.0-alpha04"
+    const val androidxFragment = "1.1.0-alpha06"
+    const val androidxLifecycle = "2.1.0-alpha04"
     const val androidxViewPager = "1.0.0"
-    const val androidxTestJunit = "1.0.0"
+    const val androidxTestJunit = "1.2.0-alpha03"
 
     const val bintray = "1.8.4"
 
@@ -36,7 +36,7 @@ object Versions {
 
     const val junit = "4.12"
 
-    const val kotlin = "1.3.21"
+    const val kotlin = "1.3.30"
 
     const val leakCanary = "1.6.1"
 
@@ -45,7 +45,7 @@ object Versions {
 
     const val roboelectric = "4.0.2"
 
-    const val rxJava = "2.2.6"
+    const val rxJava = "2.2.8"
 
     const val scopes = "0.0.1-dev-4"
 
