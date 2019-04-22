@@ -70,7 +70,7 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
-        dialog?.let { it.dismiss() }
+        dialog?.dismiss()
         dialog = null
     }
 

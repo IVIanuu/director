@@ -19,6 +19,7 @@ package com.ivianuu.director.fragment
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.arch.core.util.Cancellable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.hasHost
@@ -29,6 +30,8 @@ class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
     private val manager by lazy(LazyThreadSafetyMode.NONE) {
         RouterManager(requireActivity())
     }
+
+    private var backPressCancellable: Cancellable? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,7 +45,8 @@ class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         manager.restoreInstanceState(savedInstanceState?.getBundle(KEY_ROUTER_STATES))
-        requireActivity().addOnBackPressedCallback(this)
+        backPressCancellable =
+            requireActivity().onBackPressedDispatcher.addCallback(this)
     }
 
     override fun onStart() {
@@ -62,7 +66,8 @@ class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun onDestroy() {
         super.onDestroy()
-        requireActivity().removeOnBackPressedCallback(this)
+        backPressCancellable?.cancel()
+        backPressCancellable = null
         manager.onDestroy()
     }
 

@@ -45,7 +45,7 @@ open class FadeChangeHandler(
         val animator = AnimatorSet()
 
         if (to != null) {
-            val start = (if (addedToView) 0f else to.alpha).toFloat()
+            val start = if (addedToView) 0f else to.alpha
             animator.play(ObjectAnimator.ofFloat(to, View.ALPHA, start, 1f))
         }
 

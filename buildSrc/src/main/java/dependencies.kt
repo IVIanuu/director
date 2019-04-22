@@ -15,17 +15,17 @@ object Build {
 object Publishing {
     const val groupId = "com.ivianuu.director"
     const val vcsUrl = "https://github.com/IVIanuu/director"
-    const val version = "${Build.versionName}-dev-25"
+    const val version = "${Build.versionName}-dev-26"
 }
 
 object Versions {
-    const val androidGradlePlugin = "3.3.0"
+    const val androidGradlePlugin = "3.4.0"
 
     const val androidxAppCompat = "1.1.0-alpha04"
     const val androidxFragment = "1.1.0-alpha06"
     const val androidxLifecycle = "2.1.0-alpha04"
     const val androidxViewPager = "1.0.0"
-    const val androidxTestJunit = "1.2.0-alpha03"
+    const val androidxTestJunit = "1.1.1-alpha03"
 
     const val bintray = "1.8.4"
 
