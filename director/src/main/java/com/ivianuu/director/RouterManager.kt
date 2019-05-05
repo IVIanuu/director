@@ -242,14 +242,26 @@ fun RouterManager.getRouter(container: ViewGroup, tag: String? = null): Router {
 fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
     lazy(LazyThreadSafetyMode.NONE) { getRouter(containerId, tag) }
 
-fun RouterManager.getControllerByTagOrNull(tag: String): Controller? =
-    routers.firstNotNullResultOrNull { it.getControllerByTagOrNull(tag) }
+fun RouterManager.getControllerByTagOrNull(tag: String): Controller? {
+    for (router in routers) {
+        val controller = router.getControllerByTagOrNull(tag)
+        if (controller != null) return controller
+    }
+
+    return null
+}
 
 fun RouterManager.getControllerByTag(tag: String): Controller =
     getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
 
-fun RouterManager.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
-    routers.firstNotNullResultOrNull { it.getControllerByInstanceIdOrNull(instanceId) }
+fun RouterManager.getControllerByInstanceIdOrNull(instanceId: String): Controller? {
+    for (router in routers) {
+        val controller = router.getControllerByInstanceIdOrNull(instanceId)
+        if (controller != null) return controller
+    }
+
+    return null
+}
 
 fun RouterManager.getControllerByInstanceId(instanceId: String): Controller =
     getControllerByInstanceIdOrNull(instanceId)
