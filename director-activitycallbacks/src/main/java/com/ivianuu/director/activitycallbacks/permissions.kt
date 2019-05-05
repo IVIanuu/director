@@ -18,7 +18,6 @@ package com.ivianuu.director.activitycallbacks
 
 import android.annotation.TargetApi
 import android.os.Build
-import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.Controller
 import com.ivianuu.director.doOnPostDestroy
 
@@ -33,7 +32,7 @@ typealias PermissionResultListener = (requestCode: Int, permissions: Array<out S
 fun Controller.addPermissionResultListener(
     requestCode: Int,
     listener: PermissionResultListener
-): Closeable {
+) {
     // remove the listener on controller destruction
     doOnPostDestroy {
         activityCallbacks
@@ -41,7 +40,6 @@ fun Controller.addPermissionResultListener(
     }
     activityCallbacks
         .addPermissionResultListener(requestCode, listener)
-    return Closeable { removePermissionResultListener(requestCode, listener) }
 }
 
 /**

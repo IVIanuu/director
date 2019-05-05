@@ -11,13 +11,11 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_CREATED
-import com.ivianuu.stdlibx.safeAs
 import java.util.*
 
 /**
@@ -217,9 +215,8 @@ abstract class Controller {
     /**
      * Adds a listener for all of this Controller's lifecycle events
      */
-    fun addListener(listener: ControllerListener): Closeable {
+    fun addListener(listener: ControllerListener) {
         listeners.add(listener)
-        return Closeable { removeListener(listener) }
     }
 
     /**
@@ -288,7 +285,7 @@ abstract class Controller {
 
         viewState = null
 
-        view.safeAs<ViewGroup>()?.let { childRouterManager.setRootView(it) }
+        (view as? ViewGroup)?.let { childRouterManager.setRootView(it) }
 
         return view
     }

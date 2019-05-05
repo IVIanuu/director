@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
-import com.ivianuu.closeable.Closeable
 
 /**
  * Listener for controller changes
@@ -64,20 +63,20 @@ fun RouterListener(
 fun Router.doOnChangeStarted(
     recursive: Boolean = false,
     block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit
-): Closeable =
+) =
     addListener(recursive = recursive, onChangeStarted = block)
 
 fun Router.doOnChangeEnded(
     recursive: Boolean = false,
     block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit
-): Closeable =
+) =
     addListener(recursive = recursive, onChangeEnded = block)
 
 fun Router.addListener(
     recursive: Boolean = false,
     onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null,
     onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null
-): Closeable =
+) =
     addListener(
         RouterListener(onChangeStarted, onChangeEnded),
         recursive

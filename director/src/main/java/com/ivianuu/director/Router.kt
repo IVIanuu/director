@@ -2,11 +2,7 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
-import com.ivianuu.closeable.Closeable
 import com.ivianuu.director.ControllerState.DESTROYED
-import com.ivianuu.stdlibx.firstNotNullResultOrNull
-import com.ivianuu.stdlibx.safeAs
-import com.ivianuu.stdlibx.takeLastUntil
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s
@@ -266,9 +262,8 @@ class Router internal constructor(
     /**
      * Notifies the [listener] on controller changes
      */
-    fun addListener(listener: RouterListener, recursive: Boolean = false): Closeable {
+    fun addListener(listener: RouterListener, recursive: Boolean = false) {
         listeners.add(ListenerEntry(listener, recursive))
-        return Closeable { removeListener(listener) }
     }
 
     /**
@@ -281,9 +276,8 @@ class Router internal constructor(
     /**
      * Adds the [listener] to all controllers
      */
-    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false): Closeable {
+    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false) {
         controllerListeners.add(ListenerEntry(listener, recursive))
-        return Closeable { removeControllerListener(listener) }
     }
 
     /**
@@ -297,7 +291,7 @@ class Router internal constructor(
         return listeners
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener } +
-                (routerManager.host.safeAs<Controller>()?.router?.getListeners(true)
+                ((routerManager.host as? Controller)?.router?.getListeners(true)
                     ?: emptyList())
     }
 
@@ -305,7 +299,7 @@ class Router internal constructor(
         return controllerListeners
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener } +
-                (routerManager.host.safeAs<Controller>()?.router?.getControllerListeners(true)
+                ((routerManager.host as? Controller)?.router?.getControllerListeners(true)
                     ?: emptyList())
     }
 
@@ -524,10 +518,17 @@ class Router internal constructor(
     }
 
     private fun List<Controller>.filterVisible(): List<Controller> {
-        return takeLastUntil {
-            it.pushChangeHandler != null
-                    && !it.pushChangeHandler!!.removesFromViewOnPush
+        for (i in lastIndex downTo 0) {
+            val controller = this[i]
+
+            if (controller.pushChangeHandler == null
+                || controller.pushChangeHandler!!.removesFromViewOnPush
+            ) {
+                return drop(i)
+            }
         }
+
+        return toList()
     }
 
     private fun rebind() {
@@ -610,28 +611,34 @@ val Router.backstackSize: Int get() = backstack.size
 
 val Router.hasRoot: Boolean get() = backstackSize > 0
 
-fun Router.getControllerByTagOrNull(tag: String): Controller? =
-    backstack.firstNotNullResultOrNull {
-        if (it.tag == tag) {
-            it
-        } else {
-            it.childRouterManager
-                .getControllerByTagOrNull(tag)
+fun Router.getControllerByTagOrNull(tag: String): Controller? {
+    for (controller in backstack) {
+        if (controller.tag == tag) {
+            return controller
         }
+
+        controller.childRouterManager.getControllerByTagOrNull(tag)
+            ?.let { return@getControllerByTagOrNull it }
     }
+
+    return null
+}
 
 fun Router.getControllerByTag(tag: String): Controller =
     getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
 
-fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? =
-    backstack.firstNotNullResultOrNull {
-        if (it.instanceId == instanceId) {
-            it
-        } else {
-            it.childRouterManager
-                .getControllerByInstanceIdOrNull(instanceId)
+fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? {
+    for (controller in backstack) {
+        if (controller.instanceId == instanceId) {
+            return controller
         }
+
+        controller.childRouterManager.getControllerByInstanceIdOrNull(instanceId)
+            ?.let { return@getControllerByInstanceIdOrNull it }
     }
+
+    return null
+}
 
 fun Router.getControllerByInstanceId(instanceId: String): Controller =
     getControllerByInstanceIdOrNull(instanceId)

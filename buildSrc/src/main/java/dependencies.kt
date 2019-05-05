@@ -15,7 +15,7 @@ object Build {
 object Publishing {
     const val groupId = "com.ivianuu.director"
     const val vcsUrl = "https://github.com/IVIanuu/director"
-    const val version = "${Build.versionName}-dev-26"
+    const val version = "${Build.versionName}-dev-27"
 }
 
 object Versions {
@@ -29,14 +29,12 @@ object Versions {
 
     const val bintray = "1.8.4"
 
-    const val closeable = "0.0.1-dev-2"
-
     const val epoxy = "3.0.0"
     const val epoxyKtx = "0.0.1-dev-1"
 
     const val junit = "4.12"
 
-    const val kotlin = "1.3.30"
+    const val kotlin = "1.3.31"
 
     const val leakCanary = "1.6.1"
 
@@ -47,11 +45,9 @@ object Versions {
 
     const val rxJava = "2.2.8"
 
-    const val scopes = "0.0.1-dev-4"
+    const val scopes = "0.0.1-dev-6"
 
-    const val stdlibx = "0.0.1-dev-3"
-
-    const val traveler = "0.0.1-dev-4"
+    const val traveler = "0.0.1-dev-5"
 }
 
 object Deps {
@@ -67,8 +63,6 @@ object Deps {
     const val bintrayGradlePlugin =
         "com.jfrog.bintray.gradle:gradle-bintray-plugin:${Versions.bintray}"
 
-    const val closeable = "com.ivianuu.closeable:closeable:${Versions.closeable}"
-
     const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
     const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
     const val epoxyKtx = "com.ivianuu.epoxyktx:epoxyktx:${Versions.epoxyKtx}"
@@ -76,6 +70,7 @@ object Deps {
     const val junit = "junit:junit:${Versions.junit}"
 
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
 
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
 
@@ -92,8 +87,6 @@ object Deps {
     const val scopesCommon = "com.ivianuu.scopes:scopes-common:${Versions.scopes}"
     const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
     const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
-
-    const val stdlibx = "com.ivianuu.stdlibx:stdlibx:${Versions.stdlibx}"
 
     const val traveler = "com.ivianuu.traveler:traveler:${Versions.traveler}"
     const val travelerAndroid = "com.ivianuu.traveler:traveler-android:${Versions.traveler}"
