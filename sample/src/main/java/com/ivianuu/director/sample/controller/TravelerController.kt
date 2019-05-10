@@ -21,7 +21,7 @@ import com.ivianuu.director.childRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
-import com.ivianuu.traveler.Router
+import com.ivianuu.traveler.android.AndroidRouter
 import com.ivianuu.traveler.setRoot
 
 /**
@@ -37,7 +37,7 @@ class TravelerController : BaseController() {
     private val childRouter by childRouter(R.id.traveler_container)
 
     val travelerRouter by lazy {
-        Router().apply {
+        AndroidRouter().apply {
             setNavigator(ControllerNavigator(childRouter))
         }
     }
