@@ -162,7 +162,7 @@ class Router internal constructor(
 
                             val willBeDestroyed = !newBackstack.contains(controller)
 
-                            controller.destroyView()
+                            controller.destroyView(!willBeDestroyed)
 
                             if (willBeDestroyed) {
                                 controller.destroy()
@@ -221,7 +221,7 @@ class Router internal constructor(
                             val willBeDestroyed = !newBackstack.contains(oldTopController)
 
                             if (removesFromView) {
-                                oldTopController.destroyView()
+                                oldTopController.destroyView(false)
                             }
 
                             if (willBeDestroyed) {
@@ -327,7 +327,7 @@ class Router internal constructor(
                 }
 
                 if (it.isViewCreated) {
-                    it.destroyView()
+                    it.destroyView(false)
                 }
             }
         container = null
