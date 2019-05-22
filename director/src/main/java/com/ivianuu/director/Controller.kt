@@ -11,17 +11,22 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.*
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_CREATED
+import com.ivianuu.director.internal.ControllerViewModelStores
 import java.util.*
 
 /**
  * Lightweight view controller with a lifecycle
  */
-abstract class Controller {
+abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner {
 
     /**
      * The arguments of this controller
@@ -53,6 +58,24 @@ abstract class Controller {
      */
     var instanceId = UUID.randomUUID().toString()
         private set
+
+    private val _viewModelStore by lazy(LazyThreadSafetyMode.NONE) {
+        ControllerViewModelStores.get(this).getViewModelStore(instanceId)
+    }
+
+    private val lifecycleRegistry = LifecycleRegistry(this)
+
+    /**
+     * The [LifecycleOwner] of the view
+     */
+    val viewLifecycleOwner: LifecycleOwner
+        get() =
+            _viewLifecycleOwner
+                ?: error("can only access the viewLifecycleOwner while the view is created")
+    private var _viewLifecycleOwner: ControllerViewLifecycleOwner? = null
+
+    private val savedStateRegistryController =
+        SavedStateRegistryController.create(this)
 
     /**
      * The transaction index of this controller
@@ -226,6 +249,13 @@ abstract class Controller {
         listeners.remove(listener)
     }
 
+    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+
+    override fun getSavedStateRegistry(): SavedStateRegistry =
+        savedStateRegistryController.savedStateRegistry
+
+    override fun getViewModelStore(): ViewModelStore = _viewModelStore
+
     internal fun create(router: Router) {
         _router = router
 
@@ -236,12 +266,15 @@ abstract class Controller {
         notifyListeners { it.preCreate(this, instanceState) }
 
         state = CREATED
+        savedStateRegistryController.performRestore(instanceState)
 
         requireSuperCalled { onCreate(instanceState) }
 
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+
         notifyListeners { it.postCreate(this, instanceState) }
 
-        allState?.let { restoreUserInstanceState(it) }
+        instanceState?.let { restoreUserInstanceState(it) }
         allState = null
     }
 
@@ -251,13 +284,21 @@ abstract class Controller {
         notifyListeners { it.preDestroy(this) }
 
         state = DESTROYED
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 
         requireSuperCalled { onDestroy() }
 
         notifyListeners { it.postDestroy(this) }
+
+        if (!activity.isChangingConfigurations) {
+            ControllerViewModelStores.get(this)
+                .removeViewModelStore(instanceId)
+        }
     }
 
     internal fun createView(container: ViewGroup): View {
+        _viewLifecycleOwner = ControllerViewLifecycleOwner()
+
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
             ?.also { it.classLoader = this::class.java.classLoader }
 
@@ -270,6 +311,7 @@ abstract class Controller {
         ).also { this.view = it }
 
         state = VIEW_CREATED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
 
         notifyListeners { it.postCreateView(this, view, savedViewState) }
 
@@ -300,9 +342,10 @@ abstract class Controller {
 
         notifyListeners { it.preDestroyView(this, view) }
 
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.DESTROYED
         requireSuperCalled { onDestroyView(view) }
-
         state = CREATED
+        _viewLifecycleOwner = null
         this.view = null
 
         notifyListeners { it.postDestroyView(this) }
@@ -316,6 +359,11 @@ abstract class Controller {
         state = ATTACHED
 
         requireSuperCalled { onAttach(view) }
+
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.RESUMED
 
         notifyListeners { it.postAttach(this, view) }
 
@@ -332,6 +380,10 @@ abstract class Controller {
         notifyListeners { it.preDetach(this, view) }
 
         state = VIEW_CREATED
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
 
         requireSuperCalled { onDetach(view) }
 
@@ -356,6 +408,7 @@ abstract class Controller {
 
         val savedState = Bundle(this::class.java.classLoader)
         requireSuperCalled { onSaveInstanceState(savedState) }
+        savedStateRegistryController.performSave(savedState)
         notifyListeners { it.onSaveInstanceState(this, savedState) }
         outState.putBundle(KEY_SAVED_STATE, savedState)
 
@@ -366,18 +419,14 @@ abstract class Controller {
 
     internal fun restoreInstanceState(savedInstanceState: Bundle) {
         restoreInternalState(savedInstanceState)
-        restoreUserInstanceState(savedInstanceState)
+        val instanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)!!
+            .also { it.classLoader = this::class.java.classLoader }
+        restoreUserInstanceState(instanceState)
     }
 
     private fun restoreUserInstanceState(savedInstanceState: Bundle) {
-        val instanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)
-            ?.also { it.classLoader = this::class.java.classLoader }
-
-        // restore the instance state
-        if (instanceState != null) {
-            requireSuperCalled { onRestoreInstanceState(instanceState) }
-            notifyListeners { it.onRestoreInstanceState(this, instanceState) }
-        }
+        requireSuperCalled { onRestoreInstanceState(savedInstanceState) }
+        notifyListeners { it.onRestoreInstanceState(this, savedInstanceState) }
     }
 
     private fun restoreInternalState(savedInstanceState: Bundle) {
@@ -446,6 +495,17 @@ abstract class Controller {
         superCalled = false
         block()
         check(superCalled) { "super not called ${javaClass.name}" }
+    }
+
+    private class ControllerViewLifecycleOwner : LifecycleOwner {
+        private val lifecycleRegistry = LifecycleRegistry(this)
+        var currentState: Lifecycle.State
+            get() = lifecycleRegistry.currentState
+            set(value) {
+                lifecycleRegistry.currentState = value
+            }
+
+        override fun getLifecycle(): Lifecycle = lifecycleRegistry
     }
 
     companion object {

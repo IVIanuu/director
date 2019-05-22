@@ -16,10 +16,9 @@
 
 package com.ivianuu.director.sample.controller
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.*
-import com.ivianuu.director.androidx.lifecycle.lifecycleOwner
-import com.ivianuu.director.androidx.lifecycle.viewModelStore
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
 import com.ivianuu.scopes.MutableScope
@@ -39,14 +38,27 @@ class ArchController : BaseController() {
 
     private val viewModel by lazy {
         ViewModelProvider(
-            viewModelStore,
+            this,
             ViewModelProvider.NewInstanceFactory()
         ).get(ArchViewModel::class.java)
     }
 
+    init {
+        lifecycle.addObserver(LifecycleEventObserver { source, event ->
+            d { "lifecycle event $event" }
+        })
+    }
+
+    override fun onViewCreated(view: View, savedViewState: Bundle?) {
+        super.onViewCreated(view, savedViewState)
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { source, event ->
+            d { "view lifecycle event $event" }
+        })
+    }
+
     override fun onAttach(view: View) {
         super.onAttach(view)
-        viewModel.count.observe(lifecycleOwner, Observer { tv_title.text = "Count: $it" })
+        viewModel.count.observe(this, Observer { tv_title.text = "Count: $it" })
     }
 }
 

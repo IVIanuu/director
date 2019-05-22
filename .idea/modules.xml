@@ -11,7 +11,6 @@
       <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-fragment/director-fragment.iml" filepath="$PROJECT_DIR$/director-fragment/director-fragment.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-pager/director-pager.iml" filepath="$PROJECT_DIR$/director-pager/director-pager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-retained/director-retained.iml" filepath="$PROJECT_DIR$/director-retained/director-retained.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-scopes/director-scopes.iml" filepath="$PROJECT_DIR$/director-scopes/director-scopes.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-traveler/director-traveler.iml" filepath="$PROJECT_DIR$/director-traveler/director-traveler.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />

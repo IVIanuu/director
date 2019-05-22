@@ -37,7 +37,6 @@ dependencies {
 
     implementation(project(":director"))
     implementation(project(":director-activitycallbacks"))
-    implementation(project(":director-androidx-lifecycle"))
     implementation(project(":director-common"))
     implementation(project(":director-dialog"))
     implementation(project(":director-fragment"))

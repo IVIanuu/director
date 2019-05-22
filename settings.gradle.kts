@@ -6,7 +6,6 @@ include(
     ":director-dialog",
     ":director-fragment",
     ":director-pager",
-    ":director-retained",
     ":director-scopes",
     ":director-traveler",
     ":sample"
