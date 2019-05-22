@@ -18,13 +18,15 @@ package com.ivianuu.director
 
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.internal.TransactionIndexer
 
 /**
  * Hosts a group of [Router]s
  */
 class RouterManager(
-    val host: Any,
+    val activity: FragmentActivity,
+    val parent: Controller? = null,
     private var postponeFullRestore: Boolean = false
 ) {
 

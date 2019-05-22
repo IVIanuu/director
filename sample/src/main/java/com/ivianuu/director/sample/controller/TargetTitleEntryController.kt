@@ -7,7 +7,6 @@ import android.view.inputmethod.InputMethodManager
 import com.ivianuu.director.Controller
 import com.ivianuu.director.getControllerByInstanceId
 import com.ivianuu.director.popTop
-import com.ivianuu.director.routerManager
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
 import kotlinx.android.synthetic.main.controller_target_title_entry.btn_use_title

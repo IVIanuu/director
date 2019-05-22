@@ -21,7 +21,6 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Controller
-import com.ivianuu.director.activity
 
 /**
  * Handles activity results of controllers
@@ -106,20 +105,18 @@ class ActivityCallbacks : Fragment() {
             mutableMapOf<ActivityCallbacks, FragmentActivity>()
 
         internal fun get(controller: Controller): ActivityCallbacks {
-            val activity = (controller.activity as? FragmentActivity)
-                ?: error("controller is not attached to a FragmentActivity")
-            return ((activity as? FragmentActivity)?.supportFragmentManager
-                ?.findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
+            return controller.activity.supportFragmentManager
+                .findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
                 ?: ActivityCallbacks().also {
-                    activity.supportFragmentManager.beginTransaction()
+                    controller.activity.supportFragmentManager.beginTransaction()
                         .add(
                             it,
                             FRAGMENT_TAG
                         )
                         .commitNow()
-                }).also {
+                }.also {
                 if (it.activity == null) {
-                    activities[it] = activity
+                    activities[it] = controller.activity
                 }
             }
         }

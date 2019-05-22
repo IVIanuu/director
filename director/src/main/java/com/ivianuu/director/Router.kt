@@ -291,20 +291,19 @@ class Router internal constructor(
         controllerListeners.removeAll { it.listener == listener }
     }
 
-    internal fun getListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
+    internal fun getChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return listeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } +
-                ((routerManager.host as? Controller)?.router?.getListeners(true)
-                    ?: emptyList())
+            .map { it.listener } + (routerManager.parent?.router?.getChangeListeners(true)
+            ?: emptyList())
     }
 
-    internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
+    internal fun getControllerLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
         return controllerListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } +
-                ((routerManager.host as? Controller)?.router?.getControllerListeners(true)
-                    ?: emptyList())
+            .map { it.listener } + (routerManager.parent?.router?.getControllerLifecycleListeners(
+            true
+        ) ?: emptyList())
     }
 
     /**
@@ -406,7 +405,7 @@ class Router internal constructor(
         onComplete: (() -> Unit?)? = null
     ) {
         val container = container ?: return
-        val listeners = getListeners()
+        val listeners = getChangeListeners()
 
         val handlerToUse = when {
             handler == null -> DefaultChangeHandler()

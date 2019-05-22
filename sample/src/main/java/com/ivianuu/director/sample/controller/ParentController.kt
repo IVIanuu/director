@@ -31,7 +31,7 @@ class ParentController : BaseController() {
         val frameId = resources.getIdentifier(
             "child_content_" + (index + 1),
             "id",
-            context.packageName
+            activity.packageName
         )
 
         val container = view!!.findViewById<ViewGroup>(frameId)

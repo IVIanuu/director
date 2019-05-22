@@ -1,9 +1,6 @@
 package com.ivianuu.director
 
-import android.app.Activity
 import android.app.Application
-import android.content.Context
-import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Parcelable
@@ -11,6 +8,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
@@ -47,6 +45,21 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         }
 
     private lateinit var _router: Router
+
+    /**
+     * The router manager of the router this controller is attached to
+     */
+    val routerManager: RouterManager get() = router.routerManager
+
+    /**
+     * The hosting activity
+     */
+    val activity: FragmentActivity get() = routerManager.activity
+
+    /**
+     * The parent controller if any
+     */
+    val parentController: Controller? get() = routerManager.parent
 
     /**
      * The view of this controller or null
@@ -129,7 +142,9 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     /**
      * The child router manager of this controller
      */
-    val childRouterManager = RouterManager(this, postponeFullRestore = true)
+    val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
+        RouterManager(activity, this, true)
+    }
 
     private val listeners = mutableListOf<ControllerLifecycleListener>()
 
@@ -489,7 +504,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     }
 
     private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
-        (listeners + router.getControllerListeners()).forEach(block)
+        (listeners + router.getControllerLifecycleListeners()).forEach(block)
     }
 
     private inline fun requireSuperCalled(block: () -> Unit) {
@@ -543,35 +558,10 @@ val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
 
 val Controller.isDestroyed: Boolean get() = state == DESTROYED
 
-val Controller.routerManager: RouterManager
-    get() = router.routerManager
-
-val Controller.host: Any
-    get() = routerManager.host
-
-val Controller.parentController: Controller?
-    get() = host as? Controller
-
-val Controller.context: Context
-    get() {
-        return if (host is Context) {
-            host as Context
-        } else {
-            (host as? Controller)?.context
-        } ?: error("no context found")
-    }
-
-val Controller.activity: Activity
-    get() = context as? Activity ?: error("no activity found")
-
 val Controller.application: Application
-    get() = context.applicationContext as Application
+    get() = activity.application
 
-val Controller.resources: Resources get() = context.resources
-
-fun Controller.startActivity(intent: Intent) {
-    context.startActivity(intent)
-}
+val Controller.resources: Resources get() = activity.resources
 
 fun Controller.requireView(): View =
     view ?: error("view is only accessible between onCreateView and onDestroyView")

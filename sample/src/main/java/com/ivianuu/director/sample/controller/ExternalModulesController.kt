@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.context
+
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
@@ -44,7 +44,7 @@ class ExternalModulesController : BaseController() {
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)
 
-        recycler_view.layoutManager = LinearLayoutManager(context)
+        recycler_view.layoutManager = LinearLayoutManager(activity)
         recycler_view.buildModels {
             AdditionalModuleItem.values().forEach { item ->
                 additionalModuleItem {

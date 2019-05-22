@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
-import com.ivianuu.director.activity
-import com.ivianuu.director.parentController
+
+
 import com.ivianuu.director.sample.ToolbarProvider
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*

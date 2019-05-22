@@ -7,10 +7,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
+import com.ivianuu.director.childRouter
+import com.ivianuu.director.hasRoot
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.simpleController
+import com.ivianuu.director.setRoot
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
 import kotlinx.android.synthetic.main.row_detail_item.item_title
@@ -42,7 +45,7 @@ class MasterDetailListController : BaseController() {
     override fun onViewCreated(view: View, savedViewState: Bundle?) {
         super.onViewCreated(view, savedViewState)
 
-        recycler_view.layoutManager = LinearLayoutManager(context)
+        recycler_view.layoutManager = LinearLayoutManager(activity)
         recycler_view.adapter = epoxyController.adapter
         isTwoPane = resources.configuration.orientation ==
                 Configuration.ORIENTATION_LANDSCAPE

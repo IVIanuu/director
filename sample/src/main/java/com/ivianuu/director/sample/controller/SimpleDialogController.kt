@@ -21,7 +21,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.ivianuu.director.common.DialogController
-import com.ivianuu.director.context
+
 
 
 /**
@@ -29,12 +29,12 @@ import com.ivianuu.director.context
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(context)
+    override fun onCreateDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(activity)
         .title("Hello")
         .content("This is a simple dialog controller.")
         .positiveText("OK")
         .onPositive { _, _ ->
-            Toast.makeText(context, "Ok clicked!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "Ok clicked!", Toast.LENGTH_SHORT).show()
         }
         .negativeText("Cancel")
         .onNegative { _, _ -> dismiss() }

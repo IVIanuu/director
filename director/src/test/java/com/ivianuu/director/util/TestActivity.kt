@@ -16,9 +16,9 @@
 
 package com.ivianuu.director.util
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.getRouter
@@ -26,7 +26,7 @@ import com.ivianuu.director.getRouter
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class TestActivity : Activity() {
+class TestActivity : FragmentActivity() {
 
     var changingConfigurations = false
     var isDestroying = false

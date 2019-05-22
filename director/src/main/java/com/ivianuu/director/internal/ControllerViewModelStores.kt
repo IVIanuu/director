@@ -16,12 +16,10 @@
 
 package com.ivianuu.director.internal
 
-import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import com.ivianuu.director.Controller
-import com.ivianuu.director.activity
 
 internal class ControllerViewModelStores : ViewModel() {
 
@@ -43,7 +41,7 @@ internal class ControllerViewModelStores : ViewModel() {
 
     companion object {
         fun get(controller: Controller): ControllerViewModelStores {
-            val provider = ViewModelProvider(controller.activity as ComponentActivity, Factory)
+            val provider = ViewModelProvider(controller.activity, Factory)
             return provider[ControllerViewModelStores::class.java]
         }
     }

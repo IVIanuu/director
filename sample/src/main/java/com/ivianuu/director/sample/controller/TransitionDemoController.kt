@@ -32,7 +32,7 @@ class TransitionDemoController : BaseController() {
         if (transitionDemo.colorId != 0 && bg_view != null) {
             bg_view.setBackgroundColor(
                 ContextCompat.getColor(
-                    context,
+                    activity,
                     transitionDemo.colorId
                 )
             )
@@ -48,7 +48,7 @@ class TransitionDemoController : BaseController() {
         }
 
         btn_next.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(context, buttonColor))
+            ColorStateList.valueOf(ContextCompat.getColor(activity, buttonColor))
         tv_title.text = transitionDemo.title
 
         btn_next.setOnClickListener {
