@@ -2,15 +2,15 @@ package com.ivianuu.director.sample.util
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
-import com.ivianuu.director.ControllerListener
+import com.ivianuu.director.ControllerLifecycleListener
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class LoggingControllerListener : ControllerListener {
+class LoggingControllerLifecycleListener : ControllerLifecycleListener {
 
     private fun Controller.d(m: () -> String) {
         (this as Any).d { "Lifecycle: ${m.invoke()}" }

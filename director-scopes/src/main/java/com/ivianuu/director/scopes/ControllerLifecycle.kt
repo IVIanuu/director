@@ -18,7 +18,7 @@ package com.ivianuu.director.scopes
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerState
-import com.ivianuu.director.addListener
+import com.ivianuu.director.addLifecycleListener
 import com.ivianuu.director.common.ControllerEvent
 import com.ivianuu.director.common.ControllerEvent.ATTACH
 import com.ivianuu.director.common.ControllerEvent.CREATE
@@ -36,7 +36,7 @@ class ControllerLifecycle(
 ) : AbstractLifecycle<ControllerEvent>() {
 
     init {
-        controller.addListener(
+        controller.addLifecycleListener(
             preCreate = { _, _ -> onEvent(CREATE) },
             preCreateView = { _, _ -> onEvent(CREATE_VIEW) },
             preAttach = { _, _ -> onEvent(ATTACH) },

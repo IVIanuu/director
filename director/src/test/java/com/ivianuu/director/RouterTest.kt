@@ -422,8 +422,8 @@ class RouterTest {
         val routerNonRecursiveListener = EmptyChangeListener()
 
         val controller1 = TestController()
-        router.addListener(routerRecursiveListener, true)
-        router.addListener(routerNonRecursiveListener)
+        router.addChangeListener(routerRecursiveListener, true)
+        router.addChangeListener(routerNonRecursiveListener)
         router.setRoot(controller1)
 
         val childRouterRecursiveListener = EmptyChangeListener()
@@ -435,8 +435,8 @@ class RouterTest {
         assertFalse(childRouter.getListeners(false).contains(routerNonRecursiveListener))
 
         val controller2 = TestController()
-        childRouter.addListener(childRouterRecursiveListener, true)
-        childRouter.addListener(childRouterNonRecursiveListener)
+        childRouter.addChangeListener(childRouterRecursiveListener, true)
+        childRouter.addChangeListener(childRouterNonRecursiveListener)
         childRouter.setRoot(controller2)
 
         val childRouter2 =
@@ -454,16 +454,16 @@ class RouterTest {
 
     @Test
     fun testRecursivelySettingLifecycleListener() {
-        val routerRecursiveListener = EmptyControllerListener()
-        val routerNonRecursiveListener = EmptyControllerListener()
+        val routerRecursiveListener = EmptyControllerLifecycleListener()
+        val routerNonRecursiveListener = EmptyControllerLifecycleListener()
 
         val controller1 = TestController()
-        router.addControllerListener(routerRecursiveListener, true)
-        router.addControllerListener(routerNonRecursiveListener)
+        router.addControllerLifecycleListener(routerRecursiveListener, true)
+        router.addControllerLifecycleListener(routerNonRecursiveListener)
         router.setRoot(controller1)
 
-        val childRouterRecursiveListener = EmptyControllerListener()
-        val childRouterNonRecursiveListener = EmptyControllerListener()
+        val childRouterRecursiveListener = EmptyControllerLifecycleListener()
+        val childRouterNonRecursiveListener = EmptyControllerLifecycleListener()
 
         val childRouter =
             controller1.getChildRouter(controller1.childContainer1!!)
@@ -471,8 +471,8 @@ class RouterTest {
         assertFalse(childRouter.getControllerListeners(false).contains(routerNonRecursiveListener))
 
         val controller2 = TestController()
-        childRouter.addControllerListener(childRouterRecursiveListener, true)
-        childRouter.addControllerListener(childRouterNonRecursiveListener)
+        childRouter.addControllerLifecycleListener(childRouterRecursiveListener, true)
+        childRouter.addControllerLifecycleListener(childRouterNonRecursiveListener)
         childRouter.setRoot(controller2)
 
         val childRouter2 =

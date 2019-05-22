@@ -17,15 +17,15 @@
 package com.ivianuu.director.sample.util
 
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ControllerChangeListener
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterListener
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class LoggingRouterListener : RouterListener {
+class LoggingControllerChangeListener : ControllerChangeListener {
     override fun onChangeStarted(
         router: Router,
         to: Controller?,

@@ -56,9 +56,9 @@ class Router internal constructor(
         private set
 
     private val listeners =
-        mutableListOf<ListenerEntry<RouterListener>>()
+        mutableListOf<ListenerEntry<ControllerChangeListener>>()
     private val controllerListeners =
-        mutableListOf<ListenerEntry<ControllerListener>>()
+        mutableListOf<ListenerEntry<ControllerLifecycleListener>>()
 
     private val runningHandlers =
         mutableMapOf<Controller, ControllerChangeHandler>()
@@ -263,32 +263,35 @@ class Router internal constructor(
     /**
      * Notifies the [listener] on controller changes
      */
-    fun addListener(listener: RouterListener, recursive: Boolean = false) {
+    fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
         listeners.add(ListenerEntry(listener, recursive))
     }
 
     /**
      * Removes the previously added [listener]
      */
-    fun removeListener(listener: RouterListener) {
+    fun removeChangeListener(listener: ControllerChangeListener) {
         listeners.removeAll { it.listener == listener }
     }
 
     /**
      * Adds the [listener] to all controllers
      */
-    fun addControllerListener(listener: ControllerListener, recursive: Boolean = false) {
+    fun addControllerLifecycleListener(
+        listener: ControllerLifecycleListener,
+        recursive: Boolean = false
+    ) {
         controllerListeners.add(ListenerEntry(listener, recursive))
     }
 
     /**
      * Removes the previously added [listener]
      */
-    fun removeControllerListener(listener: ControllerListener) {
+    fun removeControllerLifecycleListener(listener: ControllerLifecycleListener) {
         controllerListeners.removeAll { it.listener == listener }
     }
 
-    internal fun getListeners(recursiveOnly: Boolean = false): List<RouterListener> {
+    internal fun getListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return listeners
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener } +
@@ -296,7 +299,7 @@ class Router internal constructor(
                     ?: emptyList())
     }
 
-    internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerListener> {
+    internal fun getControllerListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
         return controllerListeners
             .filter { !recursiveOnly || it.recursive }
             .map { it.listener } +

@@ -16,6 +16,6 @@
 
 package com.ivianuu.director.util
 
-import com.ivianuu.director.RouterListener
+import com.ivianuu.director.ControllerChangeListener
 
-class EmptyChangeListener : RouterListener
+class EmptyChangeListener : ControllerChangeListener

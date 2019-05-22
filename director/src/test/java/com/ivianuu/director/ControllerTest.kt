@@ -72,7 +72,7 @@ class ControllerTest {
 
         assertEquals(INITIALIZED, controller.state)
 
-        controller.addListener(
+        controller.addLifecycleListener(
             preCreate = { _, _ -> assertEquals(INITIALIZED, controller.state) },
             postCreate = { _, _ -> assertEquals(CREATED, controller.state) },
             preCreateView = { _, _ -> assertEquals(CREATED, controller.state) },

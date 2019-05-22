@@ -131,7 +131,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      */
     val childRouterManager = RouterManager(this, postponeFullRestore = true)
 
-    private val listeners = mutableListOf<ControllerListener>()
+    private val listeners = mutableListOf<ControllerLifecycleListener>()
 
     private var superCalled = false
 
@@ -239,14 +239,14 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     /**
      * Adds a listener for all of this Controller's lifecycle events
      */
-    fun addListener(listener: ControllerListener) {
+    fun addLifecycleListener(listener: ControllerLifecycleListener) {
         listeners.add(listener)
     }
 
     /**
      * Removes the previously added [listener]
      */
-    fun removeListener(listener: ControllerListener) {
+    fun removeLifecycleListener(listener: ControllerLifecycleListener) {
         listeners.remove(listener)
     }
 
@@ -488,7 +488,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
     }
 
-    private inline fun notifyListeners(block: (ControllerListener) -> Unit) {
+    private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
         (listeners + router.getControllerListeners()).forEach(block)
     }
 

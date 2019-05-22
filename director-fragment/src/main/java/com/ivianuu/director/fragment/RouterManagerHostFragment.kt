@@ -33,7 +33,7 @@ class RouterManagerHostFragment : Fragment() {
 
     private val backPressedCallback = BackPressedCallback()
     private val registeredRouters = mutableSetOf<Router>()
-    private val routerListener = RouterListener(
+    private val routerListener = ControllerChangeListener(
         onChangeStarted = { _, _, _, _, _, _ ->
             backPressedCallback.isEnabled =
                 manager.routers.any {
@@ -80,7 +80,7 @@ class RouterManagerHostFragment : Fragment() {
 
     private fun registerIfNeeded(router: Router) {
         if (registeredRouters.add(router)) {
-            router.addListener(routerListener, true)
+            router.addChangeListener(routerListener, true)
         }
     }
 

@@ -11,7 +11,7 @@ import com.ivianuu.director.fragment.getRouter
 import com.ivianuu.director.fragment.postponeFullRestore
 import com.ivianuu.director.fragment.startPostponedFullRestore
 import com.ivianuu.director.sample.controller.HomeController
-import com.ivianuu.director.sample.util.LoggingControllerListener
+import com.ivianuu.director.sample.util.LoggingControllerLifecycleListener
 import kotlinx.android.synthetic.main.activity_main.controller_container
 
 class MainActivity : AppCompatActivity(), ToolbarProvider {
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         setContentView(R.layout.activity_main)
 
         with(getRouter(controller_container)) {
-            addControllerListener(LoggingControllerListener(), recursive = true)
+            addControllerLifecycleListener(LoggingControllerLifecycleListener(), recursive = true)
 
             addToolbarHandling()
 

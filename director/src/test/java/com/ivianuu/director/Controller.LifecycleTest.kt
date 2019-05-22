@@ -160,7 +160,7 @@ class ControllerLifecycleCallbacksTest {
         val testController = TestController()
         val callState = CallState()
 
-        testController.addListener(object : ControllerListener {
+        testController.addLifecycleListener(object : ControllerLifecycleListener {
 
             override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
                 callState.createCalls++
@@ -562,7 +562,7 @@ class ControllerLifecycleCallbacksTest {
     }
 
     private fun attachControllerListener(controller: Controller) {
-        controller.addListener(object : ControllerListener {
+        controller.addLifecycleListener(object : ControllerLifecycleListener {
             override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
                 currentCallState.createCalls++
             }
@@ -645,12 +645,12 @@ class ControllerLifecycleCallbacksTest {
         val child = TestController()
 
 
-        val listener = LastInFirstOutControllerListener(parent, child)
+        val listener = LastInFirstOutControllerLifecycleListener(parent, child)
 
-        parent.addListener(listener)
-        child.addListener(listener)
+        parent.addLifecycleListener(listener)
+        child.addLifecycleListener(listener)
 
-        parent.addListener(
+        parent.addLifecycleListener(
             preCreate = { _, _ ->
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child)
@@ -661,10 +661,10 @@ class ControllerLifecycleCallbacksTest {
         router.push(parent)
     }
 
-    private class LastInFirstOutControllerListener(
+    private class LastInFirstOutControllerLifecycleListener(
         private val parent: Controller,
         private val child: Controller
-    ) : ControllerListener {
+    ) : ControllerLifecycleListener {
 
         override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
             super.postCreateView(controller, view, savedViewState)
