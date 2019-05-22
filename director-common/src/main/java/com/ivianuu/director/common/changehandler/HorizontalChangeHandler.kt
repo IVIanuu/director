@@ -72,7 +72,7 @@ open class HorizontalChangeHandler(
                     ObjectAnimator.ofFloat(
                         to,
                         View.TRANSLATION_X,
-                        to.width.toFloat(),
+                        -to.width.toFloat(),
                         0f
                     )
                 )

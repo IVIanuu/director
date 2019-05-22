@@ -9,7 +9,7 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.*
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.dialog.show
+import com.ivianuu.director.common.show
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel

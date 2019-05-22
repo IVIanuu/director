@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.dialog
+package com.ivianuu.director.common
 
 import android.app.Dialog
 import android.content.DialogInterface

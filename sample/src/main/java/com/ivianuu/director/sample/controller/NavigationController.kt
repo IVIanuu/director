@@ -105,15 +105,15 @@ class NavigationController : BaseController() {
     @Parcelize
     enum class AnimMode : Parcelable {
         HORIZONTAL {
-            override fun createHandler(): ChangeHandler =
+            override fun createHandler(): ControllerChangeHandler =
                 HorizontalChangeHandler()
         },
         VERTICAL {
-            override fun createHandler(): ChangeHandler =
+            override fun createHandler(): ControllerChangeHandler =
                 VerticalChangeHandler()
         };
 
-        abstract fun createHandler(): ChangeHandler
+        abstract fun createHandler(): ControllerChangeHandler
     }
 
     companion object {

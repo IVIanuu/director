@@ -30,26 +30,26 @@ var DirectorPlugins.defaultControllerFactory: ControllerFactory?
         _defaultControllerFactory = value
     }
 
-private var _defaultPushHandler: ChangeHandler? = null
+private var _defaultPushHandler: ControllerChangeHandler? = null
 
 /** The default push handler to use in all transactions */
-var DirectorPlugins.defaultPushHandler: ChangeHandler?
+var DirectorPlugins.defaultPushHandler: ControllerChangeHandler?
     get() = _defaultPushHandler
     set(value) {
         _defaultPushHandler = value
     }
 
-private var _defaultPopHandler: ChangeHandler? = null
+private var _defaultPopHandler: ControllerChangeHandler? = null
 
 /** The default push handler to use in all transactions */
-var DirectorPlugins.defaultPopHandler: ChangeHandler?
+var DirectorPlugins.defaultPopHandler: ControllerChangeHandler?
     get() = _defaultPopHandler
     set(value) {
         _defaultPopHandler = value
     }
 
 /** Sets the [handler] as the default push and pop handler */
-fun DirectorPlugins.setDefaultHandler(handler: ChangeHandler?) {
+fun DirectorPlugins.setDefaultHandler(handler: ControllerChangeHandler?) {
     defaultPushHandler = handler
     defaultPopHandler = handler
 }

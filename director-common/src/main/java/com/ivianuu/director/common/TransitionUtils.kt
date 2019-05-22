@@ -25,7 +25,6 @@ import android.transition.Transition
 import android.transition.TransitionSet
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.stdlibx.firstNotNullResultOrNull
 
 fun View.findNamedViews(namedViews: MutableMap<String, View>) {
     if (visibility != View.VISIBLE) return
@@ -42,8 +41,14 @@ fun View.findNamedViews(namedViews: MutableMap<String, View>) {
 fun View.findNamedView(transitionName: String): View? {
     if (transitionName == this.transitionName) return this
     if (this !is ViewGroup) return null
-    return (0 until childCount)
-        .firstNotNullResultOrNull { getChildAt(it).findNamedView(transitionName) }
+
+    for (i in 0 until childCount) {
+        val child = getChildAt(i)
+        val namedView = child.findNamedView(transitionName)
+        if (namedView != null) return namedView
+    }
+
+    return null
 }
 
 fun Transition.setEpicenter(view: View) {

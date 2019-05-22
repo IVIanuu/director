@@ -620,7 +620,7 @@ class ControllerLifecycleCallbacksTest {
             override fun onChangeStarted(
                 controller: Controller,
                 other: Controller?,
-                changeHandler: ChangeHandler,
+                changeHandler: ControllerChangeHandler,
                 changeType: ControllerChangeType
             ) {
                 super.onChangeStarted(controller, other, changeHandler, changeType)
@@ -630,7 +630,7 @@ class ControllerLifecycleCallbacksTest {
             override fun onChangeEnded(
                 controller: Controller,
                 other: Controller?,
-                changeHandler: ChangeHandler,
+                changeHandler: ControllerChangeHandler,
                 changeType: ControllerChangeType
             ) {
                 super.onChangeEnded(controller, other, changeHandler, changeType)

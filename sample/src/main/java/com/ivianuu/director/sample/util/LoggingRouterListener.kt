@@ -17,7 +17,7 @@
 package com.ivianuu.director.sample.util
 
 import android.view.ViewGroup
-import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterListener
@@ -32,7 +32,7 @@ class LoggingRouterListener : RouterListener {
         from: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ChangeHandler
+        handler: ControllerChangeHandler
     ) {
         d { "on change started: to $to, from $from, is push $isPush, container ${container.childCount}, changeHandler $handler" }
     }
@@ -43,7 +43,7 @@ class LoggingRouterListener : RouterListener {
         from: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ChangeHandler
+        handler: ControllerChangeHandler
     ) {
         d { "on change completed: to $to, from $from, is push $isPush, container ${container.childCount}, changeHandler $handler" }
     }

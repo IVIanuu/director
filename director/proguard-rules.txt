@@ -3,7 +3,7 @@
    public <init>();
 }
 
--keepclassmembers public class * extends com.ivianuu.director.ChangeHandler {
+-keepclassmembers public class * extends com.ivianuu.director.ControllerChangeHandler {
    public <init>();
 }
 

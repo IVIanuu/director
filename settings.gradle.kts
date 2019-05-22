@@ -1,12 +1,8 @@
 include(
     ":director",
     ":director-activitycallbacks",
-    ":director-androidx-lifecycle",
     ":director-common",
-    ":director-dialog",
     ":director-fragment",
-    ":director-pager",
-    ":director-retained",
     ":director-scopes",
     ":director-traveler",
     ":sample"

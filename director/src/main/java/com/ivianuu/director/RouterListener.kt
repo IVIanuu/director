@@ -17,7 +17,6 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
-import com.ivianuu.closeable.Closeable
 
 /**
  * Listener for controller changes
@@ -25,7 +24,7 @@ import com.ivianuu.closeable.Closeable
 interface RouterListener {
 
     /**
-     * Called when a [ChangeHandler] has started changing [Controller]s
+     * Called when a [ControllerChangeHandler] has started changing [Controller]s
      */
     fun onChangeStarted(
         router: Router,
@@ -33,12 +32,12 @@ interface RouterListener {
         from: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ChangeHandler
+        handler: ControllerChangeHandler
     ) {
     }
 
     /**
-     * Called when a [ChangeHandler] has completed changing [Controller]s
+     * Called when a [ControllerChangeHandler] has completed changing [Controller]s
      */
     fun onChangeEnded(
         router: Router,
@@ -46,7 +45,7 @@ interface RouterListener {
         from: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ChangeHandler
+        handler: ControllerChangeHandler
     ) {
     }
 
@@ -56,36 +55,36 @@ interface RouterListener {
  * Returns a [RouterListener]
  */
 fun RouterListener(
-    onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null,
-    onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null
+    onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
 ): RouterListener =
     LambdaRouterListener(onChangeStarted, onChangeEnded)
 
 fun Router.doOnChangeStarted(
     recursive: Boolean = false,
-    block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit
-): Closeable =
+    block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
+) =
     addListener(recursive = recursive, onChangeStarted = block)
 
 fun Router.doOnChangeEnded(
     recursive: Boolean = false,
-    block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit
-): Closeable =
+    block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
+) =
     addListener(recursive = recursive, onChangeEnded = block)
 
 fun Router.addListener(
     recursive: Boolean = false,
-    onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null,
-    onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null
-): Closeable =
+    onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
+) =
     addListener(
         RouterListener(onChangeStarted, onChangeEnded),
         recursive
     )
 
 private class LambdaRouterListener(
-    private val onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null,
-    private val onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ChangeHandler) -> Unit)? = null
+    private val onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
+    private val onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
 ) : RouterListener {
     override fun onChangeStarted(
         router: Router,
@@ -93,7 +92,7 @@ private class LambdaRouterListener(
         from: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ChangeHandler
+        handler: ControllerChangeHandler
     ) {
         onChangeStarted?.invoke(router, to, from, isPush, container, handler)
     }
@@ -104,7 +103,7 @@ private class LambdaRouterListener(
         from: Controller?,
         isPush: Boolean,
         container: ViewGroup,
-        handler: ChangeHandler
+        handler: ControllerChangeHandler
     ) {
         onChangeEnded?.invoke(router, to, from, isPush, container, handler)
     }

@@ -20,7 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * All necessary info a [ChangeHandler] needs to do it's job
+ * All necessary info a [ControllerChangeHandler] needs to do it's job
  */
 data class ChangeData(
     val container: ViewGroup,
@@ -28,7 +28,7 @@ data class ChangeData(
     val to: View?,
     val isPush: Boolean,
 
-    val callback: ChangeHandler.Callback,
+    val callback: ControllerChangeHandler.Callback,
 
     val toIndex: Int,
     val forceRemoveFromViewOnPush: Boolean

@@ -17,7 +17,7 @@ class ParentController : BaseController() {
 
     override fun onChangeEnded(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeEnded(other, changeHandler, changeType)

@@ -18,20 +18,29 @@ package com.ivianuu.director.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.arch.core.util.Cancellable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.hasHost
-import com.ivianuu.director.RouterManager
+import com.ivianuu.director.*
 
-class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
+class RouterManagerHostFragment : Fragment() {
 
     private val manager by lazy(LazyThreadSafetyMode.NONE) {
         RouterManager(requireActivity())
     }
 
-    private var backPressCancellable: Cancellable? = null
+    private val backPressedCallback = BackPressedCallback()
+    private val registeredRouters = mutableSetOf<Router>()
+    private val routerListener = RouterListener(
+        onChangeStarted = { _, _, _, _, _, _ ->
+            backPressedCallback.isEnabled =
+                manager.routers.any {
+                    it.hasRoot && (it.popsLastView || it.backstackSize > 1)
+                }
+        }
+    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -45,8 +54,7 @@ class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         manager.restoreInstanceState(savedInstanceState?.getBundle(KEY_ROUTER_STATES))
-        backPressCancellable =
-            requireActivity().onBackPressedDispatcher.addCallback(this)
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     override fun onStart() {
@@ -66,12 +74,21 @@ class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
 
     override fun onDestroy() {
         super.onDestroy()
-        backPressCancellable?.cancel()
-        backPressCancellable = null
+        backPressedCallback.remove()
         manager.onDestroy()
     }
 
-    override fun handleOnBackPressed(): Boolean = manager.handleBack()
+    private fun registerIfNeeded(router: Router) {
+        if (registeredRouters.add(router)) {
+            router.addListener(routerListener, true)
+        }
+    }
+
+    private inner class BackPressedCallback : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            manager.handleBack()
+        }
+    }
 
     companion object {
         private const val FRAGMENT_TAG =
@@ -80,6 +97,48 @@ class RouterManagerHostFragment : Fragment(), OnBackPressedCallback {
         private const val KEY_ROUTER_STATES = "RouterManagerHostFragment.routerState"
 
         private val postponedActivities = mutableListOf<FragmentActivity>()
+
+        fun getRouterOrNull(
+            activity: FragmentActivity,
+            containerId: Int,
+            tag: String? = null
+        ): Router? {
+            val host = get(activity)
+            return host.manager.getRouterOrNull(containerId, tag)
+                ?.also { host.registerIfNeeded(it) }
+        }
+
+        fun getRouterOrNull(
+            activity: FragmentActivity,
+            container: ViewGroup,
+            tag: String? = null
+        ): Router? {
+            val host = get(activity)
+            return host.manager.getRouterOrNull(container, tag)
+                ?.also { host.registerIfNeeded(it) }
+        }
+
+        fun getRouter(activity: FragmentActivity, containerId: Int, tag: String? = null): Router {
+            val host = get(activity)
+            return host.manager.getRouter(containerId, tag)
+                .also { host.registerIfNeeded(it) }
+        }
+
+        fun getRouter(
+            activity: FragmentActivity,
+            container: ViewGroup,
+            tag: String? = null
+        ): Router {
+            val host = get(activity)
+            return host.manager.getRouter(container, tag)
+                .also { host.registerIfNeeded(it) }
+        }
+
+        fun removeRouter(activity: FragmentActivity, router: Router) {
+            val host = get(activity)
+            host.manager.removeRouter(router)
+            host.registeredRouters.remove(router)
+        }
 
         fun postponeFullRestore(activity: FragmentActivity) {
             if (activity.supportFragmentManager.hasHost) {

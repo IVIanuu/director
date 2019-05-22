@@ -20,8 +20,8 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
+import com.ivianuu.director.common.DialogController
 import com.ivianuu.director.context
-import com.ivianuu.director.dialog.DialogController
 
 
 /**

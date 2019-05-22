@@ -1,11 +1,12 @@
 package com.ivianuu.director
 
 import android.os.Bundle
+import com.ivianuu.director.internal.newInstanceOrThrow
 
 /**
  * Swaps views on controller changes
  */
-abstract class ChangeHandler {
+abstract class ControllerChangeHandler {
 
     /**
      * Whether or not this changeHandler removes the from view on push
@@ -37,7 +38,7 @@ abstract class ChangeHandler {
     open fun restoreInstanceState(savedInstanceState: Bundle) {
     }
 
-    internal open fun copy(): ChangeHandler = fromBundle(toBundle())
+    internal open fun copy(): ControllerChangeHandler = fromBundle(toBundle())
 
     interface Callback {
         fun addToView()
@@ -48,21 +49,21 @@ abstract class ChangeHandler {
     }
 
     internal fun toBundle(): Bundle = Bundle().apply {
-        classLoader = this@ChangeHandler::class.java.classLoader
+        classLoader = this@ControllerChangeHandler::class.java.classLoader
 
-        putString(KEY_CLASS_NAME, this@ChangeHandler.javaClass.name)
+        putString(KEY_CLASS_NAME, this@ControllerChangeHandler.javaClass.name)
         putBundle(KEY_SAVED_STATE, Bundle()
-            .also { it.classLoader = this@ChangeHandler::class.java.classLoader }
-            .also { this@ChangeHandler.saveInstanceState(it) })
+            .also { it.classLoader = this@ControllerChangeHandler::class.java.classLoader }
+            .also { this@ControllerChangeHandler.saveInstanceState(it) })
     }
 
     companion object {
-        private const val KEY_CLASS_NAME = "ChangeHandler.className"
-        private const val KEY_SAVED_STATE = "ChangeHandler.savedState"
+        private const val KEY_CLASS_NAME = "ControllerChangeHandler.className"
+        private const val KEY_SAVED_STATE = "ControllerChangeHandler.savedState"
 
-        internal fun fromBundle(bundle: Bundle): ChangeHandler {
+        internal fun fromBundle(bundle: Bundle): ControllerChangeHandler {
             val className = bundle.getString(KEY_CLASS_NAME)!!
-            return newInstanceOrThrow<ChangeHandler>(className).apply {
+            return newInstanceOrThrow<ControllerChangeHandler>(className).apply {
                 restoreInstanceState(bundle.getBundle(KEY_SAVED_STATE)!!)
             }
         }

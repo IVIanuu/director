@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director
+package com.ivianuu.director.internal
 
 import android.view.View
 import android.view.ViewGroup
