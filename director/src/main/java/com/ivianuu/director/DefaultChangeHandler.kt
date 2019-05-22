@@ -19,11 +19,11 @@ package com.ivianuu.director
 import android.os.Bundle
 
 /**
- * A [ChangeHandler] that will instantly swap Views with no animations or transitions.
+ * A [ControllerChangeHandler] that will instantly swap Views with no animations or transitions.
  */
 open class DefaultChangeHandler(
     removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
-) : ChangeHandler() {
+) : ControllerChangeHandler() {
 
     override val removesFromViewOnPush: Boolean get() = _removesFromViewOnPush
     private var _removesFromViewOnPush = removesFromViewOnPush

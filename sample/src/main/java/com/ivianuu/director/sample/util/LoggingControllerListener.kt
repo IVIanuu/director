@@ -2,7 +2,7 @@ package com.ivianuu.director.sample.util
 
 import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerListener
@@ -83,7 +83,7 @@ class LoggingControllerListener : ControllerListener {
     override fun onChangeStarted(
         controller: Controller,
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeStarted(controller, other, changeHandler, changeType)
@@ -93,7 +93,7 @@ class LoggingControllerListener : ControllerListener {
     override fun onChangeEnded(
         controller: Controller,
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeEnded(controller, other, changeHandler, changeType)

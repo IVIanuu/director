@@ -75,7 +75,7 @@ interface ControllerListener {
     fun onChangeStarted(
         controller: Controller,
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
     }
@@ -83,7 +83,7 @@ interface ControllerListener {
     fun onChangeEnded(
         controller: Controller,
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
     }
@@ -109,8 +109,8 @@ fun ControllerListener(
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerListener = LambdaControllerListener(
     preCreate = preCreate, postCreate = postCreate,
     preCreateView = preCreateView, postCreateView = postCreateView,
@@ -171,10 +171,10 @@ fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, 
 fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit) =
     addListener(onSaveViewState = block)
 
-fun Controller.doOnChangeStart(block: (controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit) =
+fun Controller.doOnChangeStart(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
     addListener(onChangeStarted = block)
 
-fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit) =
+fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
     addListener(onChangeEnded = block)
 
 fun Controller.addListener(
@@ -194,8 +194,8 @@ fun Controller.addListener(
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) = ControllerListener(
     preCreate = preCreate, postCreate = postCreate,
     preCreateView = preCreateView, postCreateView = postCreateView,
@@ -226,8 +226,8 @@ fun Router.addControllerListener(
     onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) {
     return addControllerListener(
         ControllerListener(
@@ -272,8 +272,8 @@ private class LambdaControllerListener(
     private val onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
     private val onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
     private val onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
-    private val onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    private val onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    private val onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
+    private val onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) : ControllerListener {
     override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
         preCreate?.invoke(controller, savedInstanceState)
@@ -342,7 +342,7 @@ private class LambdaControllerListener(
     override fun onChangeStarted(
         controller: Controller,
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         onChangeStarted?.invoke(controller, other, changeHandler, changeType)
@@ -351,7 +351,7 @@ private class LambdaControllerListener(
     override fun onChangeEnded(
         controller: Controller,
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         onChangeEnded?.invoke(controller, other, changeHandler, changeType)

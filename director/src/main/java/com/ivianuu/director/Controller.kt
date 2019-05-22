@@ -107,7 +107,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     /**
      * The change handler being used when this controller enters the screen
      */
-    var pushChangeHandler: ChangeHandler? = DirectorPlugins.defaultPushHandler
+    var pushChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler
         set(value) {
             check(!this::_router.isInitialized) {
                 "Cannot be changed after being added to a router"
@@ -118,7 +118,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     /**
      * The change handler being used when this controller exits the screen
      */
-    var popChangeHandler: ChangeHandler? = DirectorPlugins.defaultPopHandler
+    var popChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler
         set(value) {
             check(!this::_router.isInitialized) {
                 "Cannot be changed after being added to a router"
@@ -214,7 +214,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      */
     protected open fun onChangeStarted(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         superCalled = true
@@ -225,7 +225,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      */
     protected open fun onChangeEnded(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         superCalled = true
@@ -442,9 +442,9 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         transactionIndex = savedInstanceState.getInt(KEY_TRANSACTION_INDEX)
 
         pushChangeHandler = savedInstanceState.getBundle(KEY_PUSH_CHANGE_HANDLER)
-            ?.let { ChangeHandler.fromBundle(it) }
+            ?.let { ControllerChangeHandler.fromBundle(it) }
         popChangeHandler = savedInstanceState.getBundle(KEY_POP_CHANGE_HANDLER)
-            ?.let { ChangeHandler.fromBundle(it) }
+            ?.let { ControllerChangeHandler.fromBundle(it) }
 
         childRouterManager.restoreInstanceState(
             savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES)!!
@@ -472,7 +472,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
     internal fun changeStarted(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
@@ -481,7 +481,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
     internal fun changeEnded(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
@@ -609,15 +609,15 @@ fun Controller.childRouter(
 
 fun Controller.tag(tag: String?): Controller = apply { this.tag = tag }
 
-fun Controller.pushChangeHandler(changeHandler: ChangeHandler?): Controller =
+fun Controller.pushChangeHandler(changeHandler: ControllerChangeHandler?): Controller =
     apply {
         pushChangeHandler = changeHandler
     }
 
-fun Controller.popChangeHandler(changeHandler: ChangeHandler?): Controller =
+fun Controller.popChangeHandler(changeHandler: ControllerChangeHandler?): Controller =
     apply {
         popChangeHandler = changeHandler
     }
 
-fun Controller.changeHandler(changeHandler: ChangeHandler?): Controller =
+fun Controller.changeHandler(changeHandler: ControllerChangeHandler?): Controller =
     pushChangeHandler(changeHandler).popChangeHandler(changeHandler)

@@ -20,7 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeType
 
@@ -102,7 +102,7 @@ class TestController : Controller() {
 
     override fun onChangeStarted(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeStarted(other, changeHandler, changeType)
@@ -111,7 +111,7 @@ class TestController : Controller() {
 
     override fun onChangeEnded(
         other: Controller?,
-        changeHandler: ChangeHandler,
+        changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
         super.onChangeEnded(other, changeHandler, changeType)

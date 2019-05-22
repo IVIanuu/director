@@ -19,7 +19,7 @@ package com.ivianuu.director.util
 import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.ChangeData
-import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.ControllerChangeHandler
 
 private object NoopListener : MockChangeHandler.Listener
 
@@ -27,7 +27,7 @@ class MockChangeHandler internal constructor(
     override var removesFromViewOnPush: Boolean = true,
     var tag: String? = null,
     val listener: Listener = NoopListener
-) : ChangeHandler() {
+) : ControllerChangeHandler() {
 
     var from: View? = null
     var to: View? = null
@@ -74,7 +74,7 @@ class MockChangeHandler internal constructor(
         tag = savedInstanceState.getString(KEY_TAG)
     }
 
-    override fun copy(): ChangeHandler = MockChangeHandler(removesFromViewOnPush, tag, listener)
+    override fun copy(): ControllerChangeHandler = MockChangeHandler(removesFromViewOnPush, tag, listener)
 
     companion object {
         private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "removesFromViewOnPush"

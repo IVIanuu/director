@@ -61,16 +61,16 @@ class Router internal constructor(
         mutableListOf<ListenerEntry<ControllerListener>>()
 
     private val runningHandlers =
-        mutableMapOf<Controller, ChangeHandler>()
+        mutableMapOf<Controller, ControllerChangeHandler>()
 
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
-     * using the passed [ChangeHandler]
+     * using the passed [ControllerChangeHandler]
      */
     fun setBackstack(
         newBackstack: List<Controller>,
         isPush: Boolean,
-        handler: ChangeHandler? = null
+        handler: ControllerChangeHandler? = null
     ) {
         if (isDestroyed) return
 
@@ -396,7 +396,7 @@ class Router internal constructor(
         from: Controller?,
         to: Controller?,
         isPush: Boolean,
-        handler: ChangeHandler? = null,
+        handler: ControllerChangeHandler? = null,
         forceRemoveFromViewOnPush: Boolean,
         onToAttached: (() -> Unit)? = null,
         onFromDetached: (() -> Unit)? = null,
@@ -431,7 +431,7 @@ class Router internal constructor(
 
         val toIndex = getToIndex(to, from, isPush)
 
-        val callback = object : ChangeHandler.Callback {
+        val callback = object : ControllerChangeHandler.Callback {
             override fun addToView() {
                 val addingToView = toView != null && toView.parent == null
                 val movingToView = toView != null && container.indexOfChild(toView) != toIndex
@@ -648,7 +648,7 @@ fun Router.getControllerByInstanceId(instanceId: String): Controller =
 /**
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.
  */
-fun Router.setRoot(controller: Controller, handler: ChangeHandler? = null) {
+fun Router.setRoot(controller: Controller, handler: ControllerChangeHandler? = null) {
     // todo check if we should always use isPush=true
     setBackstack(listOf(controller), true, handler ?: controller.pushChangeHandler)
 }
@@ -658,7 +658,7 @@ fun Router.setRoot(controller: Controller, handler: ChangeHandler? = null) {
  */
 fun Router.push(
     controller: Controller,
-    handler: ChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
     newBackstack.add(controller)
@@ -670,7 +670,7 @@ fun Router.push(
  */
 fun Router.replaceTop(
     controller: Controller,
-    handler: ChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
     newBackstack.lastOrNull()?.let { newBackstack.remove(it) }
@@ -683,7 +683,7 @@ fun Router.replaceTop(
  */
 fun Router.pop(
     controller: Controller,
-    handler: ChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
     newBackstack.remove(controller)
@@ -693,7 +693,7 @@ fun Router.pop(
 /**
  * Pops the top [Controller] from the backstack
  */
-fun Router.popTop(handler: ChangeHandler? = null) {
+fun Router.popTop(handler: ControllerChangeHandler? = null) {
     val controller = backstack.lastOrNull()
         ?: error("Trying to pop the current controller when there are none on the backstack.")
     pop(controller, handler)
@@ -702,14 +702,14 @@ fun Router.popTop(handler: ChangeHandler? = null) {
 /**
  * Pops all [Controller] until only the root is left
  */
-fun Router.popToRoot(handler: ChangeHandler? = null) {
+fun Router.popToRoot(handler: ControllerChangeHandler? = null) {
     backstack.firstOrNull()?.let { popTo(it, handler) }
 }
 
 /**
  * Pops all [Controller]s until the [Controller] with the passed tag is at the top
  */
-fun Router.popToTag(tag: String, handler: ChangeHandler? = null) {
+fun Router.popToTag(tag: String, handler: ControllerChangeHandler? = null) {
     backstack.firstOrNull { it.tag == tag }?.let { popTo(it, handler) }
 }
 
@@ -718,7 +718,7 @@ fun Router.popToTag(tag: String, handler: ChangeHandler? = null) {
  */
 fun Router.popTo(
     controller: Controller,
-    handler: ChangeHandler? = null
+    handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.dropLastWhile { it != controller }
     setBackstack(newBackstack, false, handler)
@@ -727,6 +727,6 @@ fun Router.popTo(
 /**
  * Clears out the backstack
  */
-fun Router.clear(handler: ChangeHandler? = null) {
+fun Router.clear(handler: ControllerChangeHandler? = null) {
     setBackstack(emptyList(), false, handler)
 }

@@ -16,7 +16,7 @@
 
 package com.ivianuu.director.sample.util
 
-import com.ivianuu.director.ChangeHandler
+import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.hasRoot
@@ -49,7 +49,7 @@ class SingleContainer(val router: Router) {
         router.setBackstack(newBackstack, false)
     }
 
-    private fun ChangeHandler?.check() {
+    private fun ControllerChangeHandler?.check() {
         check(this?.removesFromViewOnPush ?: true) {
             "Must remove from view while using single container"
         }

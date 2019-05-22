@@ -60,7 +60,7 @@ class TransitionDemoController : BaseController() {
         }
     }
 
-    fun getChangeHandler(from: Controller): ChangeHandler? = when (transitionDemo) {
+    fun getChangeHandler(from: Controller): ControllerChangeHandler? = when (transitionDemo) {
         TransitionDemoController.TransitionDemo.VERTICAL -> VerticalChangeHandler()
         TransitionDemoController.TransitionDemo.CIRCULAR -> {
             val demoController = from as TransitionDemoController
