@@ -21,6 +21,7 @@ import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_CREATED
 import com.ivianuu.director.internal.ControllerViewModelStores
+import com.ivianuu.director.internal.classForNameOrThrow
 import java.util.*
 
 /**
