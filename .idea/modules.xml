@@ -6,11 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/director/director.iml" filepath="$PROJECT_DIR$/director/director.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-activitycallbacks/director-activitycallbacks.iml" filepath="$PROJECT_DIR$/director-activitycallbacks/director-activitycallbacks.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-androidx-lifecycle/director-androidx-lifecycle.iml" filepath="$PROJECT_DIR$/director-androidx-lifecycle/director-androidx-lifecycle.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-common/director-common.iml" filepath="$PROJECT_DIR$/director-common/director-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-dialog/director-dialog.iml" filepath="$PROJECT_DIR$/director-dialog/director-dialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-fragment/director-fragment.iml" filepath="$PROJECT_DIR$/director-fragment/director-fragment.iml" />
-      <module fileurl="file://$PROJECT_DIR$/director-pager/director-pager.iml" filepath="$PROJECT_DIR$/director-pager/director-pager.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-scopes/director-scopes.iml" filepath="$PROJECT_DIR$/director-scopes/director-scopes.iml" />
       <module fileurl="file://$PROJECT_DIR$/director-traveler/director-traveler.iml" filepath="$PROJECT_DIR$/director-traveler/director-traveler.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />

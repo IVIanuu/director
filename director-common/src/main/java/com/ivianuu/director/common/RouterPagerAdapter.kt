@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.pager
+package com.ivianuu.director.common
 
 import android.os.Bundle
 import android.os.Parcelable
