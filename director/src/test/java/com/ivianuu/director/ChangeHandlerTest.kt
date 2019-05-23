@@ -36,14 +36,14 @@ class ChangeHandlerTest {
         val changeHandler1 = DefaultChangeHandler(false)
         val changeHandler2 = DefaultChangeHandler(true)
 
-        val transaction = TestController()
+        val controller = TestController()
             .pushChangeHandler(changeHandler1).popChangeHandler(changeHandler2)
 
-        router.push(transaction)
+        router.push(controller)
 
-        val restoredController = Controller.fromBundle(
-            transaction.saveInstanceState(), router.routerManager.controllerFactory
-        )
+        router.restoreInstanceState(router.saveInstanceState())
+
+        val restoredController = router.backstack.first()
 
         val restored1 = restoredController.pushChangeHandler
         val restored2 = restoredController.popChangeHandler

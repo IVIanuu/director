@@ -102,7 +102,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      */
     var tag: String? = null
         set(value) {
-            check(!this::_router.isInitialized) {
+            check(isRestoring || !this::_router.isInitialized) {
                 "Cannot be changed after being added to a router"
             }
             field = value
@@ -116,13 +116,14 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
+    private var isRestoring = false
 
     /**
      * The change handler being used when this controller enters the screen
      */
     var pushChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler
         set(value) {
-            check(!this::_router.isInitialized) {
+            check(isRestoring || !this::_router.isInitialized) {
                 "Cannot be changed after being added to a router"
             }
             field = value
@@ -133,7 +134,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      */
     var popChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler
         set(value) {
-            check(!this::_router.isInitialized) {
+            check(isRestoring || !this::_router.isInitialized) {
                 "Cannot be changed after being added to a router"
             }
             field = value
@@ -274,6 +275,8 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
     internal fun create(router: Router) {
         _router = router
+
+        allState?.let { restoreInternalState(it) }
 
         val instanceState = allState?.getBundle(KEY_SAVED_STATE)
             ?.also { it.classLoader = this::class.java.classLoader }
@@ -433,19 +436,8 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         return outState
     }
 
-    internal fun restoreInstanceState(savedInstanceState: Bundle) {
-        restoreInternalState(savedInstanceState)
-        val instanceState = savedInstanceState.getBundle(KEY_SAVED_STATE)!!
-            .also { it.classLoader = this::class.java.classLoader }
-        restoreUserInstanceState(instanceState)
-    }
-
-    private fun restoreUserInstanceState(savedInstanceState: Bundle) {
-        requireSuperCalled { onRestoreInstanceState(savedInstanceState) }
-        notifyListeners { it.onRestoreInstanceState(this, savedInstanceState) }
-    }
-
     private fun restoreInternalState(savedInstanceState: Bundle) {
+        isRestoring = true
         args = savedInstanceState.getBundle(KEY_ARGS)!!
             .also { it.classLoader = this::class.java.classLoader }
 
@@ -464,6 +456,13 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         childRouterManager.restoreInstanceState(
             savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES)!!
         )
+
+        isRestoring = false
+    }
+
+    private fun restoreUserInstanceState(savedInstanceState: Bundle) {
+        requireSuperCalled { onRestoreInstanceState(savedInstanceState) }
+        notifyListeners { it.onRestoreInstanceState(this, savedInstanceState) }
     }
 
     private fun saveViewState() {
@@ -543,8 +542,9 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
             val cls = classForNameOrThrow(className)
 
             return factory.createController(cls.classLoader!!, className).apply {
-                this.allState = bundle
-                restoreInternalState(bundle)
+                this.allState = bundle.also {
+                    it.classLoader = this::class.java.classLoader
+                }
             }
         }
     }

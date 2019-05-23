@@ -30,7 +30,7 @@ import org.robolectric.annotation.Config
 class RouterManagerTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val manager = RouterManager(this)
+    private val manager = RouterManager(activityProxy.activity)
 
     @Test
     fun testAddRemoveRouters() {
