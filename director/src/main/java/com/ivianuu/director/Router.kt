@@ -382,16 +382,13 @@ class Router internal constructor(
      * Restores the previously saved state state
      */
     fun restoreInstanceState(savedInstanceState: Bundle) {
-        _backstack.clear()
-        _backstack.addAll(
-            savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
-                .map { Controller.fromBundle(it, routerManager.controllerFactory) }
-        )
-
         popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
 
-        _backstack.forEach { moveControllerToCorrectState(it) }
-        rebind()
+        val newBackstack =
+            savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
+                .map { Controller.fromBundle(it, routerManager.controllerFactory) }
+
+        setBackstack(newBackstack, true)
     }
 
     private fun performControllerChange(
