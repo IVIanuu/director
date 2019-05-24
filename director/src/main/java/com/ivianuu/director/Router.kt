@@ -140,7 +140,7 @@ class Router internal constructor(
             val replacingTopControllers = newTopController != null && (oldTopController == null
                     || oldTopController != newTopController)
 
-            // Remove all visible controllers that were previously on the backstack
+            // Remove all visible controllers which shouldn't be visible anymore
             // from top to bottom
             oldVisibleControllers
                 .dropLast(if (replacingTopControllers) 1 else 0)
@@ -157,7 +157,7 @@ class Router internal constructor(
                         to = null,
                         isPush = isPush,
                         handler = localHandler,
-                        forceRemoveFromViewOnPush = true,
+                        forceRemoveFromView = true,
                         onFromDetached = {
                             controller.detach()
 
@@ -184,7 +184,7 @@ class Router internal constructor(
                         to = controller,
                         isPush = true,
                         handler = localHandler,
-                        forceRemoveFromViewOnPush = false,
+                        forceRemoveFromView = false,
                         onToAttached = {
                             if (isStarted) {
                                 controller.attach()
@@ -199,7 +199,7 @@ class Router internal constructor(
                     ?: (if (isPush) newTopController?.pushChangeHandler?.copy()
                     else oldTopController?.popChangeHandler?.copy())
 
-                val removesFromView =
+                val forceRemoveFromView =
                     oldTopController != null && !newVisibleControllers.contains(oldTopController)
 
                 performControllerChange(
@@ -207,7 +207,7 @@ class Router internal constructor(
                     to = newTopController,
                     isPush = isPush,
                     handler = localHandler,
-                    forceRemoveFromViewOnPush = removesFromView,
+                    forceRemoveFromView = forceRemoveFromView,
                     onToAttached = {
                         if (isStarted) {
                             newTopController?.attach()
@@ -215,13 +215,13 @@ class Router internal constructor(
                     },
                     onFromDetached = {
                         if (oldTopController != null) {
-                            if (removesFromView && oldTopController.isAttached) {
+                            if (forceRemoveFromView && oldTopController.isAttached) {
                                 oldTopController.detach()
                             }
 
                             val willBeDestroyed = !newBackstack.contains(oldTopController)
 
-                            if (removesFromView) {
+                            if (forceRemoveFromView) {
                                 oldTopController.destroyView(false)
                             }
 
@@ -399,7 +399,7 @@ class Router internal constructor(
         to: Controller?,
         isPush: Boolean,
         handler: ControllerChangeHandler? = null,
-        forceRemoveFromViewOnPush: Boolean,
+        forceRemoveFromView: Boolean,
         onToAttached: (() -> Unit)? = null,
         onFromDetached: (() -> Unit)? = null,
         onComplete: (() -> Unit?)? = null
@@ -452,7 +452,7 @@ class Router internal constructor(
 
             override fun removeFromView() {
                 if (fromView != null && (!isPush || handlerToUse.removesFromViewOnPush
-                            || forceRemoveFromViewOnPush)
+                            || forceRemoveFromView)
                 ) {
                     container.removeView(fromView)
                     fromViewRemoved()
@@ -493,7 +493,7 @@ class Router internal constructor(
             isPush,
             callback,
             toIndex,
-            forceRemoveFromViewOnPush
+            forceRemoveFromView
         )
 
         handlerToUse.performChange(changeData)
@@ -545,7 +545,7 @@ class Router internal constructor(
                     to = it,
                     isPush = true,
                     handler = DefaultChangeHandler(false),
-                    forceRemoveFromViewOnPush = false,
+                    forceRemoveFromView = false,
                     onToAttached = {
                         if (isStarted) {
                             it.attach()
