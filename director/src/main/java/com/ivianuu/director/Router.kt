@@ -522,7 +522,7 @@ class Router internal constructor(
 
     private fun List<Controller>.filterVisible(): List<Controller> {
         for (i in lastIndex downTo 0) {
-            val controller = this[i]
+            val controller = get(i)
 
             if (controller.pushChangeHandler == null
                 || controller.pushChangeHandler!!.removesFromViewOnPush
