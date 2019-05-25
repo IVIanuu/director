@@ -214,20 +214,18 @@ class Router internal constructor(
                         }
                     },
                     onFromDetached = {
-                        if (oldTopController != null) {
-                            if (forceRemoveFromView && oldTopController.isAttached) {
-                                oldTopController.detach()
-                            }
+                        oldTopController!! // cannot be null
 
-                            val willBeDestroyed = !newBackstack.contains(oldTopController)
+                        if (oldTopController.isAttached) {
+                            oldTopController.detach()
+                        }
 
-                            if (forceRemoveFromView) {
-                                oldTopController.destroyView(false)
-                            }
+                        val willBeDestroyed = !newBackstack.contains(oldTopController)
 
-                            if (willBeDestroyed) {
-                                oldTopController.destroy()
-                            }
+                        oldTopController.destroyView(!willBeDestroyed)
+
+                        if (willBeDestroyed) {
+                            oldTopController.destroy()
                         }
                     }
                 )
@@ -330,7 +328,7 @@ class Router internal constructor(
                 }
 
                 if (it.isViewCreated) {
-                    it.destroyView(false)
+                    it.destroyView(false) // todo check this
                 }
             }
         container = null
