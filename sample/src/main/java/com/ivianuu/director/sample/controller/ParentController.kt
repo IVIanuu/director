@@ -21,7 +21,6 @@ class ParentController : BaseController() {
         changeType: ControllerChangeType
     ) {
         super.onChangeEnded(other, changeHandler, changeType)
-
         if (changeType == ControllerChangeType.PUSH_ENTER) {
             addChild(0)
         }
@@ -47,26 +46,23 @@ class ParentController : BaseController() {
                 )
 
                 childController.doOnChangeEnd { _, _, _, changeType ->
-                    if (!isDestroyed) {
-                        if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
-                            if (index < NUMBER_OF_CHILDREN - 1) {
-                                addChild(index + 1)
-                            } else {
-                                hasShownAll = true
-                            }
-                        } else if (changeType == ControllerChangeType.POP_EXIT) {
-                            if (index > 0) {
-                                removeChild(index - 1)
-                            } else {
-                                router.popController(this@ParentController)
-                            }
+                    if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
+                        if (index < NUMBER_OF_CHILDREN - 1) {
+                            addChild(index + 1)
+                        } else {
+                            hasShownAll = true
+                        }
+                    } else if (changeType == ControllerChangeType.POP_EXIT) {
+                        if (index > 0) {
+                            removeChild(index - 1)
+                        } else {
+                            router.popTop()
                         }
                     }
                 }
 
                 childRouter.setRoot(
-                    childController
-                        .toTransaction()
+                    childController.toTransaction()
                         .changeHandler(FadeChangeHandler())
                 )
             }
@@ -76,7 +72,11 @@ class ParentController : BaseController() {
     private fun removeChild(index: Int) {
         val childRouters = childRouters.toList()
         if (index < childRouters.size) {
-            removeChildRouter(childRouters[index])
+            val childRouter = childRouters[index]
+            childRouter.clear()
+            childRouter.doOnChangeEnded { _, _, _, _, _, _ ->
+                removeChildRouter(childRouter)
+            }
         }
     }
 
