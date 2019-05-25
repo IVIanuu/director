@@ -124,7 +124,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
             }
         }
 
-
     /**
      * The child router manager of this controller
      */

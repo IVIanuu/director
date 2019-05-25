@@ -163,22 +163,7 @@ class Router internal constructor(
                         to = null,
                         isPush = isPush,
                         handler = localHandler,
-                        forceRemoveFromView = true,
-                        onFromDetached = {
-                            transaction.controller.detach()
-
-                            if (!transaction.controller.retainView
-                                || transaction.controller.isBeingDestroyed
-                            ) {
-                                transaction.controller.destroyView()
-                            } else if (transaction.controller.retainView) {
-                                transaction.controller.removeChildRootView()
-                            }
-
-                            if (transaction.controller.isBeingDestroyed) {
-                                transaction.controller.destroy()
-                            }
-                        }
+                        forceRemoveFromView = true
                     )
                 }
 
@@ -193,12 +178,7 @@ class Router internal constructor(
                         to = transaction.controller,
                         isPush = true,
                         handler = localHandler,
-                        forceRemoveFromView = false,
-                        onToAttached = {
-                            if (isStarted) {
-                                transaction.controller.attach()
-                            }
-                        }
+                        forceRemoveFromView = false
                     )
                 }
 
@@ -213,27 +193,7 @@ class Router internal constructor(
                     to = newTopTransaction?.controller,
                     isPush = isPush,
                     handler = localHandler,
-                    forceRemoveFromView = oldTopTransaction?.controller?.isBeingDestroyed ?: false,
-                    onToAttached = {
-                        if (isStarted) {
-                            newTopTransaction!!.controller.attach()
-                        }
-                    },
-                    onFromDetached = {
-                        oldTopTransaction!!.controller.detach()
-
-                        if (!oldTopTransaction.controller.retainView
-                            || oldTopTransaction.controller.isBeingDestroyed
-                        ) {
-                            oldTopTransaction.controller.destroyView()
-                        } else if (oldTopTransaction.controller.retainView) {
-                            oldTopTransaction.controller.removeChildRootView()
-                        }
-
-                        if (oldTopTransaction.controller.isBeingDestroyed) {
-                            oldTopTransaction.controller.destroy()
-                        }
-                    }
+                    forceRemoveFromView = oldTopTransaction?.controller?.isBeingDestroyed ?: false
                 )
             }
         }
@@ -343,6 +303,7 @@ class Router internal constructor(
                     }
                 }
             }
+        container?.removeAllViews()
         container = null
     }
 
@@ -413,10 +374,7 @@ class Router internal constructor(
         to: Controller?,
         isPush: Boolean,
         handler: ControllerChangeHandler? = null,
-        forceRemoveFromView: Boolean,
-        onToAttached: (() -> Unit)? = null,
-        onFromDetached: (() -> Unit)? = null,
-        onComplete: (() -> Unit?)? = null
+        forceRemoveFromView: Boolean
     ) {
         val container = container ?: return
         val listeners = getChangeListeners()
@@ -461,7 +419,9 @@ class Router internal constructor(
             }
 
             override fun toViewAdded() {
-                onToAttached?.invoke()
+                if (isStarted) {
+                    to!!.attach()
+                }
             }
 
             override fun removeFromView() {
@@ -474,7 +434,19 @@ class Router internal constructor(
             }
 
             override fun fromViewRemoved() {
-                onFromDetached?.invoke()
+                from!!.detach()
+
+                if (!from.retainView
+                    || from.isBeingDestroyed
+                ) {
+                    from.destroyView()
+                } else if (from.retainView) {
+                    from.removeChildRootView()
+                }
+
+                if (from.isBeingDestroyed) {
+                    from.destroy()
+                }
             }
 
             override fun onChangeCompleted() {
@@ -484,8 +456,6 @@ class Router internal constructor(
                     runningHandlers.remove(to)
                     to.changeEnded(from, handlerToUse, toChangeType)
                 }
-
-                onComplete?.invoke()
 
                 listeners.forEach {
                     it.onChangeEnded(
@@ -563,12 +533,7 @@ class Router internal constructor(
                     to = it.controller,
                     isPush = true,
                     handler = DefaultChangeHandler(false),
-                    forceRemoveFromView = false,
-                    onToAttached = {
-                        if (isStarted) {
-                            it.controller.attach()
-                        }
-                    }
+                    forceRemoveFromView = false
                 )
             }
     }
