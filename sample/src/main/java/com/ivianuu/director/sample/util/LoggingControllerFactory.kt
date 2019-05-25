@@ -21,11 +21,9 @@ import com.ivianuu.director.ReflectiveControllerFactory
 
 class LoggingControllerFactory : ControllerFactory {
 
-    private val wrapped = ReflectiveControllerFactory()
-
     override fun createController(
         classLoader: ClassLoader,
         className: String
-    ) = wrapped.createController(classLoader, className)
+    ) = ReflectiveControllerFactory.createController(classLoader, className)
         .also { d { "instantiated $it for $className" } }
 }
