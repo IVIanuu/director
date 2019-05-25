@@ -74,8 +74,12 @@ class ParentController : BaseController() {
         if (index < childRouters.size) {
             val childRouter = childRouters[index]
             childRouter.clear()
+            var removed = false
             childRouter.doOnChangeEnded { _, _, _, _, _, _ ->
-                removeChildRouter(childRouter)
+                if (!removed) {
+                    removed = true
+                    removeChildRouter(childRouter)
+                }
             }
         }
     }
