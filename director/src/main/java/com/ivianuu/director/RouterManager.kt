@@ -38,6 +38,8 @@ class RouterManager(
 
     var isStarted = false
         private set
+    var isBeingDestroyed = false
+        private set
     var isDestroyed = false
         private set
 
@@ -51,7 +53,7 @@ class RouterManager(
      * Will be used to instantiate controllers after config changes or process death
      */
     var controllerFactory: ControllerFactory =
-        DirectorPlugins.defaultControllerFactory ?: ReflectiveControllerFactory()
+        DirectorPlugins.defaultControllerFactory ?: ReflectiveControllerFactory
 
     /**
      * Sets the root view for all routers
@@ -89,11 +91,17 @@ class RouterManager(
         _routers.reversed().forEach { it.stop() }
     }
 
+    fun willBeDestroyed() {
+        isBeingDestroyed = true
+        _routers.reversed().forEach { it.willBeDestroyed() }
+    }
+
     /**
      * Notifies that the host was destroyed
      */
     fun onDestroy() {
         isDestroyed = true
+        willBeDestroyed()
         _routers.reversed().forEach {
             if (it.isStarted) {
                 it.stop()
@@ -163,6 +171,9 @@ class RouterManager(
         if (router == null) {
             router = Router(containerId, tag, this)
             _routers.add(router)
+            if (isBeingDestroyed) {
+                router.willBeDestroyed()
+            }
             if (isDestroyed) {
                 router.destroy()
             } else if (isStarted) {
@@ -180,6 +191,8 @@ class RouterManager(
      */
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
+            router.willBeDestroyed()
+
             if (router.isStarted) {
                 router.stop()
             }

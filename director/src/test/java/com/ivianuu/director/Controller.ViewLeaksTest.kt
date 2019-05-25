@@ -32,14 +32,14 @@ class ViewLeakTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRoot) {
-            setRoot(TestController())
+            setRoot(TestController().toTransaction())
         }
     }
 
     @Test
     fun testPop() {
         val controller = TestController()
-        router.push(controller)
+        router.push(controller.toTransaction())
 
         assertNotNull(controller.view)
 
@@ -53,6 +53,7 @@ class ViewLeakTest {
         val controller = TestController()
         router.push(
             controller
+                .toTransaction()
                 .pushChangeHandler(NeverAddChangeHandler())
         )
 
@@ -68,6 +69,7 @@ class ViewLeakTest {
         val controller = TestController()
         router.push(
             controller
+                .toTransaction()
                 .pushChangeHandler(NeverCompleteChangeHandler())
         )
 
@@ -83,6 +85,7 @@ class ViewLeakTest {
         val controller = TestController()
         router.push(
             controller
+                .toTransaction()
                 .pushChangeHandler(NeverAddChangeHandler())
         )
 

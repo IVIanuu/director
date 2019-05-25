@@ -57,14 +57,14 @@ class RouterManagerTest {
 
     @Test
     fun testRestoredRouterBackstack() {
-        val controller1 = TestController()
-        val controller2 = TestController()
+        val transaction1 = TestController().toTransaction()
+        val transaction2 = TestController().toTransaction()
 
         var router = manager.getRouter(activityProxy.view1)
             .apply { popsLastView = true }
 
-        router.setRoot(controller1)
-        router.push(controller2)
+        router.setRoot(transaction1)
+        router.push(transaction2)
 
         val savedState = router.saveInstanceState()
         manager.removeRouter(router)
@@ -76,30 +76,30 @@ class RouterManagerTest {
 
         assertEquals(2, router.backstackSize)
 
-        val restoredChildController1 = router.backstack.first()
-        val restoredChildController2 = router.backstack[1]
+        val restoredTransaction1 = router.backstack.first()
+        val restoredTransaction2 = router.backstack[1]
 
         assertEquals(
-            controller1.transactionIndex,
-            restoredChildController1.transactionIndex
+            transaction1.transactionIndex,
+            restoredTransaction1.transactionIndex
         )
         assertEquals(
-            controller1.instanceId,
-            restoredChildController1.instanceId
+            transaction1.controller.instanceId,
+            restoredTransaction1.controller.instanceId
         )
 
         assertEquals(
-            controller2.transactionIndex,
-            restoredChildController2.transactionIndex
+            transaction2.transactionIndex,
+            restoredTransaction2.transactionIndex
         )
         assertEquals(
-            controller2.instanceId,
-            restoredChildController2.instanceId
+            transaction2.controller.instanceId,
+            restoredTransaction2.controller.instanceId
         )
 
         assertTrue(router.handleBack())
         assertEquals(1, router.backstackSize)
-        assertEquals(restoredChildController1, router.backstack[0])
+        assertEquals(restoredTransaction1, router.backstack[0])
 
         assertTrue(router.handleBack())
         assertEquals(0, router.backstackSize)

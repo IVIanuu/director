@@ -97,6 +97,15 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     var state: ControllerState = INITIALIZED
         private set
 
+    /**
+     * Whether or not this controller is currently in the process of being destroyed
+     */
+    var isBeingDestroyed = false
+        internal set(value) {
+            field = value
+            if (value) childRouterManager.willBeDestroyed()
+        }
+
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
     private var isRestoring = false
@@ -312,9 +321,9 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         return view
     }
 
-    internal fun destroyView(saveViewState: Boolean) {
+    internal fun destroyView() {
         val view = requireView()
-        if (saveViewState && viewState == null) {
+        if (!isBeingDestroyed && viewState == null) {
             saveViewState()
         }
 

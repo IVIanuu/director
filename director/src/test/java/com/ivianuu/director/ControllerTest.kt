@@ -38,7 +38,7 @@ class ControllerTest {
     private val activityProxy = ActivityProxy().create(null).start().resume()
     private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
         if (!hasRoot) {
-            setRoot(TestController())
+            setRoot(TestController().toTransaction())
         }
     }
 
@@ -47,9 +47,9 @@ class ControllerTest {
         val parent = TestController()
         val child = TestController()
 
-        router.push(parent)
+        router.push(parent.toTransaction())
         parent.getChildRouter(parent.childContainer1!!)
-            .push(child)
+            .push(child.toTransaction())
 
         assertEquals(parent, child.parentController)
     }
@@ -57,7 +57,7 @@ class ControllerTest {
     @Test
     fun testAttachHostAwareness() {
         val controller = TestController()
-        router.push(controller)
+        router.push(controller.toTransaction())
 
         assertTrue(controller.isAttached)
         router.stop()
@@ -87,7 +87,7 @@ class ControllerTest {
             postDestroy = { assertEquals(DESTROYED, controller.state) }
         )
 
-        router.push(controller)
+        router.push(controller.toTransaction())
         controller.doOnPostAttach { _, _ -> router.popTop() }
     }
 

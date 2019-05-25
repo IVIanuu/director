@@ -36,7 +36,7 @@ interface ControllerFactory {
 /**
  * Controller factory which uses reflection to instantiate controllers
  */
-class ReflectiveControllerFactory : ControllerFactory {
+object ReflectiveControllerFactory : ControllerFactory {
     override fun createController(classLoader: ClassLoader, className: String): Controller =
         newInstanceOrThrow(className)
 }

@@ -35,41 +35,116 @@ class RouterTest {
 
     @Test
     fun testSetRoot() {
+        val rootTag = "root"
+
         val rootController = TestController()
 
         assertFalse(router.hasRoot)
 
-        router.setRoot(rootController)
+        router.setRoot(rootController.toTransaction().tag(rootTag))
 
         assertTrue(router.hasRoot)
 
-        assertEquals(rootController, router.backstack.firstOrNull())
+        assertEquals(rootController, router.getControllerByTagOrNull(rootTag))
+    }
+
+    @Test
+    fun testSetNewRoot() {
+        val oldRootTag = "oldRoot"
+        val newRootTag = "newRoot"
+
+        val oldRootController = TestController()
+        val newRootController = TestController()
+
+        router.setRoot(oldRootController.toTransaction().tag(oldRootTag))
+        router.setRoot(newRootController.toTransaction().tag(newRootTag))
+
+        assertNull(router.getControllerByTagOrNull(oldRootTag))
+        assertEquals(newRootController, router.getControllerByTagOrNull(newRootTag))
+    }
+
+    @Test
+    fun testGetByInstanceId() {
+        val controller = TestController()
+
+        router.push(controller.toTransaction())
+
+        assertEquals(controller, router.getControllerByInstanceIdOrNull(controller.instanceId))
+        assertNull(router.getControllerByInstanceIdOrNull("fake id"))
+    }
+
+    @Test
+    fun testGetByTag() {
+        val controller1Tag = "controller1"
+        val controller2Tag = "controller2"
+
+        val controller1 = TestController()
+        val controller2 = TestController()
+
+        router.push(controller1.toTransaction().tag(controller1Tag))
+        router.push(controller2.toTransaction().tag(controller2Tag))
+
+        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
+        assertEquals(controller2, router.getControllerByTagOrNull(controller2Tag))
     }
 
     @Test
     fun testPushPopControllers() {
+        val controller1Tag = "controller1"
+        val controller2Tag = "controller2"
+
         val controller1 = TestController()
         val controller2 = TestController()
 
-        router.push(controller1)
+        router.push(controller1.toTransaction().tag(controller1Tag))
 
         assertEquals(1, router.backstackSize)
-        assertEquals(controller1, router.backstack[0])
 
-        router.push(controller2)
+        router.push(controller2.toTransaction().tag(controller2Tag))
 
         assertEquals(2, router.backstackSize)
-        assertEquals(controller1, router.backstack[0])
-        assertEquals(controller2, router.backstack[1])
 
         router.popTop()
 
         assertEquals(1, router.backstackSize)
-        assertEquals(controller1, router.backstack[0])
+
+        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
+        assertNull(router.getControllerByTagOrNull(controller2Tag))
 
         router.popTop()
 
         assertEquals(0, router.backstackSize)
+
+        assertNull(router.getControllerByTagOrNull(controller1Tag))
+        assertNull(router.getControllerByTagOrNull(controller2Tag))
+    }
+
+    @Test
+    fun testPopControllerConcurrentModificationException() {
+        var step = 1
+        var i = 0
+        while (i < 10) {
+            router.push(TestController().toTransaction().tag("1"))
+            router.push(TestController().toTransaction().tag("1"))
+            router.push(TestController().toTransaction().tag("1"))
+
+            val tag: String
+            when (step) {
+                1 -> tag = "1"
+                2 -> tag = "2"
+                else -> {
+                    tag = "3"
+                    step = 0
+                }
+            }
+            val controller = router.getControllerByTagOrNull(tag)
+            if (controller != null) {
+                router.popController(controller)
+            }
+            router.popToRoot()
+            i++
+            step++
+        }
     }
 
     @Test
@@ -84,10 +159,10 @@ class RouterTest {
         val controller3 = TestController()
         val controller4 = TestController()
 
-        router.push(controller1.tag(controller1Tag))
-        router.push(controller2.tag(controller2Tag))
-        router.push(controller3.tag(controller3Tag))
-        router.push(controller4.tag(controller4Tag))
+        router.push(controller1.toTransaction().tag(controller1Tag))
+        router.push(controller2.toTransaction().tag(controller2Tag))
+        router.push(controller3.toTransaction().tag(controller3Tag))
+        router.push(controller4.toTransaction().tag(controller4Tag))
 
         router.popToTag(controller2Tag)
 
@@ -100,92 +175,96 @@ class RouterTest {
 
     @Test
     fun testPopNonCurrent() {
+        val controller1Tag = "controller1"
+        val controller2Tag = "controller2"
+        val controller3Tag = "controller3"
+
         val controller1 = TestController()
         val controller2 = TestController()
         val controller3 = TestController()
 
-        router.push(controller1)
-        router.push(controller2)
-        router.push(controller3)
+        router.push(controller1.toTransaction().tag(controller1Tag))
+        router.push(controller2.toTransaction().tag(controller2Tag))
+        router.push(controller3.toTransaction().tag(controller3Tag))
 
-        router.pop(controller2)
+        router.popController(controller2)
 
         assertEquals(2, router.backstackSize)
-        assertEquals(controller1, router.backstack[0])
-        assertFalse(router.backstack.contains(controller2))
-        assertEquals(controller3, router.backstack[1])
+        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
+        assertNull(router.getControllerByTagOrNull(controller2Tag))
+        assertEquals(controller3, router.getControllerByTagOrNull(controller3Tag))
     }
 
     @Test
     fun testSetBackstack() {
-        router.setRoot(TestController())
+        router.setRoot(TestController().toTransaction())
 
         assertEquals(1, router.backstackSize)
 
-        val rootController = TestController()
-        val middleController = TestController()
-        val topController = TestController()
+        val rootTransaction = TestController().toTransaction()
+        val middleTransaction = TestController().toTransaction()
+        val topTransaction = TestController().toTransaction()
 
         val backstack =
-            listOf(rootController, middleController, topController)
+            listOf(rootTransaction, middleTransaction, topTransaction)
         router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
 
         val fetchedBackstack = router.backstack
-        assertEquals(rootController, fetchedBackstack[0])
-        assertEquals(middleController, fetchedBackstack[1])
-        assertEquals(topController, fetchedBackstack[2])
+        assertEquals(rootTransaction, fetchedBackstack[0])
+        assertEquals(middleTransaction, fetchedBackstack[1])
+        assertEquals(topTransaction, fetchedBackstack[2])
 
-        assertEquals(router, rootController.router)
-        assertEquals(router, middleController.router)
-        assertEquals(router, topController.router)
+        assertEquals(router, rootTransaction.controller.router)
+        assertEquals(router, middleTransaction.controller.router)
+        assertEquals(router, topTransaction.controller.router)
     }
 
     @Test
     fun testSetBackstackWithNoRemoveViewOnPush() {
-        val oldRootController = TestController()
-        val oldTopController = TestController()
+        val oldRootTransaction = TestController().toTransaction()
+        val oldTopTransaction = TestController().toTransaction()
             .pushChangeHandler(noRemoveViewOnPushHandler())
 
-        router.setRoot(oldRootController)
-        router.push(oldTopController)
+        router.setRoot(oldRootTransaction)
+        router.push(oldTopTransaction)
         assertEquals(2, router.backstackSize)
 
-        assertTrue(oldRootController.isAttached)
-        assertTrue(oldTopController.isAttached)
+        assertTrue(oldRootTransaction.controller.isAttached)
+        assertTrue(oldTopTransaction.controller.isAttached)
 
-        val rootController = TestController()
-        val middleController = TestController()
+        val rootTransaction = TestController().toTransaction()
+        val middleTransaction = TestController().toTransaction()
             .pushChangeHandler(noRemoveViewOnPushHandler())
-        val topController = TestController()
+        val topTransaction = TestController().toTransaction()
             .pushChangeHandler(noRemoveViewOnPushHandler())
 
-        val backstack = listOf(rootController, middleController, topController)
+        val backstack = listOf(rootTransaction, middleTransaction, topTransaction)
         router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
 
         val fetchedBackstack = router.backstack
-        assertEquals(rootController, fetchedBackstack[0])
-        assertEquals(middleController, fetchedBackstack[1])
-        assertEquals(topController, fetchedBackstack[2])
+        assertEquals(rootTransaction, fetchedBackstack[0])
+        assertEquals(middleTransaction, fetchedBackstack[1])
+        assertEquals(topTransaction, fetchedBackstack[2])
 
-        assertFalse(oldRootController.isAttached)
-        assertFalse(oldTopController.isAttached)
-        assertTrue(rootController.isAttached)
-        assertTrue(middleController.isAttached)
-        assertTrue(topController.isAttached)
+        assertFalse(oldRootTransaction.controller.isAttached)
+        assertFalse(oldTopTransaction.controller.isAttached)
+        assertTrue(rootTransaction.controller.isAttached)
+        assertTrue(middleTransaction.controller.isAttached)
+        assertTrue(topTransaction.controller.isAttached)
     }
 
     @Test
     fun testPopToRoot() {
-        val rootController = TestController()
-        val controller1 = TestController()
-        val controller2 = TestController()
+        val rootTransaction = TestController().toTransaction()
+        val transaction1 = TestController().toTransaction()
+        val transaction2 = TestController().toTransaction()
 
         val backstack =
-            listOf(rootController, controller1, controller2)
+            listOf(rootTransaction, transaction1, transaction2)
         router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
@@ -193,24 +272,24 @@ class RouterTest {
         router.popToRoot()
 
         assertEquals(1, router.backstackSize)
-        assertEquals(rootController, router.backstack[0])
+        assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootController.isAttached)
-        assertFalse(controller1.isAttached)
-        assertFalse(controller2.isAttached)
+        assertTrue(rootTransaction.controller.isAttached)
+        assertFalse(transaction1.controller.isAttached)
+        assertFalse(transaction2.controller.isAttached)
     }
 
     @Test
     fun testPopToRootWithNoRemoveViewOnPush() {
-        val rootController = TestController()
+        val rootTransaction = TestController().toTransaction()
             .pushChangeHandler(DefaultChangeHandler(false))
-        val controller1 = TestController()
+        val transaction1 = TestController().toTransaction()
             .pushChangeHandler(DefaultChangeHandler(false))
-        val controller2 = TestController()
+        val transaction2 = TestController().toTransaction()
             .pushChangeHandler(DefaultChangeHandler(false))
 
         val backstack =
-            listOf(rootController, controller1, controller2)
+            listOf(rootTransaction, transaction1, transaction2)
         router.setBackstack(backstack, true)
 
         assertEquals(3, router.backstackSize)
@@ -218,41 +297,41 @@ class RouterTest {
         router.popToRoot()
 
         assertEquals(1, router.backstackSize)
-        assertEquals(rootController, router.backstack[0])
+        assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootController.isAttached)
-        assertFalse(controller1.isAttached)
-        assertFalse(controller2.isAttached)
+        assertTrue(rootTransaction.controller.isAttached)
+        assertFalse(transaction1.controller.isAttached)
+        assertFalse(transaction2.controller.isAttached)
     }
 
     @Test
     fun testReplaceTopController() {
-        val rootController = TestController()
-        val topController = TestController()
+        val rootTransaction = TestController().toTransaction()
+        val topTransaction = TestController().toTransaction()
 
-        val backstack = listOf(rootController, topController)
+        val backstack = listOf(rootTransaction, topTransaction)
         router.setBackstack(backstack, true)
 
         assertEquals(2, router.backstackSize)
 
         var fetchedBackstack = router.backstack
-        assertEquals(rootController, fetchedBackstack[0])
-        assertEquals(topController, fetchedBackstack[1])
+        assertEquals(rootTransaction, fetchedBackstack[0])
+        assertEquals(topTransaction, fetchedBackstack[1])
 
-        val newTopController = TestController()
-        router.replaceTop(newTopController)
+        val newTopTransaction = TestController().toTransaction()
+        router.replaceTop(newTopTransaction)
 
         assertEquals(2, router.backstackSize)
 
         fetchedBackstack = router.backstack
-        assertEquals(rootController, fetchedBackstack[0])
-        assertEquals(newTopController, fetchedBackstack[1])
+        assertEquals(rootTransaction, fetchedBackstack[0])
+        assertEquals(newTopTransaction, fetchedBackstack[1])
     }
 
     @Test
     fun testReplaceTopControllerWithNoRemoveViewOnPush() {
-        val controllerA = TestController()
-        val controllerB = TestController()
+        val controllerA = TestController().toTransaction()
+        val controllerB = TestController().toTransaction()
             .changeHandler(noRemoveViewOnPushHandler())
 
         val backstack = listOf(controllerA, controllerB)
@@ -260,24 +339,24 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
+        assertTrue(controllerA.controller.isAttached)
+        assertTrue(controllerB.controller.isAttached)
 
-        val controllerC = TestController()
+        val controllerC = TestController().toTransaction()
             .changeHandler(noRemoveViewOnPushHandler())
         router.replaceTop(controllerC)
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
-        assertTrue(controllerC.isAttached)
+        assertTrue(controllerA.controller.isAttached)
+        assertFalse(controllerB.controller.isAttached)
+        assertTrue(controllerC.controller.isAttached)
     }
 
     @Test
     fun testReplaceTopControllerWithMixedRemoveViewOnPush1() {
-        val controllerA = TestController()
-        val controllerB = TestController()
+        val controllerA = TestController().toTransaction()
+        val controllerB = TestController().toTransaction()
             .changeHandler(noRemoveViewOnPushHandler())
 
         val backstack = listOf(controllerA, controllerB)
@@ -285,41 +364,41 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
+        assertTrue(controllerA.controller.isAttached)
+        assertTrue(controllerB.controller.isAttached)
 
-        val controllerC = TestController()
+        val controllerC = TestController().toTransaction()
         router.replaceTop(controllerC)
 
         assertEquals(2, router.backstackSize)
 
-        assertFalse(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
-        assertTrue(controllerC.isAttached)
+        assertFalse(controllerA.controller.isAttached)
+        assertFalse(controllerB.controller.isAttached)
+        assertTrue(controllerC.controller.isAttached)
     }
 
     @Test
     fun testReplaceTopControllerWithMixedRemoveViewOnPush2() {
-        val controllerA = TestController()
-        val controllerB = TestController()
+        val controllerA = TestController().toTransaction()
+        val controllerB = TestController().toTransaction()
 
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack, true)
 
         assertEquals(2, router.backstackSize)
 
-        assertFalse(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
+        assertFalse(controllerA.controller.isAttached)
+        assertTrue(controllerB.controller.isAttached)
 
-        val controllerC = TestController()
+        val controllerC = TestController().toTransaction()
             .changeHandler(noRemoveViewOnPushHandler())
         router.replaceTop(controllerC)
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
-        assertTrue(controllerC.isAttached)
+        assertTrue(controllerA.controller.isAttached)
+        assertFalse(controllerB.controller.isAttached)
+        assertTrue(controllerC.controller.isAttached)
     }
 
     @Test
@@ -333,9 +412,9 @@ class RouterTest {
         router.doOnChangeStarted { _, _, _, _, _, _ -> changeCalls++ }
 
         val backstack = listOf(
-            TestController(),
-            TestController(),
-            TestController()
+            TestController().toTransaction(),
+            TestController().toTransaction(),
+            TestController().toTransaction()
         )
 
         router.setBackstack(backstack, true)
@@ -351,9 +430,9 @@ class RouterTest {
         router.doOnChangeStarted { _, _, _, _, _, _ -> changeCalls++ }
 
         val backstack = listOf(
-            TestController(),
-            TestController(),
-            TestController()
+            TestController().toTransaction(),
+            TestController().toTransaction(),
+            TestController().toTransaction()
                 .changeHandler(noRemoveViewOnPushHandler())
         )
 
@@ -365,55 +444,30 @@ class RouterTest {
     }
 
     @Test
-    fun testRearrangeBackstack() {
+    fun testRearrangeTransactionBackstack() {
         router.popsLastView = true
-        val controller1 = TestController()
-        val controller2 = TestController()
+        val transaction1 = TestController().toTransaction()
+        val transaction2 = TestController().toTransaction()
 
-        var backstack = listOf(controller1, controller2)
+        var backstack = listOf(transaction1, transaction2)
         router.setBackstack(backstack, true)
 
-        assertEquals(1, controller1.transactionIndex)
-        assertEquals(2, controller2.transactionIndex)
+        assertEquals(1, transaction1.transactionIndex)
+        assertEquals(2, transaction2.transactionIndex)
 
-        backstack = listOf(controller2, controller1)
+        backstack = listOf(transaction2, transaction1)
         router.setBackstack(backstack, true)
 
-        assertEquals(1, controller2.transactionIndex)
-        assertEquals(2, controller1.transactionIndex)
+        assertEquals(1, transaction2.transactionIndex)
+        assertEquals(2, transaction1.transactionIndex)
 
         router.handleBack()
 
         assertEquals(1, router.backstackSize)
-        assertEquals(controller2, router.backstack[0])
+        assertEquals(transaction2, router.backstack[0])
 
         router.handleBack()
         assertEquals(0, router.backstackSize)
-    }
-
-    @Test
-    fun testGetByInstanceId() {
-        val controller = TestController()
-
-        router.push(controller)
-
-        assertEquals(controller, router.getControllerByInstanceIdOrNull(controller.instanceId))
-        assertNull(router.getControllerByInstanceIdOrNull("fake id"))
-    }
-
-    @Test
-    fun testGetByTag() {
-        val controller1Tag = "controller1"
-        val controller2Tag = "controller2"
-
-        val controller1 = TestController()
-        val controller2 = TestController()
-
-        router.push(controller1.tag(controller1Tag))
-        router.push(controller2.tag(controller2Tag))
-
-        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
-        assertEquals(controller2, router.getControllerByTagOrNull(controller2Tag))
     }
 
     @Test
@@ -424,7 +478,7 @@ class RouterTest {
         val controller1 = TestController()
         router.addChangeListener(routerRecursiveListener, true)
         router.addChangeListener(routerNonRecursiveListener)
-        router.setRoot(controller1)
+        router.setRoot(controller1.toTransaction())
 
         val childRouterRecursiveListener = EmptyChangeListener()
         val childRouterNonRecursiveListener = EmptyChangeListener()
@@ -437,12 +491,12 @@ class RouterTest {
         val controller2 = TestController()
         childRouter.addChangeListener(childRouterRecursiveListener, true)
         childRouter.addChangeListener(childRouterNonRecursiveListener)
-        childRouter.setRoot(controller2)
+        childRouter.setRoot(controller2.toTransaction())
 
         val childRouter2 =
             controller2.getChildRouter(controller2.childContainer2!!)
         val controller3 = TestController()
-        childRouter2.push(controller3)
+        childRouter2.push(controller3.toTransaction())
         assertTrue(childRouter2.getChangeListeners(false).contains(routerRecursiveListener))
         assertTrue(childRouter2.getChangeListeners(false).contains(childRouterRecursiveListener))
         assertFalse(
@@ -460,7 +514,7 @@ class RouterTest {
         val controller1 = TestController()
         router.addControllerLifecycleListener(routerRecursiveListener, true)
         router.addControllerLifecycleListener(routerNonRecursiveListener)
-        router.setRoot(controller1)
+        router.setRoot(controller1.toTransaction())
 
         val childRouterRecursiveListener = EmptyControllerLifecycleListener()
         val childRouterNonRecursiveListener = EmptyControllerLifecycleListener()
@@ -481,12 +535,12 @@ class RouterTest {
         val controller2 = TestController()
         childRouter.addControllerLifecycleListener(childRouterRecursiveListener, true)
         childRouter.addControllerLifecycleListener(childRouterNonRecursiveListener)
-        childRouter.setRoot(controller2)
+        childRouter.setRoot(controller2.toTransaction())
 
         val childRouter2 =
             controller2.getChildRouter(controller2.childContainer2!!)
         val controller3 = TestController()
-        childRouter2.push(controller3)
+        childRouter2.push(controller3.toTransaction())
         assertTrue(
             childRouter2.getControllerLifecycleListeners(false).contains(
                 routerRecursiveListener
@@ -503,4 +557,5 @@ class RouterTest {
             )
         )
     }
+
 }

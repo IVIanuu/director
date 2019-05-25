@@ -39,11 +39,11 @@ class ControllerStateTest {
         var controller = StateController()
         controller.instanceStateValue = "my_state"
 
-        router.push(controller)
+        router.push(controller.toTransaction())
 
         val savedState = router.saveInstanceState()
         router.restoreInstanceState(savedState)
-        controller = router.backstack.first() as StateController
+        controller = router.backstack.first().controller as StateController
 
         assertEquals("my_state", controller.instanceStateValue)
     }
@@ -53,11 +53,11 @@ class ControllerStateTest {
         var controller = StateController()
         controller.viewStateValue = "my_state"
 
-        router.push(controller)
+        router.push(controller.toTransaction())
 
         val savedState = router.saveInstanceState()
         router.restoreInstanceState(savedState)
-        controller = router.backstack.first() as StateController
+        controller = router.backstack.first().controller as StateController
 
         assertEquals("my_state", controller.viewStateValue)
     }

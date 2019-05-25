@@ -36,10 +36,12 @@ class ChangeHandlerTest {
         val changeHandler1 = DefaultChangeHandler(false)
         val changeHandler2 = DefaultChangeHandler(true)
 
-        val controller = TestController()
-            .pushChangeHandler(changeHandler1).popChangeHandler(changeHandler2)
+        val transaction = TestController()
+            .toTransaction()
+            .pushChangeHandler(changeHandler1)
+            .popChangeHandler(changeHandler2)
 
-        router.push(controller)
+        router.push(transaction)
 
         router.restoreInstanceState(router.saveInstanceState())
 

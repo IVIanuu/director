@@ -32,9 +32,17 @@ class Router internal constructor(
     var popsLastView = false
 
     /**
+     * Will be used to instantiate controllers after config changes or process death
+     */
+    var controllerFactory: ControllerFactory = routerManager.controllerFactory
+
+    /**
      * Whether or not this router is started
      */
     var isStarted = false
+        private set
+
+    var isBeingDestroyed = false
         private set
 
     /**
@@ -102,11 +110,7 @@ class Router internal constructor(
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
-            .onEach {
-                if (it.transactionIndex == -1) {
-                    it.transactionIndex = routerManager.transactionIndexer.nextIndex()
-                }
-            }
+            .onEach { it.ensureValidIndex(routerManager.transactionIndexer) }
             .map { it.transactionIndex }
             .sorted()
 
@@ -123,6 +127,8 @@ class Router internal constructor(
         // find destroyed controllers
         val destroyedTransactions = oldBackstack
             .filter { old -> newBackstack.none { it == old } }
+
+        destroyedTransactions.forEach { it.controller.isBeingDestroyed = true }
 
         val destroyedInvisibleTransactions = destroyedTransactions
             .filterNot { it.controller.isViewCreated }
@@ -160,12 +166,8 @@ class Router internal constructor(
                         forceRemoveFromView = true,
                         onFromDetached = {
                             transaction.controller.detach()
-
-                            val willBeDestroyed = !newBackstack.contains(transaction)
-
-                            transaction.controller.destroyView(!willBeDestroyed)
-
-                            if (willBeDestroyed) {
+                            transaction.controller.destroyView()
+                            if (!newBackstack.contains(transaction)) {
                                 transaction.controller.destroy()
                             }
                         }
@@ -213,15 +215,9 @@ class Router internal constructor(
                         }
                     },
                     onFromDetached = {
-                        if (oldTopTransaction!!.controller.isAttached) {
-                            oldTopTransaction.controller.detach()
-                        }
-
-                        val willBeDestroyed = !newBackstack.contains(oldTopTransaction)
-
-                        oldTopTransaction.controller.destroyView(!willBeDestroyed)
-
-                        if (willBeDestroyed) {
+                        oldTopTransaction!!.controller.detach()
+                        oldTopTransaction.controller.destroyView()
+                        if (!newBackstack.contains(oldTopTransaction)) {
                             oldTopTransaction.controller.destroy()
                         }
                     }
@@ -325,7 +321,7 @@ class Router internal constructor(
                 }
 
                 if (it.controller.isViewCreated) {
-                    it.controller.destroyView(true) // todo check this
+                    it.controller.destroyView()
                 }
             }
         container = null
@@ -351,6 +347,13 @@ class Router internal constructor(
             .forEach { it.controller.detach() }
     }
 
+    internal fun willBeDestroyed() {
+        isBeingDestroyed = true
+
+        _backstack.reversed()
+            .forEach { it.controller.isBeingDestroyed = true }
+    }
+
     internal fun destroy() {
         isDestroyed = true
 
@@ -367,7 +370,7 @@ class Router internal constructor(
         return Bundle().apply {
             putInt(KEY_CONTAINER_ID, containerId)
             putString(KEY_TAG, tag)
-            val backstack = _backstack.map { it.saveInstanceState() }
+            val backstack = _backstack.map { it.toBundle() }
             putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
             putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
         }
@@ -381,7 +384,7 @@ class Router internal constructor(
 
         val newBackstack =
             savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
-                .map { RouterTransaction.fromBundle(it, routerManager.controllerFactory) }
+                .map { RouterTransaction.fromBundle(it, controllerFactory) }
 
         setBackstack(newBackstack, true)
     }
@@ -501,6 +504,10 @@ class Router internal constructor(
             && !controller.isAttached
         ) {
             controller.attach()
+        }
+
+        if (isBeingDestroyed) {
+            controller.isBeingDestroyed = true
         }
 
         if (isDestroyed && !controller.isDestroyed) {

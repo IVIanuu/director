@@ -91,7 +91,7 @@ class RouterTransaction {
         }
     }
 
-    internal fun saveInstanceState(): Bundle {
+    internal fun toBundle(): Bundle {
         return Bundle().apply {
             putBundle(KEY_CONTROLLER_BUNDLE, controller.saveInstanceState())
             pushChangeHandler?.let { putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
