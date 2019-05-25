@@ -614,6 +614,20 @@ abstract class SharedElementTransitionChangeHandler(
     }
 
     /**
+     * Used to register an element that will take part in the shared element transition. Maps the name used in the
+     * "from" view to the name used in the "to" view if they are not the same.
+     */
+    protected fun addSharedElement(from: View, to: View) {
+        val fromName = requireNotNull(from.transitionName) {
+            "Unique transitionNames are required for all sharedElements"
+        }
+        val toName = requireNotNull(to.transitionName) {
+            "Unique transitionNames are required for all sharedElements"
+        }
+        sharedElementNames[fromName] = toName
+    }
+
+    /**
      * The transition will be delayed until the view with the name passed in is available in the "to" hierarchy. This is
      * particularly useful for views that don't load instantly, like RecyclerViews. Note that using this method can
      * potentially lock up your app indefinitely if the view never loads!
