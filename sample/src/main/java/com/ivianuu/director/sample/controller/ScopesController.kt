@@ -26,6 +26,7 @@ import com.ivianuu.director.sample.util.d
 import com.ivianuu.director.scopes.destroy
 import com.ivianuu.director.scopes.destroyView
 import com.ivianuu.director.scopes.detach
+import com.ivianuu.director.toTransaction
 
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
@@ -61,6 +62,7 @@ class ScopesController : BaseController() {
                 TextController.newInstance(
                     "Logcat should now report that the observables from onAttach() and onCreateView() have been disposed of, while the onCreate() observable is still running."
                 )
+                    .toTransaction()
                     .changeHandler(HorizontalChangeHandler())
             )
         }
@@ -70,6 +72,7 @@ class ScopesController : BaseController() {
                 TextController.newInstance(
                     "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onCreateView() observables are still running."
                 )
+                    .toTransaction()
                     .changeHandler(HorizontalChangeHandler())
             )
         }

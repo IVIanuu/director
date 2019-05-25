@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
             startPostponedFullRestore()
 
             if (!hasRoot) {
-                setRoot(HomeController())
+                setRoot(HomeController().toTransaction())
             }
         }
     }

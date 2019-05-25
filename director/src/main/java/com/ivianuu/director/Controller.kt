@@ -92,23 +92,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         SavedStateRegistryController.create(this)
 
     /**
-     * The transaction index of this controller
-     */
-    var transactionIndex: Int = -1
-        internal set
-
-    /**
-     * The tag of this controller
-     */
-    var tag: String? = null
-        set(value) {
-            check(isRestoring || !this::_router.isInitialized) {
-                "Cannot be changed after being added to a router"
-            }
-            field = value
-        }
-
-    /**
      * The current state of this controller
      */
     var state: ControllerState = INITIALIZED
@@ -117,28 +100,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
     private var isRestoring = false
-
-    /**
-     * The change handler being used when this controller enters the screen
-     */
-    var pushChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPushHandler
-        set(value) {
-            check(isRestoring || !this::_router.isInitialized) {
-                "Cannot be changed after being added to a router"
-            }
-            field = value
-        }
-
-    /**
-     * The change handler being used when this controller exits the screen
-     */
-    var popChangeHandler: ControllerChangeHandler? = DirectorPlugins.defaultPopHandler
-        set(value) {
-            check(isRestoring || !this::_router.isInitialized) {
-                "Cannot be changed after being added to a router"
-            }
-            field = value
-        }
 
     /**
      * The child router manager of this controller
@@ -419,11 +380,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         outState.putBundle(KEY_VIEW_STATE, viewState)
         outState.putBundle(KEY_ARGS, args)
         outState.putString(KEY_INSTANCE_ID, instanceId)
-        outState.putString(KEY_TAG, tag)
-        outState.putInt(KEY_TRANSACTION_INDEX, transactionIndex)
-
-        pushChangeHandler?.let { outState.putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
-        popChangeHandler?.let { outState.putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
 
         val savedState = Bundle(this::class.java.classLoader)
         requireSuperCalled { onSaveInstanceState(savedState) }
@@ -445,13 +401,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
             ?.also { it.classLoader = this::class.java.classLoader }
 
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
-        tag = savedInstanceState.getString(KEY_TAG)
-        transactionIndex = savedInstanceState.getInt(KEY_TRANSACTION_INDEX)
-
-        pushChangeHandler = savedInstanceState.getBundle(KEY_PUSH_CHANGE_HANDLER)
-            ?.let { ControllerChangeHandler.fromBundle(it) }
-        popChangeHandler = savedInstanceState.getBundle(KEY_POP_CHANGE_HANDLER)
-            ?.let { ControllerChangeHandler.fromBundle(it) }
 
         childRouterManager.restoreInstanceState(
             savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES)!!
@@ -529,10 +478,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         private const val KEY_CHILD_ROUTER_STATES = "Controller.childRouterStates"
         private const val KEY_SAVED_STATE = "Controller.savedState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
-        private const val KEY_TAG = "Controller.tag"
-        private const val KEY_TRANSACTION_INDEX = "Controller.transactionIndex"
-        private const val KEY_PUSH_CHANGE_HANDLER = "Controller.pushChangeHandler"
-        private const val KEY_POP_CHANGE_HANDLER = "Controller.popChangeHandler"
         private const val KEY_ARGS = "Controller.args"
         private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"
         private const val KEY_VIEW_STATE_BUNDLE = "Controller.viewState.bundle"
@@ -566,6 +511,8 @@ val Controller.resources: Resources get() = activity.resources
 fun Controller.requireView(): View =
     view ?: error("view is only accessible between onCreateView and onDestroyView")
 
+fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
+
 val Controller.childRouters: List<Router> get() = childRouterManager.routers
 
 fun Controller.getChildRouterOrNull(
@@ -596,18 +543,3 @@ fun Controller.childRouter(
     containerId: Int,
     tag: String? = null
 ): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }
-
-fun Controller.tag(tag: String?): Controller = apply { this.tag = tag }
-
-fun Controller.pushChangeHandler(changeHandler: ControllerChangeHandler?): Controller =
-    apply {
-        pushChangeHandler = changeHandler
-    }
-
-fun Controller.popChangeHandler(changeHandler: ControllerChangeHandler?): Controller =
-    apply {
-        popChangeHandler = changeHandler
-    }
-
-fun Controller.changeHandler(changeHandler: ControllerChangeHandler?): Controller =
-    pushChangeHandler(changeHandler).popChangeHandler(changeHandler)

@@ -38,14 +38,14 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         val controller = createController(command.key, command.data)
             ?: return unknownScreen(command.key)
 
-        val tag = getControllerTag(command.key)
+        val transaction = controller.toTransaction()
 
-        val currentController = router.backstack.lastOrNull()
+        val currentController = router.backstack.lastOrNull()?.controller
 
-        setupController(command, currentController, controller)
-        controller.tag = tag
+        setupTransaction(command, currentController, controller, transaction)
+        transaction.tag = getControllerTag(command.key)
 
-        router.push(controller)
+        router.push(transaction)
 
         return true
     }
@@ -54,14 +54,14 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         val controller = createController(command.key, command.data)
             ?: return unknownScreen(command.key)
 
-        val tag = getControllerTag(command.key)
+        val transaction = controller.toTransaction()
 
-        val currentController = router.backstack.lastOrNull()
+        val currentController = router.backstack.lastOrNull()?.controller
 
-        setupController(command, currentController, controller)
-        controller.tag = tag
+        setupTransaction(command, currentController, controller, transaction)
+        transaction.tag = getControllerTag(command.key)
 
-        router.replaceTop(controller)
+        router.replaceTop(transaction)
 
         return true
     }
@@ -81,7 +81,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         return if (key != null) {
             val controller = router.getControllerByTagOrNull(getControllerTag(key))
             if (controller != null) {
-                router.pop(controller)
+                router.popController(controller)
                 true
             } else {
                 backToUnexisting(key)
@@ -126,10 +126,11 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     /**
      * Add change handlers etc
      */
-    protected open fun setupController(
+    protected open fun setupTransaction(
         command: Command,
         currentController: Controller?,
-        nextController: Controller
+        nextController: Controller,
+        transaction: RouterTransaction
     ) {
         val key = when (command) {
             is Forward -> command.key
@@ -137,7 +138,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
             else -> null
         } as? ControllerKey ?: return
 
-        return key.setupController(command, currentController, nextController)
+        return key.setupTransaction(command, currentController, nextController, transaction)
     }
 
     /**

@@ -58,7 +58,7 @@ class ParentController : BaseController() {
                             if (index > 0) {
                                 removeChild(index - 1)
                             } else {
-                                router.pop(this@ParentController)
+                                router.popController(this@ParentController)
                             }
                         }
                     }
@@ -66,6 +66,7 @@ class ParentController : BaseController() {
 
                 childRouter.setRoot(
                     childController
+                        .toTransaction()
                         .changeHandler(FadeChangeHandler())
                 )
             }

@@ -16,6 +16,7 @@ import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransition
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_grid.img_dot
 import kotlinx.android.synthetic.main.controller_city_grid.recycler_view
@@ -67,6 +68,7 @@ class CityGridController : BaseController() {
 
         router.push(
             CityDetailController.newInstance(city.drawableRes, city.title)
+                .toTransaction()
                 .changeHandler(CityGridSharedElementTransitionChangeHandler(names))
         )
     }

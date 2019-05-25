@@ -91,7 +91,7 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
      */
     open fun dismiss() {
         dialog?.dismiss()
-        router.pop(this)
+        router.popController(this)
     }
 
     companion object {
@@ -103,6 +103,8 @@ fun DialogController.requireDialog(): Dialog = dialog ?: error("dialog == null")
 
 fun DialogController.show(router: Router, tag: String? = null) {
     router.push(
-        changeHandler(DefaultChangeHandler(removesFromViewOnPush = false)).tag(tag)
+        toTransaction()
+            .changeHandler(DefaultChangeHandler(removesFromViewOnPush = false))
+            .tag(tag)
     )
 }

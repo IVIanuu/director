@@ -45,11 +45,13 @@ class BottomNavChildController : BaseController() {
                     if (i == 1) {
                         childRouter.setRoot(
                             controller
+                                .toTransaction()
                                 .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
                         )
                     } else {
                         childRouter.push(
                             controller
+                                .toTransaction()
                                 .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
                         )
                     }

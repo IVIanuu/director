@@ -144,8 +144,8 @@ class RouterManager(
             .flatMap { it.backstack }
             .asSequence()
             .sortedByDescending { it.transactionIndex }
-            .filter { it.isAttached }
-            .map { it.router }
+            .filter { it.controller.isAttached }
+            .map { it.controller.router }
             .any { it.handleBack() }
     }
 

@@ -60,7 +60,9 @@ class NavigationController : BaseController() {
                         displayUpMode.displayUpModeForChild,
                         useTraveler,
                         animMode
-                    ).changeHandler(animMode.createHandler())
+                    )
+                        .toTransaction()
+                        .changeHandler(animMode.createHandler())
                 )
             }
         }
@@ -150,12 +152,13 @@ data class NavigationControllerKey(
         index, displayUpMode, useTraveler, animMode
     )
 
-    override fun setupController(
+    override fun setupTransaction(
         command: Command,
         currentController: Controller?,
-        nextController: Controller
+        nextController: Controller,
+        transaction: RouterTransaction
     ) {
-        nextController.changeHandler(animMode.createHandler())
+        transaction.changeHandler(animMode.createHandler())
     }
 
 }

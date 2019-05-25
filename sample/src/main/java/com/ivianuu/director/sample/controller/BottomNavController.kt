@@ -43,7 +43,8 @@ class BottomNavController : BaseController() {
 
             // pop to root on re selections
             if (i != -1) {
-                bottomNavContainer.currentController
+                bottomNavContainer.currentTransaction
+                    ?.controller
                     ?.childRouters
                     ?.first()
                     ?.popToRoot()
@@ -56,7 +57,7 @@ class BottomNavController : BaseController() {
     }
 
     override fun handleBack(): Boolean {
-        val currentController = bottomNavContainer.currentController
+        val currentController = bottomNavContainer.currentTransaction?.controller
             ?: return false
 
         if (currentController.handleBack()) {
@@ -101,6 +102,7 @@ class BottomNavController : BaseController() {
             }
 
             BottomNavChildController.newInstance(startIndex)
+                .toTransaction()
                 .changeHandler(FadeChangeHandler())
                 .tag(index.toString())
         }

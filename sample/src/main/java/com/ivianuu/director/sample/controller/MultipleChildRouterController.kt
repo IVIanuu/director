@@ -1,13 +1,11 @@
 package com.ivianuu.director.sample.controller
 
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
-import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 
 
 class MultipleChildRouterController : BaseController() {
@@ -27,7 +25,7 @@ class MultipleChildRouterController : BaseController() {
                         0,
                         NavigationController.DisplayUpMode.HIDE,
                         false
-                    )
+                    ).toTransaction()
                 )
             }
     }

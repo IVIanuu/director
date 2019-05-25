@@ -12,6 +12,14 @@ import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.ARC_FADE
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.ARC_FADE_RESET
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.CIRCULAR
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.FADE
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.FLIP
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.HORIZONTAL
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.VERTICAL
+import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.values
 import com.ivianuu.director.sample.util.bundleOf
 import kotlinx.android.synthetic.main.controller_transition_demo.bg_view
 import kotlinx.android.synthetic.main.controller_transition_demo.btn_next
@@ -40,7 +48,7 @@ class TransitionDemoController : BaseController() {
 
         val nextIndex = transitionDemo.ordinal + 1
         var buttonColor = 0
-        if (nextIndex < TransitionDemo.values().size) {
+        if (nextIndex < values().size) {
             buttonColor = TransitionDemo.fromIndex(nextIndex).colorId
         }
         if (buttonColor == 0) {
@@ -52,8 +60,10 @@ class TransitionDemoController : BaseController() {
         tv_title.text = transitionDemo.title
 
         btn_next.setOnClickListener {
-            if (nextIndex < TransitionDemo.values().size) {
-                router.push(getNextController(nextIndex, this@TransitionDemoController))
+            if (nextIndex < values().size) {
+                router.push(
+                    getNextTransaction(nextIndex, this@TransitionDemoController)
+                )
             } else {
                 router.popToRoot()
             }
@@ -61,25 +71,25 @@ class TransitionDemoController : BaseController() {
     }
 
     fun getChangeHandler(from: Controller): ControllerChangeHandler? = when (transitionDemo) {
-        TransitionDemoController.TransitionDemo.VERTICAL -> VerticalChangeHandler()
-        TransitionDemoController.TransitionDemo.CIRCULAR -> {
+        VERTICAL -> VerticalChangeHandler()
+        CIRCULAR -> {
             val demoController = from as TransitionDemoController
             CircularRevealChangeHandler(
                 demoController.btn_next,
                 demoController.transition_root
             )
         }
-        TransitionDemoController.TransitionDemo.FADE -> FadeChangeHandler()
-        TransitionDemoController.TransitionDemo.FLIP -> FlipChangeHandler()
-        TransitionDemoController.TransitionDemo.ARC_FADE -> ArcFadeMoveChangeHandler(
+        FADE -> FadeChangeHandler()
+        FLIP -> FlipChangeHandler()
+        ARC_FADE -> ArcFadeMoveChangeHandler(
             from.resources.getString(R.string.transition_tag_dot),
             from.resources.getString(R.string.transition_tag_title)
         )
-        TransitionDemoController.TransitionDemo.ARC_FADE_RESET -> ArcFadeMoveChangeHandler(
+        ARC_FADE_RESET -> ArcFadeMoveChangeHandler(
             from.resources.getString(R.string.transition_tag_dot),
             from.resources.getString(R.string.transition_tag_title)
         )
-        TransitionDemoController.TransitionDemo.HORIZONTAL -> HorizontalChangeHandler()
+        HORIZONTAL -> HorizontalChangeHandler()
     }
 
     enum class TransitionDemo(
@@ -116,7 +126,7 @@ class TransitionDemoController : BaseController() {
         );
 
         companion object {
-            fun fromIndex(index: Int) = TransitionDemo.values()[index]
+            fun fromIndex(index: Int) = values()[index]
         }
     }
 
@@ -127,9 +137,10 @@ class TransitionDemoController : BaseController() {
             args = bundleOf(KEY_INDEX to index)
         }
 
-        fun getNextController(index: Int, fromController: Controller): Controller {
+        fun getNextTransaction(index: Int, fromController: Controller): RouterTransaction {
             val toController = newInstance(index)
             return toController
+                .toTransaction()
                 .changeHandler(toController.getChangeHandler(fromController))
         }
     }

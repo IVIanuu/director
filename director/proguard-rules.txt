@@ -7,6 +7,6 @@
    public <init>();
 }
 
--keepclassmembers public class * extends com.ivianuu.director.Transaction {
+-keepclassmembers public class * extends com.ivianuu.director.RouterTransaction {
    public <init>();
 }
