@@ -73,9 +73,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     var instanceId = UUID.randomUUID().toString()
         private set
 
-    private val _viewModelStore by lazy(LazyThreadSafetyMode.NONE) {
-        ControllerViewModelStores.get(this).getViewModelStore(instanceId)
-    }
+    private var _viewModelStore: ViewModelStore? = null
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
@@ -258,7 +256,14 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     override fun getSavedStateRegistry(): SavedStateRegistry =
         savedStateRegistryController.savedStateRegistry
 
-    override fun getViewModelStore(): ViewModelStore = _viewModelStore
+    override fun getViewModelStore(): ViewModelStore {
+        if (_viewModelStore == null) {
+            _viewModelStore = ControllerViewModelStores.get(this)
+                .getViewModelStore(instanceId)
+        }
+
+        return _viewModelStore!!
+    }
 
     internal fun create(router: Router) {
         _router = router
@@ -296,7 +301,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
         notifyListeners { it.postDestroy(this) }
 
-        if (!activity.isChangingConfigurations) {
+        if (!activity.isChangingConfigurations && _viewModelStore != null) {
             ControllerViewModelStores.get(this)
                 .removeViewModelStore(instanceId)
         }
