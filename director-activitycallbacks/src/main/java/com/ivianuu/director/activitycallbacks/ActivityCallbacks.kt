@@ -109,10 +109,7 @@ class ActivityCallbacks : Fragment() {
                 .findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
                 ?: ActivityCallbacks().also {
                     controller.activity.supportFragmentManager.beginTransaction()
-                        .add(
-                            it,
-                            FRAGMENT_TAG
-                        )
+                        .add(it, FRAGMENT_TAG)
                         .commitNow()
                 }.also {
                 if (it.activity == null) {
