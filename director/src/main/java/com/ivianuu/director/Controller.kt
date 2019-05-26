@@ -117,9 +117,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         set(value) {
             field = value
             if (!value && !isAttached && isViewCreated) {
-                if (!isBeingDestroyed) {
-                    saveViewState()
-                }
                 destroyView()
             }
         }
