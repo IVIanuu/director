@@ -95,7 +95,7 @@ abstract class RouterPagerAdapter(
      * Returns the already instantiated Router in the specified position or `null` if there
      * is no router associated with this position.
      */
-    fun getRouter(position: Int): Router? = visibleRouters.get(position)
+    fun getRouter(position: Int): Router = visibleRouters.get(position)
 
     companion object {
         private const val KEY_SAVED_PAGES = "RouterPagerAdapter.savedStates"
