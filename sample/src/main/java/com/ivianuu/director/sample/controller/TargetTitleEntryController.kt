@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.ivianuu.director.Controller
-import com.ivianuu.director.getControllerByInstanceId
+import com.ivianuu.director.findControllerByInstanceId
 import com.ivianuu.director.popTop
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
@@ -23,7 +23,7 @@ class TargetTitleEntryController : BaseController() {
 
         btn_use_title.setOnClickListener {
             val targetInstanceId = args.getString(KEY_TARGET_INSTANCE_ID)!!
-            val targetController = routerManager.getControllerByInstanceId(targetInstanceId)
+            val targetController = routerManager.findControllerByInstanceId(targetInstanceId)
             (targetController as? TargetTitleEntryControllerListener)
                 ?.onTitlePicked(edit_text.text.toString())
             router.popTop()
