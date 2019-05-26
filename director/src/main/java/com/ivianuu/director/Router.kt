@@ -322,22 +322,24 @@ class Router internal constructor(
 
         endAllChanges()
         _backstack
-            .filter { it.controller.isAttached }
             .reversed()
+            .filter { it.controller.isAttached }
             .forEach { it.controller.detach() }
     }
 
     internal fun willBeDestroyed() {
         isBeingDestroyed = true
 
-        _backstack.reversed()
+        _backstack
+            .reversed()
             .forEach { it.controller.willBeDestroyed() }
     }
 
     internal fun destroy() {
         isDestroyed = true
 
-        _backstack.reversed()
+        _backstack
+            .reversed()
             .forEach { it.controller.destroy() }
     }
 
@@ -657,13 +659,13 @@ fun Router.replaceTop(
     handler: ControllerChangeHandler? = null
 ) {
     val newBackstack = backstack.toMutableList()
-    newBackstack.lastOrNull()?.let { newBackstack.remove(it) }
+    if (newBackstack.isNotEmpty()) newBackstack.removeAt(newBackstack.lastIndex)
     newBackstack.add(transaction)
     setBackstack(newBackstack, true, handler)
 }
 
 /**
- * Pops the passed [transaction] from the backstack
+ * Pops the passed [controller] from the backstack
  */
 fun Router.popController(
     controller: Controller,
@@ -721,7 +723,7 @@ fun Router.popToController(
 }
 
 /**
- * Pops all [Controller]s until the [controller] is at the top
+ * Pops all [Controller]s until the [transaction] is at the top
  */
 fun Router.popToTransaction(
     transaction: RouterTransaction,
@@ -732,7 +734,7 @@ fun Router.popToTransaction(
 }
 
 /**
- * Clears out the backstack
+ * Clears the backstack
  */
 fun Router.clear(handler: ControllerChangeHandler? = null) {
     setBackstack(emptyList(), false, handler)
