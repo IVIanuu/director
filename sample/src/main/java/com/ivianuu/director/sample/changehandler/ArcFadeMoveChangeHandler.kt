@@ -22,15 +22,14 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
         this.sharedElementNames.addAll(sharedElementNames)
     }
 
-    override fun saveToBundle(outState: Bundle) {
-        super.saveToBundle(outState)
-        outState.putStringArrayList(KEY_SHARED_ELEMENT_NAMES, ArrayList(sharedElementNames))
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putStringArrayList(KEY_SHARED_ELEMENT_NAMES, ArrayList(sharedElementNames))
     }
 
-    override fun restoreFromBundle(savedInstanceState: Bundle) {
-        super.restoreFromBundle(savedInstanceState)
-
-        sharedElementNames.addAll(savedInstanceState.getStringArrayList(KEY_SHARED_ELEMENT_NAMES)!!)
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        sharedElementNames.addAll(bundle.getStringArrayList(KEY_SHARED_ELEMENT_NAMES)!!)
     }
 
     override fun getExitTransition(changeData: ChangeData): Transition? {

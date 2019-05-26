@@ -66,16 +66,16 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
     override fun resetFromView(from: View) {
     }
 
-    override fun saveToBundle(outState: Bundle) {
-        super.saveToBundle(outState)
-        outState.putInt(KEY_CX, cx)
-        outState.putInt(KEY_CY, cy)
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putInt(KEY_CX, cx)
+        bundle.putInt(KEY_CY, cy)
     }
 
-    override fun restoreFromBundle(savedInstanceState: Bundle) {
-        super.restoreFromBundle(savedInstanceState)
-        cx = savedInstanceState.getInt(KEY_CX)
-        cy = savedInstanceState.getInt(KEY_CY)
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        cx = bundle.getInt(KEY_CX)
+        cy = bundle.getInt(KEY_CY)
     }
 
     companion object {

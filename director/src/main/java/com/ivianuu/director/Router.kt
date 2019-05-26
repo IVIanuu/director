@@ -128,7 +128,7 @@ class Router internal constructor(
         val destroyedTransactions = oldBackstack
             .filter { old -> newBackstack.none { it == old } }
 
-        destroyedTransactions.forEach { it.controller.isBeingDestroyed = true }
+        destroyedTransactions.forEach { it.controller.willBeDestroyed() }
 
         val destroyedInvisibleTransactions = destroyedTransactions
             .filterNot { it.controller.isViewCreated }
@@ -331,7 +331,7 @@ class Router internal constructor(
         isBeingDestroyed = true
 
         _backstack.reversed()
-            .forEach { it.controller.isBeingDestroyed = true }
+            .forEach { it.controller.willBeDestroyed() }
     }
 
     internal fun destroy() {
@@ -414,7 +414,6 @@ class Router internal constructor(
                     attachToController()
                 } else if (movingToView) {
                     container.moveView(toView!!, toIndex)
-                    attachToController()
                 }
             }
 
@@ -496,7 +495,7 @@ class Router internal constructor(
         }
 
         if (isBeingDestroyed) {
-            controller.isBeingDestroyed = true
+            controller.willBeDestroyed()
         }
 
         if (isDestroyed && !controller.isDestroyed) {

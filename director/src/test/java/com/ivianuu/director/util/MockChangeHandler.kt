@@ -62,16 +62,16 @@ class MockChangeHandler internal constructor(
         listener.didEndChange()
     }
 
-    override fun saveToBundle(outState: Bundle) {
-        super.saveToBundle(outState)
-        outState.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
-        outState.putString(KEY_TAG, tag)
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
+        bundle.putString(KEY_TAG, tag)
     }
 
-    override fun restoreFromBundle(savedInstanceState: Bundle) {
-        super.restoreFromBundle(savedInstanceState)
-        removesFromViewOnPush = savedInstanceState.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
-        tag = savedInstanceState.getString(KEY_TAG)
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
+        tag = bundle.getString(KEY_TAG)
     }
 
     override fun copy(): ControllerChangeHandler = MockChangeHandler(removesFromViewOnPush, tag, listener)

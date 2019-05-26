@@ -20,12 +20,12 @@ class CityGridSharedElementTransitionChangeHandler(
         this.names.addAll(names)
     }
 
-    override fun saveToBundle(outState: Bundle) {
-        outState.putStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES, ArrayList(names))
+    override fun saveToBundle(bundle: Bundle) {
+        bundle.putStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES, ArrayList(names))
     }
 
-    override fun restoreFromBundle(savedInstanceState: Bundle) {
-        val savedNames = savedInstanceState.getStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES)
+    override fun restoreFromBundle(bundle: Bundle) {
+        val savedNames = bundle.getStringArrayList(KEY_WAIT_FOR_TRANSITION_NAMES)
         if (savedNames != null) {
             names.addAll(savedNames)
         }

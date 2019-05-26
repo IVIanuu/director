@@ -33,7 +33,7 @@ class BottomNavController : BaseController() {
 
             swapTo(i)
 
-            true
+            return@setOnNavigationItemSelectedListener true
         }
 
         bottom_nav_view.setOnNavigationItemReselectedListener { item ->

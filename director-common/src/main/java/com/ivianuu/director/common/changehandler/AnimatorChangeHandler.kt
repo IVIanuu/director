@@ -61,16 +61,16 @@ abstract class AnimatorChangeHandler(
         }
     }
 
-    override fun saveToBundle(outState: Bundle) {
-        super.saveToBundle(outState)
-        outState.putLong(KEY_DURATION, duration)
-        outState.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putLong(KEY_DURATION, duration)
+        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
     }
 
-    override fun restoreFromBundle(savedInstanceState: Bundle) {
-        super.restoreFromBundle(savedInstanceState)
-        duration = savedInstanceState.getLong(KEY_DURATION)
-        removesFromViewOnPush = savedInstanceState.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        duration = bundle.getLong(KEY_DURATION)
+        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     override fun cancel() {

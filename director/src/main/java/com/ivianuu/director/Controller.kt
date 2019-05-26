@@ -101,10 +101,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      * Whether or not this controller is currently in the process of being destroyed
      */
     var isBeingDestroyed = false
-        internal set(value) {
-            field = value
-            if (value) childRouterManager.willBeDestroyed()
-        }
+        private set
 
     private var allState: Bundle? = null
     private var viewState: Bundle? = null
@@ -476,6 +473,11 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     ) {
         requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
         notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
+    }
+
+    internal fun willBeDestroyed() {
+        isBeingDestroyed = true
+        childRouterManager.willBeDestroyed()
     }
 
     private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
