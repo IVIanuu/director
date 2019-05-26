@@ -377,6 +377,18 @@ class Router internal constructor(
         setBackstack(newBackstack, true)
     }
 
+    /**
+     * Saves the instance state of [controller] which can later be used in
+     * [Controller.setInitialSavedState]
+     */
+    fun saveControllerInstanceState(controller: Controller): Bundle {
+        require(backstack.any { it.controller == controller }) {
+            "controller is not attached to the router"
+        }
+
+        return controller.saveInstanceState()
+    }
+
     private fun performControllerChange(
         from: Controller?,
         to: Controller?,
@@ -604,38 +616,31 @@ val Router.backstackSize: Int get() = backstack.size
 
 val Router.hasRoot: Boolean get() = backstackSize > 0
 
-fun Router.getControllerByTagOrNull(tag: String): Controller? {
+fun Router.findControllerByTag(tag: String): Controller? {
     for (transaction in backstack) {
         if (transaction.tag == tag) {
             return transaction.controller
         }
 
-        transaction.controller.childRouterManager.getControllerByTagOrNull(tag)
-            ?.let { return@getControllerByTagOrNull it }
+        transaction.controller.childRouterManager.findControllerByTag(tag)
+            ?.let { return@findControllerByTag it }
     }
 
     return null
 }
 
-fun Router.getControllerByTag(tag: String): Controller =
-    getControllerByTagOrNull(tag) ?: error("couldn't find controller for tag: $tag")
-
-fun Router.getControllerByInstanceIdOrNull(instanceId: String): Controller? {
+fun Router.findControllerByInstanceId(instanceId: String): Controller? {
     for (transaction in backstack) {
         if (transaction.controller.instanceId == instanceId) {
             return transaction.controller
         }
 
-        transaction.controller.childRouterManager.getControllerByInstanceIdOrNull(instanceId)
-            ?.let { return@getControllerByInstanceIdOrNull it }
+        transaction.controller.childRouterManager.findControllerByInstanceId(instanceId)
+            ?.let { return@findControllerByInstanceId it }
     }
 
     return null
 }
-
-fun Router.getControllerByInstanceId(instanceId: String): Controller =
-    getControllerByInstanceIdOrNull(instanceId)
-        ?: error("couldn't find controller with instanceId: $instanceId")
 
 /**
  * Sets the root Controller. If any [Controller]s are currently in the backstack, they will be removed.

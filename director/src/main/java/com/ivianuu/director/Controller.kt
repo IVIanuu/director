@@ -244,6 +244,15 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         listeners.remove(listener)
     }
 
+    /**
+     * Sets the initial state of this controller which was previously created by
+     * [Router.saveControllerInstanceState]
+     */
+    fun setInitialSavedState(initialState: Bundle?) {
+        check(!isCreated) { "controller already added" }
+        allState = initialState
+    }
+
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     override fun getSavedStateRegistry(): SavedStateRegistry =
@@ -294,12 +303,12 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     }
 
     internal fun createView(container: ViewGroup): View {
-        _viewLifecycleOwner = ControllerViewLifecycleOwner()
-
         val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
             ?.also { it.classLoader = this::class.java.classLoader }
 
         notifyListeners { it.preCreateView(this, savedViewState) }
+
+        _viewLifecycleOwner = ControllerViewLifecycleOwner()
 
         val view = onCreateView(
             LayoutInflater.from(container.context),

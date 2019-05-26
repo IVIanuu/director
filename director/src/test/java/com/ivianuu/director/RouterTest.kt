@@ -45,7 +45,7 @@ class RouterTest {
 
         assertTrue(router.hasRoot)
 
-        assertEquals(rootController, router.getControllerByTagOrNull(rootTag))
+        assertEquals(rootController, router.findControllerByTag(rootTag))
     }
 
     @Test
@@ -59,8 +59,8 @@ class RouterTest {
         router.setRoot(oldRootController.toTransaction().tag(oldRootTag))
         router.setRoot(newRootController.toTransaction().tag(newRootTag))
 
-        assertNull(router.getControllerByTagOrNull(oldRootTag))
-        assertEquals(newRootController, router.getControllerByTagOrNull(newRootTag))
+        assertNull(router.findControllerByTag(oldRootTag))
+        assertEquals(newRootController, router.findControllerByTag(newRootTag))
     }
 
     @Test
@@ -69,8 +69,8 @@ class RouterTest {
 
         router.push(controller.toTransaction())
 
-        assertEquals(controller, router.getControllerByInstanceIdOrNull(controller.instanceId))
-        assertNull(router.getControllerByInstanceIdOrNull("fake id"))
+        assertEquals(controller, router.findControllerByInstanceId(controller.instanceId))
+        assertNull(router.findControllerByInstanceId("fake id"))
     }
 
     @Test
@@ -84,8 +84,8 @@ class RouterTest {
         router.push(controller1.toTransaction().tag(controller1Tag))
         router.push(controller2.toTransaction().tag(controller2Tag))
 
-        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
-        assertEquals(controller2, router.getControllerByTagOrNull(controller2Tag))
+        assertEquals(controller1, router.findControllerByTag(controller1Tag))
+        assertEquals(controller2, router.findControllerByTag(controller2Tag))
     }
 
     @Test
@@ -108,15 +108,15 @@ class RouterTest {
 
         assertEquals(1, router.backstackSize)
 
-        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
-        assertNull(router.getControllerByTagOrNull(controller2Tag))
+        assertEquals(controller1, router.findControllerByTag(controller1Tag))
+        assertNull(router.findControllerByTag(controller2Tag))
 
         router.popTop()
 
         assertEquals(0, router.backstackSize)
 
-        assertNull(router.getControllerByTagOrNull(controller1Tag))
-        assertNull(router.getControllerByTagOrNull(controller2Tag))
+        assertNull(router.findControllerByTag(controller1Tag))
+        assertNull(router.findControllerByTag(controller2Tag))
     }
 
     @Test
@@ -137,7 +137,7 @@ class RouterTest {
                     step = 0
                 }
             }
-            val controller = router.getControllerByTagOrNull(tag)
+            val controller = router.findControllerByTag(tag)
             if (controller != null) {
                 router.popController(controller)
             }
@@ -167,10 +167,10 @@ class RouterTest {
         router.popToTag(controller2Tag)
 
         assertEquals(2, router.backstackSize)
-        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
-        assertEquals(controller2, router.getControllerByTagOrNull(controller2Tag))
-        assertNull(router.getControllerByTagOrNull(controller3Tag))
-        assertNull(router.getControllerByTagOrNull(controller4Tag))
+        assertEquals(controller1, router.findControllerByTag(controller1Tag))
+        assertEquals(controller2, router.findControllerByTag(controller2Tag))
+        assertNull(router.findControllerByTag(controller3Tag))
+        assertNull(router.findControllerByTag(controller4Tag))
     }
 
     @Test
@@ -190,9 +190,9 @@ class RouterTest {
         router.popController(controller2)
 
         assertEquals(2, router.backstackSize)
-        assertEquals(controller1, router.getControllerByTagOrNull(controller1Tag))
-        assertNull(router.getControllerByTagOrNull(controller2Tag))
-        assertEquals(controller3, router.getControllerByTagOrNull(controller3Tag))
+        assertEquals(controller1, router.findControllerByTag(controller1Tag))
+        assertNull(router.findControllerByTag(controller2Tag))
+        assertEquals(controller3, router.findControllerByTag(controller3Tag))
     }
 
     @Test
