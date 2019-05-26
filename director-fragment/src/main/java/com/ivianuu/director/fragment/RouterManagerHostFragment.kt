@@ -46,7 +46,7 @@ class RouterManagerHostFragment : Fragment() {
         super.onAttach(context)
 
         if (postponedActivities.contains(requireActivity())) {
-            manager.postponeRestore()
+            manager.postponeFullRestore()
             postponedActivities.remove(requireActivity())
         }
     }
@@ -142,7 +142,7 @@ class RouterManagerHostFragment : Fragment() {
 
         fun postponeFullRestore(activity: FragmentActivity) {
             if (activity.supportFragmentManager.hasHost) {
-                get(activity).manager.postponeRestore()
+                get(activity).manager.postponeFullRestore()
             } else {
                 postponedActivities.add(activity)
             }

@@ -203,7 +203,7 @@ class RouterManager(
         }
     }
 
-    fun postponeRestore() {
+    fun postponeFullRestore() {
         postponeFullRestore = true
     }
 
