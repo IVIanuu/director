@@ -29,23 +29,23 @@ abstract class ControllerChangeHandler {
     /**
      * Saves any data about this changeHandler to a Bundle in case the application is killed.
      */
-    open fun saveInstanceState(outState: Bundle) {
+    open fun saveToBundle(bundle: Bundle) {
     }
 
     /**
-     * Restores data that was saved in [saveInstanceState].
+     * Restores data that was saved in [saveToBundle].
      */
-    open fun restoreInstanceState(savedInstanceState: Bundle) {
+    open fun restoreFromBundle(bundle: Bundle) {
     }
 
     internal open fun copy(): ControllerChangeHandler = fromBundle(toBundle())
 
     interface Callback {
         fun addToView()
-        fun toViewAdded()
+        fun attachToController()
         fun removeFromView()
-        fun fromViewRemoved()
-        fun onChangeCompleted()
+        fun detachFromController()
+        fun changeCompleted()
     }
 
     internal fun toBundle(): Bundle = Bundle().apply {
@@ -54,7 +54,7 @@ abstract class ControllerChangeHandler {
         putString(KEY_CLASS_NAME, this@ControllerChangeHandler.javaClass.name)
         putBundle(KEY_SAVED_STATE, Bundle()
             .also { it.classLoader = this@ControllerChangeHandler::class.java.classLoader }
-            .also { this@ControllerChangeHandler.saveInstanceState(it) })
+            .also { this@ControllerChangeHandler.saveToBundle(it) })
     }
 
     companion object {
@@ -64,7 +64,7 @@ abstract class ControllerChangeHandler {
         internal fun fromBundle(bundle: Bundle): ControllerChangeHandler {
             val className = bundle.getString(KEY_CLASS_NAME)!!
             return newInstanceOrThrow<ControllerChangeHandler>(className).apply {
-                restoreInstanceState(bundle.getBundle(KEY_SAVED_STATE)!!)
+                restoreFromBundle(bundle.getBundle(KEY_SAVED_STATE)!!)
             }
         }
     }

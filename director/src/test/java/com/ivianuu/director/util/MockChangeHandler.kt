@@ -58,18 +58,18 @@ class MockChangeHandler internal constructor(
             listener.didAttachOrDetach()
         }
 
-        callback.onChangeCompleted()
+        callback.changeCompleted()
         listener.didEndChange()
     }
 
-    override fun saveInstanceState(outState: Bundle) {
-        super.saveInstanceState(outState)
+    override fun saveToBundle(outState: Bundle) {
+        super.saveToBundle(outState)
         outState.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
         outState.putString(KEY_TAG, tag)
     }
 
-    override fun restoreInstanceState(savedInstanceState: Bundle) {
-        super.restoreInstanceState(savedInstanceState)
+    override fun restoreFromBundle(savedInstanceState: Bundle) {
+        super.restoreFromBundle(savedInstanceState)
         removesFromViewOnPush = savedInstanceState.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
         tag = savedInstanceState.getString(KEY_TAG)
     }

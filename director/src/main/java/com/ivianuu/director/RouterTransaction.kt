@@ -119,7 +119,11 @@ class RouterTransaction {
             return RouterTransaction(
                 Controller.fromBundle(bundle.getBundle(KEY_CONTROLLER_BUNDLE)!!, controllerFactory),
                 bundle.getString(KEY_TAG),
-                bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let(ControllerChangeHandler.Companion::fromBundle),
+                bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let {
+                    ControllerChangeHandler.fromBundle(
+                        it
+                    )
+                },
                 bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let(ControllerChangeHandler.Companion::fromBundle),
                 bundle.getInt(KEY_INDEX),
                 bundle.getBoolean(KEY_ATTACHED_TO_ROUTER)

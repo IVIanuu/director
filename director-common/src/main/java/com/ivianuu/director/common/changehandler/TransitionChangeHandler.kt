@@ -60,11 +60,11 @@ abstract class TransitionChangeHandler(
             }
 
             override fun onTransitionCancel(transition: Transition) {
-                callback.onChangeCompleted()
+                callback.changeCompleted()
             }
 
             override fun onTransitionEnd(transition: Transition) {
-                callback.onChangeCompleted()
+                callback.changeCompleted()
             }
         })
 
@@ -75,19 +75,19 @@ abstract class TransitionChangeHandler(
                 executePropertyChanges(changeData, transition)
             } else {
                 executePropertyChanges(changeData, transition)
-                callback.onChangeCompleted()
+                callback.changeCompleted()
             }
         }
     }
 
-    override fun saveInstanceState(outState: Bundle) {
-        super.saveInstanceState(outState)
+    override fun saveToBundle(outState: Bundle) {
+        super.saveToBundle(outState)
         outState.putLong(KEY_DURATION, duration)
         outState.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
     }
 
-    override fun restoreInstanceState(savedInstanceState: Bundle) {
-        super.restoreInstanceState(savedInstanceState)
+    override fun restoreFromBundle(savedInstanceState: Bundle) {
+        super.restoreFromBundle(savedInstanceState)
         duration = savedInstanceState.getLong(KEY_DURATION)
         removesFromViewOnPush = savedInstanceState.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }

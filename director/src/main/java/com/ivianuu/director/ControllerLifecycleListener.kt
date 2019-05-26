@@ -196,17 +196,19 @@ fun Controller.addLifecycleListener(
     onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
-) = ControllerListener(
-    preCreate = preCreate, postCreate = postCreate,
-    preCreateView = preCreateView, postCreateView = postCreateView,
-    preAttach = preAttach, postAttach = postAttach,
-    preDetach = preDetach, postDetach = postDetach,
-    preDestroyView = preDestroyView, postDestroyView = postDestroyView,
-    preDestroy = preDestroy, postDestroy = postDestroy,
-    onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
-    onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
-    onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
-).let { addLifecycleListener(it) }
+) = addLifecycleListener(
+    ControllerListener(
+        preCreate = preCreate, postCreate = postCreate,
+        preCreateView = preCreateView, postCreateView = postCreateView,
+        preAttach = preAttach, postAttach = postAttach,
+        preDetach = preDetach, postDetach = postDetach,
+        preDestroyView = preDestroyView, postDestroyView = postDestroyView,
+        preDestroy = preDestroy, postDestroy = postDestroy,
+        onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
+        onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
+        onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
+    )
+)
 
 fun Router.addControllerLifecycleListener(
     recursive: Boolean = false,

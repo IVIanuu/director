@@ -31,17 +31,17 @@ open class DefaultChangeHandler(
     override fun performChange(changeData: ChangeData) {
         changeData.callback.addToView()
         changeData.callback.removeFromView()
-        changeData.callback.onChangeCompleted()
+        changeData.callback.changeCompleted()
     }
 
-    override fun saveInstanceState(outState: Bundle) {
-        super.saveInstanceState(outState)
-        outState.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
+    override fun saveToBundle(bundle: Bundle) {
+        super.saveToBundle(bundle)
+        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
     }
 
-    override fun restoreInstanceState(savedInstanceState: Bundle) {
-        super.restoreInstanceState(savedInstanceState)
-        _removesFromViewOnPush = savedInstanceState.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
+    override fun restoreFromBundle(bundle: Bundle) {
+        super.restoreFromBundle(bundle)
+        _removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     companion object {

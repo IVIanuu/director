@@ -411,14 +411,14 @@ class Router internal constructor(
                 val movingToView = toView != null && container.indexOfChild(toView) != toIndex
                 if (addingToView) {
                     container.addView(toView, toIndex)
-                    toViewAdded()
+                    attachToController()
                 } else if (movingToView) {
                     container.moveView(toView!!, toIndex)
-                    toViewAdded()
+                    attachToController()
                 }
             }
 
-            override fun toViewAdded() {
+            override fun attachToController() {
                 if (isStarted) {
                     to!!.attach()
                 }
@@ -429,11 +429,11 @@ class Router internal constructor(
                             || forceRemoveFromView)
                 ) {
                     container.removeView(fromView)
-                    fromViewRemoved()
+                    detachFromController()
                 }
             }
 
-            override fun fromViewRemoved() {
+            override fun detachFromController() {
                 from!!.detach()
 
                 if (!from.retainView
@@ -449,7 +449,7 @@ class Router internal constructor(
                 }
             }
 
-            override fun onChangeCompleted() {
+            override fun changeCompleted() {
                 from?.changeEnded(to, handlerToUse, fromChangeType)
 
                 if (to != null) {

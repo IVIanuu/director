@@ -71,9 +71,9 @@ class FlipChangeHandler(
         from.alpha = 1f
 
         when (flipDirection) {
-            FlipChangeHandler.FlipDirection.LEFT, FlipChangeHandler.FlipDirection.RIGHT -> from.rotationY =
+            FlipDirection.LEFT, FlipDirection.RIGHT -> from.rotationY =
                     0f
-            FlipChangeHandler.FlipDirection.UP, FlipChangeHandler.FlipDirection.DOWN -> from.rotationX =
+            FlipDirection.UP, FlipDirection.DOWN -> from.rotationX =
                     0f
         }
     }
