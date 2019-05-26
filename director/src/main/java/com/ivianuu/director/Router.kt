@@ -288,22 +288,26 @@ class Router internal constructor(
     fun removeContainer() {
         endAllChanges()
         _backstack.reversed()
-            .forEach {
-                if (it.controller.isAttached) {
-                    it.controller.detach()
+            .map { it.controller }
+            .forEach { controller ->
+                if (controller.isAttached) {
+                    container?.removeView(controller.view!!)
+                    controller.detach()
                 }
 
-                if (it.controller.isViewCreated) {
-                    if (!it.controller.retainView || it.controller.isBeingDestroyed) {
-                        it.controller.destroyView()
-                    } else if (it.controller.retainView) {
-                        it.controller.removeChildRootView()
-                        (it.controller.view!!.parent as ViewGroup)
-                            .removeView(it.controller.view)
+                if (controller.isViewCreated) {
+                    if (!controller.retainView
+                        || controller.isBeingDestroyed
+                    ) {
+                        controller.destroyView()
+                    } else if (controller.retainView) {
+                        controller.removeChildRootView()
+                        (controller.view!!.parent as ViewGroup)
+                            .removeView(controller.view)
                     }
                 }
             }
-        container?.removeAllViews()
+
         container = null
     }
 
@@ -312,15 +316,17 @@ class Router internal constructor(
         // attach visible controllers
         _backstack
             .filterVisible()
-            .filter { it.controller.view?.parent != null }
-            .filterNot { it.controller.isAttached }
-            .forEach { it.controller.attach() }
+            .map { it.controller }
+            .filter { it.view?.parent != null }
+            .filterNot { it.isAttached }
+            .forEach { it.attach() }
     }
 
     internal fun stop() {
         isStarted = false
 
         endAllChanges()
+
         _backstack
             .reversed()
             .filter { it.controller.isAttached }
