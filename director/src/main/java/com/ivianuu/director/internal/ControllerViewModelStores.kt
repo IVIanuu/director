@@ -26,9 +26,7 @@ internal class ControllerViewModelStores : ViewModel() {
     private val viewModelStores = mutableMapOf<String, ViewModelStore>()
 
     fun getViewModelStore(instanceId: String): ViewModelStore =
-        viewModelStores.getOrPut(instanceId) {
-            ViewModelStore()
-        }
+        viewModelStores.getOrPut(instanceId) { ViewModelStore() }
 
     fun removeViewModelStore(instanceId: String) {
         viewModelStores.remove(instanceId)?.clear()

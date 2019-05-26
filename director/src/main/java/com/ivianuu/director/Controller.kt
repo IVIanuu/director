@@ -415,7 +415,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         savedStateRegistryController.performSave(savedState)
         notifyListeners { it.onSaveInstanceState(this, savedState) }
         outState.putBundle(KEY_SAVED_STATE, savedState)
-        outState.putBundle(KEY_CHILD_ROUTER_STATES, childRouterManager.saveInstanceState())
+        outState.putBundle(KEY_CHILD_ROUTER_MANAGER, childRouterManager.saveInstanceState())
 
         return outState
     }
@@ -430,7 +430,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
         retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
         childRouterManager.restoreInstanceState(
-            savedInstanceState.getBundle(KEY_CHILD_ROUTER_STATES)!!
+            savedInstanceState.getBundle(KEY_CHILD_ROUTER_MANAGER)!!
         )
 
         isRestoring = false
@@ -502,7 +502,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     companion object {
         private const val KEY_CLASS_NAME = "Controller.className"
         private const val KEY_VIEW_STATE = "Controller.viewState"
-        private const val KEY_CHILD_ROUTER_STATES = "Controller.childRouterStates"
+        private const val KEY_CHILD_ROUTER_MANAGER = "Controller.childRouterStates"
         private const val KEY_SAVED_STATE = "Controller.savedState"
         private const val KEY_INSTANCE_ID = "Controller.instanceId"
         private const val KEY_ARGS = "Controller.args"
