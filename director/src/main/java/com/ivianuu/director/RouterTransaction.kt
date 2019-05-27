@@ -57,7 +57,7 @@ class RouterTransaction {
         }
 
     internal var transactionIndex = INVALID_INDEX
-    internal var isAttachedToRouter = false
+    internal var isAddedToRouter = false
 
     constructor(controller: Controller) {
         this.controller = controller
@@ -76,7 +76,7 @@ class RouterTransaction {
         this.popChangeHandler = popChangeHandler
         this.tag = tag
         this.transactionIndex = transactionIndex
-        this.isAttachedToRouter = attachedToRouter
+        this.isAddedToRouter = attachedToRouter
     }
 
     internal fun ensureValidIndex(indexer: TransactionIndexer) {
@@ -86,7 +86,7 @@ class RouterTransaction {
     }
 
     private fun checkModify() {
-        check(!isAttachedToRouter) {
+        check(!isAddedToRouter) {
             "transactions cannot be modified after being added to a Router."
         }
     }
@@ -98,7 +98,7 @@ class RouterTransaction {
             popChangeHandler?.let { putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
             putString(KEY_TAG, tag)
             putInt(KEY_INDEX, transactionIndex)
-            putBoolean(KEY_ATTACHED_TO_ROUTER, isAttachedToRouter)
+            putBoolean(KEY_ADDED_TO_ROUTER, isAddedToRouter)
         }
     }
 
@@ -108,7 +108,7 @@ class RouterTransaction {
         private const val KEY_POP_CHANGE_HANDLER = "RouterTransaction.popChangeHandler"
         private const val KEY_TAG = "RouterTransaction.tag"
         private const val KEY_INDEX = "RouterTransaction.transactionIndex"
-        private const val KEY_ATTACHED_TO_ROUTER = "RouterTransaction.isAttachedToRouter"
+        private const val KEY_ADDED_TO_ROUTER = "RouterTransaction.isAddedToRouter"
 
         const val INVALID_INDEX = -1
 
@@ -126,7 +126,7 @@ class RouterTransaction {
                 },
                 bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let(ControllerChangeHandler.Companion::fromBundle),
                 bundle.getInt(KEY_INDEX),
-                bundle.getBoolean(KEY_ATTACHED_TO_ROUTER)
+                bundle.getBoolean(KEY_ADDED_TO_ROUTER)
             )
         }
     }

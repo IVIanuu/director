@@ -102,7 +102,11 @@ class Router internal constructor(
 
         // do not allow pushing controllers which are already attached to another router
         newBackstack.forEach {
-            check(!it.isAttachedToRouter || it.controller.router == this) {
+            check(
+                !it.isAddedToRouter
+                        || !it.controller.isCreated
+                        || it.controller.router == this
+            ) {
                 "Trying to push a controller which is attached to another router $it"
             }
         }
@@ -134,7 +138,10 @@ class Router internal constructor(
             .filterNot { it.controller.isViewCreated }
 
         // Ensure all new controllers have a valid router set
-        newBackstack.forEach { moveControllerToCorrectState(it.controller) }
+        newBackstack.forEach {
+            it.isAddedToRouter = true
+            moveControllerToCorrectState(it.controller)
+        }
 
         val newVisibleTransactions = newBackstack.filterVisible()
 
