@@ -16,6 +16,7 @@
 
 package com.ivianuu.director
 
+import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
@@ -66,7 +67,7 @@ class RouterManagerTest {
         router.setRoot(transaction1)
         router.push(transaction2)
 
-        val savedState = router.saveInstanceState()
+        val savedState = Bundle().also { router.saveInstanceState(it) }
         manager.removeRouter(router)
 
         router = manager.getRouter(activityProxy.view1)

@@ -41,7 +41,7 @@ class ControllerStateTest {
 
         router.push(controller.toTransaction())
 
-        val savedState = router.saveInstanceState()
+        val savedState = Bundle().also { router.saveInstanceState(it) }
         router.restoreInstanceState(savedState)
         controller = router.backstack.first().controller as StateController
 
@@ -55,7 +55,7 @@ class ControllerStateTest {
 
         router.push(controller.toTransaction())
 
-        val savedState = router.saveInstanceState()
+        val savedState = Bundle().also { router.saveInstanceState(it) }
         router.restoreInstanceState(savedState)
         controller = router.backstack.first().controller as StateController
 

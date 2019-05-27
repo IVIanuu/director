@@ -16,6 +16,7 @@
 
 package com.ivianuu.director
 
+import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
@@ -43,7 +44,8 @@ class ChangeHandlerTest {
 
         router.push(transaction)
 
-        router.restoreInstanceState(router.saveInstanceState())
+        val savedState = Bundle().also { router.saveInstanceState(it) }
+        router.restoreInstanceState(savedState)
 
         val restoredController = router.backstack.first()
 

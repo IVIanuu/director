@@ -36,7 +36,7 @@ class TestActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         manager = RouterManager(this)
-        savedInstanceState?.getBundle(KEY_ROUTER_STATES)?.let { manager.restoreInstanceState(it) }
+        manager.restoreInstanceState(savedInstanceState)
     }
 
     override fun onStart() {
@@ -46,17 +46,17 @@ class TestActivity : FragmentActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBundle(KEY_ROUTER_STATES, manager.saveInstanceState())
+        manager.saveInstanceState(outState)
     }
 
     override fun onStop() {
-        super.onStop()
         manager.onStop()
+        super.onStop()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         manager.onDestroy()
+        super.onDestroy()
     }
 
     fun getRouter(
@@ -68,7 +68,4 @@ class TestActivity : FragmentActivity() {
 
     override fun isDestroyed(): Boolean = isDestroying || super.isDestroyed()
 
-    private companion object {
-        private const val KEY_ROUTER_STATES = "TestActivity.routerStates"
-    }
 }
