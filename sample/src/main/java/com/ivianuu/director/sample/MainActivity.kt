@@ -7,9 +7,6 @@ import android.transition.TransitionSet
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ivianuu.director.*
-import com.ivianuu.director.fragment.getRouter
-import com.ivianuu.director.fragment.postponeFullRestore
-import com.ivianuu.director.fragment.startPostponedFullRestore
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerLifecycleListener
 import kotlinx.android.synthetic.main.activity_main.controller_container
@@ -19,22 +16,52 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
     override val toolbar: Toolbar?
         get() = findViewById(R.id.toolbar)
 
+    private val routerManager = RouterManager(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        postponeFullRestore()
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
-        with(getRouter(controller_container)) {
+        routerManager.postponeFullRestore()
+        routerManager.restoreInstanceState(savedInstanceState)
+
+        with(routerManager.getRouter(controller_container)) {
             addControllerLifecycleListener(LoggingControllerLifecycleListener(), recursive = true)
 
             addToolbarHandling()
 
-            startPostponedFullRestore()
+            routerManager.startPostponedFullRestore()
 
             if (!hasRoot) {
                 setRoot(HomeController().toTransaction())
             }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        routerManager.onStart()
+    }
+
+    override fun onStop() {
+        routerManager.onStop()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        routerManager.onDestroy()
+        super.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        routerManager.saveInstanceState(outState)
+    }
+
+    override fun onBackPressed() {
+        if (!routerManager.handleBack()) {
+            super.onBackPressed()
         }
     }
 

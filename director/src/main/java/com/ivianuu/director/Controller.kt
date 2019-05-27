@@ -426,7 +426,8 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         savedStateRegistryController.performSave(savedState)
         notifyListeners { it.onSaveInstanceState(this, savedState) }
         outState.putBundle(KEY_SAVED_STATE, savedState)
-        outState.putBundle(KEY_CHILD_ROUTER_MANAGER, childRouterManager.saveInstanceState())
+        outState.putBundle(KEY_CHILD_ROUTER_MANAGER,
+            Bundle().also { childRouterManager.saveInstanceState(it) })
 
         return outState
     }

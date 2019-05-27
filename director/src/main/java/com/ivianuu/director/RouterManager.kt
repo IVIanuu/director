@@ -135,13 +135,15 @@ class RouterManager(
     /**
      * Saves the instance state of all containing routers
      */
-    fun saveInstanceState(): Bundle = Bundle().apply {
-        putBundle(
+    fun saveInstanceState(outState: Bundle) {
+        outState.putBundle(
             KEY_TRANSACTION_INDEXER,
             transactionIndexer.saveInstanceState()
         )
-        val routerStates = _routers.map { it.saveInstanceState() }
-        putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
+        val routerStates = _routers.map { router ->
+            Bundle().also { router.saveInstanceState(it) }
+        }
+        outState.putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
     /**

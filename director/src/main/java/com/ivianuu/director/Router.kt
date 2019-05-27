@@ -352,16 +352,14 @@ class Router internal constructor(
     /**
      * Saves the state of this router
      */
-    fun saveInstanceState(): Bundle {
+    fun saveInstanceState(outState: Bundle) {
         endAllChanges()
 
-        return Bundle().apply {
-            putInt(KEY_CONTAINER_ID, containerId)
-            putString(KEY_TAG, tag)
-            val backstack = _backstack.map { it.toBundle() }
-            putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
-            putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
-        }
+        outState.putInt(KEY_CONTAINER_ID, containerId)
+        outState.putString(KEY_TAG, tag)
+        val backstack = _backstack.map { it.toBundle() }
+        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
+        outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
     }
 
     /**

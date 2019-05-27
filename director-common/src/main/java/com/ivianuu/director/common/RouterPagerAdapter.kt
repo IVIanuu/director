@@ -61,7 +61,7 @@ abstract class RouterPagerAdapter(
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         val router = `object` as Router
 
-        savedStates.put(position, router.saveInstanceState())
+        savedStates.put(position, Bundle().also { router.saveInstanceState(it) })
 
         router.clear()
         manager.removeRouter(router)
