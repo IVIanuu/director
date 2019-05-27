@@ -71,6 +71,8 @@ class Router internal constructor(
     private val runningHandlers =
         mutableMapOf<Controller, ControllerChangeHandler>()
 
+    private var settingBackstack = false
+
     /**
      * Sets the backstack, transitioning from the current top controller to the top of the new stack (if different)
      * using the passed [ControllerChangeHandler]
@@ -80,9 +82,15 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ControllerChangeHandler? = null
     ) {
+        check(!settingBackstack) {
+            "Cannot call setBackstack from within a setBackstack call"
+        }
+
         if (isDestroyed) return
 
         if (newBackstack == _backstack) return
+
+        settingBackstack = true
 
         // do not allow pushing the same controller twice
         newBackstack
@@ -207,6 +215,8 @@ class Router internal constructor(
 
         // destroy all invisible transactions here
         destroyedInvisibleTransactions.reversed().forEach { it.controller.destroy() }
+
+        settingBackstack = false
     }
 
     /**
