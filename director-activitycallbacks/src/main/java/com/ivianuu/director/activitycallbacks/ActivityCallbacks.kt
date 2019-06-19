@@ -112,10 +112,10 @@ class ActivityCallbacks : Fragment() {
                         .add(it, FRAGMENT_TAG)
                         .commitNow()
                 }.also {
-                if (it.activity == null) {
-                    activities[it] = controller.activity
+                    if (it.activity == null) {
+                        activities[it] = controller.activity
+                    }
                 }
-            }
         }
 
     }

@@ -20,7 +20,6 @@ import android.os.Bundle
 import com.ivianuu.director.*
 import com.ivianuu.director.sample.R
 
-
 /**
  * @author Manuel Wrage (IVIanuu)
  */

@@ -27,11 +27,9 @@ import com.ivianuu.director.scopes.destroy
 import com.ivianuu.director.scopes.destroyView
 import com.ivianuu.director.scopes.detach
 import com.ivianuu.director.toTransaction
-
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_scopes.btn_next_release_view
-import kotlinx.android.synthetic.main.controller_scopes.btn_next_retain_view
+import kotlinx.android.synthetic.main.controller_scopes.*
 import java.util.concurrent.TimeUnit
 
 class ScopesController : BaseController() {

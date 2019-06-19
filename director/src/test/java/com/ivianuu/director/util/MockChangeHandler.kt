@@ -74,7 +74,8 @@ class MockChangeHandler internal constructor(
         tag = bundle.getString(KEY_TAG)
     }
 
-    override fun copy(): ControllerChangeHandler = MockChangeHandler(removesFromViewOnPush, tag, listener)
+    override fun copy(): ControllerChangeHandler =
+        MockChangeHandler(removesFromViewOnPush, tag, listener)
 
     companion object {
         private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "removesFromViewOnPush"

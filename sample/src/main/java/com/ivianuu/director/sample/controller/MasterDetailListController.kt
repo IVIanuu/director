@@ -12,8 +12,8 @@ import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.simpleController
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_master_detail_list.recycler_view
-import kotlinx.android.synthetic.main.row_detail_item.item_title
+import kotlinx.android.synthetic.main.controller_master_detail_list.*
+import kotlinx.android.synthetic.main.row_detail_item.*
 
 class MasterDetailListController : BaseController() {
 
@@ -98,10 +98,14 @@ enum class DetailItem(
 @EpoxyModelClass(layout = R.layout.row_detail_item)
 abstract class DetailItemModel : BaseEpoxyModel() {
 
-    @EpoxyAttribute lateinit var item: DetailItem
-    @EpoxyAttribute var index: Int = 0
-    @EpoxyAttribute var twoPane: Boolean = false
-    @EpoxyAttribute var selectedIndex: Int = 0
+    @EpoxyAttribute
+    lateinit var item: DetailItem
+    @EpoxyAttribute
+    var index: Int = 0
+    @EpoxyAttribute
+    var twoPane: Boolean = false
+    @EpoxyAttribute
+    var selectedIndex: Int = 0
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)

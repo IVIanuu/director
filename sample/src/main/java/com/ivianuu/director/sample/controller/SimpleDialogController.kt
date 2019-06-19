@@ -22,8 +22,6 @@ import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.ivianuu.director.common.DialogController
 
-
-
 /**
  * @author Manuel Wrage (IVIanuu)
  */

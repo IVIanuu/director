@@ -34,7 +34,7 @@ object Versions {
 
     const val junit = "4.12"
 
-    const val kotlin = "1.3.31"
+    const val kotlin = "1.3.40"
 
     const val leakCanary = "1.6.1"
 
@@ -74,7 +74,8 @@ object Deps {
 
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
 
-    const val mavenGradlePlugin = "com.github.dcendents:android-maven-gradle-plugin:${Versions.mavenGradlePlugin}"
+    const val mavenGradlePlugin =
+        "com.github.dcendents:android-maven-gradle-plugin:${Versions.mavenGradlePlugin}"
 
     const val materialComponents =
         "com.google.android.material:material:${Versions.materialComponents}"

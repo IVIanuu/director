@@ -7,7 +7,6 @@ import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 
-
 class MultipleChildRouterController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_multiple_child_routers

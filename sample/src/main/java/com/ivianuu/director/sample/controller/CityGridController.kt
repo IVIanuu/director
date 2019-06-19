@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.changeHandler
-
 import com.ivianuu.director.push
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
@@ -18,11 +17,8 @@ import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_city_grid.img_dot
-import kotlinx.android.synthetic.main.controller_city_grid.recycler_view
-import kotlinx.android.synthetic.main.controller_city_grid.tv_title
-import kotlinx.android.synthetic.main.row_city_grid.grid_image
-import kotlinx.android.synthetic.main.row_city_grid.grid_title
+import kotlinx.android.synthetic.main.controller_city_grid.*
+import kotlinx.android.synthetic.main.row_city_grid.*
 
 class CityGridController : BaseController() {
 
@@ -86,13 +82,14 @@ class CityGridController : BaseController() {
             City("Tokyo", R.drawable.tokyo)
         )
 
-        fun newInstance(title: String, dotColor: Int, fromPosition: Int) = CityGridController().apply {
-            args = bundleOf(
-                KEY_TITLE to title,
-                KEY_DOT_COLOR to dotColor,
-                KEY_FROM_POSITION to fromPosition
-            )
-        }
+        fun newInstance(title: String, dotColor: Int, fromPosition: Int) =
+            CityGridController().apply {
+                args = bundleOf(
+                    KEY_TITLE to title,
+                    KEY_DOT_COLOR to dotColor,
+                    KEY_FROM_POSITION to fromPosition
+                )
+            }
     }
 }
 
@@ -101,7 +98,8 @@ data class City(val title: String, val drawableRes: Int)
 @EpoxyModelClass(layout = R.layout.row_city_grid)
 abstract class CityModel : BaseEpoxyModel() {
 
-    @EpoxyAttribute lateinit var city: City
+    @EpoxyAttribute
+    lateinit var city: City
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)

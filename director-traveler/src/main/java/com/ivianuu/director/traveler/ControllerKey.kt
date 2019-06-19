@@ -18,7 +18,6 @@ package com.ivianuu.director.traveler
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.RouterTransaction
-
 import com.ivianuu.traveler.Command
 
 /**

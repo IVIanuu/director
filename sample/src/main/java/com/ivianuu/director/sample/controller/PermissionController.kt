@@ -23,11 +23,9 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.ivianuu.director.activitycallbacks.addPermissionResultListener
 import com.ivianuu.director.activitycallbacks.requestPermissions
-
 import com.ivianuu.director.isViewCreated
 import com.ivianuu.director.sample.R
-import kotlinx.android.synthetic.main.controller_permission.grant
-import kotlinx.android.synthetic.main.controller_permission.msg
+import kotlinx.android.synthetic.main.controller_permission.*
 
 /**
  * @author Manuel Wrage (IVIanuu)

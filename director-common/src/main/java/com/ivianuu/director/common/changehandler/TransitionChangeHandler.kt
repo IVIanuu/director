@@ -134,7 +134,6 @@ abstract class TransitionChangeHandler(
     }
 }
 
-
 private var _defaultTransitionDuration = TransitionChangeHandler.NO_DURATION
 
 /**

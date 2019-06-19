@@ -15,9 +15,8 @@ import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_home.recycler_view
-import kotlinx.android.synthetic.main.row_home.home_image
-import kotlinx.android.synthetic.main.row_home.home_title
+import kotlinx.android.synthetic.main.controller_home.*
+import kotlinx.android.synthetic.main.row_home.*
 
 class HomeController : BaseController() {
 
@@ -117,8 +116,10 @@ class HomeController : BaseController() {
 @EpoxyModelClass(layout = R.layout.row_home)
 abstract class HomeItemModel : BaseEpoxyModel() {
 
-    @EpoxyAttribute lateinit var item: HomeItem
-    @EpoxyAttribute var position: Int = -1
+    @EpoxyAttribute
+    lateinit var item: HomeItem
+    @EpoxyAttribute
+    var position: Int = -1
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)
@@ -130,13 +131,13 @@ abstract class HomeItemModel : BaseEpoxyModel() {
             )
 
             home_title.transitionName =
-                    containerView.resources.getString(
-                        R.string.transition_tag_title_indexed,
-                        position
-                    )
+                containerView.resources.getString(
+                    R.string.transition_tag_title_indexed,
+                    position
+                )
 
             home_image.transitionName =
-                    containerView.resources.getString(R.string.transition_tag_dot_indexed, position)
+                containerView.resources.getString(R.string.transition_tag_dot_indexed, position)
         }
     }
 }

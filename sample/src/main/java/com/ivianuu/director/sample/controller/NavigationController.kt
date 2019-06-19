@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
@@ -15,10 +14,7 @@ import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
 import com.ivianuu.traveler.popToRoot
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.controller_navigation.btn_next
-import kotlinx.android.synthetic.main.controller_navigation.btn_pop_to_root
-import kotlinx.android.synthetic.main.controller_navigation.btn_up
-import kotlinx.android.synthetic.main.controller_navigation.tv_title
+import kotlinx.android.synthetic.main.controller_navigation.*
 
 class NavigationController : BaseController() {
 

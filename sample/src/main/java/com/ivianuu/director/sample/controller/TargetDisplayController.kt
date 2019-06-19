@@ -13,11 +13,7 @@ import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
-
-import kotlinx.android.synthetic.main.controller_target_display.btn_pick_image
-import kotlinx.android.synthetic.main.controller_target_display.btn_pick_title
-import kotlinx.android.synthetic.main.controller_target_display.image_view
-import kotlinx.android.synthetic.main.controller_target_display.tv_selection
+import kotlinx.android.synthetic.main.controller_target_display.*
 
 class TargetDisplayController : BaseController(),
     TargetTitleEntryController.TargetTitleEntryControllerListener {
@@ -99,7 +95,7 @@ class TargetDisplayController : BaseController(),
                 tv_selection.text = selectedText
             } else {
                 tv_selection.text =
-                        "Press pick title to set this title, or pick image to fill in the image view."
+                    "Press pick title to set this title, or pick image to fill in the image view."
             }
         }
     }

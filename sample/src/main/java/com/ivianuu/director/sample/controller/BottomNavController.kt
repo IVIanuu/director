@@ -7,7 +7,7 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.SingleContainer
 import com.ivianuu.director.sample.util.setByTag
-import kotlinx.android.synthetic.main.controller_bottom_nav.bottom_nav_view
+import kotlinx.android.synthetic.main.controller_bottom_nav.*
 
 /**
  * @author Manuel Wrage (IVIanuu)
@@ -70,7 +70,7 @@ class BottomNavController : BaseController() {
             if (currentChildRouter.backstackSize == 1) {
                 swapTo(0)
                 bottom_nav_view.selectedItemId =
-                        bottom_nav_view.menu.getItem(currentIndex).itemId
+                    bottom_nav_view.menu.getItem(currentIndex).itemId
                 true
             } else {
                 false

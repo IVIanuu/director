@@ -24,7 +24,6 @@ import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 
-
 /**
  * An [AnimatorChangeHandler] that will slide either slide a new View up or slide an old View down,
  * depending on whether a push or pop change is happening.

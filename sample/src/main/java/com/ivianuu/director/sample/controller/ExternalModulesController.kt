@@ -23,17 +23,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.toTransaction
-
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_external_modules.recycler_view
-import kotlinx.android.synthetic.main.row_home.home_image
-import kotlinx.android.synthetic.main.row_home.home_title
+import kotlinx.android.synthetic.main.controller_external_modules.*
+import kotlinx.android.synthetic.main.row_home.*
 
 class ExternalModulesController : BaseController() {
 
@@ -76,7 +73,8 @@ enum class AdditionalModuleItem(val title: String, val color: Int) {
 @EpoxyModelClass(layout = R.layout.row_home)
 abstract class AdditionalModuleItemModel : BaseEpoxyModel() {
 
-    @EpoxyAttribute lateinit var item: AdditionalModuleItem
+    @EpoxyAttribute
+    lateinit var item: AdditionalModuleItem
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)

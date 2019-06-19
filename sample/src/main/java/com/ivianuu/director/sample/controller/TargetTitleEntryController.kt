@@ -9,8 +9,7 @@ import com.ivianuu.director.findControllerByInstanceId
 import com.ivianuu.director.popTop
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.synthetic.main.controller_target_title_entry.btn_use_title
-import kotlinx.android.synthetic.main.controller_target_title_entry.edit_text
+import kotlinx.android.synthetic.main.controller_target_title_entry.*
 
 class TargetTitleEntryController : BaseController() {
 
@@ -45,9 +44,10 @@ class TargetTitleEntryController : BaseController() {
         private const val KEY_TARGET_INSTANCE_ID = "TargetTitleEntryController.targetInstanceId"
 
         fun <T> newInstance(targetController: T)
-                where T : Controller, T : TargetTitleEntryControllerListener = TargetTitleEntryController().apply {
-            args = bundleOf(KEY_TARGET_INSTANCE_ID to targetController.instanceId)
-        }
+                where T : Controller, T : TargetTitleEntryControllerListener =
+            TargetTitleEntryController().apply {
+                args = bundleOf(KEY_TARGET_INSTANCE_ID to targetController.instanceId)
+            }
 
     }
 }

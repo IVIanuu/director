@@ -5,7 +5,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
@@ -13,10 +12,9 @@ import com.ivianuu.director.sample.util.arg
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.sample.util.bundleOf
 import com.ivianuu.epoxyktx.KtEpoxyHolder
-import kotlinx.android.synthetic.main.controller_city_detail.recycler_view
-import kotlinx.android.synthetic.main.row_city_detail.detail_text
-import kotlinx.android.synthetic.main.row_city_header.header_image
-import kotlinx.android.synthetic.main.row_city_header.header_title
+import kotlinx.android.synthetic.main.controller_city_detail.*
+import kotlinx.android.synthetic.main.row_city_detail.*
+import kotlinx.android.synthetic.main.row_city_header.*
 
 class CityDetailController : BaseController() {
 
@@ -86,10 +84,14 @@ class CityDetailController : BaseController() {
 @EpoxyModelClass(layout = R.layout.row_city_header)
 abstract class CityHeaderModel : BaseEpoxyModel() {
 
-    @EpoxyAttribute var imageDrawableRes: Int = 0
-    @EpoxyAttribute lateinit var title: String
-    @EpoxyAttribute lateinit var imageTransitionName: String
-    @EpoxyAttribute lateinit var textViewTransitionName: String
+    @EpoxyAttribute
+    var imageDrawableRes: Int = 0
+    @EpoxyAttribute
+    lateinit var title: String
+    @EpoxyAttribute
+    lateinit var imageTransitionName: String
+    @EpoxyAttribute
+    lateinit var textViewTransitionName: String
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)
@@ -105,7 +107,8 @@ abstract class CityHeaderModel : BaseEpoxyModel() {
 @EpoxyModelClass(layout = R.layout.row_city_detail)
 abstract class CityDetailModel : BaseEpoxyModel() {
 
-    @EpoxyAttribute lateinit var text: String
+    @EpoxyAttribute
+    lateinit var text: String
 
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)

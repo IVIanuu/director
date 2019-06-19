@@ -18,20 +18,15 @@ package com.ivianuu.director.scopes
 
 import com.ivianuu.director.Controller
 import com.ivianuu.director.common.ControllerEvent
-import com.ivianuu.director.common.ControllerEvent.ATTACH
-import com.ivianuu.director.common.ControllerEvent.CREATE
-import com.ivianuu.director.common.ControllerEvent.CREATE_VIEW
-import com.ivianuu.director.common.ControllerEvent.DESTROY
-import com.ivianuu.director.common.ControllerEvent.DESTROY_VIEW
-import com.ivianuu.director.common.ControllerEvent.DETACH
+import com.ivianuu.director.common.ControllerEvent.*
 import com.ivianuu.scopes.Scope
 import com.ivianuu.scopes.common.LifecycleScopesCache
 import com.ivianuu.scopes.lifecycle.LifecycleScopes
 
 private val lifecycleScopesStore =
     LifecycleScopesCache<Controller, ControllerEvent>(DESTROY) {
-    LifecycleScopes(ControllerLifecycle(it))
-}
+        LifecycleScopes(ControllerLifecycle(it))
+    }
 
 val Controller.lifecycleScopes: LifecycleScopes<ControllerEvent>
     get() = lifecycleScopesStore.get(this)

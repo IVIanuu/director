@@ -26,7 +26,8 @@ import com.ivianuu.epoxyktx.KtEpoxyHolder
  */
 abstract class BaseEpoxyModel : EpoxyModelWithHolder<KtEpoxyHolder>() {
 
-    @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash) var onClick: ((View) -> Unit)? = null
+    @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
+    var onClick: ((View) -> Unit)? = null
 
     protected open val onClickView: View? get() = null
     protected open val useContainerForClicks get() = true
