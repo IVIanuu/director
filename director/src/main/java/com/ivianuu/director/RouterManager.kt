@@ -50,10 +50,8 @@ class RouterManager(val parent: Controller? = null) {
      * Removes the previously added [rootView]
      */
     fun removeRootView() {
-        if (rootView != null) {
-            _routers.reversed().forEach { it.removeContainer() }
-            rootView = null
-        }
+        _routers.reversed().forEach { it.removeContainer() }
+        rootView = null
     }
 
     /**

@@ -48,4 +48,6 @@ class CityGridSharedElementTransitionChangeHandler(
         }
     }
 
+    override fun copy() = CityGridSharedElementTransitionChangeHandler(sharedElementNames)
+
 }

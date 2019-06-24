@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         INSTANCE = null
         if (!isChangingConfigurations) {
             routerManager.onDestroy()
+        } else {
+            routerManager.removeRootView()
         }
         super.onDestroy()
     }

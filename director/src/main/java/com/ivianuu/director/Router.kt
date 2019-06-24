@@ -304,13 +304,7 @@ class Router internal constructor(
                 }
 
                 if (controller.isViewCreated) {
-                    if (!controller.retainView) {
-                        controller.destroyView()
-                    } else if (controller.retainView) {
-                        controller.removeChildRootView()
-                        (controller.view!!.parent as ViewGroup)
-                            .removeView(controller.view)
-                    }
+                    controller.destroyView()
                 }
             }
 
@@ -369,12 +363,6 @@ class Router internal constructor(
 
         listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
 
-        val toChangeType =
-            if (isPush) ControllerChangeType.PUSH_ENTER else ControllerChangeType.POP_ENTER
-
-        val fromChangeType =
-            if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
-
         val toView = to?.view?.also { to.setChildRootView() } ?: to?.createView(container)
         val fromView = from?.view
 
@@ -409,13 +397,7 @@ class Router internal constructor(
 
             override fun detachFromController() {
                 from!!.detach()
-
-                if (!from.retainView || forceRemoveFromView) {
-                    from.destroyView()
-                } else if (from.retainView) {
-                    from.removeChildRootView()
-                }
-
+                from.destroyView()
                 if (forceRemoveFromView) {
                     from.destroy()
                 }

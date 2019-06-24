@@ -19,8 +19,6 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
     private var cx = 0
     private var cy = 0
 
-    constructor()
-
     constructor(
         fromView: View,
         containerView: View,
@@ -65,4 +63,5 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
     override fun resetFromView(from: View) {
     }
 
+    override fun copy() = CircularRevealChangeHandler(cx, cy, duration, removesFromViewOnPush)
 }

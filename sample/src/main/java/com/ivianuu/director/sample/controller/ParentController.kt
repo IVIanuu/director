@@ -2,16 +2,13 @@ package com.ivianuu.director.sample.controller
 
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouters
 import com.ivianuu.director.clear
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.doOnChangeEnd
 import com.ivianuu.director.doOnChangeEnded
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
-import com.ivianuu.director.popTop
 import com.ivianuu.director.removeChildRouter
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
@@ -53,7 +50,7 @@ class ParentController : BaseController() {
                     false
                 )
 
-                childController.doOnChangeEnd { _, _, _, changeType ->
+                /*childController.doOnChangeEnd { _, _, _, changeType ->
                     if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
                         if (index < NUMBER_OF_CHILDREN - 1) {
                             addChild(index + 1)
@@ -67,7 +64,7 @@ class ParentController : BaseController() {
                             router.popTop()
                         }
                     }
-                }
+                }*/ // todo
 
                 childRouter.setRoot(
                     childController.toTransaction()

@@ -36,4 +36,7 @@ class ScaleFadeChangeHandler : AnimatorChangeHandler() {
 
     override fun resetFromView(from: View) {
     }
+
+    override fun copy() = ScaleFadeChangeHandler()
+
 }

@@ -67,4 +67,6 @@ class ArcFadeMoveChangeHandler(private val sharedElementNames: List<String>) :
 
     override fun allowTransitionOverlap(isPush: Boolean): Boolean = false
 
+    override fun copy() = ArcFadeMoveChangeHandler(sharedElementNames)
+
 }

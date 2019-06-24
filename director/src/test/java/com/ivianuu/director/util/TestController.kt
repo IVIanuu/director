@@ -20,8 +20,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.ControllerChangeType
 
 class TestController : Controller() {
 
@@ -74,29 +72,9 @@ class TestController : Controller() {
         currentCallState.destroyCalls++
     }
 
-    override fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeStarted(other, changeHandler, changeType)
-        currentCallState.changeStartCalls++
-    }
-
-    override fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(other, changeHandler, changeType)
-        currentCallState.changeEndCalls++
-    }
-
     companion object {
         private const val VIEW_ID = 2342
         const val CHILD_VIEW_ID_1 = 2343
         const val CHILD_VIEW_ID_2 = 2344
-
-        private const val KEY_CALL_STATE = "TestController.currentCallState"
     }
 }

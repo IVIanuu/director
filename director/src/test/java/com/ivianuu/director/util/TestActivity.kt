@@ -35,7 +35,7 @@ class TestActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        manager = RouterManager(this)
+        manager = RouterManager()
     }
 
     override fun onStart() {

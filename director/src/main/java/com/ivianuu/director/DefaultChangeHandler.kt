@@ -32,4 +32,6 @@ open class DefaultChangeHandler(
         changeData.callback.changeCompleted()
     }
 
+    override fun copy() = this
+
 }

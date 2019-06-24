@@ -27,7 +27,7 @@ abstract class ControllerChangeHandler {
     open fun cancel() {
     }
 
-    internal open fun copy(): ControllerChangeHandler = this // todo
+    abstract fun copy(): ControllerChangeHandler
 
     interface Callback {
         fun addToView()

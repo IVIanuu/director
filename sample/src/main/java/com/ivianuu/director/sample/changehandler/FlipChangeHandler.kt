@@ -78,6 +78,8 @@ class FlipChangeHandler(
         }
     }
 
+    override fun copy() = FlipChangeHandler(flipDirection, animationDuration)
+
     companion object {
         private const val DEFAULT_ANIMATION_DURATION = 300L
     }

@@ -122,12 +122,6 @@ fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit) =
 fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit) =
     addLifecycleListener(postDestroy = block)
 
-fun Controller.doOnChangeStart(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
-    addLifecycleListener()
-
-fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
-    addLifecycleListener()
-
 fun Controller.addLifecycleListener(
     preCreate: ((controller: Controller) -> Unit)? = null,
     postCreate: ((controller: Controller) -> Unit)? = null,
@@ -165,9 +159,7 @@ fun Router.addControllerLifecycleListener(
     preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
     postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
-    postDestroy: ((controller: Controller) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    postDestroy: ((controller: Controller) -> Unit)? = null
 ) {
     return addControllerLifecycleListener(
         ControllerLifecycleListener(

@@ -562,25 +562,6 @@ class ControllerLifecycleTest {
                 currentCallState.destroyCalls++
             }
 
-            override fun onChangeStarted(
-                controller: Controller,
-                other: Controller?,
-                changeHandler: ControllerChangeHandler,
-                changeType: ControllerChangeType
-            ) {
-                super.onChangeStarted(controller, other, changeHandler, changeType)
-                currentCallState.changeStartCalls++
-            }
-
-            override fun onChangeEnded(
-                controller: Controller,
-                other: Controller?,
-                changeHandler: ControllerChangeHandler,
-                changeType: ControllerChangeType
-            ) {
-                super.onChangeEnded(controller, other, changeHandler, changeType)
-                currentCallState.changeEndCalls++
-            }
         })
     }
 

@@ -73,17 +73,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
     private var viewState: SparseArray<Parcelable>? = null
 
     /**
-     * Whether or not the view should be retained while being detached
-     */
-    var retainView = DirectorPlugins.defaultRetainView
-        set(value) {
-            field = value
-            if (!value && !isAttached && isViewCreated) {
-                destroyView()
-            }
-        }
-
-    /**
      * The child router manager of this controller
      */
     val childRouterManager by lazy(LazyThreadSafetyMode.NONE) { RouterManager(this) }

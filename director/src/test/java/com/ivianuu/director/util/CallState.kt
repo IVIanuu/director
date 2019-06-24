@@ -28,8 +28,5 @@ data class CallState(
     var destroyViewCalls: Int = 0,
 
     var attachCalls: Int = 0,
-    var detachCalls: Int = 0,
-
-    var changeStartCalls: Int = 0,
-    var changeEndCalls: Int = 0
+    var detachCalls: Int = 0
 ) : Parcelable
