@@ -100,6 +100,8 @@ class ControllerViewLeaksTest {
         override fun performChange(changeData: ChangeData) {
             changeData.callback.removeFromView()
         }
+
+        override fun copy() = this
     }
 
     class NeverCompleteChangeHandler : ControllerChangeHandler() {
@@ -107,5 +109,7 @@ class ControllerViewLeaksTest {
             changeData.callback.addToView()
             changeData.callback.removeFromView()
         }
+
+        override fun copy() = this
     }
 }

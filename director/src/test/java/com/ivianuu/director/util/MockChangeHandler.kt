@@ -61,6 +61,7 @@ class MockChangeHandler internal constructor(
         listener.didEndChange()
     }
 
+    override fun copy() = MockChangeHandler(removesFromViewOnPush, tag, listener)
 }
 
 fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null)

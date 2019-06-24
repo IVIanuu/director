@@ -479,7 +479,6 @@ class ControllerLifecycleTest {
             override fun willStartChange() {
                 expectedCallState.createCalls++
                 expectedCallState.createViewCalls++
-                expectedCallState.changeStartCalls++
                 assertCalls(expectedCallState, controller)
             }
 
@@ -489,7 +488,6 @@ class ControllerLifecycleTest {
             }
 
             override fun didEndChange() {
-                expectedCallState.changeEndCalls++
                 assertCalls(expectedCallState, controller)
             }
         })
@@ -501,7 +499,6 @@ class ControllerLifecycleTest {
     ): MockChangeHandler {
         return listeningChangeHandler(object : MockChangeHandler.Listener {
             override fun willStartChange() {
-                expectedCallState.changeStartCalls++
                 assertCalls(expectedCallState, controller)
             }
 
@@ -513,7 +510,6 @@ class ControllerLifecycleTest {
             }
 
             override fun didEndChange() {
-                expectedCallState.changeEndCalls++
                 assertCalls(expectedCallState, controller)
             }
         })
