@@ -9,6 +9,7 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.doOnChangeEnded
 import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popTop
 import com.ivianuu.director.removeChildRouter
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
@@ -50,21 +51,21 @@ class ParentController : BaseController() {
                     false
                 )
 
-                /*childController.doOnChangeEnd { _, _, _, changeType ->
-                    if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
+                childRouter.doOnChangeEnded { router, _, _, isPush, _, _ ->
+                    if (isPush && !hasShownAll) {
                         if (index < NUMBER_OF_CHILDREN - 1) {
                             addChild(index + 1)
                         } else {
                             hasShownAll = true
                         }
-                    } else if (changeType == ControllerChangeType.POP_EXIT) {
+                    } else if (!isPush) {
                         if (index > 0) {
                             removeChild(index - 1)
                         } else {
                             router.popTop()
                         }
                     }
-                }*/ // todo
+                }
 
                 childRouter.setRoot(
                     childController.toTransaction()

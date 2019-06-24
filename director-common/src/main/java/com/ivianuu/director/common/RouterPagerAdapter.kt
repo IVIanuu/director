@@ -22,13 +22,12 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
-import com.ivianuu.director.clear
 import com.ivianuu.director.getRouter
+import com.ivianuu.director.hasContainer
 
 /**
  * A [PagerAdapter] that uses [Router]s as pages
  */
-// todo
 abstract class RouterPagerAdapter(
     private val manager: RouterManager
 ) : PagerAdapter() {
@@ -46,6 +45,10 @@ abstract class RouterPagerAdapter(
         val router = manager.getRouter(container, tag)
         configureRouter(router, position)
 
+        if (!router.hasContainer) {
+            router.setContainer(container)
+        }
+
         routers.put(position, router)
         return router
     }
@@ -53,8 +56,7 @@ abstract class RouterPagerAdapter(
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         val router = `object` as Router
 
-        router.clear()
-        manager.removeRouter(router)
+        router.removeContainer()
 
         routers.remove(position)
     }
