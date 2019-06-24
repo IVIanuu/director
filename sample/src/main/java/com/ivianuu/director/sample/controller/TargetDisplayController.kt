@@ -1,12 +1,9 @@
 package com.ivianuu.director.sample.controller
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.view.View
-import com.ivianuu.director.activitycallbacks.addActivityResultListener
-import com.ivianuu.director.activitycallbacks.startActivityForResult
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.push
@@ -26,12 +23,12 @@ class TargetDisplayController : BaseController() {
     override fun onCreate() {
         super.onCreate()
 
-        addActivityResultListener(REQUEST_SELECT_IMAGE) { requestCode, resultCode, data ->
+        /*addActivityResultListener(REQUEST_SELECT_IMAGE) { requestCode, resultCode, data ->
             if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
                 imageUri = data?.data
                 updateImageView()
             }
-        }
+        }*/
     }
 
     override fun onViewCreated(view: View) {
@@ -53,10 +50,10 @@ class TargetDisplayController : BaseController() {
                 Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             intent.type = "image/*"
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-            startActivityForResult(
+            /*startActivityForResult(
                 Intent.createChooser(intent, "Select Image"),
                 REQUEST_SELECT_IMAGE
-            )
+            )*/
         }
 
         updateTextView()

@@ -16,19 +16,14 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.view.View
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
 import com.ivianuu.scopes.MutableScope
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_arch.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -40,7 +35,9 @@ class ArchController : BaseController() {
     override val toolbarTitle: String?
         get() = "Arch"
 
-    private val viewModel by lazy {
+    // todo
+
+    /*private val viewModel by lazy {
         ViewModelProvider(
             this,
             ViewModelProvider.NewInstanceFactory()
@@ -64,6 +61,7 @@ class ArchController : BaseController() {
         super.onAttach(view)
         viewModel.count.observe(this, Observer { tv_title.text = "Count: $it" })
     }
+     */
 }
 
 class ArchViewModel : ViewModel() {

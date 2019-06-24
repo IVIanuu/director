@@ -36,7 +36,6 @@ dependencies {
     implementation(Deps.androidxAppCompat)
 
     implementation(project(":director"))
-    implementation(project(":director-activitycallbacks"))
     implementation(project(":director-common"))
     implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
