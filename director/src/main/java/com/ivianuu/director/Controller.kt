@@ -5,11 +5,6 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
@@ -19,7 +14,7 @@ import com.ivianuu.director.ControllerState.VIEW_CREATED
 /**
  * Lightweight view controller with a lifecycle
  */
-abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
+abstract class Controller {
 
     /**
      * The router of this controller
@@ -50,19 +45,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
      */
     var view: View? = null
         private set
-
-    private val _viewModelStore by lazy { ViewModelStore() }
-
-    private val lifecycleRegistry = LifecycleRegistry(this)
-
-    /**
-     * The [LifecycleOwner] of the view
-     */
-    val viewLifecycleOwner: LifecycleOwner
-        get() =
-            _viewLifecycleOwner
-                ?: error("can only access the viewLifecycleOwner while the view is created")
-    private var _viewLifecycleOwner: ControllerViewLifecycleOwner? = null
 
     /**
      * The current state of this controller
@@ -143,10 +125,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         listeners.remove(listener)
     }
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
-
-    override fun getViewModelStore(): ViewModelStore = _viewModelStore
-
     internal fun create(router: Router) {
         _router = router
 
@@ -154,10 +132,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         notifyListeners { it.preCreate(this) }
 
         state = CREATED
-
         requireSuperCalled { onCreate() }
-
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         notifyListeners { it.postCreate(this) }
     }
@@ -168,19 +143,13 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         notifyListeners { it.preDestroy(this) }
 
         state = DESTROYED
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-
         requireSuperCalled { onDestroy() }
 
         notifyListeners { it.postDestroy(this) }
-
-        _viewModelStore.clear()
     }
 
     internal fun createView(container: ViewGroup): View {
         notifyListeners { it.preCreateView(this) }
-
-        _viewLifecycleOwner = ControllerViewLifecycleOwner()
 
         val view = onCreateView(
             LayoutInflater.from(container.context),
@@ -188,8 +157,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         ).also { this.view = it }
 
         state = VIEW_CREATED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
-
         notifyListeners { it.postCreateView(this, view) }
 
         // restore hierarchy
@@ -212,11 +179,9 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
         notifyListeners { it.preDestroyView(this, view) }
 
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.DESTROYED
         requireSuperCalled { onDestroyView(view) }
-        state = CREATED
-        _viewLifecycleOwner = null
         this.view = null
+        state = CREATED
 
         notifyListeners { it.postDestroyView(this) }
     }
@@ -233,16 +198,8 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         val view = requireView()
 
         notifyListeners { it.preAttach(this, view) }
-
         state = ATTACHED
-
         requireSuperCalled { onAttach(view) }
-
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
-        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.RESUMED
-
         notifyListeners { it.postAttach(this, view) }
 
         viewState = null
@@ -258,11 +215,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         notifyListeners { it.preDetach(this, view) }
 
         state = VIEW_CREATED
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
-
         requireSuperCalled { onDetach(view) }
 
         notifyListeners { it.postDetach(this, view) }
@@ -276,17 +228,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         superCalled = false
         block()
         check(superCalled) { "super not called ${javaClass.name}" }
-    }
-
-    private class ControllerViewLifecycleOwner : LifecycleOwner {
-        private val lifecycleRegistry = LifecycleRegistry(this)
-        var currentState: Lifecycle.State
-            get() = lifecycleRegistry.currentState
-            set(value) {
-                lifecycleRegistry.currentState = value
-            }
-
-        override fun getLifecycle(): Lifecycle = lifecycleRegistry
     }
 
 }
