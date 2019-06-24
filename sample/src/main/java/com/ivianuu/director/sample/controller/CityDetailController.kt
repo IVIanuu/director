@@ -4,8 +4,8 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 
 import com.ivianuu.director.sample.util.buildModels
@@ -27,17 +27,17 @@ class CityDetailController(
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        val imageViewTransitionName = resources.getString(
+        val imageViewTransitionName = view.resources.getString(
             R.string.transition_tag_image_named,
             title
         )
 
-        val textViewTransitionName = resources.getString(
+        val textViewTransitionName = view.resources.getString(
             R.string.transition_tag_title_named,
             title
         )
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(mainActivity())
 
         recycler_view.buildModels {
             cityHeader {

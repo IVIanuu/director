@@ -11,7 +11,7 @@ import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.popToTag
 import com.ivianuu.director.push
-import com.ivianuu.director.resources
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.toTransaction
@@ -42,8 +42,8 @@ class NavigationController(
             btn_up.visibility = View.GONE
         }
 
-        view.setBackgroundColor(ColorUtil.getMaterialColor(resources, index))
-        tv_title.text = resources.getString(R.string.navigation_title, index)
+        view.setBackgroundColor(ColorUtil.getMaterialColor(view.resources, index))
+        tv_title.text = view.resources.getString(R.string.navigation_title, index)
 
         btn_next.setOnClickListener {
             if (useTraveler) {

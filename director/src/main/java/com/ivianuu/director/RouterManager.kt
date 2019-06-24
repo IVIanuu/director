@@ -17,15 +17,11 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
 
 /**
  * Hosts a group of [Router]s
  */
-class RouterManager(
-    val activity: FragmentActivity,
-    val parent: Controller? = null
-) {
+class RouterManager(val parent: Controller? = null) {
 
     /**
      * All routers of this router manager
@@ -170,15 +166,6 @@ fun RouterManager.router(containerId: Int, tag: String? = null): Lazy<Router> =
 fun RouterManager.findControllerByTag(tag: String): Controller? {
     for (router in routers) {
         val controller = router.findControllerByTag(tag)
-        if (controller != null) return controller
-    }
-
-    return null
-}
-
-fun RouterManager.findControllerByInstanceId(instanceId: String): Controller? {
-    for (router in routers) {
-        val controller = router.findControllerByInstanceId(instanceId)
         if (controller != null) return controller
     }
 

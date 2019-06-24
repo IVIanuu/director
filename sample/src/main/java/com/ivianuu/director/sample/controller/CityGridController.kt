@@ -8,9 +8,10 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.push
-import com.ivianuu.director.resources
+import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
+import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 
@@ -34,17 +35,17 @@ class CityGridController(
 
         tv_title.text = toolbarTitle
         img_dot.drawable.setColorFilter(
-            ContextCompat.getColor(activity, dotColor),
+            ContextCompat.getColor(mainActivity(), dotColor),
             Mode.SRC_ATOP
         )
 
         tv_title.transitionName =
-            resources.getString(R.string.transition_tag_title_indexed, fromPosition)
+            view.resources.getString(R.string.transition_tag_title_indexed, fromPosition)
 
         img_dot.transitionName =
-            resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
+            view.resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
 
-        recycler_view.layoutManager = GridLayoutManager(activity, 2)
+        recycler_view.layoutManager = GridLayoutManager(mainActivity(), 2)
         recycler_view.buildModels {
             CITIES.forEach { city ->
                 city {
@@ -58,8 +59,8 @@ class CityGridController(
 
     private fun onCityClicked(city: City) {
         val names = listOf(
-            resources.getString(R.string.transition_tag_image_named, city.title),
-            resources.getString(R.string.transition_tag_title_named, city.title)
+            requireView().resources.getString(R.string.transition_tag_image_named, city.title),
+            requireView().resources.getString(R.string.transition_tag_title_named, city.title)
         )
 
         router.push(

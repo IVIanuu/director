@@ -59,21 +59,6 @@ interface ControllerLifecycleListener {
     fun postDestroy(controller: Controller) {
     }
 
-    fun onChangeStarted(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-    }
-
-    fun onChangeEnded(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-    }
 }
 
 /**
@@ -91,17 +76,14 @@ fun ControllerLifecycleListener(
     preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
     postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
-    postDestroy: ((controller: Controller) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    postDestroy: ((controller: Controller) -> Unit)? = null
 ): ControllerLifecycleListener = LambdaControllerLifecycleListener(
     preCreate = preCreate, postCreate = postCreate,
     preCreateView = preCreateView, postCreateView = postCreateView,
     preAttach = preAttach, postAttach = postAttach,
     preDetach = preDetach, postDetach = postDetach,
     preDestroyView = preDestroyView, postDestroyView = postDestroyView,
-    preDestroy = preDestroy, postDestroy = postDestroy,
-    onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
+    preDestroy = preDestroy, postDestroy = postDestroy
 )
 
 fun Controller.doOnPreCreate(block: (controller: Controller) -> Unit) =
@@ -141,10 +123,10 @@ fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit) =
     addLifecycleListener(postDestroy = block)
 
 fun Controller.doOnChangeStart(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
-    addLifecycleListener(onChangeStarted = block)
+    addLifecycleListener()
 
 fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
-    addLifecycleListener(onChangeEnded = block)
+    addLifecycleListener()
 
 fun Controller.addLifecycleListener(
     preCreate: ((controller: Controller) -> Unit)? = null,
@@ -158,9 +140,7 @@ fun Controller.addLifecycleListener(
     preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
     postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
-    postDestroy: ((controller: Controller) -> Unit)? = null,
-    onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    postDestroy: ((controller: Controller) -> Unit)? = null
 ) = addLifecycleListener(
     ControllerLifecycleListener(
         preCreate = preCreate, postCreate = postCreate,
@@ -168,8 +148,7 @@ fun Controller.addLifecycleListener(
         preAttach = preAttach, postAttach = postAttach,
         preDetach = preDetach, postDetach = postDetach,
         preDestroyView = preDestroyView, postDestroyView = postDestroyView,
-        preDestroy = preDestroy, postDestroy = postDestroy,
-        onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
+        preDestroy = preDestroy, postDestroy = postDestroy
     )
 )
 
@@ -203,9 +182,7 @@ fun Router.addControllerLifecycleListener(
             preDestroyView = preDestroyView,
             postDestroyView = postDestroyView,
             preDestroy = preDestroy,
-            postDestroy = postDestroy,
-            onChangeStarted = onChangeStarted,
-            onChangeEnded = onChangeEnded
+            postDestroy = postDestroy
         ),
 
         recursive = recursive
@@ -224,9 +201,7 @@ private class LambdaControllerLifecycleListener(
     private val preDestroyView: ((controller: Controller, view: View) -> Unit)? = null,
     private val postDestroyView: ((controller: Controller) -> Unit)? = null,
     private val preDestroy: ((controller: Controller) -> Unit)? = null,
-    private val postDestroy: ((controller: Controller) -> Unit)? = null,
-    private val onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
-    private val onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
+    private val postDestroy: ((controller: Controller) -> Unit)? = null
 ) : ControllerLifecycleListener {
     override fun preCreate(controller: Controller) {
         preCreate?.invoke(controller)
@@ -276,21 +251,4 @@ private class LambdaControllerLifecycleListener(
         postDestroy?.invoke(controller)
     }
 
-    override fun onChangeStarted(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        onChangeStarted?.invoke(controller, other, changeHandler, changeType)
-    }
-
-    override fun onChangeEnded(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        onChangeEnded?.invoke(controller, other, changeHandler, changeType)
-    }
 }

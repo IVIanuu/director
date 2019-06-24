@@ -2,8 +2,6 @@ package com.ivianuu.director.sample.util
 
 import android.view.View
 import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
-import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.ControllerLifecycleListener
 
 /**
@@ -63,23 +61,4 @@ class LoggingControllerLifecycleListener : ControllerLifecycleListener {
         controller.d { "post destroy" }
     }
 
-    override fun onChangeStarted(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeStarted(controller, other, changeHandler, changeType)
-        controller.d { "on change started" }
-    }
-
-    override fun onChangeEnded(
-        controller: Controller,
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(controller, other, changeHandler, changeType)
-        controller.d { "on change ended" }
-    }
 }

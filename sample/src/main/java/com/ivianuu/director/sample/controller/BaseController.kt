@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
-import com.ivianuu.director.sample.ToolbarProvider
+import com.ivianuu.director.sample.mainActivity
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -52,7 +52,7 @@ abstract class BaseController : Controller(), LayoutContainer {
             parentController = parentController.parentController
         }
 
-        (activity as? ToolbarProvider)?.toolbar?.title = toolbarTitle
+        mainActivity().toolbar?.title = toolbarTitle
     }
 
     protected open fun onViewCreated(view: View) {

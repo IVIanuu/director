@@ -105,17 +105,7 @@ class ActivityCallbacks : Fragment() {
             mutableMapOf<ActivityCallbacks, FragmentActivity>()
 
         internal fun get(controller: Controller): ActivityCallbacks {
-            return controller.activity.supportFragmentManager
-                .findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
-                ?: ActivityCallbacks().also {
-                    controller.activity.supportFragmentManager.beginTransaction()
-                        .add(it, FRAGMENT_TAG)
-                        .commitNow()
-                }.also {
-                    if (it.activity == null) {
-                        activities[it] = controller.activity
-                    }
-                }
+            return ActivityCallbacks()
         }
 
     }

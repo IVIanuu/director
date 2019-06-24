@@ -1,13 +1,10 @@
 package com.ivianuu.director
 
-import android.app.Application
-import android.content.res.Resources
 import android.os.Parcelable
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -42,11 +39,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
      * The router manager of the router this controller is attached to
      */
     val routerManager: RouterManager get() = router.routerManager
-
-    /**
-     * The hosting activity
-     */
-    val activity: FragmentActivity get() = routerManager.activity
 
     /**
      * The parent controller if any
@@ -94,9 +86,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
     /**
      * The child router manager of this controller
      */
-    val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
-        RouterManager(activity, this)
-    }
+    val childRouterManager by lazy(LazyThreadSafetyMode.NONE) { RouterManager(this) }
 
     private val listeners = mutableListOf<ControllerLifecycleListener>()
 
@@ -142,28 +132,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
      * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller begins the process of being swapped in or out of the host view.
-     */
-    protected open fun onChangeStarted(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        superCalled = true
-    }
-
-    /**
-     * Called when this Controller completes the process of being swapped in or out of the host view.
-     */
-    protected open fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
         superCalled = true
     }
 
@@ -311,24 +279,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         notifyListeners { it.postDetach(this, view) }
     }
 
-    internal fun changeStarted(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        requireSuperCalled { onChangeStarted(other, changeHandler, changeType) }
-        notifyListeners { it.onChangeStarted(this, other, changeHandler, changeType) }
-    }
-
-    internal fun changeEnded(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
-        notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
-    }
-
     private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
         (listeners + router.getControllerLifecycleListeners()).forEach(block)
     }
@@ -359,11 +309,6 @@ val Controller.isViewCreated: Boolean get() = state.isAtLeast(VIEW_CREATED)
 val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
 
 val Controller.isDestroyed: Boolean get() = state == DESTROYED
-
-val Controller.application: Application
-    get() = activity.application
-
-val Controller.resources: Resources get() = activity.resources
 
 fun Controller.requireView(): View =
     view ?: error("view is only accessible between onCreateView and onDestroyView")

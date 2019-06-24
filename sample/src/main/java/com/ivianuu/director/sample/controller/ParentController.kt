@@ -1,8 +1,7 @@
 package com.ivianuu.director.sample.controller
 
+import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.Controller
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouters
@@ -14,8 +13,9 @@ import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popTop
 import com.ivianuu.director.removeChildRouter
-import com.ivianuu.director.resources
+import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -29,22 +29,16 @@ class ParentController : BaseController() {
     private var finishing = false
     private var hasShownAll = false
 
-    override fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(other, changeHandler, changeType)
-        if (changeType == ControllerChangeType.PUSH_ENTER) {
-            addChild(0)
-        }
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        addChild(0)
     }
 
     private fun addChild(index: Int) {
-        val frameId = resources.getIdentifier(
+        val frameId = requireView().resources.getIdentifier(
             "child_content_" + (index + 1),
             "id",
-            activity.packageName
+            mainActivity().packageName
         )
 
         val container = view!!.findViewById<ViewGroup>(frameId)
@@ -55,7 +49,7 @@ class ParentController : BaseController() {
             if (!childRouter.hasRoot) {
                 val childController = ChildController(
                     "Child Controller #$index",
-                    ColorUtil.getMaterialColor(resources, index),
+                    ColorUtil.getMaterialColor(requireView().resources, index),
                     false
                 )
 

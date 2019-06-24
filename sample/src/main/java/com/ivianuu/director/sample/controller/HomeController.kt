@@ -10,9 +10,11 @@ import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.show
 import com.ivianuu.director.push
-import com.ivianuu.director.resources
+import com.ivianuu.director.requireView
+
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
+import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.tag
@@ -30,7 +32,7 @@ class HomeController : BaseController() {
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(mainActivity())
         recycler_view.buildModels {
             HomeItem.values().forEachIndexed { index, item ->
                 homeItem {
@@ -75,9 +77,12 @@ class HomeController : BaseController() {
             }
             HomeItem.SHARED_ELEMENT_TRANSITIONS -> {
                 val titleSharedElementName =
-                    resources.getString(R.string.transition_tag_title_indexed, position)
+                    requireView().resources.getString(
+                        R.string.transition_tag_title_indexed,
+                        position
+                    )
                 val dotSharedElementName =
-                    resources.getString(R.string.transition_tag_dot_indexed, position)
+                    requireView().resources.getString(R.string.transition_tag_dot_indexed, position)
 
                 router.push(
                     CityGridController(item.title, item.color, position)

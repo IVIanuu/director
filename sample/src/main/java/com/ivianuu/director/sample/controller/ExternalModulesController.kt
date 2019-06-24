@@ -24,6 +24,7 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.toTransaction
@@ -41,7 +42,7 @@ class ExternalModulesController : BaseController() {
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(mainActivity())
         recycler_view.buildModels {
             AdditionalModuleItem.values().forEach { item ->
                 additionalModuleItem {

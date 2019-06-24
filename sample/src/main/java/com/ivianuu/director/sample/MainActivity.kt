@@ -6,6 +6,8 @@ import android.transition.TransitionManager
 import android.transition.TransitionSet
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.backstackSize
@@ -19,24 +21,32 @@ import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.activity_main.*
 
+class RouterManagerHolder : ViewModel() {
+    val routerManager = RouterManager()
+}
+
 class MainActivity : AppCompatActivity(), ToolbarProvider {
 
     override val toolbar: Toolbar?
         get() = findViewById(R.id.toolbar)
 
-    private val routerManager = RouterManager(this)
+    private val routerManager by lazy {
+        ViewModelProviders.of(this)[RouterManagerHolder::class.java].routerManager
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        INSTANCE = this
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
         with(routerManager.getRouter(controller_container)) {
-            addControllerLifecycleListener(LoggingControllerLifecycleListener(), recursive = true)
-
-            addToolbarHandling()
-
             if (!hasRoot) {
+                addControllerLifecycleListener(
+                    LoggingControllerLifecycleListener(),
+                    recursive = true
+                )
+                addToolbarHandling()
                 setRoot(HomeController().toTransaction())
             }
         }
@@ -53,7 +63,10 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
     }
 
     override fun onDestroy() {
-        routerManager.onDestroy()
+        INSTANCE = null
+        if (!isChangingConfigurations) {
+            routerManager.onDestroy()
+        }
         super.onDestroy()
     }
 
@@ -63,33 +76,40 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         }
     }
 
-    private fun Router.addToolbarHandling() {
-        fun updateToolbarVisibility() {
-            TransitionManager.beginDelayedTransition(
-                toolbar,
-                AutoTransition().apply {
-                    ordering = TransitionSet.ORDERING_TOGETHER
-                    duration = 180
-                }
-            )
-
-            toolbar!!.navigationIcon = if (backstackSize > 1) {
-                getDrawable(R.drawable.abc_ic_ab_back_material)
-                    .apply {
-                        setColorFilter(
-                            android.graphics.Color.WHITE,
-                            android.graphics.PorterDuff.Mode.SRC_IN
-                        )
-                    }
-            } else {
-                null
-            }
-        }
-
-        doOnChangeStarted { _, _, _, _, _, _ -> updateToolbarVisibility() }
-
-        toolbar!!.setNavigationOnClickListener { popTop() }
-
-        updateToolbarVisibility()
+    companion object {
+        var INSTANCE: MainActivity? = null
+            private set
     }
+}
+
+fun mainActivity(): MainActivity = MainActivity.INSTANCE!!
+
+private fun Router.addToolbarHandling() {
+    fun updateToolbarVisibility() {
+        TransitionManager.beginDelayedTransition(
+            mainActivity().toolbar,
+            AutoTransition().apply {
+                ordering = TransitionSet.ORDERING_TOGETHER
+                duration = 180
+            }
+        )
+
+        mainActivity().toolbar!!.navigationIcon = if (backstackSize > 1) {
+            mainActivity().getDrawable(R.drawable.abc_ic_ab_back_material)
+                .apply {
+                    setColorFilter(
+                        android.graphics.Color.WHITE,
+                        android.graphics.PorterDuff.Mode.SRC_IN
+                    )
+                }
+        } else {
+            null
+        }
+    }
+
+    doOnChangeStarted { _, _, _, _, _, _ -> updateToolbarVisibility() }
+
+    mainActivity().toolbar!!.setNavigationOnClickListener { popTop() }
+
+    updateToolbarVisibility()
 }

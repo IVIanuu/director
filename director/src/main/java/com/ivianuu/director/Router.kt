@@ -376,10 +376,7 @@ class Router internal constructor(
             if (isPush) ControllerChangeType.PUSH_EXIT else ControllerChangeType.POP_EXIT
 
         val toView = to?.view?.also { to.setChildRootView() } ?: to?.createView(container)
-        to?.changeStarted(from, handlerToUse, toChangeType)
-
         val fromView = from?.view
-        from?.changeStarted(to, handlerToUse, fromChangeType)
 
         val toIndex = getToIndex(to, from, isPush)
 
@@ -425,11 +422,8 @@ class Router internal constructor(
             }
 
             override fun changeCompleted() {
-                from?.changeEnded(to, handlerToUse, fromChangeType)
-
                 if (to != null) {
                     runningHandlers.remove(to)
-                    to.changeEnded(from, handlerToUse, toChangeType)
                 }
 
                 listeners.forEach {
@@ -561,19 +555,6 @@ fun Router.findControllerByTag(tag: String): Controller? {
 
         transaction.controller.childRouterManager.findControllerByTag(tag)
             ?.let { return@findControllerByTag it }
-    }
-
-    return null
-}
-
-fun Router.findControllerByInstanceId(instanceId: String): Controller? {
-    for (transaction in backstack) {
-        if (transaction.controller.instanceId == instanceId) {
-            return transaction.controller
-        }
-
-        transaction.controller.childRouterManager.findControllerByInstanceId(instanceId)
-            ?.let { return@findControllerByInstanceId it }
     }
 
     return null

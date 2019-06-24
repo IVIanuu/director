@@ -68,16 +68,6 @@ class RouterTest {
     }
 
     @Test
-    fun testGetByInstanceId() {
-        val controller = TestController()
-
-        router.push(controller.toTransaction())
-
-        assertEquals(controller, router.findControllerByInstanceId(controller.instanceId))
-        assertNull(router.findControllerByInstanceId("fake id"))
-    }
-
-    @Test
     fun testGetByTag() {
         val controller1Tag = "controller1"
         val controller2Tag = "controller2"
