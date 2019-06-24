@@ -16,9 +16,7 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import com.ivianuu.director.childRouter
-import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
 import com.ivianuu.traveler.android.AndroidRouter
@@ -42,15 +40,13 @@ class TravelerController : BaseController() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!childRouter.hasRoot) {
-            travelerRouter.setRoot(
-                NavigationControllerKey(
-                    0, NavigationController.DisplayUpMode.HIDE,
-                    true, NavigationController.AnimMode.HORIZONTAL
-                )
+    override fun onCreate() {
+        super.onCreate()
+        travelerRouter.setRoot(
+            NavigationControllerKey(
+                0, NavigationController.DisplayUpMode.HIDE,
+                true, NavigationController.AnimMode.HORIZONTAL
             )
-        }
+        )
     }
 }

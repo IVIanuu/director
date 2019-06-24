@@ -37,8 +37,8 @@ class ControllerLifecycle(
 
     init {
         controller.addLifecycleListener(
-            preCreate = { _, _ -> onEvent(CREATE) },
-            preCreateView = { _, _ -> onEvent(CREATE_VIEW) },
+            preCreate = { onEvent(CREATE) },
+            preCreateView = { onEvent(CREATE_VIEW) },
             preAttach = { _, _ -> onEvent(ATTACH) },
             postDetach = { _, _ -> onEvent(DETACH) },
             postDestroyView = { onEvent(DESTROY_VIEW) },

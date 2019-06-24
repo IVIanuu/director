@@ -3,7 +3,6 @@ package com.ivianuu.director.sample.controller
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import com.ivianuu.director.activitycallbacks.addActivityResultListener
@@ -15,8 +14,7 @@ import com.ivianuu.director.sample.R
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_target_display.*
 
-class TargetDisplayController : BaseController(),
-    TargetTitleEntryController.TargetTitleEntryControllerListener {
+class TargetDisplayController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_target_display
     override val toolbarTitle: String?
@@ -25,32 +23,26 @@ class TargetDisplayController : BaseController(),
     private var selectedText: String? = null
     private var imageUri: Uri? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (savedInstanceState != null) {
-            selectedText = savedInstanceState.getString(KEY_SELECTED_TEXT)
-
-            val uriString = savedInstanceState.getString(KEY_SELECTED_IMAGE, "")
-            if (uriString.isNotEmpty()) {
-                imageUri = Uri.parse(uriString)
-            }
-        }
+    override fun onCreate() {
+        super.onCreate()
 
         addActivityResultListener(REQUEST_SELECT_IMAGE) { requestCode, resultCode, data ->
             if (requestCode == REQUEST_SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
                 imageUri = data?.data
-                setImageView()
+                updateImageView()
             }
         }
     }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         btn_pick_title.setOnClickListener {
             router.push(
-                TargetTitleEntryController.newInstance(this@TargetDisplayController)
+                TargetTitleEntryController {
+                    selectedText = it
+                    updateTextView()
+                }
                     .toTransaction()
                     .changeHandler(HorizontalChangeHandler())
             )
@@ -67,29 +59,15 @@ class TargetDisplayController : BaseController(),
             )
         }
 
-        setTextView()
-        setImageView()
+        updateTextView()
+        updateImageView()
     }
 
-    override fun onTitlePicked(option: String) {
-        selectedText = option
-        setTextView()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(KEY_SELECTED_TEXT, selectedText)
-        outState.putString(
-            KEY_SELECTED_IMAGE,
-            if (imageUri != null) imageUri!!.toString() else null
-        )
-    }
-
-    private fun setImageView() {
+    private fun updateImageView() {
         image_view.setImageURI(imageUri)
     }
 
-    private fun setTextView() {
+    private fun updateTextView() {
         if (tv_selection != null) {
             if (selectedText != null && selectedText!!.isNotEmpty()) {
                 tv_selection.text = selectedText
@@ -102,7 +80,5 @@ class TargetDisplayController : BaseController(),
 
     companion object {
         private const val REQUEST_SELECT_IMAGE = 126
-        private const val KEY_SELECTED_TEXT = "TargetDisplayController.selectedText"
-        private const val KEY_SELECTED_IMAGE = "TargetDisplayController.selectedImage"
     }
 }

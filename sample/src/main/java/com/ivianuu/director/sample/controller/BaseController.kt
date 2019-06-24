@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,14 +21,13 @@ abstract class BaseController : Controller(), LayoutContainer {
 
     override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
+        container: ViewGroup
     ): View {
         check(layoutRes != 0) { "no layout res provided" }
         val view = inflater.inflate(layoutRes, container, false)
             .also { _containerView = it }
 
-        onViewCreated(view, savedViewState)
+        onViewCreated(view)
 
         return view
     }
@@ -57,7 +55,7 @@ abstract class BaseController : Controller(), LayoutContainer {
         (activity as? ToolbarProvider)?.toolbar?.title = toolbarTitle
     }
 
-    protected open fun onViewCreated(view: View, savedViewState: Bundle?) {
+    protected open fun onViewCreated(view: View) {
     }
 
 }

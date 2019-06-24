@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.util
 
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Controller
 import com.ivianuu.director.ControllerChangeHandler
@@ -16,19 +15,19 @@ class LoggingControllerLifecycleListener : ControllerLifecycleListener {
         (this as Any).d { "Lifecycle: ${m.invoke()}" }
     }
 
-    override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
+    override fun preCreate(controller: Controller) {
         controller.d { "pre create" }
     }
 
-    override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
+    override fun postCreate(controller: Controller) {
         controller.d { "post create" }
     }
 
-    override fun preCreateView(controller: Controller, savedViewState: Bundle?) {
+    override fun preCreateView(controller: Controller) {
         controller.d { "pre create view" }
     }
 
-    override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
+    override fun postCreateView(controller: Controller, view: View) {
         controller.d { "post create view" }
     }
 
@@ -62,22 +61,6 @@ class LoggingControllerLifecycleListener : ControllerLifecycleListener {
 
     override fun postDestroy(controller: Controller) {
         controller.d { "post destroy" }
-    }
-
-    override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
-        controller.d { "on restore instance state" }
-    }
-
-    override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
-        controller.d { "on save instance state" }
-    }
-
-    override fun onRestoreViewState(controller: Controller, view: View, savedViewState: Bundle) {
-        controller.d { "on restore view state" }
-    }
-
-    override fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
-        controller.d { "on save view state" }
     }
 
     override fun onChangeStarted(

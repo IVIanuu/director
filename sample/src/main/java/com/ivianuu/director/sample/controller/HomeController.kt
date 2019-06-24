@@ -1,19 +1,22 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff.Mode
-import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.show
+import com.ivianuu.director.push
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_home.*
 import kotlinx.android.synthetic.main.row_home.*
@@ -24,8 +27,8 @@ class HomeController : BaseController() {
     override val toolbarTitle: String?
         get() = "Director Sample"
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         recycler_view.layoutManager = LinearLayoutManager(activity)
         recycler_view.buildModels {
@@ -44,7 +47,7 @@ class HomeController : BaseController() {
         when (item) {
             HomeItem.NAVIGATION -> {
                 router.push(
-                    NavigationController.newInstance(
+                    NavigationController(
                         0,
                         NavigationController.DisplayUpMode.SHOW_FOR_CHILDREN_ONLY, false
                     )
@@ -77,12 +80,14 @@ class HomeController : BaseController() {
                     resources.getString(R.string.transition_tag_dot_indexed, position)
 
                 router.push(
-                    CityGridController.newInstance(item.title, item.color, position)
+                    CityGridController(item.title, item.color, position)
                         .toTransaction()
                         .changeHandler(
                             ArcFadeMoveChangeHandler(
-                                titleSharedElementName,
-                                dotSharedElementName
+                                listOf(
+                                    titleSharedElementName,
+                                    dotSharedElementName
+                                )
                             )
                         )
                 )

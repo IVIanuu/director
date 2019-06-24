@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
@@ -8,25 +7,25 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
-import com.ivianuu.director.sample.util.arg
+
 import com.ivianuu.director.sample.util.buildModels
-import com.ivianuu.director.sample.util.bundleOf
+
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_detail.*
 import kotlinx.android.synthetic.main.row_city_detail.*
 import kotlinx.android.synthetic.main.row_city_header.*
 
-class CityDetailController : BaseController() {
+class CityDetailController(
+    private val title: String,
+    private val imageRes: Int
+) : BaseController() {
 
     override val layoutRes get() = R.layout.controller_city_detail
     override val toolbarTitle: String?
         get() = title
 
-    private val title by arg<String>(KEY_TITLE)
-    private val image by arg<Int>(KEY_IMAGE)
-
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         val imageViewTransitionName = resources.getString(
             R.string.transition_tag_image_named,
@@ -43,7 +42,7 @@ class CityDetailController : BaseController() {
         recycler_view.buildModels {
             cityHeader {
                 id("header")
-                imageDrawableRes(image)
+                imageRes(imageRes)
                 title(title)
                 imageTransitionName(imageViewTransitionName)
                 textViewTransitionName(textViewTransitionName)
@@ -59,9 +58,6 @@ class CityDetailController : BaseController() {
     }
 
     companion object {
-        private const val KEY_TITLE = "CityDetailController.title"
-        private const val KEY_IMAGE = "CityDetailController.image"
-
         private val LIST_ROWS = arrayOf(
             "• This is a city.",
             "• There's some cool stuff about it.",
@@ -71,13 +67,6 @@ class CityDetailController : BaseController() {
             "• This transition utilized some callbacks to ensure all the necessary rows in the RecyclerView were laid about before the transition occurred.",
             "• Just adding some more lines so it scrolls now...\n\n\n\n\n\n\nThe end."
         )
-
-        fun newInstance(imageDrawableRes: Int, title: String) = CityDetailController().apply {
-            args = bundleOf(
-                KEY_IMAGE to imageDrawableRes,
-                KEY_TITLE to title
-            )
-        }
     }
 }
 
@@ -85,7 +74,7 @@ class CityDetailController : BaseController() {
 abstract class CityHeaderModel : BaseEpoxyModel() {
 
     @EpoxyAttribute
-    var imageDrawableRes: Int = 0
+    var imageRes: Int = 0
     @EpoxyAttribute
     lateinit var title: String
     @EpoxyAttribute
@@ -96,7 +85,7 @@ abstract class CityHeaderModel : BaseEpoxyModel() {
     override fun bind(holder: KtEpoxyHolder) {
         super.bind(holder)
         with(holder) {
-            header_image.setImageResource(imageDrawableRes)
+            header_image.setImageResource(imageRes)
             header_image.transitionName = imageTransitionName
             header_title.text = title
             header_title.transitionName = textViewTransitionName

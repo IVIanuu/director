@@ -17,7 +17,11 @@
 package com.ivianuu.director
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.util.*
+import com.ivianuu.director.util.ActivityProxy
+import com.ivianuu.director.util.EmptyChangeListener
+import com.ivianuu.director.util.EmptyControllerLifecycleListener
+import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.noRemoveViewOnPushHandler
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -452,14 +456,8 @@ class RouterTest {
         var backstack = listOf(transaction1, transaction2)
         router.setBackstack(backstack, true)
 
-        assertEquals(1, transaction1.transactionIndex)
-        assertEquals(2, transaction2.transactionIndex)
-
         backstack = listOf(transaction2, transaction1)
         router.setBackstack(backstack, true)
-
-        assertEquals(1, transaction2.transactionIndex)
-        assertEquals(2, transaction1.transactionIndex)
 
         router.handleBack()
 

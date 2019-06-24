@@ -17,7 +17,6 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff
-import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,8 +38,8 @@ class ExternalModulesController : BaseController() {
     override val toolbarTitle: String?
         get() = "External Module Demo"
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         recycler_view.layoutManager = LinearLayoutManager(activity)
         recycler_view.buildModels {

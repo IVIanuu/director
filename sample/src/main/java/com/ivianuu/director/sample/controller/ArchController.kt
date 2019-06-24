@@ -16,15 +16,19 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
 import com.ivianuu.scopes.MutableScope
 import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_arch.tv_title
+import kotlinx.android.synthetic.main.controller_arch.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -49,8 +53,8 @@ class ArchController : BaseController() {
         })
     }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
         viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { source, event ->
             d { "view lifecycle event $event" }
         })

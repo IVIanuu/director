@@ -1,14 +1,20 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
+import com.ivianuu.director.popToRoot
+import com.ivianuu.director.popToTag
+import com.ivianuu.director.push
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
-import com.ivianuu.director.sample.util.bundleOf
+import com.ivianuu.director.toTransaction
 import com.ivianuu.director.traveler.ControllerKey
 import com.ivianuu.traveler.Command
 import com.ivianuu.traveler.navigate
@@ -16,21 +22,21 @@ import com.ivianuu.traveler.popToRoot
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.controller_navigation.*
 
-class NavigationController : BaseController() {
+class NavigationController(
+    private val index: Int,
+    private val displayUpMode: DisplayUpMode,
+    private val useTraveler: Boolean = false,
+    private val animMode: AnimMode = AnimMode.HORIZONTAL
+) : BaseController() {
 
     override val layoutRes get() = R.layout.controller_navigation
     override val toolbarTitle: String?
         get() = "Navigation Demos"
 
-    private val index by lazy { args.getInt(KEY_INDEX) }
-    private val displayUpMode by lazy { args.getParcelable<DisplayUpMode>(KEY_DISPLAY_UP_MODE)!! }
-    private val useTraveler by lazy { args.getBoolean(KEY_USE_TRAVELER) }
-    private val animMode by lazy { args.getParcelable<AnimMode>(KEY_ANIM_MODE)!! }
-
     private val travelerRouter get() = (parentController as TravelerController).travelerRouter
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         if (displayUpMode != DisplayUpMode.SHOW) {
             btn_up.visibility = View.GONE
@@ -51,7 +57,7 @@ class NavigationController : BaseController() {
                 )
             } else {
                 router.push(
-                    NavigationController.newInstance(
+                    NavigationController(
                         index + 1,
                         displayUpMode.displayUpModeForChild,
                         useTraveler,
@@ -116,25 +122,8 @@ class NavigationController : BaseController() {
 
     companion object {
         const val TAG_UP_TRANSACTION = "NavigationController.up"
-        private const val KEY_INDEX = "NavigationController.index"
-        private const val KEY_DISPLAY_UP_MODE = "NavigationController.displayUpMode"
-        private const val KEY_ANIM_MODE = "NavigationController.animMode"
-        private const val KEY_USE_TRAVELER = "NavigationController.useTraveler"
-
-        fun newInstance(
-            index: Int,
-            displayUpMode: DisplayUpMode,
-            useTraveler: Boolean = false,
-            animMode: AnimMode = AnimMode.HORIZONTAL
-        ) = NavigationController().apply {
-            args = bundleOf(
-                KEY_INDEX to index,
-                KEY_DISPLAY_UP_MODE to displayUpMode,
-                KEY_USE_TRAVELER to useTraveler,
-                KEY_ANIM_MODE to animMode
-            )
-        }
     }
+
 }
 
 data class NavigationControllerKey(
@@ -144,7 +133,7 @@ data class NavigationControllerKey(
     val animMode: NavigationController.AnimMode
 ) : ControllerKey {
 
-    override fun createController(data: Any?) = NavigationController.newInstance(
+    override fun createController(data: Any?) = NavigationController(
         index, displayUpMode, useTraveler, animMode
     )
 

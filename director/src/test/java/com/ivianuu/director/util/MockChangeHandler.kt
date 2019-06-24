@@ -16,7 +16,6 @@
 
 package com.ivianuu.director.util
 
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ControllerChangeHandler
@@ -62,25 +61,6 @@ class MockChangeHandler internal constructor(
         listener.didEndChange()
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
-        bundle.putString(KEY_TAG, tag)
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
-        tag = bundle.getString(KEY_TAG)
-    }
-
-    override fun copy(): ControllerChangeHandler =
-        MockChangeHandler(removesFromViewOnPush, tag, listener)
-
-    companion object {
-        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH = "removesFromViewOnPush"
-        private const val KEY_TAG = "tag"
-    }
 }
 
 fun defaultHandler(): MockChangeHandler = MockChangeHandler(true, null)

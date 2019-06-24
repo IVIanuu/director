@@ -6,10 +6,18 @@ import android.transition.TransitionManager
 import android.transition.TransitionSet
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.ivianuu.director.*
+import com.ivianuu.director.Router
+import com.ivianuu.director.RouterManager
+import com.ivianuu.director.backstackSize
+import com.ivianuu.director.doOnChangeStarted
+import com.ivianuu.director.getRouter
+import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popTop
 import com.ivianuu.director.sample.controller.HomeController
 import com.ivianuu.director.sample.util.LoggingControllerLifecycleListener
-import kotlinx.android.synthetic.main.activity_main.controller_container
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), ToolbarProvider {
 
@@ -23,15 +31,10 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
 
         setContentView(R.layout.activity_main)
 
-        routerManager.postponeFullRestore()
-        routerManager.restoreInstanceState(savedInstanceState)
-
         with(routerManager.getRouter(controller_container)) {
             addControllerLifecycleListener(LoggingControllerLifecycleListener(), recursive = true)
 
             addToolbarHandling()
-
-            routerManager.startPostponedFullRestore()
 
             if (!hasRoot) {
                 setRoot(HomeController().toTransaction())
@@ -52,11 +55,6 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
     override fun onDestroy() {
         routerManager.onDestroy()
         super.onDestroy()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        routerManager.saveInstanceState(outState)
     }
 
     override fun onBackPressed() {

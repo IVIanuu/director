@@ -1,6 +1,5 @@
 package com.ivianuu.director
 
-import android.os.Bundle
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.internal.moveView
@@ -32,17 +31,9 @@ class Router internal constructor(
     var popsLastView = false
 
     /**
-     * Will be used to instantiate controllers after config changes or process death
-     */
-    var controllerFactory: ControllerFactory = routerManager.controllerFactory
-
-    /**
      * Whether or not this router is started
      */
     var isStarted = false
-        private set
-
-    var isBeingDestroyed = false
         private set
 
     /**
@@ -82,9 +73,9 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ControllerChangeHandler? = null
     ) {
-        check(!settingBackstack) {
+        /*check(!settingBackstack) {
             "Cannot call setBackstack from within a setBackstack call"
-        }
+        }*/ // todo
 
         if (isDestroyed) return
 
@@ -122,7 +113,7 @@ class Router internal constructor(
         // Swap around transaction indices to ensure they don't get thrown out of order by the
         // developer rearranging the backstack at runtime.
         val indices = newBackstack
-            .onEach { it.ensureValidIndex(routerManager.transactionIndexer) }
+            .onEach { it.ensureValidIndex() }
             .map { it.transactionIndex }
             .sorted()
 
@@ -139,8 +130,6 @@ class Router internal constructor(
         // find destroyed controllers
         val destroyedTransactions = oldBackstack
             .filter { old -> newBackstack.none { it == old } }
-
-        destroyedTransactions.forEach { it.controller.willBeDestroyed() }
 
         val destroyedInvisibleTransactions = destroyedTransactions
             .filterNot { it.controller.isViewCreated }
@@ -203,12 +192,15 @@ class Router internal constructor(
                     ?: (if (isPush) newTopTransaction?.pushChangeHandler?.copy()
                     else oldTopTransaction?.popChangeHandler?.copy())
 
+                val forceRemoveFromView = oldTopTransaction != null
+                        && newBackstack.none { it.controller == oldTopTransaction.controller }
+
                 performControllerChange(
                     from = oldTopTransaction?.controller,
                     to = newTopTransaction?.controller,
                     isPush = isPush,
                     handler = localHandler,
-                    forceRemoveFromView = oldTopTransaction?.controller?.isBeingDestroyed ?: false
+                    forceRemoveFromView = forceRemoveFromView
                 )
             }
         }
@@ -313,9 +305,7 @@ class Router internal constructor(
                 }
 
                 if (controller.isViewCreated) {
-                    if (!controller.retainView
-                        || controller.isBeingDestroyed
-                    ) {
+                    if (!controller.retainView) {
                         controller.destroyView()
                     } else if (controller.retainView) {
                         controller.removeChildRootView()
@@ -350,58 +340,12 @@ class Router internal constructor(
             .forEach { it.controller.detach() }
     }
 
-    internal fun willBeDestroyed() {
-        isBeingDestroyed = true
-
-        _backstack
-            .reversed()
-            .forEach { it.controller.willBeDestroyed() }
-    }
-
     internal fun destroy() {
         isDestroyed = true
 
         _backstack
             .reversed()
             .forEach { it.controller.destroy() }
-    }
-
-    /**
-     * Saves the state of this router
-     */
-    fun saveInstanceState(outState: Bundle) {
-        endAllChanges()
-
-        outState.putInt(KEY_CONTAINER_ID, containerId)
-        outState.putString(KEY_TAG, tag)
-        val backstack = _backstack.map { it.toBundle() }
-        outState.putParcelableArrayList(KEY_BACKSTACK, ArrayList(backstack))
-        outState.putBoolean(KEY_POPS_LAST_VIEW, popsLastView)
-    }
-
-    /**
-     * Restores the previously saved state state
-     */
-    fun restoreInstanceState(savedInstanceState: Bundle) {
-        popsLastView = savedInstanceState.getBoolean(KEY_POPS_LAST_VIEW)
-
-        val newBackstack =
-            savedInstanceState.getParcelableArrayList<Bundle>(KEY_BACKSTACK)!!
-                .map { RouterTransaction.fromBundle(it, controllerFactory) }
-
-        setBackstack(newBackstack, true)
-    }
-
-    /**
-     * Saves the instance state of [controller] which can later be used in
-     * [Controller.setInitialSavedState]
-     */
-    fun saveControllerInstanceState(controller: Controller): Bundle {
-        require(backstack.any { it.controller == controller }) {
-            "controller is not attached to the router"
-        }
-
-        return controller.saveInstanceState()
     }
 
     private fun performControllerChange(
@@ -470,15 +414,13 @@ class Router internal constructor(
             override fun detachFromController() {
                 from!!.detach()
 
-                if (!from.retainView
-                    || from.isBeingDestroyed
-                ) {
+                if (!from.retainView || forceRemoveFromView) {
                     from.destroyView()
                 } else if (from.retainView) {
                     from.removeChildRootView()
                 }
 
-                if (from.isBeingDestroyed) {
+                if (forceRemoveFromView) {
                     from.destroy()
                 }
             }
@@ -527,10 +469,6 @@ class Router internal constructor(
             && !controller.isAttached
         ) {
             controller.attach()
-        }
-
-        if (isBeingDestroyed) {
-            controller.willBeDestroyed()
         }
 
         if (isDestroyed && !controller.isDestroyed) {
@@ -608,21 +546,6 @@ class Router internal constructor(
         val recursive: Boolean
     )
 
-    companion object {
-        private const val KEY_BACKSTACK = "Router.backstack"
-        private const val KEY_CONTAINER_ID = "Router.containerId"
-        private const val KEY_POPS_LAST_VIEW = "Router.popsLastView"
-        private const val KEY_TAG = "Router.tag"
-
-        fun fromBundle(
-            bundle: Bundle,
-            routerManager: RouterManager
-        ): Router = Router(
-            bundle.getInt(KEY_CONTAINER_ID),
-            bundle.getString(KEY_TAG),
-            routerManager
-        )
-    }
 }
 
 val Router.hasContainer: Boolean get() = container != null

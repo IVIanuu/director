@@ -30,12 +30,6 @@ data class CallState(
     var attachCalls: Int = 0,
     var detachCalls: Int = 0,
 
-    var restoreInstanceStateCalls: Int = 0,
-    var saveInstanceStateCalls: Int = 0,
-
-    var restoreViewStateCalls: Int = 0,
-    var saveViewStateCalls: Int = 0,
-
     var changeStartCalls: Int = 0,
     var changeEndCalls: Int = 0
 ) : Parcelable

@@ -16,12 +16,11 @@
 
 package com.ivianuu.director.util
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
 import com.ivianuu.director.ControllerChangeType
 
 class TestController : Controller() {
@@ -31,18 +30,14 @@ class TestController : Controller() {
     val childContainer1: ViewGroup? get() = view?.findViewById(CHILD_VIEW_ID_1)
     val childContainer2: ViewGroup? get() = view?.findViewById(CHILD_VIEW_ID_2)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            currentCallState = savedInstanceState.getParcelable(KEY_CALL_STATE)!!
-        }
+    override fun onCreate() {
+        super.onCreate()
         currentCallState.createCalls++
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
+        container: ViewGroup
     ): View {
         currentCallState.createViewCalls++
         val view = AttachFakingFrameLayout(inflater.context)
@@ -77,27 +72,6 @@ class TestController : Controller() {
     override fun onDestroy() {
         super.onDestroy()
         currentCallState.destroyCalls++
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentCallState.restoreInstanceStateCalls++
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        currentCallState.saveInstanceStateCalls++
-        outState.putParcelable(KEY_CALL_STATE, currentCallState)
-    }
-
-    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        super.onRestoreViewState(view, savedViewState)
-        currentCallState.restoreViewStateCalls++
-    }
-
-    override fun onSaveViewState(view: View, outState: Bundle) {
-        super.onSaveViewState(view, outState)
-        currentCallState.saveViewStateCalls++
     }
 
     override fun onChangeStarted(

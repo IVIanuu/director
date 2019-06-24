@@ -16,8 +16,6 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
-
 /**
  * A [ControllerChangeHandler] that will instantly swap Views with no animations or transitions.
  */
@@ -34,18 +32,4 @@ open class DefaultChangeHandler(
         changeData.callback.changeCompleted()
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, _removesFromViewOnPush)
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        _removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
-    }
-
-    companion object {
-        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
-            "DefaultChangeHandler.removesFromViewOnPush"
-    }
 }

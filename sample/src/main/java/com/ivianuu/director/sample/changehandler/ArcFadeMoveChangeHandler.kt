@@ -2,35 +2,22 @@ package com.ivianuu.director.sample.changehandler
 
 import android.annotation.TargetApi
 import android.os.Build
-import android.os.Bundle
-import android.transition.*
+import android.transition.ArcMotion
+import android.transition.ChangeBounds
+import android.transition.ChangeClipBounds
+import android.transition.ChangeTransform
+import android.transition.Fade
+import android.transition.Transition
 import android.transition.Transition.TransitionListener
+import android.transition.TransitionSet
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
 import com.ivianuu.director.common.findNamedView
-import java.util.*
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
-
-    private val sharedElementNames = mutableListOf<String>()
-
-    constructor()
-
-    constructor(vararg sharedElementNames: String) {
-        this.sharedElementNames.addAll(sharedElementNames)
-    }
-
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putStringArrayList(KEY_SHARED_ELEMENT_NAMES, ArrayList(sharedElementNames))
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        sharedElementNames.addAll(bundle.getStringArrayList(KEY_SHARED_ELEMENT_NAMES)!!)
-    }
+class ArcFadeMoveChangeHandler(private val sharedElementNames: List<String>) :
+    SharedElementTransitionChangeHandler() {
 
     override fun getExitTransition(changeData: ChangeData): Transition? {
         return Fade(Fade.OUT)
@@ -80,7 +67,4 @@ class ArcFadeMoveChangeHandler : SharedElementTransitionChangeHandler {
 
     override fun allowTransitionOverlap(isPush: Boolean): Boolean = false
 
-    companion object {
-        private const val KEY_SHARED_ELEMENT_NAMES = "ArcFadeMoveChangeHandler.sharedElementNames"
-    }
 }

@@ -16,52 +16,48 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
-import com.ivianuu.director.*
+import com.ivianuu.director.changeHandler
+import com.ivianuu.director.childRouter
+import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class BottomNavChildController : BaseController() {
+class BottomNavChildController(private val startIndex: Int) : BaseController() {
 
     override val layoutRes: Int
         get() = R.layout.controller_bottom_nav_child
 
     private val childRouter by childRouter(R.id.bottom_nav_child_container)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!childRouter.hasRoot) {
-            (1..args.getInt(KEY_START_INDEX))
-                .map {
-                    NavigationController.newInstance(
-                        it, NavigationController.DisplayUpMode.HIDE, false,
-                        NavigationController.AnimMode.VERTICAL
-                    ) to it
+    override fun onCreate() {
+        super.onCreate()
+
+        (1..startIndex)
+            .map {
+                NavigationController(
+                    it, NavigationController.DisplayUpMode.HIDE, false,
+                    NavigationController.AnimMode.VERTICAL
+                ) to it
+            }
+            .forEach { (controller, i) ->
+                if (i == 1) {
+                    childRouter.setRoot(
+                        controller
+                            .toTransaction()
+                            .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
+                    )
+                } else {
+                    childRouter.push(
+                        controller
+                            .toTransaction()
+                            .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
+                    )
                 }
-                .forEach { (controller, i) ->
-                    if (i == 1) {
-                        childRouter.setRoot(
-                            controller
-                                .toTransaction()
-                                .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
-                        )
-                    } else {
-                        childRouter.push(
-                            controller
-                                .toTransaction()
-                                .changeHandler(NavigationController.AnimMode.VERTICAL.createHandler())
-                        )
-                    }
-                }
-        }
+            }
     }
 
-    companion object {
-        private const val KEY_START_INDEX = "start_index"
-
-        fun newInstance(startIndex: Int): BottomNavChildController = BottomNavChildController()
-            .apply { args.putInt(KEY_START_INDEX, startIndex) }
-    }
 }

@@ -1,25 +1,16 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.synthetic.main.controller_text.text_view
+import kotlinx.android.synthetic.main.controller_text.*
 
-class TextController : BaseController() {
+class TextController(private val text: String) : BaseController() {
 
     override val layoutRes get() = R.layout.controller_text
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
-        text_view.text = args.getString(KEY_TEXT)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
+        text_view.text = text
     }
 
-    companion object {
-        private const val KEY_TEXT = "TextController.text"
-
-        fun newInstance(text: String) = TextController().apply {
-            args = bundleOf(KEY_TEXT to text)
-        }
-    }
 }

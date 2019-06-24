@@ -22,7 +22,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.DefaultChangeHandler
+import com.ivianuu.director.Router
+import com.ivianuu.director.changeHandler
+import com.ivianuu.director.popController
+import com.ivianuu.director.push
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 
 /**
  * A controller counterpart for dialog fragments
@@ -36,19 +43,21 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
     var dialog: Dialog? = null
         private set
 
+    private var dialogState: Bundle? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
+        container: ViewGroup
     ): View {
         val view = View(inflater.context) // dummy view
 
-        val dialog = onCreateDialog(savedViewState).also { this.dialog = it }
+        val dialog = onCreateDialog().also { this.dialog = it }
 
         dialog.setOnCancelListener(this)
         dialog.setOnDismissListener(this)
 
-        savedViewState?.getBundle(KEY_DIALOG_STATE)?.let { dialog.onRestoreInstanceState(it) }
+        dialogState?.let { dialog.onRestoreInstanceState(it) }
+        dialogState = null
 
         return view
     }
@@ -56,7 +65,7 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
     /**
      * Creates dialog which should be shown in this controller
      */
-    protected abstract fun onCreateDialog(savedViewState: Bundle?): Dialog
+    protected abstract fun onCreateDialog(): Dialog
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -70,13 +79,9 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
+        dialogState = dialog?.onSaveInstanceState()
         dialog?.dismiss()
         dialog = null
-    }
-
-    override fun onSaveViewState(view: View, outState: Bundle) {
-        super.onSaveViewState(view, outState)
-        dialog?.onSaveInstanceState()?.let { outState.putBundle(KEY_DIALOG_STATE, it) }
     }
 
     override fun onCancel(dialog: DialogInterface) {
@@ -94,9 +99,6 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
         router.popController(this)
     }
 
-    companion object {
-        private const val KEY_DIALOG_STATE = "DialogController.dialogState"
-    }
 }
 
 fun DialogController.requireDialog(): Dialog = dialog ?: error("dialog == null")

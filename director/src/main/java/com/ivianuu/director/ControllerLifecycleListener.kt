@@ -16,7 +16,6 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import android.view.View
 
 /**
@@ -24,16 +23,16 @@ import android.view.View
  */
 interface ControllerLifecycleListener {
 
-    fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
+    fun preCreate(controller: Controller) {
     }
 
-    fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
+    fun postCreate(controller: Controller) {
     }
 
-    fun preCreateView(controller: Controller, savedViewState: Bundle?) {
+    fun preCreateView(controller: Controller) {
     }
 
-    fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
+    fun postCreateView(controller: Controller, view: View) {
     }
 
     fun preAttach(controller: Controller, view: View) {
@@ -60,18 +59,6 @@ interface ControllerLifecycleListener {
     fun postDestroy(controller: Controller) {
     }
 
-    fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
-    }
-
-    fun onSaveInstanceState(controller: Controller, outState: Bundle) {
-    }
-
-    fun onRestoreViewState(controller: Controller, view: View, savedViewState: Bundle) {
-    }
-
-    fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
-    }
-
     fun onChangeStarted(
         controller: Controller,
         other: Controller?,
@@ -92,11 +79,11 @@ interface ControllerLifecycleListener {
 /**
  * Returns a new [ControllerLifecycleListener]
  */
-fun ControllerListener(
-    preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+fun ControllerLifecycleListener(
+    preCreate: ((controller: Controller) -> Unit)? = null,
+    postCreate: ((controller: Controller) -> Unit)? = null,
+    preCreateView: ((controller: Controller) -> Unit)? = null,
+    postCreateView: ((controller: Controller, view: View) -> Unit)? = null,
     preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     preDetach: ((controller: Controller, view: View) -> Unit)? = null,
@@ -105,10 +92,6 @@ fun ControllerListener(
     postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
-    onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
-    onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ): ControllerLifecycleListener = LambdaControllerLifecycleListener(
@@ -118,21 +101,19 @@ fun ControllerListener(
     preDetach = preDetach, postDetach = postDetach,
     preDestroyView = preDestroyView, postDestroyView = postDestroyView,
     preDestroy = preDestroy, postDestroy = postDestroy,
-    onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
-    onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
     onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
 )
 
-fun Controller.doOnPreCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit) =
+fun Controller.doOnPreCreate(block: (controller: Controller) -> Unit) =
     addLifecycleListener(preCreate = block)
 
-fun Controller.doOnPostCreate(block: (controller: Controller, savedInstanceState: Bundle?) -> Unit) =
+fun Controller.doOnPostCreate(block: (controller: Controller) -> Unit) =
     addLifecycleListener(postCreate = block)
 
-fun Controller.doOnPreCreateView(block: (controller: Controller, savedViewState: Bundle?) -> Unit) =
+fun Controller.doOnPreCreateView(block: (controller: Controller) -> Unit) =
     addLifecycleListener(preCreateView = block)
 
-fun Controller.doOnPostCreateView(block: (controller: Controller, view: View, savedViewState: Bundle?) -> Unit) =
+fun Controller.doOnPostCreateView(block: (controller: Controller, view: View) -> Unit) =
     addLifecycleListener(postCreateView = block)
 
 fun Controller.doOnPreAttach(block: (controller: Controller, view: View) -> Unit) =
@@ -159,18 +140,6 @@ fun Controller.doOnPreDestroy(block: (controller: Controller) -> Unit) =
 fun Controller.doOnPostDestroy(block: (controller: Controller) -> Unit) =
     addLifecycleListener(postDestroy = block)
 
-fun Controller.doOnRestoreInstanceState(block: (controller: Controller, savedInstanceState: Bundle) -> Unit) =
-    addLifecycleListener(onRestoreInstanceState = block)
-
-fun Controller.doOnSaveInstanceState(block: (controller: Controller, outState: Bundle) -> Unit) =
-    addLifecycleListener(onSaveInstanceState = block)
-
-fun Controller.doOnRestoreViewState(block: (controller: Controller, view: View, savedViewState: Bundle) -> Unit) =
-    addLifecycleListener(onRestoreViewState = block)
-
-fun Controller.doOnSaveViewState(block: (controller: Controller, view: View, outState: Bundle) -> Unit) =
-    addLifecycleListener(onSaveViewState = block)
-
 fun Controller.doOnChangeStart(block: (controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit) =
     addLifecycleListener(onChangeStarted = block)
 
@@ -178,10 +147,10 @@ fun Controller.doOnChangeEnd(block: (controller: Controller, other: Controller?,
     addLifecycleListener(onChangeEnded = block)
 
 fun Controller.addLifecycleListener(
-    preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preCreate: ((controller: Controller) -> Unit)? = null,
+    postCreate: ((controller: Controller) -> Unit)? = null,
+    preCreateView: ((controller: Controller) -> Unit)? = null,
+    postCreateView: ((controller: Controller, view: View) -> Unit)? = null,
     preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     preDetach: ((controller: Controller, view: View) -> Unit)? = null,
@@ -190,32 +159,26 @@ fun Controller.addLifecycleListener(
     postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
-    onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
-    onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) = addLifecycleListener(
-    ControllerListener(
+    ControllerLifecycleListener(
         preCreate = preCreate, postCreate = postCreate,
         preCreateView = preCreateView, postCreateView = postCreateView,
         preAttach = preAttach, postAttach = postAttach,
         preDetach = preDetach, postDetach = postDetach,
         preDestroyView = preDestroyView, postDestroyView = postDestroyView,
         preDestroy = preDestroy, postDestroy = postDestroy,
-        onRestoreInstanceState = onRestoreInstanceState, onSaveInstanceState = onSaveInstanceState,
-        onRestoreViewState = onRestoreViewState, onSaveViewState = onSaveViewState,
         onChangeStarted = onChangeStarted, onChangeEnded = onChangeEnded
     )
 )
 
 fun Router.addControllerLifecycleListener(
     recursive: Boolean = false,
-    preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    preCreate: ((controller: Controller) -> Unit)? = null,
+    postCreate: ((controller: Controller) -> Unit)? = null,
+    preCreateView: ((controller: Controller) -> Unit)? = null,
+    postCreateView: ((controller: Controller, view: View) -> Unit)? = null,
     preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     preDetach: ((controller: Controller, view: View) -> Unit)? = null,
@@ -224,15 +187,11 @@ fun Router.addControllerLifecycleListener(
     postDestroyView: ((controller: Controller) -> Unit)? = null,
     preDestroy: ((controller: Controller) -> Unit)? = null,
     postDestroy: ((controller: Controller) -> Unit)? = null,
-    onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
-    onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) {
     return addControllerLifecycleListener(
-        ControllerListener(
+        ControllerLifecycleListener(
             preCreate = preCreate,
             postCreate = postCreate,
             preCreateView = preCreateView,
@@ -245,10 +204,6 @@ fun Router.addControllerLifecycleListener(
             postDestroyView = postDestroyView,
             preDestroy = preDestroy,
             postDestroy = postDestroy,
-            onRestoreInstanceState = onRestoreInstanceState,
-            onSaveInstanceState = onSaveInstanceState,
-            onRestoreViewState = onRestoreViewState,
-            onSaveViewState = onSaveViewState,
             onChangeStarted = onChangeStarted,
             onChangeEnded = onChangeEnded
         ),
@@ -258,10 +213,10 @@ fun Router.addControllerLifecycleListener(
 }
 
 private class LambdaControllerLifecycleListener(
-    private val preCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    private val postCreate: ((controller: Controller, savedInstanceState: Bundle?) -> Unit)? = null,
-    private val preCreateView: ((controller: Controller, savedViewState: Bundle?) -> Unit)? = null,
-    private val postCreateView: ((controller: Controller, view: View, savedViewState: Bundle?) -> Unit)? = null,
+    private val preCreate: ((controller: Controller) -> Unit)? = null,
+    private val postCreate: ((controller: Controller) -> Unit)? = null,
+    private val preCreateView: ((controller: Controller) -> Unit)? = null,
+    private val postCreateView: ((controller: Controller, view: View) -> Unit)? = null,
     private val preAttach: ((controller: Controller, view: View) -> Unit)? = null,
     private val postAttach: ((controller: Controller, view: View) -> Unit)? = null,
     private val preDetach: ((controller: Controller, view: View) -> Unit)? = null,
@@ -270,27 +225,23 @@ private class LambdaControllerLifecycleListener(
     private val postDestroyView: ((controller: Controller) -> Unit)? = null,
     private val preDestroy: ((controller: Controller) -> Unit)? = null,
     private val postDestroy: ((controller: Controller) -> Unit)? = null,
-    private val onRestoreInstanceState: ((controller: Controller, savedInstanceState: Bundle) -> Unit)? = null,
-    private val onSaveInstanceState: ((controller: Controller, outState: Bundle) -> Unit)? = null,
-    private val onRestoreViewState: ((controller: Controller, view: View, savedViewState: Bundle) -> Unit)? = null,
-    private val onSaveViewState: ((controller: Controller, view: View, outState: Bundle) -> Unit)? = null,
     private val onChangeStarted: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null,
     private val onChangeEnded: ((controller: Controller, other: Controller?, changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) -> Unit)? = null
 ) : ControllerLifecycleListener {
-    override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
-        preCreate?.invoke(controller, savedInstanceState)
+    override fun preCreate(controller: Controller) {
+        preCreate?.invoke(controller)
     }
 
-    override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
-        postCreate?.invoke(controller, savedInstanceState)
+    override fun postCreate(controller: Controller) {
+        postCreate?.invoke(controller)
     }
 
-    override fun preCreateView(controller: Controller, savedViewState: Bundle?) {
-        preCreateView?.invoke(controller, savedViewState)
+    override fun preCreateView(controller: Controller) {
+        preCreateView?.invoke(controller)
     }
 
-    override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
-        postCreateView?.invoke(controller, view, savedViewState)
+    override fun postCreateView(controller: Controller, view: View) {
+        postCreateView?.invoke(controller, view)
     }
 
     override fun preAttach(controller: Controller, view: View) {
@@ -323,22 +274,6 @@ private class LambdaControllerLifecycleListener(
 
     override fun postDestroy(controller: Controller) {
         postDestroy?.invoke(controller)
-    }
-
-    override fun onRestoreInstanceState(controller: Controller, savedInstanceState: Bundle) {
-        onRestoreInstanceState?.invoke(controller, savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
-        onSaveInstanceState?.invoke(controller, outState)
-    }
-
-    override fun onRestoreViewState(controller: Controller, view: View, savedViewState: Bundle) {
-        onRestoreViewState?.invoke(controller, view, savedViewState)
-    }
-
-    override fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
-        onSaveViewState?.invoke(controller, view, outState)
     }
 
     override fun onChangeStarted(

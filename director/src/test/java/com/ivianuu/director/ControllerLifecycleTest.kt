@@ -16,10 +16,14 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.util.*
+import com.ivianuu.director.util.ActivityProxy
+import com.ivianuu.director.util.CallState
+import com.ivianuu.director.util.MockChangeHandler
+import com.ivianuu.director.util.TestController
+import com.ivianuu.director.util.defaultHandler
+import com.ivianuu.director.util.listeningChangeHandler
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -113,14 +117,6 @@ class ControllerLifecycleTest {
         assertCalls(expectedCallState, controller)
 
         activityProxy.pause()
-
-        val bundle = Bundle()
-        activityProxy.saveInstanceState(bundle)
-
-        expectedCallState.saveInstanceStateCalls++
-        expectedCallState.saveViewStateCalls++
-        assertCalls(expectedCallState, controller)
-
         activityProxy.resume()
 
         assertCalls(expectedCallState, controller)
@@ -133,7 +129,7 @@ class ControllerLifecycleTest {
 
         testController.addLifecycleListener(object : ControllerLifecycleListener {
 
-            override fun preCreate(controller: Controller, savedInstanceState: Bundle?) {
+            override fun preCreate(controller: Controller) {
                 callState.createCalls++
                 assertEquals(1, callState.createCalls)
                 assertEquals(0, testController.currentCallState.createCalls)
@@ -154,7 +150,7 @@ class ControllerLifecycleTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
+            override fun postCreate(controller: Controller) {
                 callState.createCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -175,7 +171,7 @@ class ControllerLifecycleTest {
                 assertEquals(0, testController.currentCallState.destroyCalls)
             }
 
-            override fun preCreateView(controller: Controller, savedViewState: Bundle?) {
+            override fun preCreateView(controller: Controller) {
                 callState.createViewCalls++
                 assertEquals(2, callState.createCalls)
                 assertEquals(1, testController.currentCallState.createCalls)
@@ -198,8 +194,7 @@ class ControllerLifecycleTest {
 
             override fun postCreateView(
                 controller: Controller,
-                view: View,
-                savedViewState: Bundle?
+                view: View
             ) {
                 callState.createViewCalls++
                 assertEquals(2, callState.createCalls)
@@ -539,14 +534,13 @@ class ControllerLifecycleTest {
 
     private fun attachControllerListener(controller: Controller) {
         controller.addLifecycleListener(object : ControllerLifecycleListener {
-            override fun postCreate(controller: Controller, savedInstanceState: Bundle?) {
+            override fun postCreate(controller: Controller) {
                 currentCallState.createCalls++
             }
 
             override fun postCreateView(
                 controller: Controller,
-                view: View,
-                savedViewState: Bundle?
+                view: View
             ) {
                 currentCallState.createViewCalls++
             }
@@ -566,31 +560,6 @@ class ControllerLifecycleTest {
 
             override fun postDestroy(controller: Controller) {
                 currentCallState.destroyCalls++
-            }
-
-            override fun onRestoreInstanceState(
-                controller: Controller,
-                savedInstanceState: Bundle
-            ) {
-                super.onRestoreInstanceState(controller, savedInstanceState)
-                currentCallState.restoreInstanceStateCalls++
-            }
-
-            override fun onSaveInstanceState(controller: Controller, outState: Bundle) {
-                currentCallState.saveInstanceStateCalls++
-            }
-
-            override fun onRestoreViewState(
-                controller: Controller,
-                view: View,
-                savedViewState: Bundle
-            ) {
-                super.onRestoreViewState(controller, view, savedViewState)
-                currentCallState.restoreViewStateCalls++
-            }
-
-            override fun onSaveViewState(controller: Controller, view: View, outState: Bundle) {
-                currentCallState.saveViewStateCalls++
             }
 
             override fun onChangeStarted(
@@ -626,11 +595,13 @@ class ControllerLifecycleTest {
         child.addLifecycleListener(listener)
 
         parent.addLifecycleListener(
-            preCreate = { _, _ ->
+            preCreate = {
                 parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child.toTransaction())
             },
-            postAttach = { _, _ -> router.popTop() }
+            postAttach = { _, _ ->
+                router.popTop()
+            }
         )
 
         router.push(parent.toTransaction())
@@ -641,8 +612,8 @@ class ControllerLifecycleTest {
         private val child: Controller
     ) : ControllerLifecycleListener {
 
-        override fun postCreateView(controller: Controller, view: View, savedViewState: Bundle?) {
-            super.postCreateView(controller, view, savedViewState)
+        override fun postCreateView(controller: Controller, view: View) {
+            super.postCreateView(controller, view)
             when (controller) {
                 parent -> assertNull(child.view)
                 child -> assertNotNull(parent.view)

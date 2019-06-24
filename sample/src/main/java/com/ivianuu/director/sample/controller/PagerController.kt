@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.Router
 import com.ivianuu.director.common.RouterPagerAdapter
@@ -8,8 +7,7 @@ import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
-import kotlinx.android.synthetic.main.controller_pager.tab_layout
-import kotlinx.android.synthetic.main.controller_pager.view_pager
+import kotlinx.android.synthetic.main.controller_pager.*
 import java.util.*
 
 class PagerController : BaseController() {
@@ -24,7 +22,7 @@ class PagerController : BaseController() {
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRoot) {
                     router.setRoot(
-                        ChildController.newInstance(
+                        ChildController(
                             String.format(
                                 Locale.getDefault(),
                                 "Child #%d (Swipe to see more)",
@@ -41,8 +39,8 @@ class PagerController : BaseController() {
         }
     }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         view_pager.adapter = pagerAdapter
         tab_layout.setupWithViewPager(view_pager)

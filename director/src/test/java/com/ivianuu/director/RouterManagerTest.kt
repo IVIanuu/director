@@ -16,12 +16,9 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
-import com.ivianuu.director.util.TestController
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -54,56 +51,6 @@ class RouterManagerTest {
         manager.removeRouter(router1)
 
         assertEquals(0, manager.routers.size)
-    }
-
-    @Test
-    fun testRestoredRouterBackstack() {
-        val transaction1 = TestController().toTransaction()
-        val transaction2 = TestController().toTransaction()
-
-        var router = manager.getRouter(activityProxy.view1)
-            .apply { popsLastView = true }
-
-        router.setRoot(transaction1)
-        router.push(transaction2)
-
-        val savedState = Bundle().also { router.saveInstanceState(it) }
-        manager.removeRouter(router)
-
-        router = manager.getRouter(activityProxy.view1)
-        assertEquals(0, router.backstackSize)
-
-        router.restoreInstanceState(savedState)
-
-        assertEquals(2, router.backstackSize)
-
-        val restoredTransaction1 = router.backstack.first()
-        val restoredTransaction2 = router.backstack[1]
-
-        assertEquals(
-            transaction1.transactionIndex,
-            restoredTransaction1.transactionIndex
-        )
-        assertEquals(
-            transaction1.controller.instanceId,
-            restoredTransaction1.controller.instanceId
-        )
-
-        assertEquals(
-            transaction2.transactionIndex,
-            restoredTransaction2.transactionIndex
-        )
-        assertEquals(
-            transaction2.controller.instanceId,
-            restoredTransaction2.controller.instanceId
-        )
-
-        assertTrue(router.handleBack())
-        assertEquals(1, router.backstackSize)
-        assertEquals(restoredTransaction1, router.backstack[0])
-
-        assertTrue(router.handleBack())
-        assertEquals(0, router.backstackSize)
     }
 
 }

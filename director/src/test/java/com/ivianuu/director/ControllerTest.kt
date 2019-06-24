@@ -73,10 +73,10 @@ class ControllerTest {
         assertEquals(INITIALIZED, controller.state)
 
         controller.addLifecycleListener(
-            preCreate = { _, _ -> assertEquals(INITIALIZED, controller.state) },
-            postCreate = { _, _ -> assertEquals(CREATED, controller.state) },
-            preCreateView = { _, _ -> assertEquals(CREATED, controller.state) },
-            postCreateView = { _, _, _ -> assertEquals(VIEW_CREATED, controller.state) },
+            preCreate = { assertEquals(INITIALIZED, controller.state) },
+            postCreate = { assertEquals(CREATED, controller.state) },
+            preCreateView = { assertEquals(CREATED, controller.state) },
+            postCreateView = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
             preAttach = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
             postAttach = { _, _ -> assertEquals(ATTACHED, controller.state) },
             preDetach = { _, _ -> assertEquals(ATTACHED, controller.state) },

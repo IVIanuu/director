@@ -16,18 +16,15 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.internal.TransactionIndexer
 
 /**
  * Hosts a group of [Router]s
  */
 class RouterManager(
     val activity: FragmentActivity,
-    val parent: Controller? = null,
-    private var postponeFullRestore: Boolean = false
+    val parent: Controller? = null
 ) {
 
     /**
@@ -38,22 +35,10 @@ class RouterManager(
 
     var isStarted = false
         private set
-    var isBeingDestroyed = false
-        private set
     var isDestroyed = false
         private set
 
     private var rootView: ViewGroup? = null
-
-    private var routerStates: Map<Router, Bundle>? = null
-
-    internal val transactionIndexer = TransactionIndexer()
-
-    /**
-     * Will be used to instantiate controllers after config changes or process death
-     */
-    var controllerFactory: ControllerFactory =
-        DirectorPlugins.defaultControllerFactory ?: ReflectiveControllerFactory
 
     /**
      * Sets the root view for all routers
@@ -91,17 +76,11 @@ class RouterManager(
         _routers.reversed().forEach { it.stop() }
     }
 
-    fun willBeDestroyed() {
-        isBeingDestroyed = true
-        _routers.reversed().forEach { it.willBeDestroyed() }
-    }
-
     /**
      * Notifies that the host was destroyed
      */
     fun onDestroy() {
         isDestroyed = true
-        willBeDestroyed()
         _routers.reversed().forEach {
             if (it.isStarted) {
                 it.stop()
@@ -113,37 +92,6 @@ class RouterManager(
 
             it.destroy()
         }
-    }
-
-    /**
-     * Restores the instance state of all routers
-     */
-    fun restoreInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            restoreBasicState(it)
-
-            transactionIndexer.restoreInstanceState(
-                it.getBundle(KEY_TRANSACTION_INDEXER)!!
-            )
-
-            if (!postponeFullRestore) {
-                restoreFullState()
-            }
-        }
-    }
-
-    /**
-     * Saves the instance state of all containing routers
-     */
-    fun saveInstanceState(outState: Bundle) {
-        outState.putBundle(
-            KEY_TRANSACTION_INDEXER,
-            transactionIndexer.saveInstanceState()
-        )
-        val routerStates = _routers.map { router ->
-            Bundle().also { router.saveInstanceState(it) }
-        }
-        outState.putParcelableArrayList(KEY_ROUTER_STATES, ArrayList(routerStates))
     }
 
     /**
@@ -173,9 +121,6 @@ class RouterManager(
         if (router == null) {
             router = Router(containerId, tag, this)
             _routers.add(router)
-            if (isBeingDestroyed) {
-                router.willBeDestroyed()
-            }
             if (isDestroyed) {
                 router.destroy()
             } else if (isStarted) {
@@ -193,8 +138,6 @@ class RouterManager(
      */
     fun removeRouter(router: Router) {
         if (_routers.remove(router)) {
-            router.willBeDestroyed()
-
             if (router.isStarted) {
                 router.stop()
             }
@@ -205,48 +148,12 @@ class RouterManager(
         }
     }
 
-    fun postponeFullRestore() {
-        postponeFullRestore = true
-    }
-
-    fun startPostponedFullRestore() {
-        if (postponeFullRestore) {
-            postponeFullRestore = false
-            restoreFullState()
-        }
-    }
-
-    private fun restoreBasicState(savedInstanceState: Bundle) {
-        val routerStates = savedInstanceState
-            .getParcelableArrayList<Bundle>(KEY_ROUTER_STATES)!!
-
-        _routers.clear()
-
-        this.routerStates = routerStates
-            .map { routerState ->
-                Router.fromBundle(routerState, this) to routerState
-            }
-            .onEach { _routers.add(it.first) }
-            .toMap()
-    }
-
-    private fun restoreFullState() {
-        routerStates
-            ?.filterKeys { _routers.contains(it) }
-            ?.forEach { it.key.restoreInstanceState(it.value) }
-        routerStates = null
-    }
-
     private fun Router.restoreContainer() {
         if (!hasContainer) {
             rootView?.findViewById<ViewGroup>(containerId)?.let { setContainer(it) }
         }
     }
 
-    private companion object {
-        private const val KEY_ROUTER_STATES = "RouterManager.routerState"
-        private const val KEY_TRANSACTION_INDEXER = "RouterManager.transactionIndexer"
-    }
 }
 
 fun RouterManager.getRouterOrNull(container: ViewGroup, tag: String? = null): Router? {

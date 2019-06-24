@@ -16,7 +16,6 @@
 
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
@@ -39,8 +38,8 @@ class ScopesController : BaseController() {
     override val toolbarTitle: String?
         get() = "Scopes Demo"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate() {
+        super.onCreate()
 
         Observable.interval(1, TimeUnit.SECONDS)
             .doOnDispose { d { "Disposing from onCreate()" } }
@@ -50,8 +49,8 @@ class ScopesController : BaseController() {
             .disposeBy(destroy)
     }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
         d { "onCreateView() called" }
 
@@ -59,7 +58,7 @@ class ScopesController : BaseController() {
             retainView = false
 
             router.push(
-                TextController.newInstance(
+                TextController(
                     "Logcat should now report that the observables from onAttach() and onCreateView() have been disposed of, while the onCreate() observable is still running."
                 ).toTransaction()
                     .changeHandler(HorizontalChangeHandler())
@@ -70,7 +69,7 @@ class ScopesController : BaseController() {
             retainView = true
 
             router.push(
-                TextController.newInstance(
+                TextController(
                     "Logcat should now report that the observables from onAttach() has been disposed of, while the constructor and onCreateView() observables are still running."
                 ).toTransaction()
                     .changeHandler(HorizontalChangeHandler())

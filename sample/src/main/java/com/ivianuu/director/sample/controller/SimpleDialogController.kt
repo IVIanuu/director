@@ -17,7 +17,6 @@
 package com.ivianuu.director.sample.controller
 
 import android.app.Dialog
-import android.os.Bundle
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.ivianuu.director.common.DialogController
@@ -27,7 +26,7 @@ import com.ivianuu.director.common.DialogController
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(activity)
+    override fun onCreateDialog(): Dialog = MaterialDialog.Builder(activity)
         .title("Hello")
         .content("This is a simple dialog controller.")
         .positiveText("OK")

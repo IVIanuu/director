@@ -16,18 +16,17 @@
 
 package com.ivianuu.director
 
-import android.os.Bundle
 import com.ivianuu.director.internal.TransactionIndexer
 
 /**
  * Describes a transaction in a [Router]
  */
-class RouterTransaction {
-
+class RouterTransaction(
     /**
      * The controller of this transaction
      */
     val controller: Controller
+) {
 
     /**
      * The tag of this transaction
@@ -59,29 +58,9 @@ class RouterTransaction {
     internal var transactionIndex = INVALID_INDEX
     internal var isAddedToRouter = false
 
-    constructor(controller: Controller) {
-        this.controller = controller
-    }
-
-    private constructor(
-        controller: Controller,
-        tag: String?,
-        pushChangeHandler: ControllerChangeHandler?,
-        popChangeHandler: ControllerChangeHandler?,
-        transactionIndex: Int,
-        attachedToRouter: Boolean
-    ) {
-        this.controller = controller
-        this.pushChangeHandler = pushChangeHandler
-        this.popChangeHandler = popChangeHandler
-        this.tag = tag
-        this.transactionIndex = transactionIndex
-        this.isAddedToRouter = attachedToRouter
-    }
-
-    internal fun ensureValidIndex(indexer: TransactionIndexer) {
+    internal fun ensureValidIndex() {
         if (transactionIndex == INVALID_INDEX) {
-            transactionIndex = indexer.nextIndex()
+            transactionIndex = TransactionIndexer.nextIndex()
         }
     }
 
@@ -91,44 +70,8 @@ class RouterTransaction {
         }
     }
 
-    internal fun toBundle(): Bundle {
-        return Bundle().apply {
-            putBundle(KEY_CONTROLLER_BUNDLE, controller.saveInstanceState())
-            pushChangeHandler?.let { putBundle(KEY_PUSH_CHANGE_HANDLER, it.toBundle()) }
-            popChangeHandler?.let { putBundle(KEY_POP_CHANGE_HANDLER, it.toBundle()) }
-            putString(KEY_TAG, tag)
-            putInt(KEY_INDEX, transactionIndex)
-            putBoolean(KEY_ADDED_TO_ROUTER, isAddedToRouter)
-        }
-    }
-
     internal companion object {
-        private const val KEY_CONTROLLER_BUNDLE = "RouterTransaction.controller.bundle"
-        private const val KEY_PUSH_CHANGE_HANDLER = "RouterTransaction.pushChangeHandler"
-        private const val KEY_POP_CHANGE_HANDLER = "RouterTransaction.popChangeHandler"
-        private const val KEY_TAG = "RouterTransaction.tag"
-        private const val KEY_INDEX = "RouterTransaction.transactionIndex"
-        private const val KEY_ADDED_TO_ROUTER = "RouterTransaction.isAddedToRouter"
-
         const val INVALID_INDEX = -1
-
-        fun fromBundle(
-            bundle: Bundle,
-            controllerFactory: ControllerFactory
-        ): RouterTransaction {
-            return RouterTransaction(
-                Controller.fromBundle(bundle.getBundle(KEY_CONTROLLER_BUNDLE)!!, controllerFactory),
-                bundle.getString(KEY_TAG),
-                bundle.getBundle(KEY_PUSH_CHANGE_HANDLER)?.let {
-                    ControllerChangeHandler.fromBundle(
-                        it
-                    )
-                },
-                bundle.getBundle(KEY_POP_CHANGE_HANDLER)?.let(ControllerChangeHandler.Companion::fromBundle),
-                bundle.getInt(KEY_INDEX),
-                bundle.getBoolean(KEY_ADDED_TO_ROUTER)
-            )
-        }
     }
 }
 

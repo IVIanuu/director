@@ -1,14 +1,19 @@
 package com.ivianuu.director.sample.controller
 
 import android.content.res.ColorStateList
-import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.CircularRevealChangeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
+import com.ivianuu.director.popToRoot
+import com.ivianuu.director.push
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
 import com.ivianuu.director.sample.changehandler.FlipChangeHandler
@@ -20,23 +25,22 @@ import com.ivianuu.director.sample.controller.TransitionDemoController.Transitio
 import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.HORIZONTAL
 import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.VERTICAL
 import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.values
-import com.ivianuu.director.sample.util.bundleOf
-import kotlinx.android.synthetic.main.controller_transition_demo.bg_view
-import kotlinx.android.synthetic.main.controller_transition_demo.btn_next
-import kotlinx.android.synthetic.main.controller_transition_demo.transition_root
-import kotlinx.android.synthetic.main.controller_transition_demo.tv_title
+import com.ivianuu.director.toTransaction
+import kotlinx.android.synthetic.main.controller_transition_demo.*
 
-class TransitionDemoController : BaseController() {
+class TransitionDemoController(
+    private val index: Int
+) : BaseController() {
 
     override val layoutRes: Int
         get() = transitionDemo.layoutId
     override val toolbarTitle: String?
         get() = "Transition Demos"
 
-    private val transitionDemo by lazy { TransitionDemo.fromIndex(args.getInt(KEY_INDEX)) }
+    private val transitionDemo by lazy { TransitionDemo.fromIndex(index) }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
         if (transitionDemo.colorId != 0 && bg_view != null) {
             bg_view.setBackgroundColor(
                 ContextCompat.getColor(
@@ -82,12 +86,16 @@ class TransitionDemoController : BaseController() {
         FADE -> FadeChangeHandler()
         FLIP -> FlipChangeHandler()
         ARC_FADE -> ArcFadeMoveChangeHandler(
-            from.resources.getString(R.string.transition_tag_dot),
-            from.resources.getString(R.string.transition_tag_title)
+            listOf(
+                from.resources.getString(R.string.transition_tag_dot),
+                from.resources.getString(R.string.transition_tag_title)
+            )
         )
         ARC_FADE_RESET -> ArcFadeMoveChangeHandler(
-            from.resources.getString(R.string.transition_tag_dot),
-            from.resources.getString(R.string.transition_tag_title)
+            listOf(
+                from.resources.getString(R.string.transition_tag_dot),
+                from.resources.getString(R.string.transition_tag_title)
+            )
         )
         HORIZONTAL -> HorizontalChangeHandler()
     }
@@ -131,14 +139,8 @@ class TransitionDemoController : BaseController() {
     }
 
     companion object {
-        private const val KEY_INDEX = "TransitionDemoController.index"
-
-        fun newInstance(index: Int) = TransitionDemoController().apply {
-            args = bundleOf(KEY_INDEX to index)
-        }
-
         fun getNextTransaction(index: Int, fromController: Controller): RouterTransaction {
-            val toController = newInstance(index)
+            val toController = TransitionDemoController(index)
             return toController
                 .toTransaction()
                 .changeHandler(toController.getChangeHandler(fromController))

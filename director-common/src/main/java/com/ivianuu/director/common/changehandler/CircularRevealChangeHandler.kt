@@ -3,7 +3,6 @@ package com.ivianuu.director.common.changehandler
 import android.animation.Animator
 import android.annotation.TargetApi
 import android.os.Build
-import android.os.Bundle
 import android.view.View
 import android.view.ViewAnimationUtils
 import com.ivianuu.director.ChangeData
@@ -66,20 +65,4 @@ open class CircularRevealChangeHandler : AnimatorChangeHandler {
     override fun resetFromView(from: View) {
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putInt(KEY_CX, cx)
-        bundle.putInt(KEY_CY, cy)
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        cx = bundle.getInt(KEY_CX)
-        cy = bundle.getInt(KEY_CY)
-    }
-
-    companion object {
-        private const val KEY_CX = "CircularRevealChangeHandler.cx"
-        private const val KEY_CY = "CircularRevealChangeHandler.cy"
-    }
 }

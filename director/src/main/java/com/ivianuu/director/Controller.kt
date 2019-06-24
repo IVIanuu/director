@@ -2,35 +2,29 @@ package com.ivianuu.director
 
 import android.app.Application
 import android.content.res.Resources
-import android.os.Bundle
 import android.os.Parcelable
 import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.*
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.SavedStateRegistryController
-import androidx.savedstate.SavedStateRegistryOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import com.ivianuu.director.ControllerState.ATTACHED
 import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_CREATED
 import com.ivianuu.director.internal.ControllerViewModelStores
-import com.ivianuu.director.internal.classForNameOrThrow
 import java.util.*
 
 /**
  * Lightweight view controller with a lifecycle
  */
-abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner {
-
-    /**
-     * The arguments of this controller
-     */
-    var args = Bundle(javaClass.classLoader)
+abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
     /**
      * The router of this controller
@@ -86,24 +80,13 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
                 ?: error("can only access the viewLifecycleOwner while the view is created")
     private var _viewLifecycleOwner: ControllerViewLifecycleOwner? = null
 
-    private val savedStateRegistryController =
-        SavedStateRegistryController.create(this)
-
     /**
      * The current state of this controller
      */
     var state: ControllerState = INITIALIZED
         private set
 
-    /**
-     * Whether or not this controller is currently in the process of being destroyed
-     */
-    var isBeingDestroyed = false
-        private set
-
-    private var allState: Bundle? = null
-    private var viewState: Bundle? = null
-    private var isRestoring = false
+    private var viewState: SparseArray<Parcelable>? = null
 
     /**
      * Whether or not the view should be retained while being detached
@@ -120,7 +103,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      * The child router manager of this controller
      */
     val childRouterManager by lazy(LazyThreadSafetyMode.NONE) {
-        RouterManager(activity, this, true)
+        RouterManager(activity, this)
     }
 
     private val listeners = mutableListOf<ControllerLifecycleListener>()
@@ -130,10 +113,8 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     /**
      * Will be called once when this controller gets attached to its router
      */
-    protected open fun onCreate(savedInstanceState: Bundle?) {
+    protected open fun onCreate() {
         superCalled = true
-        // restore the full instance state of child routers
-        childRouterManager.startPostponedFullRestore()
     }
 
     /**
@@ -148,8 +129,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      */
     protected abstract fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup,
-        savedViewState: Bundle?
+        container: ViewGroup
     ): View
 
     /**
@@ -170,34 +150,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
      * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
-        superCalled = true
-    }
-
-    /**
-     * Will be called when the instance state gets restores
-     */
-    protected open fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        superCalled = true
-    }
-
-    /**
-     * Called to save the instance state of this controller
-     */
-    protected open fun onSaveInstanceState(outState: Bundle) {
-        superCalled = true
-    }
-
-    /**
-     * Will be called when the view state gets restored
-     */
-    protected open fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        superCalled = true
-    }
-
-    /**
-     * Called to save the view state of this controller
-     */
-    protected open fun onSaveViewState(view: View, outState: Bundle) {
         superCalled = true
     }
 
@@ -242,19 +194,7 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         listeners.remove(listener)
     }
 
-    /**
-     * Sets the initial state of this controller which was previously created by
-     * [Router.saveControllerInstanceState]
-     */
-    fun setInitialSavedState(initialState: Bundle?) {
-        check(!isCreated) { "controller already added" }
-        allState = initialState
-    }
-
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
-
-    override fun getSavedStateRegistry(): SavedStateRegistry =
-        savedStateRegistryController.savedStateRegistry
 
     override fun getViewModelStore(): ViewModelStore {
         if (_viewModelStore == null) {
@@ -268,25 +208,16 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     internal fun create(router: Router) {
         _router = router
 
-        allState?.let { restoreInternalState(it) }
-
-        val instanceState = allState?.getBundle(KEY_SAVED_STATE)
-            ?.also { it.classLoader = this::class.java.classLoader }
-
         // create
-        notifyListeners { it.preCreate(this, instanceState) }
+        notifyListeners { it.preCreate(this) }
 
         state = CREATED
-        savedStateRegistryController.performRestore(instanceState)
 
-        requireSuperCalled { onCreate(instanceState) }
+        requireSuperCalled { onCreate() }
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        notifyListeners { it.postCreate(this, instanceState) }
-
-        instanceState?.let { restoreUserInstanceState(it) }
-        allState = null
+        notifyListeners { it.postCreate(this) }
     }
 
     internal fun destroy() {
@@ -301,41 +232,29 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
         notifyListeners { it.postDestroy(this) }
 
-        if (!activity.isChangingConfigurations && _viewModelStore != null) {
+        if (_viewModelStore != null) {
             ControllerViewModelStores.get(this)
                 .removeViewModelStore(instanceId)
         }
     }
 
     internal fun createView(container: ViewGroup): View {
-        val savedViewState = viewState?.getBundle(KEY_VIEW_STATE_BUNDLE)
-            ?.also { it.classLoader = this::class.java.classLoader }
-
-        notifyListeners { it.preCreateView(this, savedViewState) }
+        notifyListeners { it.preCreateView(this) }
 
         _viewLifecycleOwner = ControllerViewLifecycleOwner()
 
         val view = onCreateView(
             LayoutInflater.from(container.context),
-            container,
-            savedViewState
+            container
         ).also { this.view = it }
 
         state = VIEW_CREATED
         _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
 
-        notifyListeners { it.postCreateView(this, view, savedViewState) }
+        notifyListeners { it.postCreateView(this, view) }
 
         // restore hierarchy
-        viewState
-            ?.getSparseParcelableArray<Parcelable>(KEY_VIEW_STATE_HIERARCHY)
-            ?.let { view.restoreHierarchyState(it) }
-
-        if (savedViewState != null) {
-            requireSuperCalled { onRestoreViewState(view, savedViewState) }
-            notifyListeners { it.onRestoreViewState(this, view, savedViewState) }
-        }
-
+        viewState?.let { view.restoreHierarchyState(it) }
         viewState = null
 
         setChildRootView()
@@ -345,8 +264,9 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
 
     internal fun destroyView() {
         val view = requireView()
-        if (!isBeingDestroyed && viewState == null) {
-            saveViewState()
+        if (viewState == null) {
+            viewState = SparseArray<Parcelable>()
+                .also { view.saveHierarchyState(it) }
         }
 
         removeChildRootView()
@@ -409,69 +329,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         notifyListeners { it.postDetach(this, view) }
     }
 
-    internal fun saveInstanceState(): Bundle {
-        if (view != null && viewState == null) {
-            saveViewState()
-        }
-
-        val outState = Bundle(this::class.java.classLoader)
-        outState.putString(KEY_CLASS_NAME, javaClass.name)
-        outState.putBundle(KEY_VIEW_STATE, viewState)
-        outState.putBundle(KEY_ARGS, args)
-        outState.putString(KEY_INSTANCE_ID, instanceId)
-        outState.putBoolean(KEY_RETAIN_VIEW, retainView)
-
-        val savedState = Bundle(this::class.java.classLoader)
-        requireSuperCalled { onSaveInstanceState(savedState) }
-        savedStateRegistryController.performSave(savedState)
-        notifyListeners { it.onSaveInstanceState(this, savedState) }
-        outState.putBundle(KEY_SAVED_STATE, savedState)
-        outState.putBundle(KEY_CHILD_ROUTER_MANAGER,
-            Bundle().also { childRouterManager.saveInstanceState(it) })
-
-        return outState
-    }
-
-    private fun restoreInternalState(savedInstanceState: Bundle) {
-        isRestoring = true
-
-        args = savedInstanceState.getBundle(KEY_ARGS)!!
-            .also { it.classLoader = this::class.java.classLoader }
-        viewState = savedInstanceState.getBundle(KEY_VIEW_STATE)
-            ?.also { it.classLoader = this::class.java.classLoader }
-        instanceId = savedInstanceState.getString(KEY_INSTANCE_ID)!!
-        retainView = savedInstanceState.getBoolean(KEY_RETAIN_VIEW)
-        childRouterManager.restoreInstanceState(
-            savedInstanceState.getBundle(KEY_CHILD_ROUTER_MANAGER)!!
-        )
-
-        isRestoring = false
-    }
-
-    private fun restoreUserInstanceState(savedInstanceState: Bundle) {
-        requireSuperCalled { onRestoreInstanceState(savedInstanceState) }
-        notifyListeners { it.onRestoreInstanceState(this, savedInstanceState) }
-    }
-
-    private fun saveViewState() {
-        val view = requireView()
-
-        val viewState = Bundle()
-            .also { it.classLoader = this::class.java.classLoader }
-            .also { this.viewState = it }
-
-        val hierarchyState = SparseArray<Parcelable>()
-        view.saveHierarchyState(hierarchyState)
-        viewState.putSparseParcelableArray(KEY_VIEW_STATE_HIERARCHY, hierarchyState)
-
-        val stateBundle = Bundle()
-            .also { it.classLoader = this::class.java.classLoader }
-        requireSuperCalled { onSaveViewState(view, stateBundle) }
-        viewState.putBundle(KEY_VIEW_STATE_BUNDLE, stateBundle)
-
-        notifyListeners { it.onSaveViewState(this, view, viewState) }
-    }
-
     internal fun changeStarted(
         other: Controller?,
         changeHandler: ControllerChangeHandler,
@@ -488,11 +345,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
     ) {
         requireSuperCalled { onChangeEnded(other, changeHandler, changeType) }
         notifyListeners { it.onChangeEnded(this, other, changeHandler, changeType) }
-    }
-
-    internal fun willBeDestroyed() {
-        isBeingDestroyed = true
-        childRouterManager.willBeDestroyed()
     }
 
     private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
@@ -516,28 +368,6 @@ abstract class Controller : LifecycleOwner, SavedStateRegistryOwner, ViewModelSt
         override fun getLifecycle(): Lifecycle = lifecycleRegistry
     }
 
-    companion object {
-        private const val KEY_CLASS_NAME = "Controller.className"
-        private const val KEY_VIEW_STATE = "Controller.viewState"
-        private const val KEY_CHILD_ROUTER_MANAGER = "Controller.childRouterStates"
-        private const val KEY_SAVED_STATE = "Controller.savedState"
-        private const val KEY_INSTANCE_ID = "Controller.instanceId"
-        private const val KEY_ARGS = "Controller.args"
-        private const val KEY_VIEW_STATE_HIERARCHY = "Controller.viewState.hierarchy"
-        private const val KEY_VIEW_STATE_BUNDLE = "Controller.viewState.bundle"
-        private const val KEY_RETAIN_VIEW = "Controller.retainViewMode"
-
-        internal fun fromBundle(bundle: Bundle, factory: ControllerFactory): Controller {
-            val className = bundle.getString(KEY_CLASS_NAME)!!
-            val cls = classForNameOrThrow(className)
-
-            return factory.createController(cls.classLoader!!, className).apply {
-                this.allState = bundle.also {
-                    it.classLoader = this::class.java.classLoader
-                }
-            }
-        }
-    }
 }
 
 val Controller.isCreated: Boolean get() = state.isAtLeast(CREATED)

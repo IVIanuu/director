@@ -18,7 +18,6 @@ package com.ivianuu.director.sample.controller
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.ivianuu.director.activitycallbacks.addPermissionResultListener
@@ -36,13 +35,13 @@ class PermissionController : BaseController() {
     override val toolbarTitle: String?
         get() = "Permission"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate() {
+        super.onCreate()
         addPermissionResultListener(REQUEST_CODE_PERMISSION) { _, _, _ -> updateState() }
     }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
         grant.setOnClickListener {
             requestPermissions(
                 arrayOf(Manifest.permission.CAMERA),

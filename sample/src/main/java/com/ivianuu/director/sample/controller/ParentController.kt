@@ -1,10 +1,24 @@
 package com.ivianuu.director.sample.controller
 
 import android.view.ViewGroup
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
+import com.ivianuu.director.ControllerChangeHandler
+import com.ivianuu.director.ControllerChangeType
+import com.ivianuu.director.changeHandler
+import com.ivianuu.director.childRouters
+import com.ivianuu.director.clear
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.doOnChangeEnd
+import com.ivianuu.director.doOnChangeEnded
+import com.ivianuu.director.getChildRouter
+import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popTop
+import com.ivianuu.director.removeChildRouter
+import com.ivianuu.director.resources
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 
 class ParentController : BaseController() {
 
@@ -39,7 +53,7 @@ class ParentController : BaseController() {
             childRouter.popsLastView = true
 
             if (!childRouter.hasRoot) {
-                val childController = ChildController.newInstance(
+                val childController = ChildController(
                     "Child Controller #$index",
                     ColorUtil.getMaterialColor(resources, index),
                     false
