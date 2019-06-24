@@ -72,9 +72,9 @@ class Router internal constructor(
         isPush: Boolean,
         handler: ControllerChangeHandler? = null
     ) {
-        /*check(!settingBackstack) {
+        check(!settingBackstack) {
             "Cannot call setBackstack from within a setBackstack call"
-        }*/ // todo
+        }
 
         if (isDestroyed) return
 
