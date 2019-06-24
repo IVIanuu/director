@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.internal
+package com.ivianuu.director
 
 internal object TransactionIndexer {
 

@@ -16,8 +16,6 @@
 
 package com.ivianuu.director
 
-import com.ivianuu.director.internal.TransactionIndexer
-
 /**
  * Describes a transaction in a [Router]
  */

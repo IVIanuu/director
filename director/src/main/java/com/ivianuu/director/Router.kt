@@ -2,7 +2,6 @@ package com.ivianuu.director
 
 import android.view.ViewGroup
 import com.ivianuu.director.ControllerState.DESTROYED
-import com.ivianuu.director.internal.moveView
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s

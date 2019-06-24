@@ -1,5 +1,9 @@
 package com.ivianuu.director
 
+import android.view.View
+import android.view.ViewGroup
+import java.util.*
+
 /**
  * Swaps views on controller changes
  */
@@ -33,4 +37,18 @@ abstract class ControllerChangeHandler {
         fun changeCompleted()
     }
 
+}
+
+fun ViewGroup.moveView(view: View, to: Int) {
+    if (to == -1) {
+        view.bringToFront()
+        return
+    }
+    val index = indexOfChild(view)
+    if (index == -1 || index == to) return
+    val allViews = (0 until childCount).map { getChildAt(it) }.toMutableList()
+    Collections.swap(allViews, index, to)
+    allViews.forEach { it.bringToFront() }
+    requestLayout()
+    invalidate()
 }

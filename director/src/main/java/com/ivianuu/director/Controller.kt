@@ -18,8 +18,6 @@ import com.ivianuu.director.ControllerState.CREATED
 import com.ivianuu.director.ControllerState.DESTROYED
 import com.ivianuu.director.ControllerState.INITIALIZED
 import com.ivianuu.director.ControllerState.VIEW_CREATED
-import com.ivianuu.director.internal.ControllerViewModelStores
-import java.util.*
 
 /**
  * Lightweight view controller with a lifecycle
@@ -61,13 +59,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
     var view: View? = null
         private set
 
-    /**
-     * The instance id of this controller
-     */
-    var instanceId = UUID.randomUUID().toString()
-        private set
-
-    private var _viewModelStore: ViewModelStore? = null
+    private val _viewModelStore by lazy { ViewModelStore() }
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
@@ -196,14 +188,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
-    override fun getViewModelStore(): ViewModelStore {
-        if (_viewModelStore == null) {
-            _viewModelStore = ControllerViewModelStores.get(this)
-                .getViewModelStore(instanceId)
-        }
-
-        return _viewModelStore!!
-    }
+    override fun getViewModelStore(): ViewModelStore = _viewModelStore
 
     internal fun create(router: Router) {
         _router = router
@@ -232,10 +217,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
         notifyListeners { it.postDestroy(this) }
 
-        if (_viewModelStore != null) {
-            ControllerViewModelStores.get(this)
-                .removeViewModelStore(instanceId)
-        }
+        _viewModelStore.clear()
     }
 
     internal fun createView(container: ViewGroup): View {
