@@ -28,6 +28,7 @@ import com.ivianuu.director.getRouter
 /**
  * A [PagerAdapter] that uses [Router]s as pages
  */
+// todo
 abstract class RouterPagerAdapter(
     private val manager: RouterManager
 ) : PagerAdapter() {

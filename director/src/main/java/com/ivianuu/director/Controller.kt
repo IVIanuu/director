@@ -61,20 +61,16 @@ abstract class Controller {
 
     private val listeners = mutableListOf<ControllerLifecycleListener>()
 
-    private var superCalled = false
-
     /**
      * Will be called once when this controller gets attached to its router
      */
     protected open fun onCreate() {
-        superCalled = true
     }
 
     /**
      * Called when this Controller has been destroyed.
      */
     protected open fun onDestroy() {
-        superCalled = true
     }
 
     /**
@@ -89,21 +85,18 @@ abstract class Controller {
      * Called when the view of this controller gets destroyed
      */
     protected open fun onDestroyView(view: View) {
-        superCalled = true
     }
 
     /**
      * Called when this Controller is attached to its container
      */
     protected open fun onAttach(view: View) {
-        superCalled = true
     }
 
     /**
      * Called when this Controller is detached from its container
      */
     protected open fun onDetach(view: View) {
-        superCalled = true
     }
 
     /**
@@ -132,7 +125,7 @@ abstract class Controller {
         notifyListeners { it.preCreate(this) }
 
         state = CREATED
-        requireSuperCalled { onCreate() }
+        onCreate()
 
         notifyListeners { it.postCreate(this) }
     }
@@ -143,7 +136,7 @@ abstract class Controller {
         notifyListeners { it.preDestroy(this) }
 
         state = DESTROYED
-        requireSuperCalled { onDestroy() }
+        onDestroy()
 
         notifyListeners { it.postDestroy(this) }
     }
@@ -178,8 +171,7 @@ abstract class Controller {
         removeChildRootView()
 
         notifyListeners { it.preDestroyView(this, view) }
-
-        requireSuperCalled { onDestroyView(view) }
+        onDestroyView(view)
         this.view = null
         state = CREATED
 
@@ -199,7 +191,7 @@ abstract class Controller {
 
         notifyListeners { it.preAttach(this, view) }
         state = ATTACHED
-        requireSuperCalled { onAttach(view) }
+        onAttach(view)
         notifyListeners { it.postAttach(this, view) }
 
         viewState = null
@@ -215,19 +207,13 @@ abstract class Controller {
         notifyListeners { it.preDetach(this, view) }
 
         state = VIEW_CREATED
-        requireSuperCalled { onDetach(view) }
+        onDetach(view)
 
         notifyListeners { it.postDetach(this, view) }
     }
 
     private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
         (listeners + router.getControllerLifecycleListeners()).forEach(block)
-    }
-
-    private inline fun requireSuperCalled(block: () -> Unit) {
-        superCalled = false
-        block()
-        check(superCalled) { "super not called ${javaClass.name}" }
     }
 
 }
