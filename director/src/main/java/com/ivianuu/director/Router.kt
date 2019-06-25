@@ -295,7 +295,7 @@ class Router internal constructor(val parent: Controller? = null) {
         container = null
     }
 
-    internal fun start() {
+    fun start() {
         isStarted = true
         // attach visible controllers
         _backstack
@@ -306,7 +306,7 @@ class Router internal constructor(val parent: Controller? = null) {
             .forEach { it.attach() }
     }
 
-    internal fun stop() {
+    fun stop() {
         isStarted = false
 
         endAllChanges()
@@ -317,7 +317,7 @@ class Router internal constructor(val parent: Controller? = null) {
             .forEach { it.controller.detach() }
     }
 
-    internal fun destroy() {
+    fun destroy() {
         isDestroyed = true
 
         _backstack
