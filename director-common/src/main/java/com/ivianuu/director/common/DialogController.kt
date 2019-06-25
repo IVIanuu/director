@@ -51,7 +51,7 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
     ): View {
         val view = View(inflater.context) // dummy view
 
-        val dialog = onCreateDialog().also { this.dialog = it }
+        val dialog = onCreateDialog(inflater, container).also { this.dialog = it }
 
         dialog.setOnCancelListener(this)
         dialog.setOnDismissListener(this)
@@ -65,7 +65,10 @@ abstract class DialogController : Controller(), DialogInterface.OnCancelListener
     /**
      * Creates dialog which should be shown in this controller
      */
-    protected abstract fun onCreateDialog(): Dialog
+    protected abstract fun onCreateDialog(
+        inflater: LayoutInflater,
+        container: ViewGroup
+    ): Dialog
 
     override fun onAttach(view: View) {
         super.onAttach(view)

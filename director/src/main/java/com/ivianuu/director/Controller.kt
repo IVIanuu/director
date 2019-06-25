@@ -156,7 +156,7 @@ abstract class Controller {
         viewState?.let { view.restoreHierarchyState(it) }
         viewState = null
 
-        setChildRootView()
+        (view as? ViewGroup)?.let { childRouterManager.setRootView(it) }
 
         return view
     }
@@ -168,9 +168,10 @@ abstract class Controller {
                 .also { view.saveHierarchyState(it) }
         }
 
-        removeChildRootView()
+        childRouterManager.removeRootView()
 
         notifyListeners { it.preDestroyView(this, view) }
+
         onDestroyView(view)
         this.view = null
         state = CREATED
@@ -178,20 +179,14 @@ abstract class Controller {
         notifyListeners { it.postDestroyView(this) }
     }
 
-    internal fun setChildRootView() {
-        (view as? ViewGroup)?.let { childRouterManager.setRootView(it) }
-    }
-
-    internal fun removeChildRootView() {
-        childRouterManager.removeRootView()
-    }
-
     internal fun attach() {
         val view = requireView()
 
         notifyListeners { it.preAttach(this, view) }
+
         state = ATTACHED
         onAttach(view)
+
         notifyListeners { it.postAttach(this, view) }
 
         viewState = null

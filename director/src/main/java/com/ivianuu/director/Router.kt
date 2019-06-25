@@ -363,7 +363,7 @@ class Router internal constructor(
 
         listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
 
-        val toView = to?.view?.also { to.setChildRootView() } ?: to?.createView(container)
+        val toView = to?.view ?: to?.createView(container)
         val fromView = from?.view
 
         val toIndex = getToIndex(to, from, isPush)
