@@ -37,7 +37,6 @@ dependencies {
 
     implementation(project(":director"))
     implementation(project(":director-common"))
-    implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
 
     implementation(Deps.epoxy)
@@ -48,8 +47,6 @@ dependencies {
     implementation(Deps.materialComponents)
 
     implementation(Deps.rxJava)
-
-    implementation(Deps.scopesRx)
 
     implementation("com.afollestad.material-dialogs:core:0.9.6.0")
 }

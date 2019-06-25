@@ -1,14 +1,7 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
-import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.ivianuu.director.ControllerState.DESTROYED
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s
@@ -84,7 +77,7 @@ class Router internal constructor(val parent: Controller? = null) {
 
         // do not allow pushing destroyed controllers
         newBackstack.forEach {
-            check(it.controller.state != DESTROYED) {
+            check(it.controller.lifecycle.currentState != Lifecycle.State.DESTROYED) {
                 "Trying to push a controller that has already been destroyed $it"
             }
         }
@@ -93,7 +86,7 @@ class Router internal constructor(val parent: Controller? = null) {
         newBackstack.forEach {
             check(
                 !it.isAddedToRouter
-                        || !it.controller.isCreated
+                        || !it.controller.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
                         || it.controller.router == this
             ) {
                 "Trying to push a controller which is attached to another router $it"
@@ -122,7 +115,7 @@ class Router internal constructor(val parent: Controller? = null) {
             .filter { old -> newBackstack.none { it == old } }
 
         val destroyedInvisibleTransactions = destroyedTransactions
-            .filterNot { it.controller.isViewCreated }
+            .filter { it.controller.view == null }
 
         // Ensure all new controllers have a valid router set
         newBackstack.forEach {
@@ -282,12 +275,12 @@ class Router internal constructor(val parent: Controller? = null) {
         _backstack.reversed()
             .map { it.controller }
             .forEach { controller ->
-                if (controller.isAttached) {
+                if (controller.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
                     container?.removeView(controller.view!!)
                     controller.detach()
                 }
 
-                if (controller.isViewCreated) {
+                if (controller.view != null) {
                     controller.destroyView()
                 }
             }
@@ -302,7 +295,7 @@ class Router internal constructor(val parent: Controller? = null) {
             .filterVisible()
             .map { it.controller }
             .filter { it.view?.parent != null }
-            .filterNot { it.isAttached }
+            .filterNot { it.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
             .forEach { it.attach() }
     }
 
@@ -313,8 +306,9 @@ class Router internal constructor(val parent: Controller? = null) {
 
         _backstack
             .reversed()
-            .filter { it.controller.isAttached }
-            .forEach { it.controller.detach() }
+            .map { it.controller }
+            .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
+            .forEach { it.detach() }
     }
 
     fun destroy() {
@@ -419,18 +413,18 @@ class Router internal constructor(val parent: Controller? = null) {
     }
 
     private fun moveControllerToCorrectState(controller: Controller) {
-        if (!controller.isCreated) {
+        if (controller.lifecycle.currentState == Lifecycle.State.INITIALIZED) {
             controller.create(this)
         }
 
         if (isStarted
             && controller.view?.parent != null
-            && !controller.isAttached
+            && !controller.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
         ) {
             controller.attach()
         }
 
-        if (isDestroyed && !controller.isDestroyed) {
+        if (isDestroyed && controller.lifecycle.currentState != Lifecycle.State.DESTROYED) {
             controller.destroy()
         }
     }
@@ -633,70 +627,4 @@ fun Router.popToTransaction(
  */
 fun Router.clear(handler: ControllerChangeHandler? = null) {
     setBackstack(emptyList(), false, handler)
-}
-
-private class RouterHolder : ViewModel() {
-    val router = Router()
-
-    object Factory : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T = RouterHolder() as T
-    }
-}
-
-fun ComponentActivity.router(container: ViewGroup): Router =
-    router { container }
-
-fun ComponentActivity.router(containerId: Int): Router =
-    router { findViewById(containerId) }
-
-fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Router {
-    val holder = ViewModelProvider(this, RouterHolder.Factory)[RouterHolder::class.java]
-    val router = holder.router
-
-    fun canHandleBack(): Boolean =
-        router.backstack.isNotEmpty() &&
-                (router.backstackSize > 1 || router.popsLastView)
-
-    val backPressedCallback = object : OnBackPressedCallback(canHandleBack()) {
-        override fun handleOnBackPressed() {
-            router.handleBack()
-        }
-    }
-
-    onBackPressedDispatcher.addCallback(backPressedCallback)
-
-    val changeListener = router.doOnChangeStarted { _, _, _, _, _, _ ->
-        backPressedCallback.isEnabled = canHandleBack()
-    }
-
-    lifecycle.addObserver(object : LifecycleEventObserver {
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    containerProvider?.invoke()?.let { router.setContainer(it) }
-                }
-                Lifecycle.Event.ON_START -> {
-                    router.start()
-                }
-                Lifecycle.Event.ON_STOP -> {
-                    router.stop()
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    router.removeChangeListener(changeListener)
-
-                    if (containerProvider != null) {
-                        router.removeContainer()
-                    }
-
-                    if (!isChangingConfigurations) {
-                        router.destroy()
-                    } else if (containerProvider != null) {
-                        router.removeContainer()
-                    }
-                }
-            }
-        }
-    })
-
-    return router
 }

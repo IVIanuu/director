@@ -16,14 +16,18 @@
 
 package com.ivianuu.director.sample.controller
 
+import android.view.View
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
-import com.ivianuu.scopes.MutableScope
-import com.ivianuu.scopes.rx.disposeBy
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.controller_arch.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -35,9 +39,7 @@ class ArchController : BaseController() {
     override val toolbarTitle: String?
         get() = "Arch"
 
-    // todo
-
-    /*private val viewModel by lazy {
+    private val viewModel by lazy {
         ViewModelProvider(
             this,
             ViewModelProvider.NewInstanceFactory()
@@ -45,14 +47,14 @@ class ArchController : BaseController() {
     }
 
     init {
-        lifecycle.addObserver(LifecycleEventObserver { source, event ->
+        lifecycle.addObserver(LifecycleEventObserver { _, event ->
             d { "lifecycle event $event" }
         })
     }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
-        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { source, event ->
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
             d { "view lifecycle event $event" }
         })
     }
@@ -61,7 +63,7 @@ class ArchController : BaseController() {
         super.onAttach(view)
         viewModel.count.observe(this, Observer { tv_title.text = "Count: $it" })
     }
-     */
+
 }
 
 class ArchViewModel : ViewModel() {
@@ -69,19 +71,13 @@ class ArchViewModel : ViewModel() {
     val count: LiveData<Long> get() = _count
     private val _count = MutableLiveData<Long>()
 
-    private val scope = MutableScope()
+    private val disposables = CompositeDisposable()
 
     init {
-        scope.addListener { d { "cleared" } }
-
         Observable.interval(1, TimeUnit.SECONDS)
             .startWith(0)
             .subscribe { _count.postValue(it) }
-            .disposeBy(scope)
+            .let { disposables.add(it) }
     }
 
-    override fun onCleared() {
-        scope.close()
-        super.onCleared()
-    }
 }

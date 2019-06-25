@@ -11,7 +11,6 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/director" />
             <option value="$PROJECT_DIR$/director-common" />
-            <option value="$PROJECT_DIR$/director-scopes" />
             <option value="$PROJECT_DIR$/director-traveler" />
             <option value="$PROJECT_DIR$/sample" />
           </set>

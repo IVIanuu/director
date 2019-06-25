@@ -5,16 +5,16 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.ControllerState.ATTACHED
-import com.ivianuu.director.ControllerState.CREATED
-import com.ivianuu.director.ControllerState.DESTROYED
-import com.ivianuu.director.ControllerState.INITIALIZED
-import com.ivianuu.director.ControllerState.VIEW_CREATED
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 
 /**
  * Lightweight view controller with a lifecycle
  */
-abstract class Controller {
+abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
     /**
      * The router of this controller
@@ -41,15 +41,19 @@ abstract class Controller {
     var view: View? = null
         private set
 
-    /**
-     * The current state of this controller
-     */
-    var state: ControllerState = INITIALIZED
-        private set
-
     private var viewState: SparseArray<Parcelable>? = null
 
     private val listeners = mutableListOf<ControllerLifecycleListener>()
+
+    private val _viewModelStore = ViewModelStore()
+
+    private val lifecycleRegistry = LifecycleRegistry(this)
+
+    val viewLifecycleOwner: LifecycleOwner
+        get() =
+            _viewLifecycleOwner
+                ?: error("can only access the viewLifecycleOwner while the view is created")
+    private var _viewLifecycleOwner: ControllerViewLifecycleOwner? = null
 
     /**
      * Will be called once when this controller gets attached to its router
@@ -108,14 +112,18 @@ abstract class Controller {
         listeners.remove(listener)
     }
 
+    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+
+    override fun getViewModelStore(): ViewModelStore = _viewModelStore
+
     internal fun create(router: Router) {
         _router = router
 
         // create
         notifyListeners { it.preCreate(this) }
 
-        state = CREATED
         onCreate()
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         notifyListeners { it.postCreate(this) }
     }
@@ -123,21 +131,26 @@ abstract class Controller {
     internal fun destroy() {
         notifyListeners { it.preDestroy(this) }
 
-        state = DESTROYED
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         onDestroy()
 
         notifyListeners { it.postDestroy(this) }
+
+        _viewModelStore.clear()
     }
 
     internal fun createView(container: ViewGroup): View {
         notifyListeners { it.preCreateView(this) }
+
+        _viewLifecycleOwner = ControllerViewLifecycleOwner()
 
         val view = onCreateView(
             LayoutInflater.from(container.context),
             container
         ).also { this.view = it }
 
-        state = VIEW_CREATED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
+
         notifyListeners { it.postCreateView(this, view) }
 
         // restore hierarchy
@@ -156,9 +169,10 @@ abstract class Controller {
 
         notifyListeners { it.preDestroyView(this, view) }
 
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.DESTROYED
         onDestroyView(view)
         this.view = null
-        state = CREATED
+        _viewLifecycleOwner = null
 
         notifyListeners { it.postDestroyView(this) }
     }
@@ -168,9 +182,13 @@ abstract class Controller {
 
         notifyListeners { it.preAttach(this, view) }
 
-        state = ATTACHED
         onAttach(view)
         viewState = null
+
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.RESUMED
 
         notifyListeners { it.postAttach(this, view) }
     }
@@ -180,7 +198,11 @@ abstract class Controller {
 
         notifyListeners { it.preDetach(this, view) }
 
-        state = VIEW_CREATED
+        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
+        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
+
         onDetach(view)
 
         notifyListeners { it.postDetach(this, view) }
@@ -190,62 +212,20 @@ abstract class Controller {
         (listeners + router.getControllerLifecycleListeners()).forEach(block)
     }
 
+    private class ControllerViewLifecycleOwner : LifecycleOwner {
+        private val lifecycleRegistry = LifecycleRegistry(this)
+        var currentState: Lifecycle.State
+            get() = lifecycleRegistry.currentState
+            set(value) {
+                lifecycleRegistry.currentState = value
+            }
+
+        override fun getLifecycle(): Lifecycle = lifecycleRegistry
+    }
+
 }
-
-val Controller.isCreated: Boolean get() = state.isAtLeast(CREATED)
-
-val Controller.isViewCreated: Boolean get() = state.isAtLeast(VIEW_CREATED)
-
-val Controller.isAttached: Boolean get() = state.isAtLeast(ATTACHED)
-
-val Controller.isDestroyed: Boolean get() = state == DESTROYED
 
 fun Controller.requireView(): View =
     view ?: error("view is only accessible between onCreateView and onDestroyView")
 
 fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
-
-fun Controller.childRouter(container: ViewGroup): Router =
-    childRouter { container }
-
-fun Controller.childRouter(containerId: Int): Router =
-    childRouter { view!!.findViewById(containerId) }
-
-fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router {
-    val router = Router(this)
-
-    if (isDestroyed) {
-        router.destroy()
-        return router
-    }
-
-    if (isViewCreated) {
-        containerProvider?.invoke()?.let { router.setContainer(it) }
-    }
-
-    if (isAttached) {
-        router.start()
-    }
-
-    addLifecycleListener(
-        postCreateView = { _, _ ->
-            containerProvider?.invoke()?.let { router.setContainer(it) }
-        },
-        postAttach = { _, _ ->
-            router.start()
-        },
-        preDetach = { _, _ ->
-            router.stop()
-        },
-        preDestroyView = { _, _ ->
-            if (containerProvider != null) {
-                router.removeContainer()
-            }
-        },
-        preDestroy = {
-            router.destroy()
-        }
-    )
-
-    return router
-}

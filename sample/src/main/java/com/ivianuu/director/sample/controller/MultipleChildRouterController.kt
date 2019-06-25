@@ -1,8 +1,8 @@
 package com.ivianuu.director.sample.controller
 
+import androidx.lifecycle.Lifecycle
 import com.ivianuu.director.Router
 import com.ivianuu.director.childRouter
-import com.ivianuu.director.isAttached
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -37,7 +37,7 @@ class MultipleChildRouterController : BaseController() {
             .flatMap { it.backstack }
             .asSequence()
             .sortedByDescending { it.transactionIndex }
-            .filter { it.controller.isAttached }
+            .filter { it.controller.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
             .map { it.controller.router }
             .any { it.handleBack() }
     }

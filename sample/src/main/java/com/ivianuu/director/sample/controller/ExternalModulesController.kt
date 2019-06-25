@@ -57,7 +57,6 @@ class ExternalModulesController : BaseController() {
     private fun onItemClicked(item: AdditionalModuleItem) {
         when (item) {
             AdditionalModuleItem.ARCH -> router.push(ArchController().toTransaction())
-            AdditionalModuleItem.SCOPES -> router.push(ScopesController().toTransaction())
             AdditionalModuleItem.TRAVELER -> router.push(TravelerController().toTransaction())
         }
     }
@@ -66,7 +65,6 @@ class ExternalModulesController : BaseController() {
 
 enum class AdditionalModuleItem(val title: String, val color: Int) {
     ARCH("Arch", R.color.red_300),
-    SCOPES("Scopes", R.color.blue_grey_300),
     TRAVELER("Traveler", R.color.purple_300)
 }
 

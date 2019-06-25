@@ -84,11 +84,6 @@ object Deps {
 
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
 
-    const val scopes = "com.ivianuu.scopes:scopes:${Versions.scopes}"
-    const val scopesCommon = "com.ivianuu.scopes:scopes-common:${Versions.scopes}"
-    const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
-    const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
-
     const val traveler = "com.ivianuu.traveler:traveler:${Versions.traveler}"
     const val travelerAndroid = "com.ivianuu.traveler:traveler-android:${Versions.traveler}"
     const val travelerCommon =
