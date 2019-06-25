@@ -23,7 +23,6 @@ import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.getRouter
-import com.ivianuu.director.hasContainer
 
 /**
  * A [PagerAdapter] that uses [Router]s as pages
@@ -44,10 +43,6 @@ abstract class RouterPagerAdapter(
 
         val router = manager.getRouter(container, tag)
         configureRouter(router, position)
-
-        if (!router.hasContainer) {
-            router.setContainer(container)
-        }
 
         routers.put(position, router)
         return router
