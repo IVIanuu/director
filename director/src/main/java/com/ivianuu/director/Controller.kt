@@ -214,8 +214,17 @@ fun Controller.childRouter(containerId: Int): Router =
 fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router {
     val router = Router(this)
 
+    if (isDestroyed) {
+        router.destroy()
+        return router
+    }
+
     if (isViewCreated) {
         containerProvider?.invoke()?.let { router.setContainer(it) }
+    }
+
+    if (isAttached) {
+        router.start()
     }
 
     addLifecycleListener(
