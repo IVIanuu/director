@@ -60,4 +60,6 @@ class BottomNavChildController(private val startIndex: Int) : BaseController() {
             }
     }
 
+    override fun handleBack() = childRouter.handleBack()
+
 }
