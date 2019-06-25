@@ -16,12 +16,11 @@
 
 package com.ivianuu.director
 
+import androidx.lifecycle.Lifecycle.State.CREATED
+import androidx.lifecycle.Lifecycle.State.DESTROYED
+import androidx.lifecycle.Lifecycle.State.INITIALIZED
+import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ivianuu.director.ControllerState.ATTACHED
-import com.ivianuu.director.ControllerState.CREATED
-import com.ivianuu.director.ControllerState.DESTROYED
-import com.ivianuu.director.ControllerState.INITIALIZED
-import com.ivianuu.director.ControllerState.VIEW_CREATED
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
 import org.junit.Assert.assertEquals
@@ -59,32 +58,28 @@ class ControllerTest {
         val controller = TestController()
         router.push(controller.toTransaction())
 
-        assertTrue(controller.isAttached)
+        assertTrue(controller.lifecycle.currentState == RESUMED)
         router.stop()
-        assertFalse(controller.isAttached)
+        assertFalse(controller.lifecycle.currentState == RESUMED)
         router.start()
-        assertTrue(controller.isAttached)
+        assertTrue(controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
     fun testControllerState() {
         val controller = TestController()
 
-        assertEquals(INITIALIZED, controller.state)
+        assertEquals(INITIALIZED, controller.lifecycle.currentState)
 
         controller.addLifecycleListener(
-            preCreate = { assertEquals(INITIALIZED, controller.state) },
-            postCreate = { assertEquals(CREATED, controller.state) },
-            preCreateView = { assertEquals(CREATED, controller.state) },
-            postCreateView = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
-            preAttach = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
-            postAttach = { _, _ -> assertEquals(ATTACHED, controller.state) },
-            preDetach = { _, _ -> assertEquals(ATTACHED, controller.state) },
-            postDetach = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
-            preDestroyView = { _, _ -> assertEquals(VIEW_CREATED, controller.state) },
-            postDestroyView = { assertEquals(CREATED, controller.state) },
-            preDestroy = { assertEquals(CREATED, controller.state) },
-            postDestroy = { assertEquals(DESTROYED, controller.state) }
+            preCreate = { assertEquals(INITIALIZED, controller.lifecycle.currentState) },
+            postCreate = { assertEquals(CREATED, controller.lifecycle.currentState) },
+            preAttach = { _, _ -> assertEquals(CREATED, controller.lifecycle.currentState) },
+            postAttach = { _, _ -> assertEquals(RESUMED, controller.lifecycle.currentState) },
+            preDetach = { _, _ -> assertEquals(RESUMED, controller.lifecycle.currentState) },
+            postDetach = { _, _ -> assertEquals(CREATED, controller.lifecycle.currentState) },
+            preDestroy = { assertEquals(CREATED, controller.lifecycle.currentState) },
+            postDestroy = { assertEquals(DESTROYED, controller.lifecycle.currentState) }
         )
 
         router.push(controller.toTransaction())

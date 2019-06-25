@@ -17,7 +17,8 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State.DESTROYED
+import androidx.lifecycle.Lifecycle.State.STARTED
 
 fun Controller.childRouter(container: ViewGroup): Router =
     childRouter { container }
@@ -28,7 +29,7 @@ fun Controller.childRouter(containerId: Int): Router =
 fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router {
     val router = Router(this)
 
-    if (lifecycle.currentState == Lifecycle.State.DESTROYED) {
+    if (lifecycle.currentState == DESTROYED) {
         router.destroy()
         return router
     }
@@ -37,7 +38,7 @@ fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router
         containerProvider?.invoke()?.let { router.setContainer(it) }
     }
 
-    if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+    if (lifecycle.currentState.isAtLeast(STARTED)) {
         router.start()
     }
 

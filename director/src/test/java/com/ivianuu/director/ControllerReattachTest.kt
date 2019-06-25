@@ -17,6 +17,7 @@
 package com.ivianuu.director
 
 import android.os.Bundle
+import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.TestController
@@ -50,13 +51,13 @@ class ControllerReattachTest {
                 .changeHandler(defaultHandler())
         )
 
-        assertTrue(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
+        assertTrue(controllerA.lifecycle.currentState == RESUMED)
+        assertFalse(controllerB.lifecycle.currentState == RESUMED)
 
         sleepWakeDevice()
 
-        assertTrue(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
+        assertTrue(controllerA.lifecycle.currentState == RESUMED)
+        assertFalse(controllerB.lifecycle.currentState == RESUMED)
 
         router.push(
             controllerB
@@ -64,8 +65,8 @@ class ControllerReattachTest {
                 .changeHandler(defaultHandler())
         )
 
-        assertFalse(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
+        assertFalse(controllerA.lifecycle.currentState == RESUMED)
+        assertTrue(controllerB.lifecycle.currentState == RESUMED)
     }
 
     @Test
@@ -79,9 +80,9 @@ class ControllerReattachTest {
         router.push(controller3.toTransaction())
         router.popController(controller2)
 
-        assertFalse(controller1.isAttached)
-        assertFalse(controller2.isAttached)
-        assertTrue(controller3.isAttached)
+        assertFalse(controller1.lifecycle.currentState == RESUMED)
+        assertFalse(controller2.lifecycle.currentState == RESUMED)
+        assertTrue(controller3.lifecycle.currentState == RESUMED)
 
         controller1 = TestController()
         controller2 = TestController()
@@ -96,9 +97,9 @@ class ControllerReattachTest {
         )
         router.popController(controller2)
 
-        assertTrue(controller1.isAttached)
-        assertFalse(controller2.isAttached)
-        assertTrue(controller3.isAttached)
+        assertTrue(controller1.lifecycle.currentState == RESUMED)
+        assertFalse(controller2.lifecycle.currentState == RESUMED)
+        assertTrue(controller3.lifecycle.currentState == RESUMED)
     }
 
     private fun sleepWakeDevice() {

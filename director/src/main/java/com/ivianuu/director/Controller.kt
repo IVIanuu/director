@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State.CREATED
+import androidx.lifecycle.Lifecycle.State.DESTROYED
+import androidx.lifecycle.Lifecycle.State.RESUMED
+import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelStore
@@ -123,7 +127,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         notifyListeners { it.preCreate(this) }
 
         onCreate()
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        lifecycleRegistry.currentState = CREATED
 
         notifyListeners { it.postCreate(this) }
     }
@@ -131,7 +135,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
     internal fun destroy() {
         notifyListeners { it.preDestroy(this) }
 
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        lifecycleRegistry.currentState = DESTROYED
         onDestroy()
 
         notifyListeners { it.postDestroy(this) }
@@ -149,7 +153,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
             container
         ).also { this.view = it }
 
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
+        _viewLifecycleOwner!!.currentState = CREATED
 
         notifyListeners { it.postCreateView(this, view) }
 
@@ -169,7 +173,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
         notifyListeners { it.preDestroyView(this, view) }
 
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.DESTROYED
+        _viewLifecycleOwner!!.currentState = DESTROYED
         onDestroyView(view)
         this.view = null
         _viewLifecycleOwner = null
@@ -185,10 +189,10 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         onAttach(view)
         viewState = null
 
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
-        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.RESUMED
+        lifecycleRegistry.currentState = STARTED
+        _viewLifecycleOwner!!.currentState = STARTED
+        lifecycleRegistry.currentState = RESUMED
+        _viewLifecycleOwner!!.currentState = RESUMED
 
         notifyListeners { it.postAttach(this, view) }
     }
@@ -198,10 +202,10 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
         notifyListeners { it.preDetach(this, view) }
 
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.STARTED
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        _viewLifecycleOwner!!.currentState = Lifecycle.State.CREATED
+        lifecycleRegistry.currentState = STARTED
+        _viewLifecycleOwner!!.currentState = STARTED
+        lifecycleRegistry.currentState = CREATED
+        _viewLifecycleOwner!!.currentState = CREATED
 
         onDetach(view)
 

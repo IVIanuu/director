@@ -1,7 +1,10 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State.CREATED
+import androidx.lifecycle.Lifecycle.State.DESTROYED
+import androidx.lifecycle.Lifecycle.State.INITIALIZED
+import androidx.lifecycle.Lifecycle.State.STARTED
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s
@@ -77,7 +80,7 @@ class Router internal constructor(val parent: Controller? = null) {
 
         // do not allow pushing destroyed controllers
         newBackstack.forEach {
-            check(it.controller.lifecycle.currentState != Lifecycle.State.DESTROYED) {
+            check(it.controller.lifecycle.currentState != DESTROYED) {
                 "Trying to push a controller that has already been destroyed $it"
             }
         }
@@ -86,7 +89,7 @@ class Router internal constructor(val parent: Controller? = null) {
         newBackstack.forEach {
             check(
                 !it.isAddedToRouter
-                        || !it.controller.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
+                        || !it.controller.lifecycle.currentState.isAtLeast(CREATED)
                         || it.controller.router == this
             ) {
                 "Trying to push a controller which is attached to another router $it"
@@ -275,7 +278,7 @@ class Router internal constructor(val parent: Controller? = null) {
         _backstack.reversed()
             .map { it.controller }
             .forEach { controller ->
-                if (controller.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                if (controller.lifecycle.currentState.isAtLeast(STARTED)) {
                     container?.removeView(controller.view!!)
                     controller.detach()
                 }
@@ -295,7 +298,7 @@ class Router internal constructor(val parent: Controller? = null) {
             .filterVisible()
             .map { it.controller }
             .filter { it.view?.parent != null }
-            .filterNot { it.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
+            .filterNot { it.lifecycle.currentState.isAtLeast(STARTED) }
             .forEach { it.attach() }
     }
 
@@ -307,7 +310,7 @@ class Router internal constructor(val parent: Controller? = null) {
         _backstack
             .reversed()
             .map { it.controller }
-            .filter { it.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) }
+            .filter { it.lifecycle.currentState.isAtLeast(STARTED) }
             .forEach { it.detach() }
     }
 
@@ -413,18 +416,18 @@ class Router internal constructor(val parent: Controller? = null) {
     }
 
     private fun moveControllerToCorrectState(controller: Controller) {
-        if (controller.lifecycle.currentState == Lifecycle.State.INITIALIZED) {
+        if (controller.lifecycle.currentState == INITIALIZED) {
             controller.create(this)
         }
 
         if (isStarted
             && controller.view?.parent != null
-            && !controller.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+            && !controller.lifecycle.currentState.isAtLeast(STARTED)
         ) {
             controller.attach()
         }
 
-        if (isDestroyed && controller.lifecycle.currentState != Lifecycle.State.DESTROYED) {
+        if (isDestroyed && controller.lifecycle.currentState != DESTROYED) {
             controller.destroy()
         }
     }

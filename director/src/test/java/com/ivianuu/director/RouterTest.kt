@@ -16,6 +16,7 @@
 
 package com.ivianuu.director
 
+import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
@@ -225,8 +226,8 @@ class RouterTest {
         router.push(oldTopTransaction)
         assertEquals(2, router.backstackSize)
 
-        assertTrue(oldRootTransaction.controller.isAttached)
-        assertTrue(oldTopTransaction.controller.isAttached)
+        assertTrue(oldRootTransaction.controller.lifecycle.currentState == RESUMED)
+        assertTrue(oldTopTransaction.controller.lifecycle.currentState == RESUMED)
 
         val rootTransaction = TestController().toTransaction()
         val middleTransaction = TestController().toTransaction()
@@ -244,11 +245,11 @@ class RouterTest {
         assertEquals(middleTransaction, fetchedBackstack[1])
         assertEquals(topTransaction, fetchedBackstack[2])
 
-        assertFalse(oldRootTransaction.controller.isAttached)
-        assertFalse(oldTopTransaction.controller.isAttached)
-        assertTrue(rootTransaction.controller.isAttached)
-        assertTrue(middleTransaction.controller.isAttached)
-        assertTrue(topTransaction.controller.isAttached)
+        assertFalse(oldRootTransaction.controller.lifecycle.currentState == RESUMED)
+        assertFalse(oldTopTransaction.controller.lifecycle.currentState == RESUMED)
+        assertTrue(rootTransaction.controller.lifecycle.currentState == RESUMED)
+        assertTrue(middleTransaction.controller.lifecycle.currentState == RESUMED)
+        assertTrue(topTransaction.controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
@@ -268,9 +269,9 @@ class RouterTest {
         assertEquals(1, router.backstackSize)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.isAttached)
-        assertFalse(transaction1.controller.isAttached)
-        assertFalse(transaction2.controller.isAttached)
+        assertTrue(rootTransaction.controller.lifecycle.currentState == RESUMED)
+        assertFalse(transaction1.controller.lifecycle.currentState == RESUMED)
+        assertFalse(transaction2.controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
@@ -293,9 +294,9 @@ class RouterTest {
         assertEquals(1, router.backstackSize)
         assertEquals(rootTransaction, router.backstack[0])
 
-        assertTrue(rootTransaction.controller.isAttached)
-        assertFalse(transaction1.controller.isAttached)
-        assertFalse(transaction2.controller.isAttached)
+        assertTrue(rootTransaction.controller.lifecycle.currentState == RESUMED)
+        assertFalse(transaction1.controller.lifecycle.currentState == RESUMED)
+        assertFalse(transaction2.controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
@@ -333,8 +334,8 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.controller.isAttached)
-        assertTrue(controllerB.controller.isAttached)
+        assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
+        assertTrue(controllerB.controller.lifecycle.currentState == RESUMED)
 
         val controllerC = TestController().toTransaction()
             .changeHandler(noRemoveViewOnPushHandler())
@@ -342,9 +343,9 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.controller.isAttached)
-        assertFalse(controllerB.controller.isAttached)
-        assertTrue(controllerC.controller.isAttached)
+        assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
+        assertFalse(controllerB.controller.lifecycle.currentState == RESUMED)
+        assertTrue(controllerC.controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
@@ -358,17 +359,17 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.controller.isAttached)
-        assertTrue(controllerB.controller.isAttached)
+        assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
+        assertTrue(controllerB.controller.lifecycle.currentState == RESUMED)
 
         val controllerC = TestController().toTransaction()
         router.replaceTop(controllerC)
 
         assertEquals(2, router.backstackSize)
 
-        assertFalse(controllerA.controller.isAttached)
-        assertFalse(controllerB.controller.isAttached)
-        assertTrue(controllerC.controller.isAttached)
+        assertFalse(controllerA.controller.lifecycle.currentState == RESUMED)
+        assertFalse(controllerB.controller.lifecycle.currentState == RESUMED)
+        assertTrue(controllerC.controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
@@ -381,8 +382,8 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertFalse(controllerA.controller.isAttached)
-        assertTrue(controllerB.controller.isAttached)
+        assertFalse(controllerA.controller.lifecycle.currentState == RESUMED)
+        assertTrue(controllerB.controller.lifecycle.currentState == RESUMED)
 
         val controllerC = TestController().toTransaction()
             .changeHandler(noRemoveViewOnPushHandler())
@@ -390,9 +391,9 @@ class RouterTest {
 
         assertEquals(2, router.backstackSize)
 
-        assertTrue(controllerA.controller.isAttached)
-        assertFalse(controllerB.controller.isAttached)
-        assertTrue(controllerC.controller.isAttached)
+        assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
+        assertFalse(controllerB.controller.lifecycle.currentState == RESUMED)
+        assertTrue(controllerC.controller.lifecycle.currentState == RESUMED)
     }
 
     @Test
