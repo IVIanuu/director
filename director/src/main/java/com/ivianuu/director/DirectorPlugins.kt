@@ -53,12 +53,3 @@ var DirectorPlugins.defaultRemovesFromViewOnPush: Boolean
     set(value) {
         _defaultRemovesFromViewOnPush = value
     }
-
-private var _defaultRetainView = false
-
-/** Default retain view */
-var DirectorPlugins.defaultRetainView: Boolean
-    get() = _defaultRetainView
-    set(value) {
-        _defaultRetainView = value
-    }
