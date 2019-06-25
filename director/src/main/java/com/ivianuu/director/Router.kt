@@ -1,22 +1,19 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ivianuu.director.ControllerState.DESTROYED
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s
  */
-class Router internal constructor(
-    containerId: Int,
-    tag: String? = null,
-    val routerManager: RouterManager
-) {
-
-    /**
-     * The tag of this router
-     */
-    var tag: String? = tag
-        private set
+class Router internal constructor(val parent: Controller? = null) {
 
     /**
      * The current backstack
@@ -39,12 +36,6 @@ class Router internal constructor(
      * Whether or not this router has been destroyed
      */
     var isDestroyed = false
-        private set
-
-    /**
-     * The container id of this router
-     */
-    var containerId: Int = containerId
         private set
 
     /**
@@ -266,26 +257,19 @@ class Router internal constructor(
     internal fun getChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
         return listeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (routerManager.parent?.router?.getChangeListeners(true)
-            ?: emptyList())
+            .map { it.listener }// + (routerManager.parent?.router?.getChangeListeners(true) ?: emptyList())
     }
 
     internal fun getControllerLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
         return controllerListeners
             .filter { !recursiveOnly || it.recursive }
-            .map { it.listener } + (routerManager.parent?.router?.getControllerLifecycleListeners(
-            true
-        ) ?: emptyList())
+            .map { it.listener }// + (routerManager.parent?.router?.getControllerLifecycleListeners(true) ?: emptyList())
     }
 
     /**
      * Sets the container of this router
      */
     fun setContainer(container: ViewGroup) {
-        require(container.id == containerId) {
-            "Container id of the container must match the container id of this router $containerId"
-        }
-
         this.container = container
         rebind()
     }
@@ -535,8 +519,8 @@ fun Router.findControllerByTag(tag: String): Controller? {
             return transaction.controller
         }
 
-        transaction.controller.childRouterManager.findControllerByTag(tag)
-            ?.let { return@findControllerByTag it }
+        /*transaction.controller.childRouterManager.findControllerByTag(tag)
+            ?.let { return@findControllerByTag it }*/
     }
 
     return null
@@ -563,7 +547,7 @@ fun Router.push(
 }
 
 /**
- * Replaces this Router's top [Controller] with the [controller]
+ * Replaces this router's top [Controller] with the [controller]
  */
 fun Router.replaceTop(
     transaction: RouterTransaction,
@@ -649,4 +633,70 @@ fun Router.popToTransaction(
  */
 fun Router.clear(handler: ControllerChangeHandler? = null) {
     setBackstack(emptyList(), false, handler)
+}
+
+private class RouterHolder : ViewModel() {
+    val router = Router()
+
+    object Factory : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T = RouterHolder() as T
+    }
+}
+
+fun ComponentActivity.router(container: ViewGroup): Router =
+    router { container }
+
+fun ComponentActivity.router(containerId: Int): Router =
+    router { findViewById(containerId) }
+
+fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Router {
+    val holder = ViewModelProvider(this, RouterHolder.Factory)[RouterHolder::class.java]
+    val router = holder.router
+
+    fun canHandleBack(): Boolean =
+        router.backstack.isNotEmpty() &&
+                (router.backstackSize > 1 || router.popsLastView)
+
+    val backPressedCallback = object : OnBackPressedCallback(canHandleBack()) {
+        override fun handleOnBackPressed() {
+            router.handleBack()
+        }
+    }
+
+    onBackPressedDispatcher.addCallback(backPressedCallback)
+
+    val changeListener = router.doOnChangeStarted { _, _, _, _, _, _ ->
+        backPressedCallback.isEnabled = canHandleBack()
+    }
+
+    lifecycle.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    containerProvider?.invoke()?.let { router.setContainer(it) }
+                }
+                Lifecycle.Event.ON_START -> {
+                    router.start()
+                }
+                Lifecycle.Event.ON_STOP -> {
+                    router.stop()
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    router.removeChangeListener(changeListener)
+
+                    if (containerProvider != null) {
+                        router.removeContainer()
+                    }
+
+                    if (!isChangingConfigurations) {
+                        router.destroy()
+                    } else if (containerProvider != null) {
+                        router.removeContainer()
+                    }
+                }
+            }
+        }
+    })
+
+    return router
 }

@@ -3,9 +3,8 @@ package com.ivianuu.director.sample.controller
 import android.view.View
 import com.ivianuu.director.backstackSize
 import com.ivianuu.director.changeHandler
-import com.ivianuu.director.childRouters
+import com.ivianuu.director.childRouter
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.SingleContainer
@@ -26,7 +25,7 @@ class BottomNavController : BaseController() {
     private var currentIndex = -1
 
     private val bottomNavContainer by lazy {
-        SingleContainer(getChildRouter(R.id.bottom_nav_container))
+        SingleContainer(childRouter(R.id.bottom_nav_container))
     }
 
     override fun onViewCreated(view: View) {
@@ -48,10 +47,9 @@ class BottomNavController : BaseController() {
 
             // pop to root on re selections
             if (i != -1) {
-                bottomNavContainer.currentTransaction
-                    ?.controller
-                    ?.childRouters
-                    ?.first()
+                (bottomNavContainer.currentTransaction
+                    ?.controller as? BottomNavChildController)
+                    ?.childRouter
                     ?.popToRoot()
             }
         }
@@ -70,7 +68,8 @@ class BottomNavController : BaseController() {
         }
 
         return if (currentIndex != 0) {
-            val currentChildRouter = currentController.childRouters.first()
+            val currentChildRouter = (bottomNavContainer.currentTransaction
+                ?.controller as? BottomNavChildController)!!.childRouter
 
             if (currentChildRouter.backstackSize == 1) {
                 swapTo(0)

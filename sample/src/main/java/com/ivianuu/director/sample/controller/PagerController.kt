@@ -2,6 +2,7 @@ package com.ivianuu.director.sample.controller
 
 import android.view.View
 import com.ivianuu.director.Router
+import com.ivianuu.director.childRouter
 import com.ivianuu.director.common.RouterPagerAdapter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.sample.R
@@ -17,7 +18,7 @@ class PagerController : BaseController() {
         get() = "ViewPager Demo"
 
     private val pagerAdapter by lazy {
-        object : RouterPagerAdapter(childRouterManager) {
+        object : RouterPagerAdapter({ childRouter() }) {
 
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRoot) {

@@ -16,6 +16,7 @@
 
 package com.ivianuu.director.sample.controller
 
+
 import com.ivianuu.director.childRouter
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.traveler.ControllerNavigator
@@ -32,7 +33,9 @@ class TravelerController : BaseController() {
     override val toolbarTitle: String?
         get() = "Traveler Demo"
 
-    private val childRouter by childRouter(R.id.traveler_container)
+    private val childRouter by lazy {
+        childRouter(R.id.traveler_container)
+    }
 
     val travelerRouter by lazy {
         AndroidRouter().apply {

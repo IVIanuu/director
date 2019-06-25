@@ -38,7 +38,7 @@ import org.robolectric.annotation.Config
 class ControllerLifecycleTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
+    private val router = activityProxy.activity.router(activityProxy.view1).apply {
         if (!hasRoot) {
             setRoot(TestController().toTransaction())
         }
@@ -418,7 +418,7 @@ class ControllerLifecycleTest {
         assertCalls(expectedCallState, child)
 
         val childRouter =
-            parent.getChildRouter(parent.childContainer1!!).apply {
+            parent.childRouter(parent.childContainer1!!).apply {
                 setRoot(
                     child
                         .toTransaction()
@@ -426,11 +426,11 @@ class ControllerLifecycleTest {
                         .popChangeHandler(getPopHandler(expectedCallState, child))
                 )
             }
+        expectedCallState.createCalls++
 
         assertCalls(expectedCallState, child)
 
         childRouter.clear()
-        parent.removeChildRouter(childRouter)
 
         assertCalls(expectedCallState, child)
     }
@@ -451,7 +451,7 @@ class ControllerLifecycleTest {
 
         assertCalls(expectedCallState, child)
 
-        parent.getChildRouter(parent.childContainer1!!).apply {
+        parent.childRouter(parent.childContainer1!!).apply {
             setRoot(
                 child
                     .toTransaction()
@@ -459,6 +459,7 @@ class ControllerLifecycleTest {
                     .popChangeHandler(getPopHandler(expectedCallState, child))
             )
         }
+        expectedCallState.createCalls++
 
         assertCalls(expectedCallState, child)
 
@@ -573,7 +574,7 @@ class ControllerLifecycleTest {
 
         parent.addLifecycleListener(
             preCreate = {
-                parent.getChildRouter(TestController.CHILD_VIEW_ID_1)
+                parent.childRouter(TestController.CHILD_VIEW_ID_1)
                     .push(child.toTransaction())
             },
             postAttach = { _, _ ->

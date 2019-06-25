@@ -7,7 +7,7 @@ import com.ivianuu.director.ControllerLifecycleListener
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class LoggingControllerLifecycleListener : ControllerLifecycleListener {
+class LoggingLifecycleListener : ControllerLifecycleListener {
 
     private fun Controller.d(m: () -> String) {
         (this as Any).d { "Lifecycle: ${m.invoke()}" }

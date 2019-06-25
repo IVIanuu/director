@@ -33,7 +33,7 @@ import org.robolectric.annotation.Config
 class ControllerReattachTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
+    private val router = activityProxy.activity.router(activityProxy.view1).apply {
         if (!hasRoot) {
             setRoot(TestController().toTransaction())
         }
@@ -66,139 +66,6 @@ class ControllerReattachTest {
 
         assertFalse(controllerA.isAttached)
         assertTrue(controllerB.isAttached)
-    }
-
-    @Test
-    fun testChildNeedsAttachOnPause() {
-        val controllerA = TestController()
-        val childController = TestController()
-        val controllerB = TestController()
-
-        router.push(
-            controllerA
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        val childRouter =
-            controllerA.getChildRouter(controllerA.childContainer1!!)
-        childRouter.push(
-            childController
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertTrue(controllerA.isAttached)
-        assertTrue(childController.isAttached)
-        assertFalse(controllerB.isAttached)
-
-        sleepWakeDevice()
-
-        assertTrue(controllerA.isAttached)
-        assertTrue(childController.isAttached)
-        assertFalse(controllerB.isAttached)
-
-        router.push(
-            controllerB
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertFalse(controllerA.isAttached)
-        assertFalse(childController.isAttached)
-        assertTrue(controllerB.isAttached)
-    }
-
-    @Test
-    fun testChildHandleBack() {
-        val controllerA = TestController()
-        val controllerB = TestController()
-        val childController = TestController()
-
-        router.push(
-            controllerA
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertTrue(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
-        assertFalse(childController.isAttached)
-
-        router.push(
-            controllerB
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        val childRouter =
-            controllerB.getChildRouter(controllerB.childContainer1!!)
-                .apply { popsLastView = true }
-
-        childRouter.push(
-            childController
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertFalse(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
-        assertTrue(childController.isAttached)
-    }
-
-    // Attempt to test https://github.com/bluelinelabs/Conductor/issues/86#issuecomment-231381271
-    @Test
-    fun testReusedChildRouterHandleBack() {
-        val controllerA = TestController()
-        val controllerB = TestController()
-        var childController = TestController()
-
-        router.push(
-            controllerA
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertTrue(controllerA.isAttached)
-        assertFalse(controllerB.isAttached)
-        assertFalse(childController.isAttached)
-
-        router.push(
-            controllerB
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        val childRouter =
-            controllerB.getChildRouter(controllerB.childContainer1!!)
-                .apply { popsLastView = true }
-
-        childRouter.push(
-            childController
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertFalse(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
-        assertTrue(childController.isAttached)
-
-        router.handleBack()
-
-        assertFalse(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
-        assertFalse(childController.isAttached)
-
-        childController = TestController()
-        childRouter.push(
-            childController
-                .toTransaction()
-                .changeHandler(defaultHandler())
-        )
-
-        assertFalse(controllerA.isAttached)
-        assertTrue(controllerB.isAttached)
-        assertTrue(childController.isAttached)
     }
 
     @Test

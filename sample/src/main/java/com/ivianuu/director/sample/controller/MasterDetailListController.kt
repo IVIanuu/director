@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.childRouter
+
 import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popTop
 
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.mainActivity
@@ -41,7 +43,7 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    private val childRouter by childRouter(R.id.detail_container)
+    private val childRouter by lazy { childRouter(R.id.detail_container) }
 
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
@@ -57,6 +59,15 @@ class MasterDetailListController : BaseController() {
 
         if (isTwoPane && !childRouter.hasRoot) {
             onItemClicked(DetailItem.values()[selectedIndex], selectedIndex)
+        }
+    }
+
+    override fun handleBack(): Boolean {
+        return if (childRouter.hasRoot) {
+            childRouter.popTop()
+            true
+        } else {
+            false
         }
     }
 

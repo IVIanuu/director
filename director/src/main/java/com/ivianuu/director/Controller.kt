@@ -31,14 +31,9 @@ abstract class Controller {
     private lateinit var _router: Router
 
     /**
-     * The router manager of the router this controller is attached to
-     */
-    val routerManager: RouterManager get() = router.routerManager
-
-    /**
      * The parent controller if any
      */
-    val parentController: Controller? get() = routerManager.parent
+    val parentController: Controller? get() = router.parent
 
     /**
      * The view of this controller or null
@@ -53,11 +48,6 @@ abstract class Controller {
         private set
 
     private var viewState: SparseArray<Parcelable>? = null
-
-    /**
-     * The child router manager of this controller
-     */
-    val childRouterManager by lazy(LazyThreadSafetyMode.NONE) { RouterManager(this) }
 
     private val listeners = mutableListOf<ControllerLifecycleListener>()
 
@@ -102,7 +92,7 @@ abstract class Controller {
     /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
-    open fun handleBack(): Boolean = childRouterManager.handleBack()
+    open fun handleBack(): Boolean = false
 
     /**
      * Adds a listener for all of this Controller's lifecycle events
@@ -131,8 +121,6 @@ abstract class Controller {
     }
 
     internal fun destroy() {
-        childRouterManager.onDestroy()
-
         notifyListeners { it.preDestroy(this) }
 
         state = DESTROYED
@@ -156,8 +144,6 @@ abstract class Controller {
         viewState?.let { view.restoreHierarchyState(it) }
         viewState = null
 
-        (view as? ViewGroup)?.let { childRouterManager.setRootView(it) }
-
         return view
     }
 
@@ -167,8 +153,6 @@ abstract class Controller {
             viewState = SparseArray<Parcelable>()
                 .also { view.saveHierarchyState(it) }
         }
-
-        childRouterManager.removeRootView()
 
         notifyListeners { it.preDestroyView(this, view) }
 
@@ -186,18 +170,13 @@ abstract class Controller {
 
         state = ATTACHED
         onAttach(view)
-
-        notifyListeners { it.postAttach(this, view) }
-
         viewState = null
 
-        childRouterManager.onStart()
+        notifyListeners { it.postAttach(this, view) }
     }
 
     internal fun detach() {
         val view = requireView()
-
-        childRouterManager.onStop()
 
         notifyListeners { it.preDetach(this, view) }
 
@@ -226,33 +205,38 @@ fun Controller.requireView(): View =
 
 fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
 
-val Controller.childRouters: List<Router> get() = childRouterManager.routers
+fun Controller.childRouter(container: ViewGroup): Router =
+    childRouter { container }
 
-fun Controller.getChildRouterOrNull(
-    containerId: Int,
-    tag: String?
-): Router? = childRouterManager.getRouterOrNull(containerId, tag)
+fun Controller.childRouter(containerId: Int): Router =
+    childRouter { view!!.findViewById(containerId) }
 
-fun Controller.getChildRouter(
-    containerId: Int,
-    tag: String? = null
-): Router = childRouterManager.getRouter(containerId, tag)
+fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router {
+    val router = Router(this)
 
-fun Controller.removeChildRouter(childRouter: Router) {
-    childRouterManager.removeRouter(childRouter)
+    if (isViewCreated) {
+        containerProvider?.invoke()?.let { router.setContainer(it) }
+    }
+
+    addLifecycleListener(
+        postCreateView = { _, _ ->
+            containerProvider?.invoke()?.let { router.setContainer(it) }
+        },
+        postAttach = { _, _ ->
+            router.start()
+        },
+        preDetach = { _, _ ->
+            router.stop()
+        },
+        preDestroyView = { _, _ ->
+            if (containerProvider != null) {
+                router.removeContainer()
+            }
+        },
+        preDestroy = {
+            router.destroy()
+        }
+    )
+
+    return router
 }
-
-fun Controller.getChildRouterOrNull(
-    container: ViewGroup,
-    tag: String? = null
-): Router? = getChildRouterOrNull(container.id, tag)
-
-fun Controller.getChildRouter(
-    container: ViewGroup,
-    tag: String? = null
-): Router = getChildRouter(container.id, tag)
-
-fun Controller.childRouter(
-    containerId: Int,
-    tag: String? = null
-): Lazy<Router> = lazy(LazyThreadSafetyMode.NONE) { getChildRouter(containerId, tag) }

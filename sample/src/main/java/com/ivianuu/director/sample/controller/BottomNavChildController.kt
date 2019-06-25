@@ -31,7 +31,7 @@ class BottomNavChildController(private val startIndex: Int) : BaseController() {
     override val layoutRes: Int
         get() = R.layout.controller_bottom_nav_child
 
-    private val childRouter by childRouter(R.id.bottom_nav_child_container)
+    val childRouter by lazy { childRouter(R.id.bottom_nav_child_container) }
 
     override fun onCreate() {
         super.onCreate()

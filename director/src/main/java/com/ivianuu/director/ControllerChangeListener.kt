@@ -51,9 +51,6 @@ interface ControllerChangeListener {
 
 }
 
-/**
- * Returns a [ControllerChangeListener]
- */
 fun ControllerChangeListener(
     onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
     onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
@@ -63,24 +60,20 @@ fun ControllerChangeListener(
 fun Router.doOnChangeStarted(
     recursive: Boolean = false,
     block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
-) =
-    addChangeListener(recursive = recursive, onChangeStarted = block)
+) = addChangeListener(recursive = recursive, onChangeStarted = block)
 
 fun Router.doOnChangeEnded(
     recursive: Boolean = false,
     block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
-) =
-    addChangeListener(recursive = recursive, onChangeEnded = block)
+) = addChangeListener(recursive = recursive, onChangeEnded = block)
 
 fun Router.addChangeListener(
     recursive: Boolean = false,
     onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
     onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
-) =
-    addChangeListener(
-        ControllerChangeListener(onChangeStarted, onChangeEnded),
-        recursive
-    )
+) = ControllerChangeListener(onChangeStarted, onChangeEnded).also {
+    addChangeListener(it, recursive)
+}
 
 private class LambdaControllerChangeListener(
     private val onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,

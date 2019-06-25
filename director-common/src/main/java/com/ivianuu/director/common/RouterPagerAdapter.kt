@@ -16,22 +16,20 @@
 
 package com.ivianuu.director.common
 
-import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Router
-import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getRouter
+import com.ivianuu.director.router
 
 /**
- * A [PagerAdapter] that uses [Router]s as pages
+ * A [PagerAdapter] that uses [router]s as pages
  */
 abstract class RouterPagerAdapter(
-    private val manager: RouterManager
+    private val routerFactory: () -> Router
 ) : PagerAdapter() {
 
-    private val routers = SparseArray<Router>()
+    private val routers = mutableMapOf<Int, Router>()
 
     /**
      * Configure the router e.g. set the root controller
@@ -39,30 +37,23 @@ abstract class RouterPagerAdapter(
     abstract fun configureRouter(router: Router, position: Int)
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val tag = (container.id + position).toString()
-
-        val router = manager.getRouter(container, tag)
+        val router = routers.getOrPut(position, routerFactory)
+        router.setContainer(container)
         configureRouter(router, position)
-
-        routers.put(position, router)
         return router
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        val router = `object` as Router
-
-        router.removeContainer()
-
-        routers.remove(position)
+        (`object` as Router).removeContainer()
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean =
         (`object` as Router).backstack.any { it.controller.view == view }
 
     /**
-     * Returns the already instantiated Router in the specified position or `null` if there
+     * Returns the already instantiated router in the specified position or `null` if there
      * is no router associated with this position.
      */
-    fun getRouter(position: Int): Router = routers.get(position)
+    fun getRouter(position: Int): Router = routers.getValue(position)
 
 }

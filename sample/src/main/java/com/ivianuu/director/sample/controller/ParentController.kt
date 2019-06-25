@@ -2,15 +2,14 @@ package com.ivianuu.director.sample.controller
 
 import android.view.View
 import android.view.ViewGroup
+import com.ivianuu.director.Router
 import com.ivianuu.director.changeHandler
-import com.ivianuu.director.childRouters
+import com.ivianuu.director.childRouter
 import com.ivianuu.director.clear
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.doOnChangeEnded
-import com.ivianuu.director.getChildRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popTop
-import com.ivianuu.director.removeChildRouter
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.mainActivity
@@ -27,6 +26,8 @@ class ParentController : BaseController() {
     private var finishing = false
     private var hasShownAll = false
 
+    private val childRouters = mutableListOf<Router>()
+
     override fun onAttach(view: View) {
         super.onAttach(view)
         addChild(0)
@@ -41,7 +42,9 @@ class ParentController : BaseController() {
 
         val container = view!!.findViewById<ViewGroup>(frameId)
 
-        getChildRouter(container).let { childRouter ->
+        childRouter(container).let { childRouter ->
+            childRouters.add(childRouter)
+
             childRouter.popsLastView = true
 
             if (!childRouter.hasRoot) {
@@ -76,7 +79,6 @@ class ParentController : BaseController() {
     }
 
     private fun removeChild(index: Int) {
-        val childRouters = childRouters.toList()
         if (index < childRouters.size) {
             val childRouter = childRouters[index]
             childRouter.clear()
@@ -84,7 +86,7 @@ class ParentController : BaseController() {
             childRouter.doOnChangeEnded { _, _, _, _, _, _ ->
                 if (!removed) {
                     removed = true
-                    removeChildRouter(childRouter)
+                    childRouters.remove(childRouter)
                 }
             }
         }

@@ -36,7 +36,7 @@ import org.robolectric.annotation.Config
 class ControllerTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getRouter(activityProxy.view1).apply {
+    private val router = activityProxy.activity.router(activityProxy.view1).apply {
         if (!hasRoot) {
             setRoot(TestController().toTransaction())
         }
@@ -48,7 +48,7 @@ class ControllerTest {
         val child = TestController()
 
         router.push(parent.toTransaction())
-        parent.getChildRouter(parent.childContainer1!!)
+        parent.childRouter(parent.childContainer1!!)
             .push(child.toTransaction())
 
         assertEquals(parent, child.parentController)

@@ -35,7 +35,7 @@ import org.robolectric.annotation.Config
 class RouterTest {
 
     private val activityProxy = ActivityProxy().create(null).start().resume()
-    private val router = activityProxy.activity.getRouter(activityProxy.view1)
+    private val router = activityProxy.activity.router(activityProxy.view1)
 
     @Test
     fun testSetRoot() {
@@ -472,7 +472,7 @@ class RouterTest {
         val childRouterNonRecursiveListener = EmptyChangeListener()
 
         val childRouter =
-            controller1.getChildRouter(controller1.childContainer1!!)
+            controller1.childRouter(controller1.childContainer1!!)
         assertTrue(childRouter.getChangeListeners(false).contains(routerRecursiveListener))
         assertFalse(childRouter.getChangeListeners(false).contains(routerNonRecursiveListener))
 
@@ -482,7 +482,7 @@ class RouterTest {
         childRouter.setRoot(controller2.toTransaction())
 
         val childRouter2 =
-            controller2.getChildRouter(controller2.childContainer2!!)
+            controller2.childRouter(controller2.childContainer2!!)
         val controller3 = TestController()
         childRouter2.push(controller3.toTransaction())
         assertTrue(childRouter2.getChangeListeners(false).contains(routerRecursiveListener))
@@ -508,7 +508,7 @@ class RouterTest {
         val childRouterNonRecursiveListener = EmptyControllerLifecycleListener()
 
         val childRouter =
-            controller1.getChildRouter(controller1.childContainer1!!)
+            controller1.childRouter(controller1.childContainer1!!)
         assertTrue(
             childRouter.getControllerLifecycleListeners(false).contains(
                 routerRecursiveListener
@@ -526,7 +526,7 @@ class RouterTest {
         childRouter.setRoot(controller2.toTransaction())
 
         val childRouter2 =
-            controller2.getChildRouter(controller2.childContainer2!!)
+            controller2.childRouter(controller2.childContainer2!!)
         val controller3 = TestController()
         childRouter2.push(controller3.toTransaction())
         assertTrue(

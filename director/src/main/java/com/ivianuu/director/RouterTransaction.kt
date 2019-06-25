@@ -17,7 +17,7 @@
 package com.ivianuu.director
 
 /**
- * Describes a transaction in a [Router]
+ * Describes a transaction in a [router]
  */
 class RouterTransaction(
     /**
@@ -53,7 +53,8 @@ class RouterTransaction(
             field = value
         }
 
-    internal var transactionIndex = INVALID_INDEX
+    var transactionIndex = INVALID_INDEX
+        internal set
     internal var isAddedToRouter = false
 
     internal fun ensureValidIndex() {
@@ -64,7 +65,7 @@ class RouterTransaction(
 
     private fun checkModify() {
         check(!isAddedToRouter) {
-            "transactions cannot be modified after being added to a Router."
+            "transactions cannot be modified after being added to a router."
         }
     }
 
