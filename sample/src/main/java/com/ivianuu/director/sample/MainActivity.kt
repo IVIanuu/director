@@ -8,10 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import com.ivianuu.director.Router
+import com.ivianuu.director.ControllerChangeListener
 import com.ivianuu.director.RouterManager
 import com.ivianuu.director.backstackSize
-import com.ivianuu.director.doOnChangeStarted
 import com.ivianuu.director.getRouter
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popTop
@@ -33,6 +32,15 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
     private val routerManager by lazy {
         ViewModelProviders.of(this)[RouterManagerHolder::class.java].routerManager
     }
+    private val router by lazy {
+        routerManager.getRouter(controller_container)
+    }
+
+    private val toolbarListener = ControllerChangeListener(
+        onChangeStarted = { _, _, _, _, _, _ ->
+            updateToolbarVisibility()
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         INSTANCE = this
@@ -40,16 +48,19 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
 
         setContentView(R.layout.activity_main)
 
-        with(routerManager.getRouter(controller_container)) {
-            if (!hasRoot) {
-                addControllerLifecycleListener(
-                    LoggingControllerLifecycleListener(),
-                    recursive = true
-                )
-                addToolbarHandling()
-                setRoot(HomeController().toTransaction())
-            }
+        router.addChangeListener(toolbarListener)
+
+        if (!router.hasRoot) {
+            router.addControllerLifecycleListener(
+                LoggingControllerLifecycleListener(),
+                recursive = true
+            )
+            router.setRoot(HomeController().toTransaction())
         }
+
+        toolbar!!.setNavigationOnClickListener { router.popTop() }
+
+        updateToolbarVisibility()
     }
 
     override fun onStart() {
@@ -63,6 +74,8 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
     }
 
     override fun onDestroy() {
+        router.removeChangeListener(toolbarListener)
+
         INSTANCE = null
         if (!isChangingConfigurations) {
             routerManager.onDestroy()
@@ -78,25 +91,16 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         }
     }
 
-    companion object {
-        var INSTANCE: MainActivity? = null
-            private set
-    }
-}
-
-fun mainActivity(): MainActivity = MainActivity.INSTANCE!!
-
-private fun Router.addToolbarHandling() {
-    fun updateToolbarVisibility() {
+    private fun updateToolbarVisibility() {
         TransitionManager.beginDelayedTransition(
-            mainActivity().toolbar,
+            toolbar,
             AutoTransition().apply {
                 ordering = TransitionSet.ORDERING_TOGETHER
                 duration = 180
             }
         )
 
-        mainActivity().toolbar!!.navigationIcon = if (backstackSize > 1) {
+        toolbar!!.navigationIcon = if (router.backstackSize > 1) {
             mainActivity().getDrawable(R.drawable.abc_ic_ab_back_material)
                 .apply {
                     setColorFilter(
@@ -109,9 +113,10 @@ private fun Router.addToolbarHandling() {
         }
     }
 
-    doOnChangeStarted { _, _, _, _, _, _ -> updateToolbarVisibility() }
-
-    mainActivity().toolbar!!.setNavigationOnClickListener { popTop() }
-
-    updateToolbarVisibility()
+    companion object {
+        var INSTANCE: MainActivity? = null
+            private set
+    }
 }
+
+fun mainActivity(): MainActivity = MainActivity.INSTANCE!!
