@@ -11,11 +11,11 @@ import androidx.lifecycle.Lifecycle.State.STARTED
  */
 class Router internal constructor(val parent: Controller? = null) {
 
+    private val _backstack = mutableListOf<RouterTransaction>()
     /**
      * The current backstack
      */
     val backstack: List<RouterTransaction> get() = _backstack
-    private val _backstack = mutableListOf<RouterTransaction>()
 
     /**
      * Whether or not the last view should be popped

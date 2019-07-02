@@ -19,7 +19,7 @@ object Publishing {
 }
 
 object Versions {
-    const val androidGradlePlugin = "3.4.0"
+    const val androidGradlePlugin = "3.5.0-beta05"
 
     const val androidxAppCompat = "1.1.0-alpha04"
     const val androidxFragment = "1.1.0-alpha08"

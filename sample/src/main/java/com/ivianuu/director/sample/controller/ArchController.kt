@@ -68,8 +68,8 @@ class ArchController : BaseController() {
 
 class ArchViewModel : ViewModel() {
 
-    val count: LiveData<Long> get() = _count
     private val _count = MutableLiveData<Long>()
+    val count: LiveData<Long> get() = _count
 
     private val disposables = CompositeDisposable()
 
