@@ -193,4 +193,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 fun Controller.requireView(): View =
     view ?: error("view is only accessible between onCreateView and onDestroyView")
 
+fun Controller.requireParentController(): Controller =
+    parentController ?: error("parent controller == null")
+
 fun Controller.toTransaction(): RouterTransaction = RouterTransaction(this)
