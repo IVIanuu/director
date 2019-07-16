@@ -10,9 +10,9 @@ import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.doOnChangeEnded
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popTop
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.ColorUtil
 import com.ivianuu.director.setRoot
 import com.ivianuu.director.toTransaction
@@ -37,7 +37,7 @@ class ParentController : BaseController() {
         val frameId = requireView().resources.getIdentifier(
             "child_content_" + (index + 1),
             "id",
-            mainActivity().packageName
+            requireActivity().packageName
         )
 
         val container = view!!.findViewById<ViewGroup>(frameId)

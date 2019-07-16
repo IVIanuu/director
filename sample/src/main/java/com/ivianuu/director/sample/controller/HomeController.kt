@@ -10,11 +10,10 @@ import com.ivianuu.director.changeHandler
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
 import com.ivianuu.director.common.show
 import com.ivianuu.director.push
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireView
-
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.ArcFadeMoveChangeHandler
-import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 import com.ivianuu.director.tag
@@ -32,7 +31,7 @@ class HomeController : BaseController() {
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        recycler_view.layoutManager = LinearLayoutManager(mainActivity())
+        recycler_view.layoutManager = LinearLayoutManager(requireActivity())
         recycler_view.buildModels {
             HomeItem.values().forEachIndexed { index, item ->
                 homeItem {

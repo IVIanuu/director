@@ -2,9 +2,8 @@ package com.ivianuu.director.sample.controller
 
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.sample.mainActivity
-
 import kotlinx.android.synthetic.main.controller_child.*
 
 class ChildController(
@@ -21,7 +20,7 @@ class ChildController(
 
         var bgColor = this.bgColor
         if (colorIsRes) {
-            bgColor = ContextCompat.getColor(mainActivity(), bgColor)
+            bgColor = ContextCompat.getColor(requireActivity(), bgColor)
         }
 
         view.setBackgroundColor(bgColor)

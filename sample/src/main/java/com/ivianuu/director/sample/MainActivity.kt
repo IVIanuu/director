@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
     private val router by lazy { router(R.id.controller_container) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        INSTANCE = this
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
@@ -46,7 +45,6 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
 
     override fun onDestroy() {
         router.removeChangeListener(toolbarListener)
-        INSTANCE = null
         super.onDestroy()
     }
 
@@ -60,7 +58,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         )
 
         toolbar!!.navigationIcon = if (router.backstack.size > 1) {
-            mainActivity().getDrawable(R.drawable.abc_ic_ab_back_material)
+            getDrawable(R.drawable.abc_ic_ab_back_material)
                 .apply {
                     setColorFilter(
                         android.graphics.Color.WHITE,
@@ -72,10 +70,4 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         }
     }
 
-    companion object {
-        var INSTANCE: MainActivity? = null
-            private set
-    }
 }
-
-fun mainActivity(): MainActivity = MainActivity.INSTANCE!!

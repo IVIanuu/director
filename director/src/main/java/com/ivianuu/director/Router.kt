@@ -1,6 +1,8 @@
 package com.ivianuu.director
 
+import android.content.ContextWrapper
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle.State.CREATED
 import androidx.lifecycle.Lifecycle.State.DESTROYED
 import androidx.lifecycle.Lifecycle.State.INITIALIZED
@@ -486,7 +488,17 @@ class Router internal constructor(val parent: Controller? = null) {
 
 val Router.hasContainer: Boolean get() = container != null
 
-val Router.hasRoot: Boolean get() = backstack.size > 0
+val Router.activity: FragmentActivity?
+    get() {
+        var context = container?.context
+        while (context is ContextWrapper) {
+            context = context.baseContext
+        }
+
+        return context as? FragmentActivity
+    }
+
+val Router.hasRoot: Boolean get() = backstack.isNotEmpty()
 
 fun Router.findControllerByTag(tag: String): Controller? {
     for (transaction in backstack) {

@@ -13,6 +13,7 @@ import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
 import com.ivianuu.director.common.changehandler.VerticalChangeHandler
 import com.ivianuu.director.popToRoot
 import com.ivianuu.director.push
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireView
 
 import com.ivianuu.director.sample.R
@@ -26,7 +27,6 @@ import com.ivianuu.director.sample.controller.TransitionDemoController.Transitio
 import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.HORIZONTAL
 import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.VERTICAL
 import com.ivianuu.director.sample.controller.TransitionDemoController.TransitionDemo.values
-import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_transition_demo.*
 
@@ -46,7 +46,7 @@ class TransitionDemoController(
         if (transitionDemo.colorId != 0 && bg_view != null) {
             bg_view.setBackgroundColor(
                 ContextCompat.getColor(
-                    mainActivity(),
+                    requireActivity(),
                     transitionDemo.colorId
                 )
             )
@@ -62,7 +62,7 @@ class TransitionDemoController(
         }
 
         btn_next.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(mainActivity(), buttonColor))
+            ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), buttonColor))
         tv_title.text = transitionDemo.title
 
         btn_next.setOnClickListener {

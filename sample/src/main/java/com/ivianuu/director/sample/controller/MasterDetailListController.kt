@@ -7,12 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.childRouter
-
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popTop
-
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.simpleController
 import com.ivianuu.director.setRoot
@@ -48,7 +46,7 @@ class MasterDetailListController : BaseController() {
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
 
-        recycler_view.layoutManager = LinearLayoutManager(mainActivity())
+        recycler_view.layoutManager = LinearLayoutManager(requireActivity())
         recycler_view.adapter = epoxyController.adapter
         isTwoPane = view.resources.configuration.orientation ==
                 Configuration.ORIENTATION_LANDSCAPE

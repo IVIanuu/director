@@ -8,10 +8,10 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.push
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.changehandler.CityGridSharedElementTransitionChangeHandler
-import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
 
@@ -35,7 +35,7 @@ class CityGridController(
 
         tv_title.text = toolbarTitle
         img_dot.drawable.setColorFilter(
-            ContextCompat.getColor(mainActivity(), dotColor),
+            ContextCompat.getColor(requireActivity(), dotColor),
             Mode.SRC_ATOP
         )
 
@@ -45,7 +45,7 @@ class CityGridController(
         img_dot.transitionName =
             view.resources.getString(R.string.transition_tag_dot_indexed, fromPosition)
 
-        recycler_view.layoutManager = GridLayoutManager(mainActivity(), 2)
+        recycler_view.layoutManager = GridLayoutManager(requireActivity(), 2)
         recycler_view.buildModels {
             CITIES.forEach { city ->
                 city {

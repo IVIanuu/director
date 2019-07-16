@@ -4,12 +4,10 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.R
-import com.ivianuu.director.sample.mainActivity
 import com.ivianuu.director.sample.util.BaseEpoxyModel
-
 import com.ivianuu.director.sample.util.buildModels
-
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_city_detail.*
 import kotlinx.android.synthetic.main.row_city_detail.*
@@ -37,7 +35,7 @@ class CityDetailController(
             title
         )
 
-        recycler_view.layoutManager = LinearLayoutManager(mainActivity())
+        recycler_view.layoutManager = LinearLayoutManager(requireActivity())
 
         recycler_view.buildModels {
             cityHeader {
