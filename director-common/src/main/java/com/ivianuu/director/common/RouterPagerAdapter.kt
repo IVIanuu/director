@@ -20,7 +20,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import com.ivianuu.director.Router
-import com.ivianuu.director.router
 
 /**
  * A [PagerAdapter] that uses [router]s as pages

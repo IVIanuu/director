@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director
+package com.ivianuu.director.common
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -26,6 +26,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State.DESTROYED
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import com.ivianuu.director.Controller
+import com.ivianuu.director.requireActivity
 
 /**
  * Handles activity results of controllers
@@ -108,7 +110,7 @@ class ActivityCallbacks : Fragment() {
 
     companion object {
         private const val FRAGMENT_TAG =
-            "com.ivianuu.director.ActivityCallbacks"
+            "com.ivianuu.director.common.ActivityCallbacks"
 
         private val activities =
             mutableMapOf<ActivityCallbacks, FragmentActivity>()
@@ -118,7 +120,10 @@ class ActivityCallbacks : Fragment() {
                 .findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
                 ?: ActivityCallbacks().also {
                     controller.requireActivity().supportFragmentManager.beginTransaction()
-                        .add(it, FRAGMENT_TAG)
+                        .add(
+                            it,
+                            FRAGMENT_TAG
+                        )
                         .commitNow()
                 }.also {
                     if (it.activity == null) {

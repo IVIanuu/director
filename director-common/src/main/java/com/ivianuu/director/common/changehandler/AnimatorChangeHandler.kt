@@ -52,9 +52,10 @@ abstract class AnimatorChangeHandler(
             && changeData.to!!.width <= 0
             && changeData.to!!.height <= 0
         ) {
-            onReadyOrAbortedListener = OnReadyOrAbortedListener(changeData.to!!) {
-                performAnimation(changeData)
-            }
+            onReadyOrAbortedListener =
+                OnReadyOrAbortedListener(changeData.to!!) {
+                    performAnimation(changeData)
+                }
         } else {
             performAnimation(changeData)
         }

@@ -5,13 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.view.View
-import com.ivianuu.director.addActivityResultListener
 import com.ivianuu.director.changeHandler
+import com.ivianuu.director.common.addActivityResultListener
 import com.ivianuu.director.common.changehandler.HorizontalChangeHandler
+import com.ivianuu.director.common.startActivityForResult
 import com.ivianuu.director.push
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.d
-import com.ivianuu.director.startActivityForResult
 import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_target_display.*
 
