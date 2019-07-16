@@ -5,6 +5,8 @@ import androidx.lifecycle.Lifecycle.State.CREATED
 import androidx.lifecycle.Lifecycle.State.DESTROYED
 import androidx.lifecycle.Lifecycle.State.INITIALIZED
 import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 
 /**
  * Handles the backstack and delegates the host lifecycle to it's [Controller]s
@@ -39,6 +41,9 @@ class Router internal constructor(val parent: Controller? = null) {
      */
     var container: ViewGroup? = null
         private set
+
+    private val _viewModelStoreOwner = RouterViewModelStoreOwner()
+    val viewModelStoreOwner: ViewModelStoreOwner get() = _viewModelStoreOwner
 
     private val changeListeners =
         mutableListOf<ChangeListenerEntry>()
@@ -296,6 +301,8 @@ class Router internal constructor(val parent: Controller? = null) {
         _backstack
             .reversed()
             .forEach { it.controller.destroy() }
+
+        _viewModelStoreOwner.viewModelStore.clear()
     }
 
     private fun performControllerChange(
@@ -470,6 +477,11 @@ class Router internal constructor(val parent: Controller? = null) {
         val listener: ControllerChangeListener,
         val recursive: Boolean
     )
+
+    private class RouterViewModelStoreOwner : ViewModelStoreOwner {
+        private val _viewModelStore = ViewModelStore()
+        override fun getViewModelStore() = _viewModelStore
+    }
 }
 
 val Router.hasContainer: Boolean get() = container != null
