@@ -490,12 +490,15 @@ val Router.hasContainer: Boolean get() = container != null
 
 val Router.activity: FragmentActivity?
     get() {
+        if (parent != null) return parent.activity
+
         var context = container?.context
         while (context is ContextWrapper) {
+            if (context is FragmentActivity) return context
             context = context.baseContext
         }
 
-        return context as? FragmentActivity
+        return null
     }
 
 val Router.hasRoot: Boolean get() = backstack.isNotEmpty()

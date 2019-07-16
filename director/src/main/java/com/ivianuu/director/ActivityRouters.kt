@@ -20,10 +20,10 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Lifecycle.Event.ON_CREATE
 import androidx.lifecycle.Lifecycle.Event.ON_DESTROY
 import androidx.lifecycle.Lifecycle.Event.ON_START
 import androidx.lifecycle.Lifecycle.Event.ON_STOP
+import androidx.lifecycle.Lifecycle.State.DESTROYED
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -38,6 +38,13 @@ fun ComponentActivity.router(containerId: Int): Router =
 fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Router {
     val holder = ViewModelProvider(this, RouterHolder.Factory)[RouterHolder::class.java]
     val router = holder.router
+
+    if (lifecycle.currentState == DESTROYED) {
+        router.destroy()
+        return router
+    }
+
+    if (containerProvider != null) router.setContainer(containerProvider())
 
     fun canHandleBack(): Boolean =
         router.backstack.isNotEmpty() &&
@@ -58,15 +65,8 @@ fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Rout
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             when (event) {
-                ON_CREATE -> {
-                    containerProvider?.invoke()?.let { router.setContainer(it) }
-                }
-                ON_START -> {
-                    router.start()
-                }
-                ON_STOP -> {
-                    router.stop()
-                }
+                ON_START -> router.start()
+                ON_STOP -> router.stop()
                 ON_DESTROY -> {
                     router.removeChangeListener(changeListener)
 
