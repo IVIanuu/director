@@ -1,7 +1,6 @@
 package com.ivianuu.director.sample.controller
 
 import android.annotation.TargetApi
-import android.os.Build.VERSION_CODES
 import android.view.View
 import com.ivianuu.director.popController
 import com.ivianuu.director.sample.R

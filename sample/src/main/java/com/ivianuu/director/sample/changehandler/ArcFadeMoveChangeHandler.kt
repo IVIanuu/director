@@ -1,7 +1,6 @@
 package com.ivianuu.director.sample.changehandler
 
 import android.annotation.TargetApi
-import android.os.Build
 import android.transition.ArcMotion
 import android.transition.ChangeBounds
 import android.transition.ChangeClipBounds
@@ -15,7 +14,7 @@ import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
 import com.ivianuu.director.common.findNamedView
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@TargetApi(21)
 class ArcFadeMoveChangeHandler(private val sharedElementNames: List<String>) :
     SharedElementTransitionChangeHandler() {
 

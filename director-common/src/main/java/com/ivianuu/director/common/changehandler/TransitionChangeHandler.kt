@@ -17,7 +17,6 @@
 package com.ivianuu.director.common.changehandler
 
 import android.annotation.TargetApi
-import android.os.Build
 import android.transition.Transition
 import android.transition.TransitionManager
 import com.ivianuu.director.ChangeData
@@ -28,7 +27,7 @@ import com.ivianuu.director.defaultRemovesFromViewOnPush
 /**
  * A base [ControllerChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
+@TargetApi(19)
 abstract class TransitionChangeHandler(
     duration: Long = DirectorPlugins.defaultTransitionDuration,
     override var removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush

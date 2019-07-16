@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-@file:TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@file:TargetApi(21)
 
 package com.ivianuu.director.common
 
 import android.annotation.TargetApi
 import android.graphics.Rect
-import android.os.Build
 import android.transition.Transition
 import android.transition.TransitionSet
 import android.view.View

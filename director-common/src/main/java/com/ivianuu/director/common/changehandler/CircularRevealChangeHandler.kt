@@ -2,7 +2,6 @@ package com.ivianuu.director.common.changehandler
 
 import android.animation.Animator
 import android.annotation.TargetApi
-import android.os.Build
 import android.view.View
 import android.view.ViewAnimationUtils
 import com.ivianuu.director.ChangeData
@@ -13,7 +12,7 @@ import kotlin.math.hypot
 /**
  * A [AnimatorChangeHandler] that will perform a circular reveal
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@TargetApi(21)
 open class CircularRevealChangeHandler : AnimatorChangeHandler {
 
     private var cx = 0

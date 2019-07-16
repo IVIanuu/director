@@ -1,7 +1,6 @@
 package com.ivianuu.director.sample.changehandler
 
 import android.annotation.TargetApi
-import android.os.Build
 import android.transition.ChangeBounds
 import android.transition.ChangeClipBounds
 import android.transition.ChangeTransform
@@ -13,7 +12,7 @@ import android.view.Gravity
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.common.changehandler.SharedElementTransitionChangeHandler
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@TargetApi(21)
 class CityGridSharedElementTransitionChangeHandler(
     private val sharedElementNames: List<String>
 ) : SharedElementTransitionChangeHandler() {
