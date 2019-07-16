@@ -12,6 +12,8 @@ import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 
@@ -50,11 +52,16 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
 
+    private var _viewLifecycleOwner: ControllerViewLifecycleOwner? = null
     val viewLifecycleOwner: LifecycleOwner
         get() =
             _viewLifecycleOwner
                 ?: error("can only access the viewLifecycleOwner while the view is created")
-    private var _viewLifecycleOwner: ControllerViewLifecycleOwner? = null
+
+    private var _viewLifecycleOwnerLiveData = MutableLiveData<LifecycleOwner?>()
+    val viewLifecycleOwnerLiveData: LiveData<LifecycleOwner?>
+        get() = _viewLifecycleOwnerLiveData
+
 
     /**
      * Will be called once when this controller gets attached to its router
@@ -124,6 +131,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         ).also { this.view = it }
 
         _viewLifecycleOwner!!.currentState = CREATED
+        _viewLifecycleOwnerLiveData.value = _viewLifecycleOwner
 
         // restore hierarchy
         viewState?.let { view.restoreHierarchyState(it) }
@@ -143,6 +151,7 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         onDestroyView(view)
         this.view = null
         _viewLifecycleOwner = null
+        _viewLifecycleOwnerLiveData.value = null
     }
 
     internal fun attach() {

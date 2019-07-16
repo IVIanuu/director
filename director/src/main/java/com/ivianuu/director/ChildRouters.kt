@@ -18,10 +18,14 @@ package com.ivianuu.director
 
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.Event.ON_CREATE
+import androidx.lifecycle.Lifecycle.Event.ON_DESTROY
+import androidx.lifecycle.Lifecycle.Event.ON_PAUSE
+import androidx.lifecycle.Lifecycle.Event.ON_RESUME
 import androidx.lifecycle.Lifecycle.State.DESTROYED
-import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 
 fun Controller.childRouter(container: ViewGroup): Router =
     childRouter { container }
@@ -37,33 +41,25 @@ fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router
         return router
     }
 
-    if (view != null) {
-        containerProvider?.invoke()?.let { router.setContainer(it) }
-    }
-
-    if (lifecycle.currentState.isAtLeast(STARTED)) {
-        router.start()
+    if (containerProvider != null) {
+        viewLifecycleOwnerLiveData.observe(this, Observer {
+            it?.lifecycle?.addObserver(object : LifecycleEventObserver {
+                override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                    when (event) {
+                        ON_CREATE -> router.setContainer(containerProvider())
+                        ON_DESTROY -> router.removeContainer()
+                    }
+                }
+            })
+        })
     }
 
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             when (event) {
-                Lifecycle.Event.ON_RESUME -> {
-                    if (containerProvider != null) {
-                        router.setContainer(containerProvider())
-                    }
-                    router.start()
-                }
-                Lifecycle.Event.ON_PAUSE -> {
-                    router.stop()
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    if (containerProvider != null) {
-                        router.removeContainer()
-                    }
-
-                    router.destroy()
-                }
+                ON_RESUME -> router.start()
+                ON_PAUSE -> router.stop()
+                ON_DESTROY -> router.destroy()
             }
         }
     })

@@ -20,6 +20,10 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.Event.ON_CREATE
+import androidx.lifecycle.Lifecycle.Event.ON_DESTROY
+import androidx.lifecycle.Lifecycle.Event.ON_START
+import androidx.lifecycle.Lifecycle.Event.ON_STOP
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -47,24 +51,24 @@ fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Rout
 
     onBackPressedDispatcher.addCallback(backPressedCallback)
 
-    /*val changeListener = router.doOnChangeStarted { _, _, _, _, _, _ ->
+    val changeListener = router.doOnChangeStarted { _, _, _, _, _, _ ->
         backPressedCallback.isEnabled = canHandleBack()
-    }*/
+    }
 
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             when (event) {
-                Lifecycle.Event.ON_CREATE -> {
+                ON_CREATE -> {
                     containerProvider?.invoke()?.let { router.setContainer(it) }
                 }
-                Lifecycle.Event.ON_START -> {
+                ON_START -> {
                     router.start()
                 }
-                Lifecycle.Event.ON_STOP -> {
+                ON_STOP -> {
                     router.stop()
                 }
-                Lifecycle.Event.ON_DESTROY -> {
-                    //router.removeChangeListener(changeListener)
+                ON_DESTROY -> {
+                    router.removeChangeListener(changeListener)
 
                     if (containerProvider != null) {
                         router.removeContainer()

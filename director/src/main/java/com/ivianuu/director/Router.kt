@@ -40,6 +40,9 @@ class Router internal constructor(val parent: Controller? = null) {
     var container: ViewGroup? = null
         private set
 
+    private val changeListeners =
+        mutableListOf<ChangeListenerEntry>()
+
     private val runningHandlers =
         mutableMapOf<Controller, ControllerChangeHandler>()
 
@@ -215,6 +218,27 @@ class Router internal constructor(val parent: Controller? = null) {
     }
 
     /**
+     * Notifies the [listener] on controller changes
+     */
+    fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
+        changeListeners.add(ChangeListenerEntry(listener, recursive))
+    }
+
+    /**
+     * Removes the previously added [listener]
+     */
+    fun removeChangeListener(listener: ControllerChangeListener) {
+        changeListeners.removeAll { it.listener == listener }
+    }
+
+    internal fun getChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
+        return changeListeners
+            .filter { !recursiveOnly || it.recursive }
+            .map { it.listener } + (parent?.router?.getChangeListeners(true)
+            ?: emptyList())
+    }
+
+    /**
      * Sets the container of this router
      */
     fun setContainer(container: ViewGroup) {
@@ -282,6 +306,7 @@ class Router internal constructor(val parent: Controller? = null) {
         forceRemoveFromView: Boolean
     ) {
         val container = container ?: return
+        val listeners = getChangeListeners()
 
         val handlerToUse = when {
             handler == null -> DefaultChangeHandler()
@@ -292,6 +317,8 @@ class Router internal constructor(val parent: Controller? = null) {
 
         from?.let { cancelChange(it) }
         to?.let { runningHandlers[it] = handlerToUse }
+
+        listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
 
         val toView = to?.view ?: to?.createView(container)
         val fromView = from?.view
@@ -336,6 +363,10 @@ class Router internal constructor(val parent: Controller? = null) {
             override fun changeCompleted() {
                 if (to != null) {
                     runningHandlers.remove(to)
+                }
+
+                listeners.forEach {
+                    it.onChangeEnded(this@Router, to, from, isPush, container, handlerToUse)
                 }
             }
         }
@@ -435,6 +466,10 @@ class Router internal constructor(val parent: Controller? = null) {
         }
     }
 
+    private data class ChangeListenerEntry(
+        val listener: ControllerChangeListener,
+        val recursive: Boolean
+    )
 }
 
 val Router.hasContainer: Boolean get() = container != null

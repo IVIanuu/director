@@ -20,7 +20,6 @@ import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
-import com.ivianuu.director.util.EmptyControllerLifecycleListener
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.noRemoveViewOnPushHandler
 import org.junit.Assert.assertEquals
@@ -93,22 +92,22 @@ class RouterTest {
 
         router.push(controller1.toTransaction().tag(controller1Tag))
 
-        assertEquals(1, router.backstackSize)
+        assertEquals(1, router.backstack.size)
 
         router.push(controller2.toTransaction().tag(controller2Tag))
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         router.popTop()
 
-        assertEquals(1, router.backstackSize)
+        assertEquals(1, router.backstack.size)
 
         assertEquals(controller1, router.findControllerByTag(controller1Tag))
         assertNull(router.findControllerByTag(controller2Tag))
 
         router.popTop()
 
-        assertEquals(0, router.backstackSize)
+        assertEquals(0, router.backstack.size)
 
         assertNull(router.findControllerByTag(controller1Tag))
         assertNull(router.findControllerByTag(controller2Tag))
@@ -161,7 +160,7 @@ class RouterTest {
 
         router.popToTag(controller2Tag)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
         assertEquals(controller1, router.findControllerByTag(controller1Tag))
         assertEquals(controller2, router.findControllerByTag(controller2Tag))
         assertNull(router.findControllerByTag(controller3Tag))
@@ -184,7 +183,7 @@ class RouterTest {
 
         router.popController(controller2)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
         assertEquals(controller1, router.findControllerByTag(controller1Tag))
         assertNull(router.findControllerByTag(controller2Tag))
         assertEquals(controller3, router.findControllerByTag(controller3Tag))
@@ -194,7 +193,7 @@ class RouterTest {
     fun testSetBackstack() {
         router.setRoot(TestController().toTransaction())
 
-        assertEquals(1, router.backstackSize)
+        assertEquals(1, router.backstack.size)
 
         val rootTransaction = TestController().toTransaction()
         val middleTransaction = TestController().toTransaction()
@@ -204,7 +203,7 @@ class RouterTest {
             listOf(rootTransaction, middleTransaction, topTransaction)
         router.setBackstack(backstack, true)
 
-        assertEquals(3, router.backstackSize)
+        assertEquals(3, router.backstack.size)
 
         val fetchedBackstack = router.backstack
         assertEquals(rootTransaction, fetchedBackstack[0])
@@ -224,7 +223,7 @@ class RouterTest {
 
         router.setRoot(oldRootTransaction)
         router.push(oldTopTransaction)
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertTrue(oldRootTransaction.controller.lifecycle.currentState == RESUMED)
         assertTrue(oldTopTransaction.controller.lifecycle.currentState == RESUMED)
@@ -238,7 +237,7 @@ class RouterTest {
         val backstack = listOf(rootTransaction, middleTransaction, topTransaction)
         router.setBackstack(backstack, true)
 
-        assertEquals(3, router.backstackSize)
+        assertEquals(3, router.backstack.size)
 
         val fetchedBackstack = router.backstack
         assertEquals(rootTransaction, fetchedBackstack[0])
@@ -262,11 +261,11 @@ class RouterTest {
             listOf(rootTransaction, transaction1, transaction2)
         router.setBackstack(backstack, true)
 
-        assertEquals(3, router.backstackSize)
+        assertEquals(3, router.backstack.size)
 
         router.popToRoot()
 
-        assertEquals(1, router.backstackSize)
+        assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
         assertTrue(rootTransaction.controller.lifecycle.currentState == RESUMED)
@@ -287,11 +286,11 @@ class RouterTest {
             listOf(rootTransaction, transaction1, transaction2)
         router.setBackstack(backstack, true)
 
-        assertEquals(3, router.backstackSize)
+        assertEquals(3, router.backstack.size)
 
         router.popToRoot()
 
-        assertEquals(1, router.backstackSize)
+        assertEquals(1, router.backstack.size)
         assertEquals(rootTransaction, router.backstack[0])
 
         assertTrue(rootTransaction.controller.lifecycle.currentState == RESUMED)
@@ -307,7 +306,7 @@ class RouterTest {
         val backstack = listOf(rootTransaction, topTransaction)
         router.setBackstack(backstack, true)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         var fetchedBackstack = router.backstack
         assertEquals(rootTransaction, fetchedBackstack[0])
@@ -316,7 +315,7 @@ class RouterTest {
         val newTopTransaction = TestController().toTransaction()
         router.replaceTop(newTopTransaction)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         fetchedBackstack = router.backstack
         assertEquals(rootTransaction, fetchedBackstack[0])
@@ -332,7 +331,7 @@ class RouterTest {
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack, true)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
         assertTrue(controllerB.controller.lifecycle.currentState == RESUMED)
@@ -341,7 +340,7 @@ class RouterTest {
             .changeHandler(noRemoveViewOnPushHandler())
         router.replaceTop(controllerC)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
         assertFalse(controllerB.controller.lifecycle.currentState == RESUMED)
@@ -357,7 +356,7 @@ class RouterTest {
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack, true)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
         assertTrue(controllerB.controller.lifecycle.currentState == RESUMED)
@@ -365,7 +364,7 @@ class RouterTest {
         val controllerC = TestController().toTransaction()
         router.replaceTop(controllerC)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertFalse(controllerA.controller.lifecycle.currentState == RESUMED)
         assertFalse(controllerB.controller.lifecycle.currentState == RESUMED)
@@ -380,7 +379,7 @@ class RouterTest {
         val backstack = listOf(controllerA, controllerB)
         router.setBackstack(backstack, true)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertFalse(controllerA.controller.lifecycle.currentState == RESUMED)
         assertTrue(controllerB.controller.lifecycle.currentState == RESUMED)
@@ -389,7 +388,7 @@ class RouterTest {
             .changeHandler(noRemoveViewOnPushHandler())
         router.replaceTop(controllerC)
 
-        assertEquals(2, router.backstackSize)
+        assertEquals(2, router.backstack.size)
 
         assertTrue(controllerA.controller.lifecycle.currentState == RESUMED)
         assertFalse(controllerB.controller.lifecycle.currentState == RESUMED)
@@ -452,11 +451,11 @@ class RouterTest {
 
         router.handleBack()
 
-        assertEquals(1, router.backstackSize)
+        assertEquals(1, router.backstack.size)
         assertEquals(transaction2, router.backstack[0])
 
         router.handleBack()
-        assertEquals(0, router.backstackSize)
+        assertEquals(0, router.backstack.size)
     }
 
     @Test
@@ -490,58 +489,6 @@ class RouterTest {
         assertTrue(childRouter2.getChangeListeners(false).contains(childRouterRecursiveListener))
         assertFalse(
             childRouter2.getChangeListeners(false).contains(
-                childRouterNonRecursiveListener
-            )
-        )
-    }
-
-    @Test
-    fun testRecursivelySettingLifecycleListener() {
-        val routerRecursiveListener = EmptyControllerLifecycleListener()
-        val routerNonRecursiveListener = EmptyControllerLifecycleListener()
-
-        val controller1 = TestController()
-        router.addControllerLifecycleListener(routerRecursiveListener, true)
-        router.addControllerLifecycleListener(routerNonRecursiveListener)
-        router.setRoot(controller1.toTransaction())
-
-        val childRouterRecursiveListener = EmptyControllerLifecycleListener()
-        val childRouterNonRecursiveListener = EmptyControllerLifecycleListener()
-
-        val childRouter =
-            controller1.childRouter(controller1.childContainer1!!)
-        assertTrue(
-            childRouter.getControllerLifecycleListeners(false).contains(
-                routerRecursiveListener
-            )
-        )
-        assertFalse(
-            childRouter.getControllerLifecycleListeners(false).contains(
-                routerNonRecursiveListener
-            )
-        )
-
-        val controller2 = TestController()
-        childRouter.addControllerLifecycleListener(childRouterRecursiveListener, true)
-        childRouter.addControllerLifecycleListener(childRouterNonRecursiveListener)
-        childRouter.setRoot(controller2.toTransaction())
-
-        val childRouter2 =
-            controller2.childRouter(controller2.childContainer2!!)
-        val controller3 = TestController()
-        childRouter2.push(controller3.toTransaction())
-        assertTrue(
-            childRouter2.getControllerLifecycleListeners(false).contains(
-                routerRecursiveListener
-            )
-        )
-        assertTrue(
-            childRouter2.getControllerLifecycleListeners(false).contains(
-                childRouterRecursiveListener
-            )
-        )
-        assertFalse(
-            childRouter2.getControllerLifecycleListeners(false).contains(
                 childRouterNonRecursiveListener
             )
         )
