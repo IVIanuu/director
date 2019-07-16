@@ -16,9 +16,6 @@
 
 package com.ivianuu.director
 
-import androidx.lifecycle.Lifecycle.State.CREATED
-import androidx.lifecycle.Lifecycle.State.DESTROYED
-import androidx.lifecycle.Lifecycle.State.INITIALIZED
 import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ivianuu.director.util.ActivityProxy
@@ -63,27 +60,6 @@ class ControllerTest {
         assertFalse(controller.lifecycle.currentState == RESUMED)
         router.start()
         assertTrue(controller.lifecycle.currentState == RESUMED)
-    }
-
-    @Test
-    fun testControllerState() {
-        val controller = TestController()
-
-        assertEquals(INITIALIZED, controller.lifecycle.currentState)
-
-        controller.addLifecycleListener(
-            preCreate = { assertEquals(INITIALIZED, controller.lifecycle.currentState) },
-            postCreate = { assertEquals(CREATED, controller.lifecycle.currentState) },
-            preAttach = { _, _ -> assertEquals(CREATED, controller.lifecycle.currentState) },
-            postAttach = { _, _ -> assertEquals(RESUMED, controller.lifecycle.currentState) },
-            preDetach = { _, _ -> assertEquals(RESUMED, controller.lifecycle.currentState) },
-            postDetach = { _, _ -> assertEquals(CREATED, controller.lifecycle.currentState) },
-            preDestroy = { assertEquals(CREATED, controller.lifecycle.currentState) },
-            postDestroy = { assertEquals(DESTROYED, controller.lifecycle.currentState) }
-        )
-
-        router.push(controller.toTransaction())
-        controller.doOnPostAttach { _, _ -> router.popTop() }
     }
 
 }
