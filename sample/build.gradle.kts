@@ -21,6 +21,7 @@ plugins {
 }
 
 apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/android-build-app.gradle")
+apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/java-8-android.gradle")
 apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/kt-android-ext.gradle")
 apply(from = "https://raw.githubusercontent.com/IVIanuu/gradle-scripts/master/kt-kapt.gradle")
 
@@ -36,9 +37,7 @@ dependencies {
     implementation(Deps.androidxAppCompat)
 
     implementation(project(":director"))
-    implementation(project(":director-activitycallbacks"))
     implementation(project(":director-common"))
-    implementation(project(":director-scopes"))
     implementation(project(":director-traveler"))
 
     implementation(Deps.epoxy)
@@ -49,8 +48,6 @@ dependencies {
     implementation(Deps.materialComponents)
 
     implementation(Deps.rxJava)
-
-    implementation(Deps.scopesRx)
 
     implementation("com.afollestad.material-dialogs:core:0.9.6.0")
 }

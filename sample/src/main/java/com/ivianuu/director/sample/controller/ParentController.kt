@@ -1,10 +1,21 @@
 package com.ivianuu.director.sample.controller
 
+import android.view.View
 import android.view.ViewGroup
-import com.ivianuu.director.*
+import com.ivianuu.director.Router
+import com.ivianuu.director.changeHandler
+import com.ivianuu.director.childRouter
+import com.ivianuu.director.clear
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.doOnChangeEnded
+import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popTop
+import com.ivianuu.director.requireActivity
+import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.ColorUtil
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 
 class ParentController : BaseController() {
 
@@ -15,44 +26,42 @@ class ParentController : BaseController() {
     private var finishing = false
     private var hasShownAll = false
 
-    override fun onChangeEnded(
-        other: Controller?,
-        changeHandler: ControllerChangeHandler,
-        changeType: ControllerChangeType
-    ) {
-        super.onChangeEnded(other, changeHandler, changeType)
-        if (changeType == ControllerChangeType.PUSH_ENTER) {
-            addChild(0)
-        }
+    private val childRouters = mutableListOf<Router>()
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        addChild(0)
     }
 
     private fun addChild(index: Int) {
-        val frameId = resources.getIdentifier(
+        val frameId = requireView().resources.getIdentifier(
             "child_content_" + (index + 1),
             "id",
-            activity.packageName
+            requireActivity().packageName
         )
 
         val container = view!!.findViewById<ViewGroup>(frameId)
 
-        getChildRouter(container).let { childRouter ->
+        childRouter(container).let { childRouter ->
+            childRouters.add(childRouter)
+
             childRouter.popsLastView = true
 
             if (!childRouter.hasRoot) {
-                val childController = ChildController.newInstance(
+                val childController = ChildController(
                     "Child Controller #$index",
-                    ColorUtil.getMaterialColor(resources, index),
+                    ColorUtil.getMaterialColor(requireView().resources, index),
                     false
                 )
 
-                childController.doOnChangeEnd { _, _, _, changeType ->
-                    if (changeType == ControllerChangeType.PUSH_ENTER && !hasShownAll) {
+                childRouter.doOnChangeEnded { router, _, _, isPush, _, _ ->
+                    if (isPush && !hasShownAll) {
                         if (index < NUMBER_OF_CHILDREN - 1) {
                             addChild(index + 1)
                         } else {
                             hasShownAll = true
                         }
-                    } else if (changeType == ControllerChangeType.POP_EXIT) {
+                    } else if (!isPush) {
                         if (index > 0) {
                             removeChild(index - 1)
                         } else {
@@ -70,7 +79,6 @@ class ParentController : BaseController() {
     }
 
     private fun removeChild(index: Int) {
-        val childRouters = childRouters.toList()
         if (index < childRouters.size) {
             val childRouter = childRouters[index]
             childRouter.clear()
@@ -78,7 +86,7 @@ class ParentController : BaseController() {
             childRouter.doOnChangeEnded { _, _, _, _, _, _ ->
                 if (!removed) {
                     removed = true
-                    removeChildRouter(childRouter)
+                    childRouters.remove(childRouter)
                 }
             }
         }

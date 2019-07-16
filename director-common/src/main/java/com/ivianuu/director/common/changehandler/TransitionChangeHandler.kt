@@ -17,8 +17,6 @@
 package com.ivianuu.director.common.changehandler
 
 import android.annotation.TargetApi
-import android.os.Build
-import android.os.Bundle
 import android.transition.Transition
 import android.transition.TransitionManager
 import com.ivianuu.director.ChangeData
@@ -29,7 +27,7 @@ import com.ivianuu.director.defaultRemovesFromViewOnPush
 /**
  * A base [ControllerChangeHandler] that facilitates using [android.transition.Transition]s to replace Controller Views.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
+@TargetApi(19)
 abstract class TransitionChangeHandler(
     duration: Long = DirectorPlugins.defaultTransitionDuration,
     override var removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
@@ -80,18 +78,6 @@ abstract class TransitionChangeHandler(
         }
     }
 
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putLong(KEY_DURATION, duration)
-        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        duration = bundle.getLong(KEY_DURATION)
-        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
-    }
-
     override fun cancel() {
         super.cancel()
         canceled = true
@@ -127,9 +113,6 @@ abstract class TransitionChangeHandler(
     }
 
     companion object {
-        private const val KEY_DURATION = "TransitionChangeHandler.duration"
-        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
-            "TransitionChangeHandler.removesFromViewOnPush"
         const val NO_DURATION = -1L
     }
 }

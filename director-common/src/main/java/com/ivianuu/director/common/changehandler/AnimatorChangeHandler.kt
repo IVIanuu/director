@@ -18,7 +18,6 @@ package com.ivianuu.director.common.changehandler
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.os.Bundle
 import android.view.View
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.ControllerChangeHandler
@@ -59,18 +58,6 @@ abstract class AnimatorChangeHandler(
         } else {
             performAnimation(changeData)
         }
-    }
-
-    override fun saveToBundle(bundle: Bundle) {
-        super.saveToBundle(bundle)
-        bundle.putLong(KEY_DURATION, duration)
-        bundle.putBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH, removesFromViewOnPush)
-    }
-
-    override fun restoreFromBundle(bundle: Bundle) {
-        super.restoreFromBundle(bundle)
-        duration = bundle.getLong(KEY_DURATION)
-        removesFromViewOnPush = bundle.getBoolean(KEY_REMOVES_FROM_VIEW_ON_PUSH)
     }
 
     override fun cancel() {
@@ -137,10 +124,6 @@ abstract class AnimatorChangeHandler(
     }
 
     companion object {
-        private const val KEY_DURATION = "AnimatorChangeHandler.duration"
-        private const val KEY_REMOVES_FROM_VIEW_ON_PUSH =
-            "AnimatorChangeHandler.removesFromViewOnPush"
-
         const val NO_DURATION = -1L
     }
 }

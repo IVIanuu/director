@@ -1,16 +1,20 @@
 package com.ivianuu.director.sample.controller
 
 import android.content.res.Configuration
-import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
-import com.ivianuu.director.*
+import com.ivianuu.director.childRouter
+import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popTop
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.simpleController
+import com.ivianuu.director.setRoot
+import com.ivianuu.director.toTransaction
 import com.ivianuu.epoxyktx.KtEpoxyHolder
 import kotlinx.android.synthetic.main.controller_master_detail_list.*
 import kotlinx.android.synthetic.main.row_detail_item.*
@@ -37,14 +41,14 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    private val childRouter by childRouter(R.id.detail_container)
+    private val childRouter by lazy { childRouter(R.id.detail_container) }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(requireActivity())
         recycler_view.adapter = epoxyController.adapter
-        isTwoPane = resources.configuration.orientation ==
+        isTwoPane = view.resources.configuration.orientation ==
                 Configuration.ORIENTATION_LANDSCAPE
 
         childRouter.popsLastView = !isTwoPane
@@ -56,29 +60,25 @@ class MasterDetailListController : BaseController() {
         }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        selectedIndex = savedInstanceState.getInt(KEY_SELECTED_INDEX)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(KEY_SELECTED_INDEX, selectedIndex)
+    override fun handleBack(): Boolean {
+        return if (childRouter.hasRoot) {
+            childRouter.popTop()
+            true
+        } else {
+            false
+        }
     }
 
     private fun onItemClicked(item: DetailItem, index: Int) {
         selectedIndex = index
         childRouter.setRoot(
-            ChildController.newInstance(
+            ChildController(
                 item.detail, item.backgroundColor, true
             ).toTransaction()
         )
         epoxyController.requestModelBuild()
     }
 
-    companion object {
-        private const val KEY_SELECTED_INDEX = "MasterDetailListController.selectedIndex"
-    }
 }
 
 enum class DetailItem(

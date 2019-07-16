@@ -86,4 +86,6 @@ open class HorizontalChangeHandler(
         from.translationX = 0f
     }
 
+    override fun copy() = HorizontalChangeHandler(duration, removesFromViewOnPush)
+
 }

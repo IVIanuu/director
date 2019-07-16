@@ -21,15 +21,6 @@ package com.ivianuu.director
  */
 object DirectorPlugins
 
-private var _defaultControllerFactory: ControllerFactory? = null
-
-/** Default controller factory to use */
-var DirectorPlugins.defaultControllerFactory: ControllerFactory?
-    get() = _defaultControllerFactory
-    set(value) {
-        _defaultControllerFactory = value
-    }
-
 private var _defaultPushHandler: ControllerChangeHandler? = null
 
 /** The default push handler to use in all transactions */
@@ -61,13 +52,4 @@ var DirectorPlugins.defaultRemovesFromViewOnPush: Boolean
     get() = _defaultRemovesFromViewOnPush
     set(value) {
         _defaultRemovesFromViewOnPush = value
-    }
-
-private var _defaultRetainView = false
-
-/** Default retain view */
-var DirectorPlugins.defaultRetainView: Boolean
-    get() = _defaultRetainView
-    set(value) {
-        _defaultRetainView = value
     }

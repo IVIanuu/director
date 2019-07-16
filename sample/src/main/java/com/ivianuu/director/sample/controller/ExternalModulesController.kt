@@ -17,13 +17,13 @@
 package com.ivianuu.director.sample.controller
 
 import android.graphics.PorterDuff
-import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.ivianuu.director.push
+import com.ivianuu.director.requireActivity
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.BaseEpoxyModel
 import com.ivianuu.director.sample.util.buildModels
@@ -39,10 +39,10 @@ class ExternalModulesController : BaseController() {
     override val toolbarTitle: String?
         get() = "External Module Demo"
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
 
-        recycler_view.layoutManager = LinearLayoutManager(activity)
+        recycler_view.layoutManager = LinearLayoutManager(requireActivity())
         recycler_view.buildModels {
             AdditionalModuleItem.values().forEach { item ->
                 additionalModuleItem {
@@ -57,7 +57,6 @@ class ExternalModulesController : BaseController() {
     private fun onItemClicked(item: AdditionalModuleItem) {
         when (item) {
             AdditionalModuleItem.ARCH -> router.push(ArchController().toTransaction())
-            AdditionalModuleItem.SCOPES -> router.push(ScopesController().toTransaction())
             AdditionalModuleItem.TRAVELER -> router.push(TravelerController().toTransaction())
         }
     }
@@ -66,7 +65,6 @@ class ExternalModulesController : BaseController() {
 
 enum class AdditionalModuleItem(val title: String, val color: Int) {
     ARCH("Arch", R.color.red_300),
-    SCOPES("Scopes", R.color.blue_grey_300),
     TRAVELER("Traveler", R.color.purple_300)
 }
 

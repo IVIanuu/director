@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.util
+package com.ivianuu.director
 
-import com.ivianuu.director.ControllerLifecycleListener
-
-class EmptyControllerLifecycleListener : ControllerLifecycleListener
+internal object TransactionIndexer {
+    private var currentIndex = 0
+    fun nextIndex() = ++currentIndex
+}

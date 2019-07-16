@@ -16,23 +16,20 @@
 
 package com.ivianuu.director.common
 
-import android.os.Bundle
-import android.os.Parcelable
-import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
-import com.ivianuu.director.*
+import com.ivianuu.director.Router
+import com.ivianuu.director.router
 
 /**
- * A [PagerAdapter] that uses [Router]s as pages
+ * A [PagerAdapter] that uses [router]s as pages
  */
 abstract class RouterPagerAdapter(
-    private val manager: RouterManager
+    private val routerFactory: () -> Router
 ) : PagerAdapter() {
 
-    private val visibleRouters = SparseArray<Router>()
-    private val savedStates = SparseArray<Bundle>()
+    private val routers = mutableMapOf<Int, Router>()
 
     /**
      * Configure the router e.g. set the root controller
@@ -40,64 +37,23 @@ abstract class RouterPagerAdapter(
     abstract fun configureRouter(router: Router, position: Int)
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val tag = (container.id + position).toString()
-
-        val router = manager.getRouter(container, tag)
-        if (!router.hasRoot) {
-            val routerSavedState = savedStates.get(position)
-
-            if (routerSavedState != null) {
-                router.restoreInstanceState(routerSavedState)
-                savedStates.remove(position)
-            }
-        }
-
+        val router = routers.getOrPut(position, routerFactory)
+        router.setContainer(container)
         configureRouter(router, position)
-
-        visibleRouters.put(position, router)
         return router
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        val router = `object` as Router
-
-        savedStates.put(position, Bundle().also { router.saveInstanceState(it) })
-
-        router.clear()
-        manager.removeRouter(router)
-
-        visibleRouters.remove(position)
+        (`object` as Router).removeContainer()
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean =
         (`object` as Router).backstack.any { it.controller.view == view }
 
-    override fun saveState(): Parcelable {
-        val bundle = Bundle()
-        bundle.putSparseParcelableArray(KEY_SAVED_PAGES, savedStates)
-        return bundle
-    }
-
-    override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-        super.restoreState(state, loader)
-        val bundle = state as? Bundle
-        if (bundle != null) {
-            savedStates.clear()
-            bundle.getSparseParcelableArray<Bundle>(KEY_SAVED_PAGES)?.let { pages ->
-                (0 until pages.size())
-                    .map { pages.valueAt(it) }
-                    .forEachIndexed { index, value -> savedStates.setValueAt(index, value) }
-            }
-        }
-    }
-
     /**
-     * Returns the already instantiated Router in the specified position or `null` if there
+     * Returns the already instantiated router in the specified position or `null` if there
      * is no router associated with this position.
      */
-    fun getRouter(position: Int): Router = visibleRouters.get(position)
+    fun getRouter(position: Int): Router = routers.getValue(position)
 
-    companion object {
-        private const val KEY_SAVED_PAGES = "RouterPagerAdapter.savedStates"
-    }
 }

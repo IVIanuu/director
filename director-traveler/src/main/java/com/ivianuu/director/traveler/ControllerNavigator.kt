@@ -16,9 +16,23 @@
 
 package com.ivianuu.director.traveler
 
-import com.ivianuu.director.*
+import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
-import com.ivianuu.traveler.*
+import com.ivianuu.director.RouterTransaction
+import com.ivianuu.director.findControllerByTag
+import com.ivianuu.director.hasRoot
+import com.ivianuu.director.popController
+import com.ivianuu.director.popToRoot
+import com.ivianuu.director.popTop
+import com.ivianuu.director.push
+import com.ivianuu.director.replaceTop
+import com.ivianuu.director.toTransaction
+import com.ivianuu.traveler.Back
+import com.ivianuu.traveler.BackTo
+import com.ivianuu.traveler.Command
+import com.ivianuu.traveler.Forward
+import com.ivianuu.traveler.Navigator
+import com.ivianuu.traveler.Replace
 import com.ivianuu.traveler.common.ResultNavigator
 
 /**
@@ -66,8 +80,8 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
         return true
     }
 
-    protected open fun back(command: Back): Boolean = if (router.backstackSize > 0
-        && (router.popsLastView || router.backstackSize > 1)
+    protected open fun back(command: Back): Boolean = if (router.hasRoot
+        && (router.popsLastView || router.backstack.size > 1)
     ) {
         router.popTop()
         true

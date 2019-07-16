@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package com.ivianuu.director.activitycallbacks
+package com.ivianuu.director
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.Controller
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State.DESTROYED
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 
 /**
  * Handles activity results of controllers
@@ -29,6 +34,10 @@ class ActivityCallbacks : Fragment() {
 
     private val activityResultListeners =
         mutableMapOf<Int, MutableSet<ActivityResultListener>>()
+
+    init {
+        retainInstance = true
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -99,21 +108,21 @@ class ActivityCallbacks : Fragment() {
 
     companion object {
         private const val FRAGMENT_TAG =
-            "com.ivianuu.director.activitycallbacks.ActivityCallbacks"
+            "com.ivianuu.director.ActivityCallbacks"
 
         private val activities =
             mutableMapOf<ActivityCallbacks, FragmentActivity>()
 
         internal fun get(controller: Controller): ActivityCallbacks {
-            return controller.activity.supportFragmentManager
+            return controller.requireActivity().supportFragmentManager
                 .findFragmentByTag(FRAGMENT_TAG) as? ActivityCallbacks
                 ?: ActivityCallbacks().also {
-                    controller.activity.supportFragmentManager.beginTransaction()
+                    controller.requireActivity().supportFragmentManager.beginTransaction()
                         .add(it, FRAGMENT_TAG)
                         .commitNow()
                 }.also {
                     if (it.activity == null) {
-                        activities[it] = controller.activity
+                        activities[it] = controller.requireActivity()
                     }
                 }
         }
@@ -124,3 +133,89 @@ class ActivityCallbacks : Fragment() {
 
 internal val Controller.activityCallbacks: ActivityCallbacks
     get() = ActivityCallbacks.get(this)
+
+/**
+ * Listener for activity results
+ */
+typealias ActivityResultListener = (requestCode: Int, resultCode: Int, data: Intent?) -> Unit
+
+/**
+ * Notifies the [listener] on activity results for [requestCode]
+ */
+fun Controller.addActivityResultListener(
+    requestCode: Int,
+    listener: ActivityResultListener
+) {
+    activityCallbacks.addActivityResultListener(requestCode, listener)
+    lifecycle.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            if (lifecycle.currentState == DESTROYED) {
+                activityCallbacks
+                    .removeActivityResultListener(requestCode, listener)
+            }
+        }
+    })
+}
+
+/**
+ * Removes the previously added [listener]
+ */
+fun Controller.removeActivityResultListener(
+    requestCode: Int,
+    listener: ActivityResultListener
+) {
+    activityCallbacks.removeActivityResultListener(requestCode, listener)
+}
+
+/**
+ * Starts the intent for result
+ */
+fun Controller.startActivityForResult(
+    intent: Intent,
+    requestCode: Int,
+    options: Bundle? = null
+) {
+    activityCallbacks.startActivityForResult(intent, requestCode, options)
+}
+
+/**
+ * Lister for permission results
+ */
+typealias PermissionResultListener = (requestCode: Int, permissions: Array<out String>, grantResults: IntArray) -> Unit
+
+/**
+ * Notifies the [listener] on activity results for [requestCode]
+ */
+fun Controller.addPermissionResultListener(
+    requestCode: Int,
+    listener: PermissionResultListener
+) {
+    activityCallbacks
+        .addPermissionResultListener(requestCode, listener)
+
+    lifecycle.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            if (lifecycle.currentState == DESTROYED) {
+                activityCallbacks
+                    .removePermissionResultListener(requestCode, listener)
+            }
+        }
+    })
+}
+
+/**
+ * Removes the previously added [listener]
+ */
+fun Controller.removePermissionResultListener(
+    requestCode: Int,
+    listener: PermissionResultListener
+) {
+    activityCallbacks
+        .removePermissionResultListener(requestCode, listener)
+}
+
+@TargetApi(23)
+fun Controller.requestPermissions(permissions: Array<out String>, requestCode: Int) {
+    activityCallbacks
+        .requestPermissions(permissions, requestCode)
+}

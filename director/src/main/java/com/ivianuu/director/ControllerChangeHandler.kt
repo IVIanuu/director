@@ -1,7 +1,8 @@
 package com.ivianuu.director
 
-import android.os.Bundle
-import com.ivianuu.director.internal.newInstanceOrThrow
+import android.view.View
+import android.view.ViewGroup
+import java.util.*
 
 /**
  * Swaps views on controller changes
@@ -26,19 +27,7 @@ abstract class ControllerChangeHandler {
     open fun cancel() {
     }
 
-    /**
-     * Saves any data about this changeHandler to a Bundle in case the application is killed.
-     */
-    open fun saveToBundle(bundle: Bundle) {
-    }
-
-    /**
-     * Restores data that was saved in [saveToBundle].
-     */
-    open fun restoreFromBundle(bundle: Bundle) {
-    }
-
-    internal open fun copy(): ControllerChangeHandler = fromBundle(toBundle())
+    abstract fun copy(): ControllerChangeHandler
 
     interface Callback {
         fun addToView()
@@ -48,24 +37,18 @@ abstract class ControllerChangeHandler {
         fun changeCompleted()
     }
 
-    internal fun toBundle(): Bundle = Bundle().apply {
-        classLoader = this@ControllerChangeHandler::class.java.classLoader
+}
 
-        putString(KEY_CLASS_NAME, this@ControllerChangeHandler.javaClass.name)
-        putBundle(KEY_SAVED_STATE, Bundle()
-            .also { it.classLoader = this@ControllerChangeHandler::class.java.classLoader }
-            .also { this@ControllerChangeHandler.saveToBundle(it) })
+fun ViewGroup.moveView(view: View, to: Int) {
+    if (to == -1) {
+        view.bringToFront()
+        return
     }
-
-    companion object {
-        private const val KEY_CLASS_NAME = "ControllerChangeHandler.className"
-        private const val KEY_SAVED_STATE = "ControllerChangeHandler.savedState"
-
-        internal fun fromBundle(bundle: Bundle): ControllerChangeHandler {
-            val className = bundle.getString(KEY_CLASS_NAME)!!
-            return newInstanceOrThrow<ControllerChangeHandler>(className).apply {
-                restoreFromBundle(bundle.getBundle(KEY_SAVED_STATE)!!)
-            }
-        }
-    }
+    val index = indexOfChild(view)
+    if (index == -1 || index == to) return
+    val allViews = (0 until childCount).map { getChildAt(it) }.toMutableList()
+    Collections.swap(allViews, index, to)
+    allViews.forEach { it.bringToFront() }
+    requestLayout()
+    invalidate()
 }

@@ -1,12 +1,15 @@
 package com.ivianuu.director.sample.controller
 
-import android.os.Bundle
 import android.view.View
-import com.ivianuu.director.*
+import com.ivianuu.director.changeHandler
+import com.ivianuu.director.childRouter
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
+import com.ivianuu.director.popToRoot
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.util.SingleContainer
 import com.ivianuu.director.sample.util.setByTag
+import com.ivianuu.director.tag
+import com.ivianuu.director.toTransaction
 import kotlinx.android.synthetic.main.controller_bottom_nav.*
 
 /**
@@ -21,11 +24,11 @@ class BottomNavController : BaseController() {
     private var currentIndex = -1
 
     private val bottomNavContainer by lazy {
-        SingleContainer(getChildRouter(R.id.bottom_nav_container))
+        SingleContainer(childRouter(R.id.bottom_nav_container))
     }
 
-    override fun onViewCreated(view: View, savedViewState: Bundle?) {
-        super.onViewCreated(view, savedViewState)
+    override fun onViewCreated(view: View) {
+        super.onViewCreated(view)
         bottom_nav_view.setOnNavigationItemSelectedListener { item ->
             val i = (0 until bottom_nav_view.menu.size())
                 .map { bottom_nav_view.menu.getItem(it) }
@@ -43,10 +46,9 @@ class BottomNavController : BaseController() {
 
             // pop to root on re selections
             if (i != -1) {
-                bottomNavContainer.currentTransaction
-                    ?.controller
-                    ?.childRouters
-                    ?.first()
+                (bottomNavContainer.currentTransaction
+                    ?.controller as? BottomNavChildController)
+                    ?.childRouter
                     ?.popToRoot()
             }
         }
@@ -65,9 +67,10 @@ class BottomNavController : BaseController() {
         }
 
         return if (currentIndex != 0) {
-            val currentChildRouter = currentController.childRouters.first()
+            val currentChildRouter = (bottomNavContainer.currentTransaction
+                ?.controller as? BottomNavChildController)!!.childRouter
 
-            if (currentChildRouter.backstackSize == 1) {
+            if (currentChildRouter.backstack.size == 1) {
                 swapTo(0)
                 bottom_nav_view.selectedItemId =
                     bottom_nav_view.menu.getItem(currentIndex).itemId
@@ -78,16 +81,6 @@ class BottomNavController : BaseController() {
         } else {
             false
         }
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        currentIndex = savedInstanceState.getInt(KEY_CURRENT_INDEX)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(KEY_CURRENT_INDEX, currentIndex)
     }
 
     private fun swapTo(index: Int) {
@@ -101,7 +94,7 @@ class BottomNavController : BaseController() {
                 else -> error("should not happen")
             }
 
-            BottomNavChildController.newInstance(startIndex)
+            BottomNavChildController(startIndex)
                 .toTransaction()
                 .changeHandler(FadeChangeHandler())
                 .tag(index.toString())
@@ -110,7 +103,4 @@ class BottomNavController : BaseController() {
         currentIndex = index
     }
 
-    private companion object {
-        private const val KEY_CURRENT_INDEX = "BottomNavController.currentIndex"
-    }
 }

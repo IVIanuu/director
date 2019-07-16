@@ -5,7 +5,7 @@ object Build {
     const val buildToolsVersion = "28.0.3"
     const val compileSdk = 28
     const val minSdk = 16
-    const val minSdkSample = 21
+    const val minSdkSample = 23
     const val targetSdk = 28
 
     const val versionCode = 1
@@ -15,11 +15,11 @@ object Build {
 object Publishing {
     const val groupId = "com.ivianuu.director"
     const val vcsUrl = "https://github.com/IVIanuu/director"
-    const val version = "${Build.versionName}-dev-35"
+    const val version = "${Build.versionName}-dev-36"
 }
 
 object Versions {
-    const val androidGradlePlugin = "3.4.0"
+    const val androidGradlePlugin = "3.5.0-beta05"
 
     const val androidxAppCompat = "1.1.0-alpha04"
     const val androidxFragment = "1.1.0-alpha08"
@@ -83,11 +83,6 @@ object Deps {
     const val roboelectric = "org.robolectric:robolectric:${Versions.roboelectric}"
 
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
-
-    const val scopes = "com.ivianuu.scopes:scopes:${Versions.scopes}"
-    const val scopesCommon = "com.ivianuu.scopes:scopes-common:${Versions.scopes}"
-    const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
-    const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
 
     const val traveler = "com.ivianuu.traveler:traveler:${Versions.traveler}"
     const val travelerAndroid = "com.ivianuu.traveler:traveler-android:${Versions.traveler}"

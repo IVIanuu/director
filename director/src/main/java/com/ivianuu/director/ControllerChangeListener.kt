@@ -63,8 +63,7 @@ fun ControllerChangeListener(
 fun Router.doOnChangeStarted(
     recursive: Boolean = false,
     block: (router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit
-) =
-    addChangeListener(recursive = recursive, onChangeStarted = block)
+) = addChangeListener(recursive = recursive, onChangeStarted = block)
 
 fun Router.doOnChangeEnded(
     recursive: Boolean = false,
@@ -76,11 +75,11 @@ fun Router.addChangeListener(
     recursive: Boolean = false,
     onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,
     onChangeEnded: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null
-) =
-    addChangeListener(
-        ControllerChangeListener(onChangeStarted, onChangeEnded),
-        recursive
-    )
+): ControllerChangeListener {
+    val listener = ControllerChangeListener(onChangeStarted, onChangeEnded)
+    addChangeListener(listener, recursive)
+    return listener
+}
 
 private class LambdaControllerChangeListener(
     private val onChangeStarted: ((router: Router, to: Controller?, from: Controller?, isPush: Boolean, container: ViewGroup, handler: ControllerChangeHandler) -> Unit)? = null,

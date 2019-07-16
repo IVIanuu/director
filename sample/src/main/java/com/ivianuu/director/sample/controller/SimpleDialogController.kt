@@ -17,25 +17,28 @@
 package com.ivianuu.director.sample.controller
 
 import android.app.Dialog
-import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.ivianuu.director.common.DialogController
+import com.ivianuu.director.requireActivity
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
 class SimpleDialogController : DialogController() {
 
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog = MaterialDialog.Builder(activity)
-        .title("Hello")
-        .content("This is a simple dialog controller.")
-        .positiveText("OK")
-        .onPositive { _, _ ->
-            Toast.makeText(activity, "Ok clicked!", Toast.LENGTH_SHORT).show()
-        }
-        .negativeText("Cancel")
-        .onNegative { _, _ -> dismiss() }
-        .build()
+    override fun onCreateDialog(inflater: LayoutInflater, container: ViewGroup): Dialog =
+        MaterialDialog.Builder(requireActivity())
+            .title("Hello")
+            .content("This is a simple dialog controller.")
+            .positiveText("OK")
+            .onPositive { _, _ ->
+                Toast.makeText(requireActivity(), "Ok clicked!", Toast.LENGTH_SHORT).show()
+            }
+            .negativeText("Cancel")
+            .onNegative { _, _ -> dismiss() }
+            .build()
 
 }

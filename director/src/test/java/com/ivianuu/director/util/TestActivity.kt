@@ -16,53 +16,15 @@
 
 package com.ivianuu.director.util
 
-import android.os.Bundle
-import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
-import com.ivianuu.director.Router
-import com.ivianuu.director.RouterManager
-import com.ivianuu.director.getRouter
+import androidx.activity.ComponentActivity
 
 /**
  * @author Manuel Wrage (IVIanuu)
  */
-class TestActivity : FragmentActivity() {
+class TestActivity : ComponentActivity() {
 
     var changingConfigurations = false
     var isDestroying = false
-
-    private lateinit var manager: RouterManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        manager = RouterManager(this)
-        manager.restoreInstanceState(savedInstanceState)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        manager.onStart()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        manager.saveInstanceState(outState)
-    }
-
-    override fun onStop() {
-        manager.onStop()
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        manager.onDestroy()
-        super.onDestroy()
-    }
-
-    fun getRouter(
-        container: ViewGroup,
-        tag: String? = null
-    ): Router = manager.getRouter(container, tag)
 
     override fun isChangingConfigurations(): Boolean = changingConfigurations
 

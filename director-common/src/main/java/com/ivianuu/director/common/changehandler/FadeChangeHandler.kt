@@ -60,4 +60,6 @@ open class FadeChangeHandler(
         from.alpha = 1f
     }
 
+    override fun copy() = FadeChangeHandler(duration, removesFromViewOnPush)
+
 }

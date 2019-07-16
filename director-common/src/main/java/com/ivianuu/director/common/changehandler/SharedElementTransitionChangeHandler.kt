@@ -19,7 +19,6 @@ package com.ivianuu.director.common.changehandler
 import android.annotation.TargetApi
 import android.app.SharedElementCallback
 import android.graphics.Rect
-import android.os.Build
 import android.transition.Transition
 import android.transition.Transition.TransitionListener
 import android.transition.TransitionSet
@@ -28,13 +27,20 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnPreDrawListener
 import com.ivianuu.director.ChangeData
 import com.ivianuu.director.DirectorPlugins
-import com.ivianuu.director.common.*
+import com.ivianuu.director.common.addTargets
+import com.ivianuu.director.common.findNamedView
+import com.ivianuu.director.common.findNamedViews
+import com.ivianuu.director.common.getBoundsOnScreen
+import com.ivianuu.director.common.replaceTargets
+import com.ivianuu.director.common.setEpicenter
+import com.ivianuu.director.common.setTargets
+import com.ivianuu.director.common.transitionSetOf
 import com.ivianuu.director.defaultRemovesFromViewOnPush
 
 /**
  * [TransitionChangeHandler] which does shared element transitions
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@TargetApi(21)
 abstract class SharedElementTransitionChangeHandler(
     duration: Long = DirectorPlugins.defaultTransitionDuration,
     removesFromViewOnPush: Boolean = DirectorPlugins.defaultRemovesFromViewOnPush
