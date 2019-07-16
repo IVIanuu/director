@@ -30,6 +30,10 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
         toolbar!!.setNavigationOnClickListener { router.popTop() }
     }
 
+    override fun onBackPressed() {
+        if (!router.handleBack()) super.onBackPressed()
+    }
+
     override fun onDestroy() {
         INSTANCE = null
         super.onDestroy()

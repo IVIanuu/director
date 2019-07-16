@@ -48,10 +48,10 @@ fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             when (event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    containerProvider?.invoke()?.let { router.setContainer(it) }
-                }
                 Lifecycle.Event.ON_RESUME -> {
+                    if (containerProvider != null) {
+                        router.setContainer(containerProvider())
+                    }
                     router.start()
                 }
                 Lifecycle.Event.ON_PAUSE -> {
