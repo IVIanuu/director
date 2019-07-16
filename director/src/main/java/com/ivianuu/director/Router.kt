@@ -40,11 +40,6 @@ class Router internal constructor(val parent: Controller? = null) {
     var container: ViewGroup? = null
         private set
 
-    private val listeners =
-        mutableListOf<ListenerEntry<ControllerChangeListener>>()
-    private val controllerListeners =
-        mutableListOf<ListenerEntry<ControllerLifecycleListener>>()
-
     private val runningHandlers =
         mutableMapOf<Controller, ControllerChangeHandler>()
 
@@ -208,7 +203,7 @@ class Router internal constructor(val parent: Controller? = null) {
         return if (topTransaction != null) {
             if (topTransaction.controller.handleBack()) {
                 true
-            } else if (hasRoot && (popsLastView || backstackSize > 1)) {
+            } else if (hasRoot && (popsLastView || _backstack.size > 1)) {
                 popTop()
                 true
             } else {
@@ -217,49 +212,6 @@ class Router internal constructor(val parent: Controller? = null) {
         } else {
             false
         }
-    }
-
-    /**
-     * Notifies the [listener] on controller changes
-     */
-    fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
-        listeners.add(ListenerEntry(listener, recursive))
-    }
-
-    /**
-     * Removes the previously added [listener]
-     */
-    fun removeChangeListener(listener: ControllerChangeListener) {
-        listeners.removeAll { it.listener == listener }
-    }
-
-    /**
-     * Adds the [listener] to all controllers
-     */
-    fun addControllerLifecycleListener(
-        listener: ControllerLifecycleListener,
-        recursive: Boolean = false
-    ) {
-        controllerListeners.add(ListenerEntry(listener, recursive))
-    }
-
-    /**
-     * Removes the previously added [listener]
-     */
-    fun removeControllerLifecycleListener(listener: ControllerLifecycleListener) {
-        controllerListeners.removeAll { it.listener == listener }
-    }
-
-    internal fun getChangeListeners(recursiveOnly: Boolean = false): List<ControllerChangeListener> {
-        return listeners
-            .filter { !recursiveOnly || it.recursive }
-            .map { it.listener }// + (routerManager.parent?.router?.getChangeListeners(true) ?: emptyList())
-    }
-
-    internal fun getControllerLifecycleListeners(recursiveOnly: Boolean = false): List<ControllerLifecycleListener> {
-        return controllerListeners
-            .filter { !recursiveOnly || it.recursive }
-            .map { it.listener }// + (routerManager.parent?.router?.getControllerLifecycleListeners(true) ?: emptyList())
     }
 
     /**
@@ -330,7 +282,6 @@ class Router internal constructor(val parent: Controller? = null) {
         forceRemoveFromView: Boolean
     ) {
         val container = container ?: return
-        val listeners = getChangeListeners()
 
         val handlerToUse = when {
             handler == null -> DefaultChangeHandler()
@@ -341,8 +292,6 @@ class Router internal constructor(val parent: Controller? = null) {
 
         from?.let { cancelChange(it) }
         to?.let { runningHandlers[it] = handlerToUse }
-
-        listeners.forEach { it.onChangeStarted(this, to, from, isPush, container, handlerToUse) }
 
         val toView = to?.view ?: to?.createView(container)
         val fromView = from?.view
@@ -387,17 +336,6 @@ class Router internal constructor(val parent: Controller? = null) {
             override fun changeCompleted() {
                 if (to != null) {
                     runningHandlers.remove(to)
-                }
-
-                listeners.forEach {
-                    it.onChangeEnded(
-                        this@Router,
-                        to,
-                        from,
-                        isPush,
-                        container,
-                        handlerToUse
-                    )
                 }
             }
         }
@@ -497,18 +435,11 @@ class Router internal constructor(val parent: Controller? = null) {
         }
     }
 
-    private data class ListenerEntry<T>(
-        val listener: T,
-        val recursive: Boolean
-    )
-
 }
 
 val Router.hasContainer: Boolean get() = container != null
 
-val Router.backstackSize: Int get() = backstack.size
-
-val Router.hasRoot: Boolean get() = backstackSize > 0
+val Router.hasRoot: Boolean get() = backstack.size > 0
 
 fun Router.findControllerByTag(tag: String): Controller? {
     for (transaction in backstack) {
@@ -516,8 +447,6 @@ fun Router.findControllerByTag(tag: String): Controller? {
             return transaction.controller
         }
 
-        /*transaction.controller.childRouterManager.findControllerByTag(tag)
-            ?.let { return@findControllerByTag it }*/
     }
 
     return null

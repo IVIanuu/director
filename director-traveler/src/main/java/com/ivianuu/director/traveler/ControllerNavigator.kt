@@ -19,7 +19,6 @@ package com.ivianuu.director.traveler
 import com.ivianuu.director.Controller
 import com.ivianuu.director.Router
 import com.ivianuu.director.RouterTransaction
-import com.ivianuu.director.backstackSize
 import com.ivianuu.director.findControllerByTag
 import com.ivianuu.director.hasRoot
 import com.ivianuu.director.popController
@@ -82,7 +81,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     }
 
     protected open fun back(command: Back): Boolean = if (router.hasRoot
-        && (router.popsLastView || router.backstackSize > 1)
+        && (router.popsLastView || router.backstack.size > 1)
     ) {
         router.popTop()
         true

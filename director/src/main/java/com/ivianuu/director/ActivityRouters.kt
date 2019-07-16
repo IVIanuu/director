@@ -37,7 +37,7 @@ fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Rout
 
     fun canHandleBack(): Boolean =
         router.backstack.isNotEmpty() &&
-                (router.backstackSize > 1 || router.popsLastView)
+                (router.backstack.size > 1 || router.popsLastView)
 
     val backPressedCallback = object : OnBackPressedCallback(canHandleBack()) {
         override fun handleOnBackPressed() {
@@ -47,9 +47,9 @@ fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Rout
 
     onBackPressedDispatcher.addCallback(backPressedCallback)
 
-    val changeListener = router.doOnChangeStarted { _, _, _, _, _, _ ->
+    /*val changeListener = router.doOnChangeStarted { _, _, _, _, _, _ ->
         backPressedCallback.isEnabled = canHandleBack()
-    }
+    }*/
 
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -64,7 +64,7 @@ fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Rout
                     router.stop()
                 }
                 Lifecycle.Event.ON_DESTROY -> {
-                    router.removeChangeListener(changeListener)
+                    //router.removeChangeListener(changeListener)
 
                     if (containerProvider != null) {
                         router.removeContainer()

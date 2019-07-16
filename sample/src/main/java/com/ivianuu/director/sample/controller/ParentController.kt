@@ -5,11 +5,8 @@ import android.view.ViewGroup
 import com.ivianuu.director.Router
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouter
-import com.ivianuu.director.clear
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
-import com.ivianuu.director.doOnChangeEnded
 import com.ivianuu.director.hasRoot
-import com.ivianuu.director.popTop
 import com.ivianuu.director.requireView
 import com.ivianuu.director.sample.R
 import com.ivianuu.director.sample.mainActivity
@@ -54,7 +51,7 @@ class ParentController : BaseController() {
                     false
                 )
 
-                childRouter.doOnChangeEnded { router, _, _, isPush, _, _ ->
+                /*childRouter.doOnChangeEnded { router, _, _, isPush, _, _ ->
                     if (isPush && !hasShownAll) {
                         if (index < NUMBER_OF_CHILDREN - 1) {
                             addChild(index + 1)
@@ -68,7 +65,7 @@ class ParentController : BaseController() {
                             router.popTop()
                         }
                     }
-                }
+                }*/
 
                 childRouter.setRoot(
                     childController.toTransaction()
@@ -78,7 +75,7 @@ class ParentController : BaseController() {
         }
     }
 
-    private fun removeChild(index: Int) {
+    /*private fun removeChild(index: Int) {
         if (index < childRouters.size) {
             val childRouter = childRouters[index]
             childRouter.clear()
@@ -90,7 +87,7 @@ class ParentController : BaseController() {
                 }
             }
         }
-    }
+    }*/
 
     override fun handleBack(): Boolean {
         val childControllers = childRouters.count { it.hasRoot }

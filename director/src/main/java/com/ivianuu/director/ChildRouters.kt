@@ -17,8 +17,11 @@
 package com.ivianuu.director
 
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.State.DESTROYED
 import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 
 fun Controller.childRouter(container: ViewGroup): Router =
     childRouter { container }
@@ -42,25 +45,28 @@ fun Controller.childRouter(containerProvider: (() -> ViewGroup)? = null): Router
         router.start()
     }
 
-    addLifecycleListener(
-        postCreateView = { _, _ ->
-            containerProvider?.invoke()?.let { router.setContainer(it) }
-        },
-        postAttach = { _, _ ->
-            router.start()
-        },
-        preDetach = { _, _ ->
-            router.stop()
-        },
-        preDestroyView = { _, _ ->
-            if (containerProvider != null) {
-                router.removeContainer()
+    lifecycle.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    containerProvider?.invoke()?.let { router.setContainer(it) }
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    router.start()
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    router.stop()
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    if (containerProvider != null) {
+                        router.removeContainer()
+                    }
+
+                    router.destroy()
+                }
             }
-        },
-        preDestroy = {
-            router.destroy()
         }
-    )
+    })
 
     return router
 }

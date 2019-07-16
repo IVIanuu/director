@@ -17,9 +17,6 @@
 package com.ivianuu.director
 
 internal object TransactionIndexer {
-
     private var currentIndex = 0
-
     fun nextIndex() = ++currentIndex
-
 }

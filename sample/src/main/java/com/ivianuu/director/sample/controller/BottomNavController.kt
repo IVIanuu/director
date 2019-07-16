@@ -1,7 +1,6 @@
 package com.ivianuu.director.sample.controller
 
 import android.view.View
-import com.ivianuu.director.backstackSize
 import com.ivianuu.director.changeHandler
 import com.ivianuu.director.childRouter
 import com.ivianuu.director.common.changehandler.FadeChangeHandler
@@ -71,7 +70,7 @@ class BottomNavController : BaseController() {
             val currentChildRouter = (bottomNavContainer.currentTransaction
                 ?.controller as? BottomNavChildController)!!.childRouter
 
-            if (currentChildRouter.backstackSize == 1) {
+            if (currentChildRouter.backstack.size == 1) {
                 swapTo(0)
                 bottom_nav_view.selectedItemId =
                     bottom_nav_view.menu.getItem(currentIndex).itemId

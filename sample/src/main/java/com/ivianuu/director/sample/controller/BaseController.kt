@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.ivianuu.director.Controller
 import com.ivianuu.director.sample.mainActivity
-import com.ivianuu.director.sample.util.LoggingLifecycleListener
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.*
 
@@ -19,10 +18,6 @@ abstract class BaseController : Controller(), LayoutContainer {
     protected open val layoutRes = 0
 
     protected open val toolbarTitle: String? get() = null
-
-    init {
-        addLifecycleListener(LoggingLifecycleListener())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

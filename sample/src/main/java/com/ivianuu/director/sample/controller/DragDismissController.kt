@@ -1,6 +1,5 @@
 package com.ivianuu.director.sample.controller
 
-import android.annotation.TargetApi
 import android.view.View
 import com.ivianuu.director.popController
 import com.ivianuu.director.sample.R
@@ -8,7 +7,6 @@ import com.ivianuu.director.sample.changehandler.ScaleFadeChangeHandler
 import com.ivianuu.director.sample.widget.ElasticDragDismissFrameLayout
 import com.ivianuu.director.sample.widget.ElasticDragDismissFrameLayout.ElasticDragDismissCallback
 
-@TargetApi(VERSION_CODES.LOLLIPOP)
 class DragDismissController : BaseController() {
 
     override val layoutRes get() = R.layout.controller_drag_dismiss

@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelStoreOwner
  */
 abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
+    private lateinit var _router: Router
     /**
      * The router of this controller
      */
@@ -31,8 +32,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
             return _router
         }
-
-    private lateinit var _router: Router
 
     /**
      * The parent controller if any
@@ -46,8 +45,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         private set
 
     private var viewState: SparseArray<Parcelable>? = null
-
-    private val listeners = mutableListOf<ControllerLifecycleListener>()
 
     private val _viewModelStore = ViewModelStore()
 
@@ -66,24 +63,12 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
     }
 
     /**
-     * Called when this Controller has been destroyed.
-     */
-    protected open fun onDestroy() {
-    }
-
-    /**
      * Creates the view for this controller
      */
     protected abstract fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup
     ): View
-
-    /**
-     * Called when the view of this controller gets destroyed
-     */
-    protected open fun onDestroyView(view: View) {
-    }
 
     /**
      * Called when this Controller is attached to its container
@@ -98,23 +83,21 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
     }
 
     /**
+     * Called when the view of this controller gets destroyed
+     */
+    protected open fun onDestroyView(view: View) {
+    }
+
+    /**
+     * Called when this Controller has been destroyed.
+     */
+    protected open fun onDestroy() {
+    }
+
+    /**
      * Should be overridden if this Controller needs to handle the back button being pressed.
      */
     open fun handleBack(): Boolean = false
-
-    /**
-     * Adds a listener for all of this Controller's lifecycle events
-     */
-    fun addLifecycleListener(listener: ControllerLifecycleListener) {
-        listeners.add(listener)
-    }
-
-    /**
-     * Removes the previously added [listener]
-     */
-    fun removeLifecycleListener(listener: ControllerLifecycleListener) {
-        listeners.remove(listener)
-    }
 
     override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
@@ -122,30 +105,17 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
 
     internal fun create(router: Router) {
         _router = router
-
-        // create
-        notifyListeners { it.preCreate(this) }
-
         onCreate()
         lifecycleRegistry.currentState = CREATED
-
-        notifyListeners { it.postCreate(this) }
     }
 
     internal fun destroy() {
-        notifyListeners { it.preDestroy(this) }
-
         lifecycleRegistry.currentState = DESTROYED
         onDestroy()
-
-        notifyListeners { it.postDestroy(this) }
-
         _viewModelStore.clear()
     }
 
     internal fun createView(container: ViewGroup): View {
-        notifyListeners { it.preCreateView(this) }
-
         _viewLifecycleOwner = ControllerViewLifecycleOwner()
 
         val view = onCreateView(
@@ -154,8 +124,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         ).also { this.view = it }
 
         _viewLifecycleOwner!!.currentState = CREATED
-
-        notifyListeners { it.postCreateView(this, view) }
 
         // restore hierarchy
         viewState?.let { view.restoreHierarchyState(it) }
@@ -171,20 +139,14 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
                 .also { view.saveHierarchyState(it) }
         }
 
-        notifyListeners { it.preDestroyView(this, view) }
-
         _viewLifecycleOwner!!.currentState = DESTROYED
         onDestroyView(view)
         this.view = null
         _viewLifecycleOwner = null
-
-        notifyListeners { it.postDestroyView(this) }
     }
 
     internal fun attach() {
         val view = requireView()
-
-        notifyListeners { it.preAttach(this, view) }
 
         onAttach(view)
         viewState = null
@@ -193,14 +155,10 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         _viewLifecycleOwner!!.currentState = STARTED
         lifecycleRegistry.currentState = RESUMED
         _viewLifecycleOwner!!.currentState = RESUMED
-
-        notifyListeners { it.postAttach(this, view) }
     }
 
     internal fun detach() {
         val view = requireView()
-
-        notifyListeners { it.preDetach(this, view) }
 
         lifecycleRegistry.currentState = STARTED
         _viewLifecycleOwner!!.currentState = STARTED
@@ -208,12 +166,6 @@ abstract class Controller : LifecycleOwner, ViewModelStoreOwner {
         _viewLifecycleOwner!!.currentState = CREATED
 
         onDetach(view)
-
-        notifyListeners { it.postDetach(this, view) }
-    }
-
-    private inline fun notifyListeners(block: (ControllerLifecycleListener) -> Unit) {
-        (listeners + router.getControllerLifecycleListeners()).forEach(block)
     }
 
     private class ControllerViewLifecycleOwner : LifecycleOwner {
