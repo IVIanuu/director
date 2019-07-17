@@ -34,7 +34,7 @@ class MultipleChildRouterController : BaseController() {
 
     override fun handleBack(): Boolean {
         return childRouters
-            .flatMap { it.backstack }
+            .flatMap { it.backStack }
             .asSequence()
             .sortedByDescending { it.transactionIndex }
             .filter { it.controller.lifecycle.currentState.isAtLeast(STARTED) }

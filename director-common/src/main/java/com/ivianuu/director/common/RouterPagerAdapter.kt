@@ -47,7 +47,7 @@ abstract class RouterPagerAdapter(
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean =
-        (`object` as Router).backstack.any { it.controller.view == view }
+        (`object` as Router).backStack.any { it.controller.view == view }
 
     /**
      * Returns the already instantiated router in the specified position or `null` if there

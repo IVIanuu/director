@@ -147,7 +147,7 @@ assertTrue(newRootController.changeHandlerHistory.latestIsPush())
 }
 
 @Test
-fun testSetBackstackHandlers() {
+fun testSetBackStackHandlers() {
 val initialController1 = TestController()
 val initialPushHandler1 = taggedHandler("initialPush1", true)
 val initialPopHandler1 = taggedHandler("initialPop1", true)
@@ -171,14 +171,14 @@ val initialView2 = initialController2.view
 
 val newController1 = TestController()
 val newController2 = TestController()
-val setBackstackHandler = taggedHandler("setBackstackHandler", true)
+val setBackStackHandler = taggedHandler("setBackStackHandler", true)
 
-val newBackstack = listOf(
+val newBackStack = listOf(
 newController1,
 newController2
 )
 
-router.setBackstack(newBackstack, true, setBackstackHandler)
+router.setBackStack(newBackStack, true, setBackStackHandler)
 
 assertTrue(initialController1.changeHandlerHistory.isValidHistory)
 assertTrue(initialController2.changeHandlerHistory.isValidHistory)
@@ -196,7 +196,7 @@ initialController2.changeHandlerHistory.latestToView()
 )
 assertEquals(initialView2, initialController2.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController2.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController2.changeHandlerHistory.latestIsPush())
@@ -204,7 +204,7 @@ assertTrue(initialController2.changeHandlerHistory.latestIsPush())
 assertNull(initialController1.changeHandlerHistory.latestToView())
 assertEquals(initialView1, initialController1.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController1.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController1.changeHandlerHistory.latestIsPush())
@@ -213,14 +213,14 @@ assertNotNull(newController2.changeHandlerHistory.latestToView())
 assertEquals(newController2.view, newController2.changeHandlerHistory.latestToView())
 assertEquals(initialView2, newController2.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 newController2.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(newController2.changeHandlerHistory.latestIsPush())
 }
 
 /*@Test
-fun testSetBackstackWithTwoVisibleHandlers() {
+fun testSetBackStackWithTwoVisibleHandlers() {
 val initialController1 = TestController()
 val initialPushHandler1 = taggedHandler("initialPush1", true)
 val initialPopHandler1 = taggedHandler("initialPop1", true)
@@ -236,14 +236,14 @@ val initialView2 = initialController2.view
 
 val newController1 = TestController()
 val newController2 = TestController()
-val setBackstackHandler = taggedHandler("setBackstackHandler", true)
+val setBackStackHandler = taggedHandler("setBackStackHandler", true)
 val pushController2Handler = noRemoveViewOnPushHandler("pushController2")
-val newBackstack = listOf(
+val newBackStack = listOf(
 newController1,
 newController2.toTransaction(pushController2Handler)
 )
 
-router.setBackstack(newBackstack, true, setBackstackHandler)
+router.setBackStack(newBackStack, true, setBackStackHandler)
 
 assertTrue(initialController1.changeHandlerHistory.isValidHistory)
 assertTrue(initialController2.changeHandlerHistory.isValidHistory)
@@ -261,7 +261,7 @@ initialController1.changeHandlerHistory.latestToView()
 )
 assertEquals(initialView1, initialController1.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController1.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController1.changeHandlerHistory.latestIsPush())
@@ -269,7 +269,7 @@ assertTrue(initialController1.changeHandlerHistory.latestIsPush())
 assertNull(initialController2.changeHandlerHistory.latestToView())
 assertEquals(initialView2, initialController2.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController2.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController2.changeHandlerHistory.latestIsPush())
@@ -280,7 +280,7 @@ assertEquals(newController2.view, newController1.changeHandlerHistory.latestToVi
 assertEquals(initialView1, newController1.changeHandlerHistory.fromViewAt(0))
 assertEquals(newController1.view, newController1.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 newController1.changeHandlerHistory.changeHandlerAt(0).tag
 )
 assertEquals(
@@ -300,7 +300,7 @@ assertTrue(newController2.changeHandlerHistory.latestIsPush())
 }*/
 
 @Test
-fun testSetBackstackForPushHandlers() {
+fun testSetBackStackForPushHandlers() {
 val initialController = TestController()
 val initialPushHandler = taggedHandler("initialPush1", true)
 val initialPopHandler = taggedHandler("initialPop1", true)
@@ -313,14 +313,14 @@ router.setRoot(initialController)
 val initialView = initialController.view
 
 val newController = TestController()
-val setBackstackHandler = taggedHandler("setBackstackHandler", true)
+val setBackStackHandler = taggedHandler("setBackStackHandler", true)
 
-val newBackstack = listOf(
+val newBackStack = listOf(
 initialController,
 newController
 )
 
-router.setBackstack(newBackstack, true, setBackstackHandler)
+router.setBackStack(newBackStack, true, setBackStackHandler)
 
 assertTrue(initialController.changeHandlerHistory.isValidHistory)
 assertTrue(newController.changeHandlerHistory.isValidHistory)
@@ -332,7 +332,7 @@ assertNotNull(initialController.changeHandlerHistory.latestToView())
 assertEquals(newController.view, initialController.changeHandlerHistory.latestToView())
 assertEquals(initialView, initialController.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController.changeHandlerHistory.latestIsPush())
@@ -340,7 +340,7 @@ assertTrue(newController.changeHandlerHistory.latestIsPush())
 }
 
 @Test
-fun testSetBackstackForInvertHandlersWithRemovesView() {
+fun testSetBackStackForInvertHandlersWithRemovesView() {
 val initialController1 = TestController()
 val initialPushHandler1 = taggedHandler("initialPush1", true)
 val initialPopHandler1 = taggedHandler("initialPop1", true)
@@ -359,13 +359,13 @@ router.push(initialController2)
 
 val initialView2 = initialController2.view
 
-val setBackstackHandler = taggedHandler("setBackstackHandler", true)
-val newBackstack = listOf(
+val setBackStackHandler = taggedHandler("setBackStackHandler", true)
+val newBackStack = listOf(
 initialController2,
 initialController1
 )
 
-router.setBackstack(newBackstack, false, setBackstackHandler)
+router.setBackStack(newBackStack, false, setBackStackHandler)
 
 assertTrue(initialController1.changeHandlerHistory.isValidHistory)
 assertTrue(initialController2.changeHandlerHistory.isValidHistory)
@@ -376,7 +376,7 @@ assertEquals(2, initialController2.changeHandlerHistory.size())
 assertNotNull(initialController1.changeHandlerHistory.latestToView())
 assertEquals(initialView2, initialController1.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController1.changeHandlerHistory.latestChangeHandler().tag
 )
 assertFalse(initialController1.changeHandlerHistory.latestIsPush())
@@ -384,14 +384,14 @@ assertFalse(initialController1.changeHandlerHistory.latestIsPush())
 assertNotNull(initialController2.changeHandlerHistory.latestToView())
 assertEquals(initialView2, initialController2.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController2.changeHandlerHistory.latestChangeHandler().tag
 )
 assertFalse(initialController2.changeHandlerHistory.latestIsPush())
 }
 
 @Test
-fun testSetBackstackForInvertHandlersWithoutRemovesView() {
+fun testSetBackStackForInvertHandlersWithoutRemovesView() {
 val initialController1 = TestController()
 val initialPushHandler1 = taggedHandler("initialPush1", true)
 val initialPopHandler1 = taggedHandler("initialPop1", true)
@@ -411,13 +411,13 @@ router.push(initialController2)
 val initialView1 = initialController1.view
 val initialView2 = initialController2.view
 
-val setBackstackHandler = taggedHandler("setBackstackHandler", true)
-val newBackstack = listOf(
+val setBackStackHandler = taggedHandler("setBackStackHandler", true)
+val newBackStack = listOf(
 initialController2,
 initialController1
 )
 
-router.setBackstack(newBackstack, true, setBackstackHandler)
+router.setBackStack(newBackStack, true, setBackStackHandler)
 
 assertTrue(initialController1.changeHandlerHistory.isValidHistory)
 assertTrue(initialController2.changeHandlerHistory.isValidHistory)
@@ -428,7 +428,7 @@ assertEquals(2, initialController2.changeHandlerHistory.size())
 assertNotNull(initialController1.changeHandlerHistory.latestToView())
 assertEquals(initialView2, initialController1.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController1.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController1.changeHandlerHistory.latestIsPush())
@@ -436,7 +436,7 @@ assertTrue(initialController1.changeHandlerHistory.latestIsPush())
 assertNotNull(initialController2.changeHandlerHistory.latestToView())
 assertEquals(initialView2, initialController2.changeHandlerHistory.latestFromView())
 assertEquals(
-setBackstackHandler.tag,
+setBackStackHandler.tag,
 initialController2.changeHandlerHistory.latestChangeHandler().tag
 )
 assertTrue(initialController2.changeHandlerHistory.latestIsPush())
@@ -444,7 +444,7 @@ assertTrue(initialController2.changeHandlerHistory.latestIsPush())
 
 /*
 @Test
-fun testSetBackstackCustomIsPush() {
+fun testSetBackStackCustomIsPush() {
 val pushHandler1 = taggedHandler("pushHandler1", true)
 val popHandler1 = taggedHandler("popHandler1", true)
 val pushHandler2 = taggedHandler("pushHandler2", true)
@@ -456,9 +456,9 @@ val controller1 = controller1.toController(pushHandler1, popHandler1)
 val controller2 = TestController()
 val controller2 = controller2.toController(pushHandler2, popHandler2)
 
-var backstack = listOf(controller1, controller2)
+var backStack = listOf(controller1, controller2)
 
-router.setBackstack(backstack, true)
+router.setBackStack(backStack, true)
 
 assertTrue(controller1.changeHandlerHistory.isValidHistory)
 assertTrue(controller2.changeHandlerHistory.isValidHistory)
@@ -468,8 +468,8 @@ assertEquals(1, controller2.changeHandlerHistory.size())
 
 assertEquals(pushHandler2, controller2.changeHandlerHistory.latestChangeHandler())
 
-backstack = listOf(controller2, controller1)
-router.setBackstack(backstack, isPush = true)
+backStack = listOf(controller2, controller1)
+router.setBackStack(backStack, isPush = true)
 
 assertTrue(controller1.changeHandlerHistory.isValidHistory)
 assertTrue(controller2.changeHandlerHistory.isValidHistory)

@@ -47,8 +47,8 @@ fun ComponentActivity.router(containerProvider: (() -> ViewGroup)? = null): Rout
     if (containerProvider != null) router.setContainer(containerProvider())
 
     fun canHandleBack(): Boolean =
-        router.backstack.isNotEmpty() &&
-                (router.backstack.size > 1 || router.popsLastView)
+        router.backStack.isNotEmpty() &&
+                (router.backStack.size > 1 || router.popsLastView)
 
     val backPressedCallback = object : OnBackPressedCallback(canHandleBack()) {
         override fun handleOnBackPressed() {

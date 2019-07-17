@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), ToolbarProvider {
             }
         )
 
-        toolbar!!.navigationIcon = if (router.backstack.size > 1) {
+        toolbar!!.navigationIcon = if (router.backStack.size > 1) {
             getDrawable(R.drawable.abc_ic_ab_back_material)
                 .apply {
                     setColorFilter(

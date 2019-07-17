@@ -70,7 +70,7 @@ class BottomNavController : BaseController() {
             val currentChildRouter = (bottomNavContainer.currentTransaction
                 ?.controller as? BottomNavChildController)!!.childRouter
 
-            if (currentChildRouter.backstack.size == 1) {
+            if (currentChildRouter.backStack.size == 1) {
                 swapTo(0)
                 bottom_nav_view.selectedItemId =
                     bottom_nav_view.menu.getItem(currentIndex).itemId

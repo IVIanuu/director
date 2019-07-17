@@ -54,7 +54,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val transaction = controller.toTransaction()
 
-        val currentController = router.backstack.lastOrNull()?.controller
+        val currentController = router.backStack.lastOrNull()?.controller
 
         setupTransaction(command, currentController, controller, transaction)
         transaction.tag = getControllerTag(command.key)
@@ -70,7 +70,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
 
         val transaction = controller.toTransaction()
 
-        val currentController = router.backstack.lastOrNull()?.controller
+        val currentController = router.backStack.lastOrNull()?.controller
 
         setupTransaction(command, currentController, controller, transaction)
         transaction.tag = getControllerTag(command.key)
@@ -81,7 +81,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     }
 
     protected open fun back(command: Back): Boolean = if (router.hasRoot
-        && (router.popsLastView || router.backstack.size > 1)
+        && (router.popsLastView || router.backStack.size > 1)
     ) {
         router.popTop()
         true
@@ -116,7 +116,7 @@ open class ControllerNavigator(private val router: Router) : ResultNavigator() {
     }
 
     /**
-     * Will be called when the backstack is empty and the hosting activity should be closed
+     * Will be called when the backStack is empty and the hosting activity should be closed
      * This is a no op by default
      */
     protected open fun exit(): Boolean = true
