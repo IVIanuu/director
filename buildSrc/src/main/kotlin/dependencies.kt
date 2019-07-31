@@ -31,7 +31,7 @@ object Build {
 object Publishing {
     const val groupId = "com.ivianuu.director"
     const val vcsUrl = "https://github.com/IVIanuu/director"
-    const val version = "${Build.versionName}-dev-38"
+    const val version = "${Build.versionName}-dev40"
 }
 
 object Versions {
@@ -61,7 +61,7 @@ object Versions {
 
     const val rxJava = "2.2.8"
 
-    const val scopes = "0.0.1-dev-12"
+    const val scopes = "0.0.1-dev13"
 
     const val traveler = "0.0.1-dev-6"
 }
