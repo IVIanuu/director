@@ -5,9 +5,15 @@
       <module fileurl="file://$PROJECT_DIR$/Director.iml" filepath="$PROJECT_DIR$/Director.iml" />
       <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/director/director.iml" filepath="$PROJECT_DIR$/director/director.iml" />
+      <module fileurl="file://$PROJECT_DIR$/buildSrc/director-buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/director-buildSrc.iml" group="director/buildSrc" />
       <module fileurl="file://$PROJECT_DIR$/director-common/director-common.iml" filepath="$PROJECT_DIR$/director-common/director-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/director/director-director.iml" filepath="$PROJECT_DIR$/director/director-director.iml" group="director/director" />
+      <module fileurl="file://$PROJECT_DIR$/director-common/director-director-common.iml" filepath="$PROJECT_DIR$/director-common/director-director-common.iml" group="director/director-common" />
+      <module fileurl="file://$PROJECT_DIR$/director-traveler/director-director-traveler.iml" filepath="$PROJECT_DIR$/director-traveler/director-director-traveler.iml" group="director/director-traveler" />
+      <module fileurl="file://$PROJECT_DIR$/sample/director-sample.iml" filepath="$PROJECT_DIR$/sample/director-sample.iml" group="director/sample" />
       <module fileurl="file://$PROJECT_DIR$/director-traveler/director-traveler.iml" filepath="$PROJECT_DIR$/director-traveler/director-traveler.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/studio-projects-director.iml" filepath="$PROJECT_DIR$/studio-projects-director.iml" group="director" />
     </modules>
   </component>
 </project>
