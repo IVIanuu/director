@@ -58,8 +58,7 @@ class ActivityCallbacks : Fragment() {
         requestCode: Int,
         listener: ActivityResultListener
     ) {
-        activityResultListeners.getOrPut(requestCode) { mutableSetOf() }
-            .add(listener)
+        activityResultListeners.getOrPut(requestCode) { mutableSetOf() } += listener
     }
 
     internal fun removeActivityResultListener(
@@ -67,9 +66,9 @@ class ActivityCallbacks : Fragment() {
         listener: ActivityResultListener
     ) {
         val listenersForCode = activityResultListeners[requestCode] ?: return
-        listenersForCode.remove(listener)
+        listenersForCode -= listener
         if (listenersForCode.isEmpty()) {
-            activityResultListeners.remove(requestCode)
+            activityResultListeners -= requestCode
         }
     }
 
@@ -93,8 +92,7 @@ class ActivityCallbacks : Fragment() {
         requestCode: Int,
         listener: PermissionResultListener
     ) {
-        permissionResultListeners.getOrPut(requestCode) { mutableSetOf() }
-            .add(listener)
+        permissionResultListeners.getOrPut(requestCode) { mutableSetOf() } += listener
     }
 
     internal fun removePermissionResultListener(
@@ -102,9 +100,9 @@ class ActivityCallbacks : Fragment() {
         listener: PermissionResultListener
     ) {
         val callbacksForCode = permissionResultListeners[requestCode] ?: return
-        callbacksForCode.remove(listener)
+        callbacksForCode -= listener
         if (callbacksForCode.isEmpty()) {
-            permissionResultListeners.remove(requestCode)
+            permissionResultListeners -= requestCode
         }
     }
 

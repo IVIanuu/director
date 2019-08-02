@@ -22,10 +22,7 @@ import com.ivianuu.director.util.ActivityProxy
 import com.ivianuu.director.util.EmptyChangeListener
 import com.ivianuu.director.util.TestController
 import com.ivianuu.director.util.noRemoveViewOnPushHandler
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -473,8 +470,8 @@ class RouterTest {
 
         val childRouter =
             controller1.childRouter(controller1.childContainer1!!)
-        assertTrue(childRouter.getChangeListeners(false).contains(routerRecursiveListener))
-        assertFalse(childRouter.getChangeListeners(false).contains(routerNonRecursiveListener))
+        assertTrue(routerRecursiveListener in childRouter.getChangeListeners(false))
+        assertFalse(routerNonRecursiveListener in childRouter.getChangeListeners(false))
 
         val controller2 = TestController()
         childRouter.addChangeListener(childRouterRecursiveListener, true)
@@ -485,13 +482,9 @@ class RouterTest {
             controller2.childRouter(controller2.childContainer2!!)
         val controller3 = TestController()
         childRouter2.push(controller3.toTransaction())
-        assertTrue(childRouter2.getChangeListeners(false).contains(routerRecursiveListener))
-        assertTrue(childRouter2.getChangeListeners(false).contains(childRouterRecursiveListener))
-        assertFalse(
-            childRouter2.getChangeListeners(false).contains(
-                childRouterNonRecursiveListener
-            )
-        )
+        assertTrue(routerRecursiveListener in childRouter2.getChangeListeners(false))
+        assertTrue(childRouterRecursiveListener in childRouter2.getChangeListeners(false))
+        assertFalse(childRouterNonRecursiveListener in childRouter2.getChangeListeners(false))
     }
 
 }

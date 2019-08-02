@@ -59,7 +59,7 @@ class ParentController : BaseController() {
         val container = view!!.findViewById<ViewGroup>(frameId)
 
         childRouter(container).let { childRouter ->
-            childRouters.add(childRouter)
+            childRouters += childRouter
 
             childRouter.popsLastView = true
 
@@ -102,7 +102,7 @@ class ParentController : BaseController() {
             childRouter.doOnChangeEnded { _, _, _, _, _, _ ->
                 if (!removed) {
                     removed = true
-                    childRouters.remove(childRouter)
+                    childRouters -= childRouter
                 }
             }
         }

@@ -177,7 +177,7 @@ abstract class SharedElementTransitionChangeHandler(
                 for (transitionName in waitForTransitionNames) {
                     val namedView = to.findNamedView(transitionName)
                     if (namedView != null) {
-                        foundViews.add(namedView)
+                        foundViews += namedView
                     } else {
                         allViewsFound = false
                         break
@@ -204,8 +204,8 @@ abstract class SharedElementTransitionChangeHandler(
     ) {
         foundViews.forEach {
             OneShotPreDrawListener(true, it) {
-                waitForTransitionNames.remove(it.transitionName)
-                removedViews.add(it to it.parent as ViewGroup)
+                waitForTransitionNames -= it.transitionName
+                removedViews += it to it.parent as ViewGroup
                 (it.parent as ViewGroup).removeView(it)
 
                 if (waitForTransitionNames.isEmpty()) {
@@ -235,17 +235,17 @@ abstract class SharedElementTransitionChangeHandler(
                     toSharedElements,
                     nonExistentView
                 )
-                enteringViews.addAll(views)
+                enteringViews += views
             }
 
             val exitTransition = exitTransition
             if (exitTransition != null) {
                 val tempExiting = mutableListOf<View>()
-                tempExiting.add(nonExistentView)
+                tempExiting += nonExistentView
                 exitTransition.replaceTargets(exitingViews, tempExiting)
             }
             exitingViews.clear()
-            exitingViews.add(nonExistentView)
+            exitingViews += nonExistentView
         }
     }
 
@@ -281,7 +281,7 @@ abstract class SharedElementTransitionChangeHandler(
         view?.captureTransitioningViews(views)
         views.removeAll(sharedElements)
         if (views.isNotEmpty()) {
-            views.add(nonExistentView)
+            views += nonExistentView
             transition.addTargets(views)
         }
         return views
@@ -305,7 +305,7 @@ abstract class SharedElementTransitionChangeHandler(
         if (sharedElementNames.isEmpty()) {
             sharedElementTransition = null
         } else {
-            fromSharedElements.addAll(capturedFromSharedElements.values)
+            fromSharedElements += capturedFromSharedElements.values
         }
 
         if (enterTransition == null && exitTransition == null && sharedElementTransition == null) {
@@ -340,14 +340,14 @@ abstract class SharedElementTransitionChangeHandler(
         OneShotPreDrawListener(true, container) {
             val capturedToSharedElements = captureToSharedElements(to, isPush)
 
-            toSharedElements.addAll(capturedToSharedElements.values)
-            toSharedElements.add(nonExistentView)
+            toSharedElements += capturedToSharedElements.values
+            toSharedElements += nonExistentView
 
             callSharedElementStartEnd(capturedToSharedElements, false)
 
             if (sharedElementTransition != null) {
                 sharedElementTransition.targets.clear()
-                sharedElementTransition.targets.addAll(toSharedElements)
+                sharedElementTransition.targets += toSharedElements
                 sharedElementTransition.replaceTargets(
                     fromSharedElements,
                     toSharedElements
@@ -390,8 +390,8 @@ abstract class SharedElementTransitionChangeHandler(
         val names = sharedElementNames.values.toList()
 
         toSharedElements
-            .filterKeys { !names.contains(it) }
-            .forEach { toSharedElements.remove(it.key) }
+            .filterKeys { it !in names }
+            .forEach { toSharedElements -= it.key }
 
         val enterTransitionCallback = enterTransitionCallback
         if (enterTransitionCallback != null) {
@@ -403,7 +403,7 @@ abstract class SharedElementTransitionChangeHandler(
                     if (view == null) {
                         val key = sharedElementNames.findKeyForValue(name)
                         if (key != null) {
-                            sharedElementNames.remove(key)
+                            sharedElementNames -= key
                         }
                     } else if (name != view.transitionName) {
                         val key = sharedElementNames.findKeyForValue(name)
@@ -415,8 +415,8 @@ abstract class SharedElementTransitionChangeHandler(
         } else {
             sharedElementNames.toList()
                 .reversed()
-                .filterNot { toSharedElements.contains(it.second) }
-                .forEach { sharedElementNames.remove(it.first) }
+                .filterNot { it.second in toSharedElements }
+                .forEach { sharedElementNames -= it.first }
         }
         return toSharedElements
     }
@@ -439,8 +439,8 @@ abstract class SharedElementTransitionChangeHandler(
         val names = sharedElementNames.keys.toList()
 
         fromSharedElements
-            .filterKeys { !names.contains(it) }
-            .forEach { fromSharedElements.remove(it.key) }
+            .filterKeys { it !in names }
+            .forEach { fromSharedElements -= it.key }
 
         val exitTransitionCallback = exitTransitionCallback
         if (exitTransitionCallback != null) {
@@ -451,7 +451,7 @@ abstract class SharedElementTransitionChangeHandler(
                 .map { it to fromSharedElements[it] }
                 .forEach { (name, view) ->
                     if (view == null) {
-                        sharedElementNames.remove(name)
+                        sharedElementNames -= name
                     } else if (name != view.transitionName) {
                         val targetValue = sharedElementNames.remove(name)!!
                         sharedElementNames[view.transitionName] = targetValue
@@ -459,8 +459,8 @@ abstract class SharedElementTransitionChangeHandler(
                 }
         } else {
             sharedElementNames
-                .filterKeys { !fromSharedElements.contains(it) }
-                .forEach { sharedElementNames.remove(it.key) }
+                .filterKeys { it !in fromSharedElements }
+                .forEach { sharedElementNames -= it.key }
         }
         return fromSharedElements
     }
@@ -489,14 +489,14 @@ abstract class SharedElementTransitionChangeHandler(
         if (visibility == View.VISIBLE) {
             if (this is ViewGroup) {
                 if (isTransitionGroup) {
-                    transitioningViews.add(this)
+                    transitioningViews += this
                 } else {
                     (0 until childCount)
                         .map { getChildAt(it) }
                         .forEach { it.captureTransitioningViews(transitioningViews) }
                 }
             } else {
-                transitioningViews.add(this)
+                transitioningViews += this
             }
         }
     }
@@ -639,10 +639,10 @@ abstract class SharedElementTransitionChangeHandler(
      * potentially lock up your app indefinitely if the view never loads!
      */
     protected fun waitOnSharedElementNamed(name: String) {
-        check(sharedElementNames.values.contains(name)) {
+        check(name in sharedElementNames.values) {
             "Can't wait on a shared element that hasn't been registered using addSharedElement"
         }
-        waitForTransitionNames.add(name)
+        waitForTransitionNames += name
     }
 
     private class OneShotPreDrawListener(

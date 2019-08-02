@@ -72,8 +72,8 @@ fun Transition.setTargets(nonExistentView: View, sharedViews: MutableList<View>)
             it
         )
     }
-    views.add(nonExistentView)
-    sharedViews.add(nonExistentView)
+    views += nonExistentView
+    sharedViews += nonExistentView
     addTargets(sharedViews)
 }
 
@@ -115,7 +115,7 @@ private fun bfsAddViewChildren(views: MutableList<View>, startView: View) {
     ) {
         return  // This child is already in the list, so all its children are also.
     }
-    views.add(startView)
+    views += startView
 
     // drop?
     (startIndex until views.size)

@@ -23,17 +23,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Lifecycle.State.CREATED
-import androidx.lifecycle.Lifecycle.State.DESTROYED
-import androidx.lifecycle.Lifecycle.State.RESUMED
-import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.Lifecycle.State.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-
 
 /**
  * Lightweight view controller with a lifecycle

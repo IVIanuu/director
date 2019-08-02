@@ -142,11 +142,11 @@ class ElasticDragDismissFrameLayout @JvmOverloads constructor(
     }
 
     fun addListener(listener: ElasticDragDismissCallback) {
-        callbacks.add(listener)
+        callbacks += listener
     }
 
     fun removeListener(listener: ElasticDragDismissCallback) {
-        callbacks.remove(listener)
+        callbacks -= listener
     }
 
     private fun dragScale(scroll: Int) {

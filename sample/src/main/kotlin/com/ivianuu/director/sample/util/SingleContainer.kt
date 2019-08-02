@@ -38,14 +38,14 @@ class SingleContainer(val router: Router) {
         val index = newBackStack.indexOf(transaction)
 
         if (index != -1) newBackStack.removeAt(index)
-        newBackStack.add(transaction)
+        newBackStack += transaction
 
         router.setBackStack(newBackStack, isPush = true)
     }
 
     fun remove(transaction: RouterTransaction) {
         val newBackStack = router.backStack.toMutableList()
-        newBackStack.remove(transaction)
+        newBackStack -= transaction
         router.setBackStack(newBackStack, false)
     }
 
@@ -60,12 +60,12 @@ inline fun Router.moveToTop(tag: String, create: () -> RouterTransaction) {
     val backStack = backStack.toMutableList()
     var controller = backStack.firstOrNull { it.tag == tag }
     if (controller != null) {
-        backStack.remove(controller)
+        backStack -= controller
     } else {
         controller = create()
     }
 
-    backStack.add(controller)
+    backStack += controller
     setBackStack(backStack, true)
 }
 

@@ -36,7 +36,7 @@ class MultipleChildRouterController : BaseController() {
         listOf(R.id.container_0, R.id.container_1, R.id.container_2)
             .map { childRouter(it) }
             .forEach {
-                childRouters.add(it)
+                childRouters += it
 
                 it.setRoot(
                     NavigationController(

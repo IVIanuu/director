@@ -19,10 +19,7 @@ package com.ivianuu.director
 import android.content.ContextWrapper
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle.State.CREATED
-import androidx.lifecycle.Lifecycle.State.DESTROYED
-import androidx.lifecycle.Lifecycle.State.INITIALIZED
-import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.Lifecycle.State.*
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 
@@ -132,7 +129,7 @@ class Router internal constructor(val parent: Controller? = null) {
         val oldVisibleTransactions = oldBackStack.filterVisible()
 
         _backStack.clear()
-        _backStack.addAll(newBackStack)
+        _backStack += newBackStack
 
         // find destroyed controllers
         val destroyedTransactions = oldBackStack
@@ -162,7 +159,7 @@ class Router internal constructor(val parent: Controller? = null) {
             oldVisibleTransactions
                 .dropLast(if (replacingTopControllers) 1 else 0)
                 .reversed()
-                .filterNot { newVisibleTransactions.contains(it) }
+                .filterNot { it in newVisibleTransactions }
                 .forEach { transaction ->
                     cancelChange(transaction.controller)
 
@@ -181,7 +178,7 @@ class Router internal constructor(val parent: Controller? = null) {
             // Add any new controllers to the backStack from bottom to top
             newVisibleTransactions
                 .dropLast(if (replacingTopControllers) 1 else 0)
-                .filterNot { oldVisibleTransactions.contains(it) }
+                .filterNot { it in oldVisibleTransactions }
                 .forEachIndexed { i, transaction ->
                     val localHandler = handler?.copy() ?: transaction.pushChangeHandler
                     performControllerChange(
@@ -244,7 +241,7 @@ class Router internal constructor(val parent: Controller? = null) {
      * Notifies the [listener] on controller changes
      */
     fun addChangeListener(listener: ControllerChangeListener, recursive: Boolean = false) {
-        changeListeners.add(ChangeListenerEntry(listener, recursive))
+        changeListeners += ChangeListenerEntry(listener, recursive)
     }
 
     /**
@@ -387,7 +384,7 @@ class Router internal constructor(val parent: Controller? = null) {
 
             override fun changeCompleted() {
                 if (to != null) {
-                    runningHandlers.remove(to)
+                    runningHandlers -= to
                 }
 
                 listeners.forEach {
@@ -546,7 +543,7 @@ fun Router.push(
     handler: ControllerChangeHandler? = null
 ) {
     val newBackStack = backStack.toMutableList()
-    newBackStack.add(transaction)
+    newBackStack += transaction
     setBackStack(newBackStack, true, handler)
 }
 
@@ -559,7 +556,7 @@ fun Router.replaceTop(
 ) {
     val newBackStack = backStack.toMutableList()
     if (newBackStack.isNotEmpty()) newBackStack.removeAt(newBackStack.lastIndex)
-    newBackStack.add(transaction)
+    newBackStack += transaction
     setBackStack(newBackStack, true, handler)
 }
 
@@ -582,7 +579,7 @@ fun Router.popTransaction(
     handler: ControllerChangeHandler? = null
 ) {
     val newBackStack = backStack.toMutableList()
-    newBackStack.remove(transaction)
+    newBackStack -= transaction
     setBackStack(newBackStack, false, handler)
 }
 
