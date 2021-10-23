@@ -18,6 +18,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven("https://jitpack.io")
     }
     dependencies {
         classpath(Deps.androidGradlePlugin)
@@ -32,7 +33,7 @@ allprojects {
         google()
         jcenter()
         mavenLocal()
-        maven("https://dl.bintray.com/ivianuu/maven/")
+        maven("https://jitpack.io")
     }
 }
 

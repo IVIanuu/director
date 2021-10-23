@@ -30,7 +30,7 @@ object Versions {
     const val bintray = "1.8.4"
 
     const val epoxy = "3.0.0"
-    const val epoxyKtx = "0.0.1-dev-1"
+    const val epoxyKtx = "a2aaa1f6"
 
     const val junit = "4.12"
 
@@ -45,9 +45,9 @@ object Versions {
 
     const val rxJava = "2.2.8"
 
-    const val scopes = "0.0.1-dev-12"
+    const val scopes = "9aa8dce7"
 
-    const val traveler = "0.0.1-dev-6"
+    const val traveler = "b5b58726"
 }
 
 object Deps {
@@ -65,7 +65,7 @@ object Deps {
 
     const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
     const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
-    const val epoxyKtx = "com.ivianuu.epoxyktx:epoxyktx:${Versions.epoxyKtx}"
+    const val epoxyKtx = "com.github.IVIanuu:epoxy-ktx:${Versions.epoxyKtx}"
 
     const val junit = "junit:junit:${Versions.junit}"
 
@@ -83,13 +83,12 @@ object Deps {
 
     const val rxJava = "io.reactivex.rxjava2:rxjava:${Versions.rxJava}"
 
-    const val scopes = "com.ivianuu.scopes:scopes:${Versions.scopes}"
-    const val scopesCommon = "com.ivianuu.scopes:scopes-common:${Versions.scopes}"
-    const val scopesLifecycle = "com.ivianuu.scopes:scopes-lifecycle:${Versions.scopes}"
-    const val scopesRx = "com.ivianuu.scopes:scopes-rx:${Versions.scopes}"
+    const val scopes = "com.github.IVIanuu.scopes:scopes:${Versions.scopes}"
+    const val scopesCommon = "com.github.IVIanuu.scopes:scopes-common:${Versions.scopes}"
+    const val scopesLifecycle = "com.github.IVIanuu.scopes:scopes-lifecycle:${Versions.scopes}"
+    const val scopesRx = "com.github.IVIanuu.scopes:scopes-rx:${Versions.scopes}"
 
-    const val traveler = "com.ivianuu.traveler:traveler:${Versions.traveler}"
-    const val travelerAndroid = "com.ivianuu.traveler:traveler-android:${Versions.traveler}"
-    const val travelerCommon =
-        "com.ivianuu.traveler:traveler-common:${Versions.traveler}"
+    const val traveler = "com.github.IVIanuu.traveler:traveler:${Versions.traveler}"
+    const val travelerAndroid = "com.github.IVIanuu.traveler:traveler-android:${Versions.traveler}"
+    const val travelerCommon = "com.github.IVIanuu.traveler:traveler-common:${Versions.traveler}"
 }
